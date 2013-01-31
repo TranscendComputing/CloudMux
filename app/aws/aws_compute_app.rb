@@ -229,6 +229,21 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 	
+	delete '/spot_requests/delete' do
+		compute = get_compute_interface(params[:cred_id])
+		if(compute.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil? || json_body["spot_request"].nil?)
+				[BAD_REQUEST]
+			else
+				response = compute.spot_requests.get(json_body["spot_request"]["id"]).destroy
+				[OK, response.to_json]
+			end
+		end
+	end
+	
 	#
 	# Compute Elastic Ips
 	#
