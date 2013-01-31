@@ -36,6 +36,66 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 	
+	post '/instances/start' do
+		compute = get_compute_interface(params[:cred_id])
+		if(compute.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil? || json_body["instance"].nil?)
+				[BAD_REQUEST]
+			else
+				response = compute.servers.get(json_body["instance"]["id"]).start
+				[OK, response.to_json]
+			end
+		end
+	end
+	
+	post '/instances/stop' do
+		compute = get_compute_interface(params[:cred_id])
+		if(compute.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil? || json_body["instance"].nil?)
+				[BAD_REQUEST]
+			else
+				response = compute.servers.get(json_body["instance"]["id"]).stop
+				[OK, response.to_json]
+			end
+		end
+	end
+	
+	post '/instances/reboot' do
+		compute = get_compute_interface(params[:cred_id])
+		if(compute.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil? || json_body["instance"].nil?)
+				[BAD_REQUEST]
+			else
+				response = compute.servers.get(json_body["instance"]["id"]).reboot
+				[OK, response.to_json]
+			end
+		end
+	end
+	
+	delete '/instances/terminate' do
+		compute = get_compute_interface(params[:cred_id])
+		if(compute.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil? || json_body["instance"].nil?)
+				[BAD_REQUEST]
+			else
+				response = compute.servers.get(json_body["instance"]["id"]).destroy
+				[OK, response.to_json]
+			end
+		end
+	end
+	
 	#
 	# Compute Security Group
 	#
@@ -70,6 +130,22 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 	
+	delete '/security_groups/delete' do
+		compute = get_compute_interface(params[:cred_id])
+		if(compute.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil? || json_body["security_group"].nil?)
+				[BAD_REQUEST]
+			else
+				response = compute.security_groups.get(json_body["security_group"]["name"]).destroy
+				[OK, response.to_json]
+			end
+		end
+	end
+	
+	
 	#
 	# Compute Key Pairs
 	#
@@ -99,6 +175,21 @@ class AwsComputeApp < ResourceApiBase
 				[BAD_REQUEST]
 			else
 				response = compute.key_pairs.create(json_body["key_pair"])
+				[OK, response.to_json]
+			end
+		end
+	end
+	
+	delete '/key_pairs/delete' do
+		compute = get_compute_interface(params[:cred_id])
+		if(compute.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil? || json_body["key_pair"].nil?)
+				[BAD_REQUEST]
+			else
+				response = compute.key_pairs.get(json_body["key_pair"]["name"]).destroy
 				[OK, response.to_json]
 			end
 		end
@@ -167,6 +258,21 @@ class AwsComputeApp < ResourceApiBase
 				[BAD_REQUEST]
 			else
 				response = compute.addresses.create(json_body["address"])
+				[OK, response.to_json]
+			end
+		end
+	end
+	
+	delete '/addresses/delete' do
+		compute = get_compute_interface(params[:cred_id])
+		if(compute.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil? || json_body["address"].nil?)
+				[BAD_REQUEST]
+			else
+				response = compute.addresses.get(json_body["address"]["publicIp"]).destroy
 				[OK, response.to_json]
 			end
 		end
