@@ -35,6 +35,70 @@ class AwsBlockStorageApp < ResourceApiBase
 			end
 		end
 	end
+	
+	delete '/volumes/delete' do
+		block_storage = get_block_storage_interface(params[:cred_id])
+		if(block_storage.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil? || json_body["volume"].nil?)
+				[BAD_REQUEST]
+			else
+				response = block_storage.volumes.get(json_body["volume"]["id"]).destroy
+				[OK, response.to_json]
+			end
+		end
+	end
+	
+	#
+	# Snapshots
+	#
+	post '/snapshots/describe' do
+		block_storage = get_block_storage_interface(params[:cred_id])
+		if(block_storage.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil?)
+				response = block_storage.snapshots
+			else
+				filters = json_body["filters"]
+				response = block_storage.snapshots.all(filters)
+			end
+			[OK, response.to_json]
+		end
+	end
+	
+	put '/snapshots/create' do
+		block_storage = get_block_storage_interface(params[:cred_id])
+		if(block_storage.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil?)
+				[BAD_REQUEST]
+			else
+				response = block_storage.snapshots.create(json_body["snapshot"])
+				[OK, response.to_json]
+			end
+		end
+	end
+	
+	delete '/snapshots/delete' do
+		block_storage = get_block_storage_interface(params[:cred_id])
+		if(block_storage.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil? || json_body["snapshot"].nil?)
+				[BAD_REQUEST]
+			else
+				response = block_storage.snapshots.get(json_body["snapshot"]["id"]).destroy
+				[OK, response.to_json]
+			end
+		end
+	end
 
 	def get_block_storage_interface(cred_id)
 		if(cred_id.nil?)
