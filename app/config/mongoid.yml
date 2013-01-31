@@ -1,0 +1,10 @@
+development:
+    host: localhost
+    database: stack_place_development
+
+test:
+    host: localhost
+    database: stack_place_test
+
+production:
+    uri: <%= ENV['MONGO_URI'] || ENV['MONGOLAB_URI'] %>

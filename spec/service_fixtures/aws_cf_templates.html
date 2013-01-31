@@ -1,0 +1,749 @@
+
+
+
+  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="icon" type="image/ico" href="//d36cz9buwru1tt.cloudfront.net/favicon.ico">
+  <link rel="shortcut icon" type="image/ico" href="//d36cz9buwru1tt.cloudfront.net/favicon.ico">
+  <meta name="description" content="AWS CloudFormation Templates for US East 1 region" /><meta name="keywords" content="AWS CloudFormation Templates" />
+
+  <title>AWS CloudFormation Templates</title>
+
+  
+
+  <link rel="stylesheet" href="/css/screen_2.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <link rel="stylesheet" href="/css/awsGlobalNav3-ltIE9.css" type="text/css" />
+  <![endif]-->
+  <!--[if lt IE 8]>
+    <link rel="stylesheet" href="/css/awsGlobalNav3-ltIE8.css" type="text/css" />
+  <![endif]-->
+  <!--[if lt IE 7]>
+    <link rel="stylesheet" href="/css/awsGlobalNav3-ltIE7.css" type="text/css" />
+    <link rel="stylesheet" href="/css/documentationIE6.css" type="text/css" />
+  <![endif]-->
+
+  
+
+  <script src="/js/all_2.js" type="text/javascript"></script>
+
+  <script type="text/javascript">
+  __amznUtmPage = "/cloudformation/aws-cloudformation-templates/";
+</script>
+<script src="/js/amznUrchin.js" type="text/javascript"></script> 
+</head>
+
+<body id="top" class="yui-skin-sam noJS">
+  
+  <!-- layout one_column -->
+  <div id="doc4" class="yui-t1">
+    <div id="hd">
+
+
+
+
+
+
+
+
+
+
+  <!-- header -->
+<div id="main-nav" class="nav-lang-en">
+  <a href="//aws.amazon.com/" id="nav-aws-logo" class="nav-sprite" title="Amazon Web Services"><span>Amazon Web Services</span></a>
+
+  <div id="nav-bar" class="nav-sprite">
+    <a id="nav-dd-products-solutions" class="nav-link" href="//aws.amazon.com/products-solutions/">
+      <strong>AWS Products</strong> &amp; <strong>Solutions</strong>
+    </a>
+
+    <form id="nav-search-form" method="get" action="//aws.amazon.com/search">
+      <div id="nav-searchfield-outer" class="nav-sprite">
+        <div id="nav-searchfield-inner" class="nav-sprite">
+          <div id="nav-searchfield-width">
+            <input id="nav-searchfield" name="searchQuery"></input>
+          </div>
+        </div>
+      </div>
+
+      <span id="nav-search-in" class="nav-sprite">
+        <span id="nav-search-in-content">Search In</span>
+        <span class="nav-down-arrow nav-sprite"></span>
+        <select name="searchPath" id="nav-search-dropdown"></select>
+      </span>
+
+      <div id="nav-search-button" class="nav-sprite">
+        <input type="image" alt="Search" id="nav-search-button-inner" title="Search" src="//d36cz9buwru1tt.cloudfront.net/nav/transparent_pixel.gif">
+      </div>
+    </form>
+
+    <a id="nav-dd-developers" class="nav-link" href="//aws.amazon.com/developers/">
+      <strong>Developers</strong>
+    </a>
+
+    <a id="nav-dd-support" class="nav-link" href="//aws.amazon.com/support/">
+      <strong>Support</strong>
+    </a>
+  </div>
+
+  <div id="global-top-links">
+    <a href="https://aws-portal.amazon.com/gp/aws/developer/registration/index.html" id="gtl-sign-up">Sign Up</a>
+    <a href="https://console.aws.amazon.com/s3/home" id="gtl-dd-account-console">My Account / Console</a>
+  </div>
+</div>
+
+
+
+<noscript>
+  <!--#if expr="${LANG_NOT_FOUND}" -->
+    <div id="pageNotTranslated">
+      <!--#include virtual="/errors/untranslated/$LANG_NOT_FOUND/index.html" -->
+    </div>
+  <!--#endif -->
+</noscript>
+
+
+<script type="text/javascript">
+  if ( ! window.AWSGlobalNav ) {
+      AWSGlobalNav = {};
+  }
+
+  // This has to be set early (before the onload handlers execute)
+  AWSGlobalNav.acceptLanguage = '<!--#echo var="ACCEPT_LANGUAGE_HEADER" -->';
+  AWSGlobalNav.contentBaseURL = '//aws.amazon.com';
+</script>
+
+<!-- /header -->
+
+
+</div> 
+    <div id="bd"><h1 class="title" style="padding-bottom:0px;">AWS CloudFormation Sample Templates - US East (Virginia) region</h1>
+
+<p>
+AWS CloudFormation gives developers and systems administrators an easy way to create a collection of related AWS resources and provision them in an orderly and predictable fashion. The AWS CloudFormation samples package contains a collection of templates that illustrate
+various usage cases.  Stacks can be created from the templates
+via the <a href="http://aws.amazon.com/console">AWS Management Console</a>, through the AWS
+CloudFormation command line tools or via the AWS CloudFormation APIs. You can use the templates as-is or you can use them as a starting point for creating your own templates. All the sample templates can be downloaded <a href="https://s3.amazonaws.com/cloudformation-examples/AWSCloudFormation-samples.zip">here</a>.
+<p/>
+<p>
+AWS CloudFormation is available in all AWS regions. For more details click <a href="#regions">here</a>.
+</p>
+
+<h2>CloudFormer</h2>
+CloudFormer is a prototype tool that enables you to create <a href="http://aws.amazon.com/cloudformation/">AWS CloudFormation</a> templates from the existing AWS resources in your account. You can provision and configure your application resources the way you want using your existing processes and tools. Once everything is setup and you have the resources provisioned, simply take a "snapshot" of the configuration to create a template, enabling you to launch copies of the application with just a few clicks through the <a href="http://aws.amazon.com/console/">AWS Management Console</a>. The CloudFormer tool is packaged as a standalone application that you can launch inside your AWS environment. The application is started on a t1.micro Amazon EC2 instance via AWS CloudFormation. No other AWS resources are required to run CloudFormer.  
+<p/><p/>
+Click <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~AWSCloudFormer|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/AWSCloudFormer.template">here</a> to launch CloudFormer.
+
+<h2>Recently added samples</h2>
+<p/>
+<table>
+<tr>
+<th style="text-align: left; width: 25%;">Template URL</th>
+<th style="text-align: left; width: 60%;">Description</th>
+<th style="text-align: left; width: 15%;">Launch in US East (Virginia) Region</th>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/VPC_EC2_Instance_with_EIP_and_Security_Group.template">VPC_EC2_Instance_with_EIP_and_Security_Group.template</a></td>
+<td>Launch an Amazon EC2 instance and an associated Elastic IP address in an existing VPC.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~EC2InstanceInVPC|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/VPC_EC2_Instance_with_EIP_and_Security_Group.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/VPC_AutoScaling_and_ElasticLoadBalancer.template">VPC_AutoScaling_and_ElasticLoadBalancer.template</a></td>
+<td>Launch an Auto Scaling Group and an associated Elastic Load Balancer in an existing VPC.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~AutoScalingAndELBInVPC|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/VPC_AutoScaling_and_ElasticLoadBalancer.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/VPC_RDS_DB_Instance.template">VPC_RDS_DB_Instance.template</a></td>
+<td>Launch an Amazon RDS Database instance in an existing VPC.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~RDSDBInVPC|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/VPC_RDS_DB_Instance.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/VPC_WordPress_Single_Instance_With_RDS.template">VPC_WordPress_Single_Instance_With_RDS.template</a></td>
+<td>Launch a single instance WordPress installation using an Amazon RDS database instance for storage in an existing VPC.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~WordPressInVPC|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/VPC_WordPress_Single_Instance_With_RDS.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/UpdateTutorial+Part1.template">UpdateTutorial+Part1.template</a>,
+<a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/UpdateTutorial+Part2.template">UpdateTutorial+Part2.template</a>,
+<a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/UpdateTutorial+Part3.template">UpdateTutorial+Part3.template</a>,
+<a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/UpdateTutorial+Part4.template">UpdateTutorial+Part4.template</a></td>
+<td>Tutorial templates associated with the stack update walk-through in the <a href="http://docs.amazonwebservices.com/AWSCloudFormation/latest/UserGuide/">AWS CloudFormation User Guide</a>.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~UpdateTutorial|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/UpdateTutorial%20Part1.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+</table>
+
+<h2>Open Source Applications</h2>
+The following sample templates show you how to provision existing open source application stack. Each of the samples shows how to deploy and install the application at launch time using the AWS CloudFormation application bootstrap support described <a href="https://s3.amazonaws.com/cloudformation-examples/BoostrappingApplicationsWithAWSCloudFormation.pdf">here</a>.
+<p/>
+
+<table>
+<tr>
+<th style="text-align: left; width: 35%;">Description</th>
+<th style="text-align: left; width: 50%;">Template URL</th>
+<th style="text-align: left; width: 15%;">Launch in US East (Virginia) Region</th>
+</tr>
+
+<tr>
+<td><b>Drupal</b> is an open source content management platform powering millions of websites and applications. For more details click <a href="http://drupal.org/">here</a>.</td>
+<td>
+<table>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Drupal_Single_Instance.template">Single EC2 Instance with local MySQL database</a></td></tr>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Drupal_Single_Instance_With_RDS.template">Single EC2 Instance web server with Amazon RDS database instance</a></td></tr>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Drupal_Multi_AZ.template">Highly Available Web Server with Multi-AZ Amazon RDS database instance and using S3 for storing file content</a></td></tr>
+</table>
+</td>
+<td>
+<table>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~DrupalSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Drupal_Single_Instance.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~DrupalSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Drupal_Single_Instance_With_RDS.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~DrupalSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Drupal_Multi_AZ.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+
+<tr>
+<td><b>Gollum</b> is a simple wiki system built on top of Git that powers GitHub Wikis. For more details click <a href="https://github.com/github/gollum">here</a>.</td>
+<td>
+<table>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Gollum_Single_Instance.template">Single EC2 Instance with data stored on ephemeral drive</a></td></tr>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Gollum_Single_Instance_With_EBS_Volume.template">Single EC2 Instance with data stored on an EBS volume</a></td></tr>
+</table>
+</td>
+<td>
+<table>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~GollumSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Gollum_Single_Instance.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~GollumSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Gollum_Single_Instance_With_EBS_Volume.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+</table>
+</td>
+</tr>
+
+<tr>
+<td><b>Insoshi</b> is an open source social networking platform in Ruby on Rails. For more details click <a href="https://github.com/insoshi/insoshi">
+here</a>.</td>
+<td>
+<table>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Insoshi_Single_Instance.template">Single EC2 Instance with local MySQL database</a></td></tr>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Insoshi_Single_Instance_With_RDS.template">Single EC2 Instance web server with Amazon RDS database instance</a></td></tr>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Insoshi_Multi_AZ.template">Highly Available Web Server with Multi-AZ Amazon RDS database instance and files stored on S3</a></td></tr>
+</table>
+</td>
+<td>
+<table>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~InsoshiSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Insoshi_Single_Instance.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~InsoshiSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Insoshi_Single_Instance_With_RDS.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~InsoshiSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Insoshi_Multi_AZ.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+</table>
+</td>
+</tr>
+
+<tr>
+<td><b>Joomla!</b> is a free, open-source content management system (CMS) and application framework. For more details click <a href="http://www.joomla.org/">here</a>.</td>
+<td>
+<table>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Joomla!_Single_Instance.template">Single EC2 Instance with local MySQL database</a></td></tr>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Joomla!_Single_Instance_With_RDS.template">Single EC2 Instance web server with Amazon RDS database instance</a></td></tr>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Joomla!_Multi_AZ.template">Highly Available Web Server with Multi-AZ Amazon RDS Instance</a></td></tr>
+</table>
+</td>
+<td>
+<table>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~JoomlaSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Joomla!_Single_Instance.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~JoomlaSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Joomla!_Single_Instance_With_RDS.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~JoomlaSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Joomla!_Multi_AZ.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+</table>
+</td>
+</tr>
+
+<tr>
+<td><b>Redmine</b> is a flexible project management web application which includes a gantt chart, calendar, wiki, forums, multiple roles, and email notification. For more details click <a href="http://www.redmine.org/">here</a>.</td>
+<td>
+<table>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Redmine_Single_Instance.template">Single EC2 Instance with local MySQL database</a></td></tr>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Redmine_Single_Instance_With_RDS.template">Single EC2 Instance web server with Amazon RDS database instance</a></td></tr>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Redmine_Multi_AZ.template">Highly Available Web Server with Multi-AZ Amazon RDS database instance</a></td></tr>
+</table>
+</td>
+<td>
+<table>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~RedmineSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Redmine_Single_Instance.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~RedmineSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Redmine_Single_Instance_With_RDS.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~RedmineSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Redmine_Multi_AZ.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+</table>
+</td>
+</tr>
+
+<tr>
+<td><b>Tracks</b> is a web-based application to help you implement David Allen's Getting Things Done&trade; methodology. For more details click <a href="http://www.getontracks.org/">here</a>.</td>
+<td>
+<table>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Tracks_Single_Instance.template">Single EC2 Instance with local MySQL</a></td></tr>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Tracks_Single_Instance_With_RDS.template">Single EC2 Instance web server with Amazon RDS database instance</a></td></tr>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Tracks_Multi_AZ.template">Highly Available Web Server with Multi-AZ Amazon RDS Instance</a></td></tr>
+</table>
+</td>
+<td>
+<table>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~TracksSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Tracks_Single_Instance.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~TracksSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Tracks_Single_Instance_With_RDS.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~TracksSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Tracks_Multi_AZ.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+</table>
+</td>
+</tr>
+
+<tr>
+<td><b>WordPress</b> is web software you can use to create a beautiful website or blog. For more details click <a href="http://wordpress.org/">here</a>.</td>
+<td>
+<table>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/WordPress_Single_Instance.template">Single EC2 Instance with local MySQL database</a></td></tr>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/WordPress_Single_Instance_With_RDS.template">Single EC2 Instance web server with Amazon RDS database instance</a></td></tr>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/WordPress_Multi_AZ.template">Highly Available Web Server with Multi-AZ Amazon RDS Instance</a></td></tr>
+</table>
+</td>
+<td>
+<table>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~WordPressSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/WordPress_Single_Instance.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~WordPressSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/WordPress_Single_Instance_With_RDS.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~WordPressSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/WordPress_Multi_AZ.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+</table>
+</td>
+</tr>
+
+</table>
+
+<p/>
+
+<h2>Application Framework Examples</h2>
+The following sample templates show you how to provision application frameworks by setting up <i>Hello World</i> applications:
+<p/>
+
+<table>
+<tr>
+<th style="text-align: left; width: 35%;">Description</th>
+<th style="text-align: left; width: 50%;">Template URL</th>
+<th style="text-align: left; width: 15%;">Launch in US East (Virginia) Region</th>
+</tr>
+
+<tr>
+<td>A simple <b>LAMP</b> stack running a PHP "Hello World" application.</td>
+<td>
+<table>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/LAMP_Single_Instance.template">Single EC2 Instance with local MySQL database</a></td></tr>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/LAMP_Single_Instance_With_RDS.template">Single EC2 Instance web server with Amazon RDS database instance</a></td></tr>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/LAMP_Multi_AZ.template">Highly Available Web Server with Multi-AZ Amazon RDS Instance</a></td></tr>
+</table>
+</td>
+<td>
+<table>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~PHPHelloWorld|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/LAMP_Single_Instance.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~PHPHelloWorld|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/LAMP_Single_Instance_With_RDS.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~PHPHelloWorld|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/LAMP_Multi_AZ.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+</table>
+</td>
+</tr>
+
+<tr>
+<td>A simple <b>Ruby on Rails</b> "Hello World" application.</td>
+<td>
+<table>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Rails_Single_Instance.template">Single EC2 Instance with local MySQL database</a></td></tr>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Rails_Single_Instance_With_RDS.template">Single EC2 Instance web server with Amazon RDS database instance</a></td></tr>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Rails_Multi_AZ.template">Highly Available Web Server with Multi-AZ Amazon RDS Instance</a></td></tr>
+</table>
+</td>
+<td>
+<table>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~RailsHelloWorld|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Rails_Single_Instance.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~RailsHelloWorld|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Rails_Single_Instance_With_RDS.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~RailsHelloWorld|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Rails_Multi_AZ.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+</table>
+</td>
+</tr>
+
+<tr>
+<td>A sample <b>AWS Elastic Beanstalk</b> application.</td>
+<td>
+<table>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/ElasticBeanstalkSample.template">Startup the AWS Elastic Beanstalk Sample Application</a></td></tr>
+<tr><td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/ElasticBeanstalk_Simple.template">Sample AWS Beanstalk application connected to an Amazon RDS database instance</a></td></tr>
+</table>
+</td>
+<td>
+<table>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~BeanstalkSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/ElasticBeanstalkSample.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+<tr><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~PHPHelloWorld|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/ElasticBeanstalk_Simple.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td></tr>
+</table>
+</td>
+</tr>
+
+</table>
+<p/>
+
+<h2>Template Features</h2>
+The following sample templates illustrate how to use different resources or template features:
+
+<p/>
+<table>
+<tr>
+<th style="text-align: left; width: 25%;">Template URL</th>
+<th style="text-align: left; width: 60%;">Description</th>
+<th style="text-align: left; width: 15%;">Launch in US East (Virginia) Region</th>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/AutoScalingKeepAtNSample.template">AutoScalingKeepAtNSample.template</a></td>
+<td>An example of using Auto Scaling groups to manage a set of EC2 instances.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~ASSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/AutoScalingKeepAtNSample.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/AutoScalingMultiAZSample.template">AutoScalingMultiAZSample.template</a></td>
+<td>An example of using Load Balanced, Auto Scaling groups spanning multiple EC2 availability zones. This template has been updated to use Auto Scaling Policies.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~ASMultiAZSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/AutoScalingMultiAZSample.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/AutoScalingMultiAZWithNotifications.template">AutoScalingMultiAZWithNotifications.template</a></td>
+<td>An example of using Load Balanced Auto Scaling groups spanning multiple EC2 availability zones. This template uses Auto Scaling Policies and configures Auto Scaling notifications so that you can get emails when scaling events occur.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~ASMultiAZNotifications|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/AutoScalingMultiAZWithNotifications.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/CloudFront_S3.template">CloudFront_S3.template</a></td>
+<td>An example of using a CloudFront distribution with an S3 origin.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~CloudFrontSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/CloudFront_S3.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/EC2ChooseAMI.template">EC2ChooseAMI.template</a></td>
+<td>An example of using Mappings to select an AMI based on region and instance type.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~MappingsSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/EC2ChooseAMI.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/EC2InstanceSample.template">EC2InstanceSample.template</a></td>
+<td>Simple EC2 instance example.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~EC2Sample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/EC2InstanceSample.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/EC2InstanceWithSecurityGroupSample.template">EC2InstanceWithSecurityGroupSample.template</a></td>
+<td>Simple EC2 instance with a security group.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~EC2SGSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/EC2InstanceWithSecurityGroupSample.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/EC2WebSiteSample.template">EC2WebSiteSample.template</a></td>
+<td>Simple EC2-based website.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~WebSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/EC2WebSiteSample.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/EC2WithEBSSample.template">EC2WithEBSSample.template</a></td>
+<td>Sample of attaching an EBS volume to an EC2 instance.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~EBSSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/EC2WithEBSSample.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/EC2WithMetadata.template">EC2WithMetadata.template</a></td>
+<td>Example of using resource metadata with an EC2 instance resource.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~MetadataSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/EC2WithMetadata.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/EC2_Untargeted_Launch_with_EBS_Volume.template">EC2_Untargeted_Launch_with_EBS_Volume.template</a></td>
+<td>Untargeted launch of an EC2 instance with an attached EBS volume.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~UntargetedSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/EC2_Untargeted_Launch_with_EBS_Volume.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/EBS_Snapshot_On_Delete.template">EBS_Snapshot_On_Delete.template</a></td>
+<td>Sample of attaching an EBS volume to an EC2 instance with the <i>snapshot</i> deletion policy. This will cause a snapshot of the EBS volume to be taken prior to the EBS volume resource being deleted.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~EBSSnapshotSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/EBS_Snapshot_On_Delete.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/EIP_With_Association.template">EIP_With_Association.template</a></td>
+<td>Associate an EC2 Instance with a pre-existing EIP.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~EIPAssocSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/EIP_With_Association.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/ElastiCache.template">ElastiCache.template</a></td>
+<td>Example of creating an ElastiCache Cache Cluster. The template also deploys a sample PHP application that connects to the Cache Cluster.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~ElastiCacheSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/ElastiCache.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/ELBSample.template">ELBSample.template</a></td>
+<td>Elastic Load Balancer with a health check</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~ELBSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/ELBSample.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/ELBStickinessSample.template">ELBStickinessSample.template</a></td>
+<td>Elastic Load Balancer example configured with cookie-based stickiness.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~ELBStickinessSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/ELBStickinessSample.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/ELBWithLockedDownEC2Instances.template">ELBWithLockedDownEC2Instances.template</a></td>
+<td>Elastic Load Balancer with instances that are locked down to only receive traffic from the load balancer.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~ELBSecurityGroupSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/ELBWithLockedDownEC2Instances.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/ELBWithLockedDownAutoScaledInstances.template">ELBWithLockedDownAutoScaledInstances.template</a></td>
+<td>Elastic Load Balancer with and Auto Scaling group that is locked down to only receive traffic from the load balancer.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~ELBASSecurityGroupSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/ELBWithLockedDownAutoScaledInstances.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/ELBZoneApex.template">ELBZoneApex.template</a></td>
+<td>Map an Elastic Load Balancer to a DNS Zone apex.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~ELBZoneApexSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/ELBZoneApex.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/IAM_Users_Groups_and_Policies.template">IAM_Users_Groups_and_Policies.template</a></td>
+<td>Example of creating IAM users, groups and policies.</td><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~IAMUsers|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/IAM_Users_Groups_and_Policies.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/IAM_Policies_for_S3.template">IAM_Policies_for_S3.template</a></td><td>Example of using IAM policies to configure access to an S3 bucket.</td><td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~IAMS3|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/IAM_Policies_for_S3.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/IAM_Policies_SNS_Publish_To_SQS.template">IAM_Policies_SNS_Publish_To_SQS.template</a></td>
+<td>Example of using IAM policies to configure an SNS topic to publish to an SQS queue.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~IAMSNS|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/IAM_Policies_SNS_Publish_To_SQS.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Mutually_Referencing_EC2_Security_Groups.template">Mutually_Referencing_EC2_Security_Groups.template</a></td>
+<td>Example of creating EC2 security groups that mutually reference each other.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~MutualSGSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Mutually_Referencing_EC2_Security_Groups.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Parameter_Validate.template">Parameter_Validate.template.template</a></td>
+<td>Parameter validation examples.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~ParameterSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Parameter_Validate.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/RDS_Version.template">RDS_Version.template</a></td>
+<td>Example of creating an Amazon Relational Database Service database instance with a specific MySQL version.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~RDSSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/RDS_Version.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/RDS_MySQL_55.template">RDS_MySQL_55.template</a></td>
+<td>Instantiate an RDS MySQL V5.5 database instance with best practice alarm configuration.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~RDSMySQL55Sample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/RDS_MySQL_55.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/RDS_Snapshot_On_Delete.template">RDS_Snapshot_On_Delete.template</a></td>
+<td>Example of creating an Amazon Relational Database Service database instance with the <i>snapshot</i> deletion policy. This will cause a snapshot of the Amazon RDS database instance to be created before the database resource is deleted.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~RDSSnapshotSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/RDS_Snapshot_On_Delete.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/RDS_Oracle.template">RDS_Oracle.template</a></td>
+<td>Instantiate an RDS Oracle database instance.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~RDSOracleSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/RDS_Oracle.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Route53_A.template">Route53_A.template</a></td>
+<td>Example of creating an Amazon Route 53 DNS A record associated with an EC2 instance.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~ARecordSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Route53_A.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Route53_CNAME.template">Route53_CNAME.template</a></td>
+<td>Example of creating an Amazon Route 53 DNS CNAME record.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~CNAMESample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Route53_CNAME.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Route53_RoundRobin.template">Route53_RoundRobin.template</a></td>
+<td>Example of using Route 53 weighted round robin (WRR) DNS records.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~WRRDNSSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/Route53_RoundRobin.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/S3_Bucket.template">S3_Bucket.template</a></td>
+<td>Example of creating a publicly accessible S3 bucket.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~S3Sample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/S3_Bucket.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/S3_Website_Bucket_With_Retain_On_Delete.template">S3_Website_Bucket_With_Retain_On_Delete.template</a></td>
+<td>Example of creating an S3 bucket with the <i>retain</i> deletion policy to keep the bucket after the stack is deleted.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~S3RetainSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/S3_Website_Bucket_With_Retain_On_Delete.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/S3_With_CloudFront_Distribution.template">S3_With_CloudFront_Distribution.template</a></td>
+<td>Example of creating a website using an S3, website-enabled bucket, distributed globally via CloudFront.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~S3CFSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/S3_With_CloudFront_Distribution.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/S3_Website_With_CloudFront_Distribution.template">S3_Website_With_CloudFront_Distribution.template</a></td>
+<td>Example of creating a website using an S3, website-enabled bucket, distributed globally via CloudFront.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~S3CFWebSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/S3_Website_With_CloudFront_Distribution.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/SQS.template">SQS.template</a></td>
+<td>Example of creating an Amazon SQS queue.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~SQSSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/SQS.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/SQS_With_CloudWatch_Alarms.template">SQS_With_CloudWatch_Alarms.template</a></td>
+<td>Example of using Amazon CloudWatch alarms with Amazon SQS metrics.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~SQSAlarms|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/SQS_With_CloudWatch_Alarms.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/WaitObject.template">WaitObject.template</a></td>
+<td>Example of using a WaitCondition resource to block stack creation until an external event occurs.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~WaitConditionSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/WaitObject.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/VPC_Instance_With_Association.template">VPC_Instance_With_Association.template</a></td>
+<td>Example of launching and Amazon EC2 instance in a pre-existing Amazon Virtual Private Cloud and associating it with an existing VPC-based Elastic IP Address.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~VPCInstanceSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/VPC_Instance_With_Association.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+</table> 
+
+<h2>Templates for Whitepapers</h2>
+AWS CloudFromation provides helper scripts to make it easy for you to bootstrap applications in the cloud. We have provided several <a href="http://aws.amazon.com/cloudformation/aws-cloudformation-articles-and-tutorials/">whitepapers</a> 
+that describe how AWS CloudFormation
+can help you to configure and/or install your application as well as how to bootstrap deployment and management tools that you may already use in your environment such as
+Chef and Puppet. The following templates accompany those whitepapers:
+
+<p/>
+<table>
+<tr>
+<th style="text-align: left; width: 25%;">Template URL</th>
+<th style="text-align: left; width: 60%;">Description</th>
+<th style="text-align: left; width: 15%;">Launch in US East (Virginia) Region</th>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/wordpress-via-cfn-bootstrap.template">wordpress-via-cfn-bootstrap.template</a></td>
+<td>Install the open source WordPress application using the AWS CloudFormation application bootstrap helper scripts.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~WordPressViaCFN|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/wordpress-via-cfn-bootstrap.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/wordpress-via-chef-solo.template">wordpress-via-chef-solo.template</a></td>
+<td>Install the open source WordPress application using Opscode Chef Solo. Opscode Chef Solo is bootstrapped using the AWS CloudFormation application bootstrap helper scripts.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~WordPressViaChefSolo|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/wordpress-via-chef-solo.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/wordpress-via-chef-solo-building-block.template">wordpress-via-chef-solo-building-block.template</a></td>
+<td>Install the open source WordPress application using Opscode Chef Solo. Opscode Chef Solo is bootstrapped using the AWS CloudFormation application bootstrap helper scripts in an embedded template <a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/chef-solo-configuration.template">chef-solo-configuration.template</a>.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~WordPressViaChefSolo1|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/wordpress-via-chef-solo-building-block.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/chef-server-ubuntu-configuration.template">chef-server-ubuntu-configuration.template</a></td>
+<td>Install an OpsCode Chef Server.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~ChefServer|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/chef-server-ubuntu-configuration.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/wordpress-via-chef-client.template">wordpress-via-chef-client.template</a></td>
+<td>Install the open source WordPress application using Opscode Chef Client. You need to deploy a Chef Server using the previous template.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~WordPressViaChefClient|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/wordpress-via-chef-client.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/puppet-master-configuration.template">puppet-master-configuration.template</a></td>
+<td>Install a Puppet Master.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~PuppetMaster|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/puppet-master-configuration.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/wordpress-via-puppet-client.template">wordpress-via-puppet-client.template</a></td>
+<td>Install the open source WordPress application using the Puppet Client. You need to deploy a Puppet Master using the previous template.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~WordPressViaPuppet|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/wordpress-via-puppet-client.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/wordpress-via-puppet-client-building-block.template">wordpress-via-puppet-client-building-block.template</a></td>
+<td>Install the open source WordPress application with the Puppet Client using the Puppet configuration in an embedded template <a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/puppet-client-configuration.template">puppet-client-configuration.template</a>. You need to deploy a Puppet Master using the previous template.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~WordPressViaPuppet2|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/wordpress-via-puppet-client-building-block.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/SampleRailsApp.template">SampleRailsApp.template</a></td>
+<td>Build the default sample Rails application dynamically at runtime using the Amazon Linux AMI and Cloud-init. For more details click <a href="http://docs.amazonwebservices.com/FeaturedArticles/latest/index.html?cloudformation-waitcondition-article.html">here</a>.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~RailsSample|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/SampleRailsApp.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+</table>
+
+<h2>Compute Cluster</h2>
+<table>
+<tr>
+<th style="text-align: left; width: 25%;">Template URL</th>
+<th style="text-align: left; width: 60%;">Description</th>
+<th style="text-align: left; width: 15%;">Launch in US East (Virginia) Region</th>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/cc1-cluster.json">cc1-cluster.json</a></td>
+<td>An example template which launches and bootstraps a cluster of CC1 EC2 instances for high performance computational tasks. Includes StarCluster, SGE, NFS and a Public Data Set.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~CC1-Cluster|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/cc1-cluster.json"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+<tr>
+<td><a href="https://s3.amazonaws.com/cloudformation-templates-us-east-1/cc2-cluster.json">cc2-cluster.json</a></td>
+<td>An example template which launches and bootstraps a cluster of CC2 EC2 instances for high performance computational tasks. Includes StarCluster, SGE, NFS and a Public Data Set.</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn~CC2-Cluster|turl~https://s3.amazonaws.com/cloudformation-templates-us-east-1/cc2-cluster.json"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch now" width=80% height=80%/></a></td>
+</tr>
+</table>
+
+<h2>Getting Started</h2>
+
+<h3>Launching the templates directly</h3>
+<ul>
+<li>Simply click on the "Launch Now" link for the template you want to use in the tables above.</li>
+<li>A name will automatically be filled in for the stack. Either use the one specified or change it as required.</li>
+<li>Press "Continue" and follow the instructions on the screen.</li>
+</ul>
+
+<h3>AWS Management Console</h3>
+<ul>
+<li>Log into the <a href="http://aws.amazon.com/console">AWS Management Console</a>.</li>
+
+<li>Click on the "AWS CloudFormation" tab.</li>
+<li>Click the "Create Stack" button.</li>
+<li>Fill in a name for your stack.</li>
+<li>Click on "Provide a Template URL" and fill in the URL of the sample you want to use.</li>
+<li>Press "Continue" and follow the instructions on the screen.</li>
+
+</ul>
+
+<h3>AWS CloudFormation Command Line Tools</h3>
+<ul>
+<li>Download the AWS CloudFormation command line tools from <a href="https://s3.amazonaws.com/cloudformation-cli/AWSCloudFormation-cli.zip">here</a>
+
+<li>Use the <code>cfn-validate-template</code> command with the <code>--template-url</code> option to validate the template and list the template parameters
+<li>Use the <code>cfn-create-stack</code> command with the <code>--template-url</code> option to create a stack. If the stack requires parameter values to be filled in, you will need to also specify the <code>--parameters</code> option.
+
+
+</ul>
+
+<h3 id="regions">Using Templates in Different Regions</h3>
+You must reference a template in an S3 bucket in the same region in which you are creating the stack.
+Each sample template is available in every AWS Region. You can use the same template files from each region from the following pages:
+<ul>
+<li><a href="/cloudformation/aws-cloudformation-templates/">US East - Virginia region</a></li>
+<li><a href="/cloudformation/aws-cloudformation-templates/aws-cloudformation-templates-us-west-2/">US West - Oregon region</a></li>
+<li><a href="/cloudformation/aws-cloudformation-templates/aws-cloudformation-templates-us-west-1/">US West - N. California region</a></li>
+<li><a href="/cloudformation/aws-cloudformation-templates/aws-cloudformation-templates-eu-west-1/">EU West - Ireland region</a></li>
+<li><a href="/cloudformation/aws-cloudformation-templates/aws-cloudformation-templates-ap-southeast-1/">Asia Pacific - Singapore region</a></li>
+<li><a href="/cloudformation/aws-cloudformation-templates/aws-cloudformation-templates-ap-northeast-1/">Asia Pacific - Tokyo region</a></li>
+<li><a href="/cloudformation/aws-cloudformation-templates/aws-cloudformation-templates-sa-east-1/">South America - Sao Paulo region</a></li>
+</ul>
+</div>
+    <div id="ft">
+
+
+
+
+
+
+
+
+
+
+  <div style="border-top: 1px solid #ccc; margin-bottom: 12px; margin-top: 10px; padding-top: 2px;">
+  <ul class="h_bar">
+    <li class="first">
+      <a href="http://aws.typepad.com/" target="_blank">AWS Blog <img src="//d36cz9buwru1tt.cloudfront.net/icon_offsite.gif" width="15" height="13" border="0" alt="This link will launch a new browser window or tab."></a>
+    </li>
+    <li><a href="http://phx.corporate-ir.net/phoenix.zhtml?c=176060&p=irol-InfoReq">Press Inquiries</a></li>
+    <li><a href="/careers/">Careers at AWS</a></li>
+    <li><a href="/contact-us/">Contact Us</a></li>
+    <li><a href="/privacy/">Privacy Policy</a></li>
+    <li><a href="/terms/">Terms of Use</a></li>
+  </ul>
+  <div class="grey666">&#169;2011, Amazon Web Services LLC or its affiliates. All rights reserved.</div>
+  <img src="//d36cz9buwru1tt.cloudfront.net/awsmedia/logo_an_amazon_company.gif" width="160" height="21" vspace="8">
+</div>
+
+</div> 
+  </div>
+
+
+  
+</body>
+
+</html>
+
+
+

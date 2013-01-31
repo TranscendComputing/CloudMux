@@ -1,0 +1,92 @@
+        <div id="stack_template" class="stack_template">
+          <%=presenter.render_description_html(stack_template.description)%>
+          <div class="version">AWS Template Format Version: <%=stack_template.version%></div>
+
+          <a name="parameters"></a>
+          <h2>Parameters</h2>
+          <div class="parameters">
+            <%- if stack_template.parameters.empty? -%>
+            <div class='none'>None</div>
+            <%- end -%>
+            <%-  stack_template.parameters.each do |parameter| -%>
+              <div id="<%=parameter.key%>" class='parameter <%=parameter['type'].underscore%>'>
+                <div class='name'><%=parameter.name%></div>
+                <div class='type'><%=parameter['type']%></div>
+                <div class='description'><%=parameter['description']%></div>
+                <div class='details expandable'>
+                  <div class='fields'>
+                    <%- if !parameter.default.nil? -%><div class='name'>Default:</div><div class='value'><%=parameter.default%></div><%- end -%>
+                    <%- if !parameter.no_echo.nil? -%><div class='name'>No Echo:</div><div class='value'><%=parameter.no_echo%></div><%- end -%>
+                    <%- if !parameter.allowed_values.nil? and !parameter.allowed_values.empty? -%><div class='name'>Allowed Values:</div><div class='value'><%=parameter.allowed_values.join(', ')%></div><%- end -%>
+                    <%- if !parameter.allowed_pattern.nil? -%><div class='name'>Allowed Pattern:</div><div class='value'><%=parameter.allowed_pattern%></div><%- end -%>
+                    <%- if !parameter.min_length.nil? -%><div class='name'>Min Length:</div><div class='value'><%=parameter.min_length%></div><%- end -%>
+                    <%- if !parameter.max_length.nil? -%><div class='name'>Max Length:</div><div class='value'><%=parameter.max_length%></div><%- end -%>
+                    <%- if !parameter.min_value.nil? -%><div class='name'>Min Value:</div><div class='value'><%=parameter.min_value%></div><%- end -%>
+                    <%- if !parameter.max_value.nil? -%><div class='name'>Max Value:</div><div class='value'><%=parameter.max_value%></div><%- end -%>
+                    <%- if !parameter.constraint_description.nil? -%><div class='name'>Constraints Description:</div><div class='value description'><%=parameter.constraint_description%></div><%- end -%>
+                  </div>
+                  <%- unless parameter.properties.empty? -%>
+                    <div class="properties">
+                      <h4>Properties</h4>
+                      <%- parameter.properties.each do |property| -%>
+                        <%=presenter.render_property_html(property)%>
+                      <%- end -%>
+                    </div>
+                  <%- end -%>
+                </div>
+              </div>
+            <%- end -%>
+          </div>
+
+          <a name="mappings"></a>
+          <h2>Mappings</h2>
+          <div class="mappings">
+            <%-  stack_template.mapping_sets.each do |mapping_set| -%>
+              <div id="<%=mapping_set.key%>" class='mapping_set'>
+                <div class='name'><%=mapping_set.name%></div>
+                <div class='details expandable'>
+                  <%- if mapping_set.children.empty? -%>
+                  <p class='empty'>&lt;Empty&gt;</p>
+                  <%- else -%>
+                    <%=presenter.render_mapping_html(mapping_set.children)%>
+                  <%- end -%>
+                </div>
+              </div>
+            <%- end -%>
+          </div>
+
+          <a name="resources"></a>
+          <h2>Resources</h2>
+          <div class="resources">
+
+            <%=presenter.render_resource_groups_html(stack_template, ["load_balancing", "auto_scaling", "compute", "datastore", "notification", "monitoring", "identity", "cloud_formation", "caching", "cdn", "app_deploy", "dns", "simple_storage", "simple_db", "queue", "other"])%>
+
+          </div>
+
+          <a name="outputs"></a>
+          <h2>Outputs</h2>
+          <div class="outputs">
+            <%- if stack_template.outputs.empty? -%>
+            <div class='none'>None</div>
+            <%- end -%>
+
+            <%-  stack_template.outputs.each do |output| -%>
+              <div id="<%=output.key%>" class='output'>
+                <div class='name'><%=output.name%></div>
+                <div class='value'><%=presenter.render_element_html(output.value)%></div>
+                <div class='details'>
+                  <div class='description'><%=output['description']%></div>
+                </div>
+              </div>
+                  <%- unless output.properties.empty? -%>
+                    <div class="properties">
+                    <h4>Properties</h4>
+                    <%- output.properties.each do |property| -%>
+                      <%=presenter.render_property_html(property)%>
+                    <%- end -%>
+                    </div>
+                 <%- end -%>
+            <%- end -%>
+          </div>
+
+        </div>

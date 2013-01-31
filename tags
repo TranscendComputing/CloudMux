@@ -1,0 +1,439 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+<<	lib/cfdoc/model/element.rb	/^      def <<(child)$/;"	f	class:CFDoc.Model.Element
+<<	lib/cfdoc/model/stack.rb	/^      def <<(obj)$/;"	f	class:CFDoc.Model.Stack
+<<	lib/cfdoc/model/stack_template.rb	/^      def <<(element)$/;"	f	class:CFDoc.Model.StackTemplate
+Account	lib/service/model/account.rb	/^class Account$/;"	c
+AccountApiApp	app/account_api_app.rb	/^class AccountApiApp < ApiBase$/;"	c
+AccountRepresenter	lib/service/representer/account_representer.rb	/^module AccountRepresenter$/;"	m
+AccountSubscription	lib/service/model/account.rb	/^  class AccountSubscription$/;"	c	class:Account.subscriptions=
+AccountSubscriptionRepresenter	lib/service/representer/account_subscription_representer.rb	/^module AccountSubscriptionRepresenter$/;"	m
+AccountSummaryRepresenter	lib/service/representer/account_summary_representer.rb	/^module AccountSummaryRepresenter$/;"	m
+AddSubscriberRepresenter	lib/service/representer/add_subscriber_representer.rb	/^module AddSubscriberRepresenter$/;"	m
+ApiBase	app/api_base.rb	/^class ApiBase < Sinatra::Base$/;"	c
+AuditLog	lib/service/model/audit_log.rb	/^class AuditLog$/;"	c
+AuditLogRepresenter	lib/service/representer/audit_log_representer.rb	/^module AuditLogRepresenter$/;"	m
+AwsCfMappingImporter	lib/service/importer/aws_cf_mapping_importer.rb	/^class AwsCfMappingImporter$/;"	c
+AwsDefaultImageMappingImporter	lib/service/importer/aws_default_image_mapping_importer.rb	/^class AwsDefaultImageMappingImporter$/;"	c
+AwsTemplateImporter	lib/service/importer/aws_template_importer.rb	/^class AwsTemplateImporter$/;"	c
+Base	lib/cfdoc/presenter/base.rb	/^    class Base$/;"	c	class:CFDoc.Presenter
+CFDoc	lib/cfdoc.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/cli.rb	/^class CFDoc::CLI$/;"	c
+CFDoc	lib/cfdoc/model/code_block.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/model/description.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/model/description_support.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/model/element.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/model/function.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/model/list.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/model/mapping.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/model/mapping_set.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/model/metadata.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/model/output.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/model/parameter.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/model/platform.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/model/property.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/model/property_support.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/model/ref.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/model/resource.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/model/resource_support.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/model/stack.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/model/stack_template.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/model/user_data.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/model/vendor.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/model/vendor_support.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/parser/cf_parser.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/presenter/base.rb	/^module CFDoc$/;"	m
+CFDoc	lib/cfdoc/presenter/stack_template_presenter.rb	/^module CFDoc$/;"	m
+CFParser	lib/cfdoc/parser/cf_parser.rb	/^    class CFParser$/;"	c	class:CFDoc.Parser
+Category	lib/service/model/category.rb	/^class Category$/;"	c
+CategoryApiApp	app/category_api_app.rb	/^class CategoryApiApp < ApiBase$/;"	c
+CategoryQuery	lib/service/model/category_query.rb	/^class CategoryQuery$/;"	c
+CategoryQueryRepresenter	lib/service/representer/category_query_representer.rb	/^module CategoryQueryRepresenter$/;"	m
+CategoryRepresenter	lib/service/representer/category_representer.rb	/^module CategoryRepresenter$/;"	m
+CategorySummaryRepresenter	lib/service/representer/category_summary_representer.rb	/^module CategorySummaryRepresenter$/;"	m
+Cloud	lib/service/model/cloud.rb	/^class Cloud$/;"	c
+CloudAccount	lib/service/model/cloud_account.rb	/^class CloudAccount$/;"	c
+CloudAccountRepresenter	lib/service/representer/cloud_account_representer.rb	/^module CloudAccountRepresenter$/;"	m
+CloudApiApp	app/cloud_api_app.rb	/^class CloudApiApp < ApiBase$/;"	c
+CloudMapping	lib/service/model/cloud_mapping.rb	/^class CloudMapping$/;"	c
+CloudMappingRepresenter	lib/service/representer/cloud_mapping_representer.rb	/^module CloudMappingRepresenter$/;"	m
+CloudQuery	lib/service/model/cloud_query.rb	/^class CloudQuery$/;"	c
+CloudQueryRepresenter	lib/service/representer/cloud_query_representer.rb	/^module CloudQueryRepresenter$/;"	m
+CloudRepresenter	lib/service/representer/cloud_representer.rb	/^module CloudRepresenter$/;"	m
+CloudService	lib/service/model/cloud_service.rb	/^class CloudService$/;"	c
+CloudServiceRepresenter	lib/service/representer/cloud_service_representer.rb	/^module CloudServiceRepresenter$/;"	m
+CodeBlock	lib/cfdoc/model/code_block.rb	/^    class CodeBlock < CFDoc::Model::Element$/;"	c	class:CFDoc.Model
+Core	lib/core.rb	/^module Core$/;"	m
+Country	lib/service/model/country.rb	/^class Country$/;"	c
+CountryQuery	lib/service/model/country_query.rb	/^class CountryQuery$/;"	c
+CountryQueryRepresenter	lib/service/representer/country_query_representer.rb	/^module CountryQueryRepresenter$/;"	m
+CountryRepresenter	lib/service/representer/country_representer.rb	/^module CountryRepresenter$/;"	m
+CreateProjectRepresenter	lib/service/representer/create_project_representer.rb	/^module CreateProjectRepresenter$/;"	m
+CreateStack	lib/service/model/create_stack.rb	/^class CreateStack$/;"	c
+CreateStackRepresenter	lib/service/representer/create_stack_representer.rb	/^module CreateStackRepresenter$/;"	m
+Description	lib/cfdoc/model/description.rb	/^    class Description < CFDoc::Model::Element$/;"	c	class:CFDoc.Model
+DescriptionSupport	lib/cfdoc/model/description_support.rb	/^    module DescriptionSupport$/;"	m	class:CFDoc.Model
+Element	lib/cfdoc/model/element.rb	/^    class Element$/;"	c	class:CFDoc.Model
+Element	lib/service/model/element.rb	/^class Element$/;"	c
+ElementRepresenter	lib/service/representer/element_representer.rb	/^module ElementRepresenter$/;"	m
+ElementsRepresenter	lib/service/representer/elements_representer.rb	/^module ElementsRepresenter$/;"	m
+EmbeddedProject	lib/service/model/embedded_project.rb	/^class EmbeddedProject$/;"	c
+EmbeddedProjectRepresenter	lib/service/representer/embedded_project_representer.rb	/^module EmbeddedProjectRepresenter$/;"	m
+Environment	lib/service/model/environment.rb	/^class Environment$/;"	c
+EnvironmentRepresenter	lib/service/representer/environment_representer.rb	/^module EnvironmentRepresenter$/;"	m
+Error	lib/service/model/error.rb	/^class Error$/;"	c
+ErrorRepresenter	lib/service/representer/error_representer.rb	/^module ErrorRepresenter$/;"	m
+Function	lib/cfdoc/model/function.rb	/^    class Function < CFDoc::Model::Element$/;"	c	class:CFDoc.Model
+HttpStatusCodes	lib/service/util/http_status_codes.rb	/^module HttpStatusCodes$/;"	m
+IdentityApiApp	app/identity_api_app.rb	/^class IdentityApiApp < ApiBase$/;"	c
+ImportResults	lib/service/model/import_results.rb	/^class ImportResults$/;"	c
+ImportResultsRepresenter	lib/service/representer/import_results_representer.rb	/^module ImportResultsRepresenter$/;"	m
+ImportTemplate	lib/service/model/import_template.rb	/^class ImportTemplate$/;"	c
+ImportTemplateRepresenter	lib/service/representer/import_template_representer.rb	/^module ImportTemplateRepresenter$/;"	m
+KeyPair	lib/service/model/key_pair.rb	/^class KeyPair$/;"	c
+KeyPairRepresenter	lib/service/representer/key_pair_representer.rb	/^module KeyPairRepresenter$/;"	m
+Link	lib/service/model/link.rb	/^class Link$/;"	c
+LinkRepresenter	lib/service/representer/link_representer.rb	/^module LinkRepresenter$/;"	m
+List	lib/cfdoc/model/list.rb	/^    class List < CFDoc::Model::Element$/;"	c	class:CFDoc.Model
+Mapping	lib/cfdoc/model/mapping.rb	/^    class Mapping < CFDoc::Model::Element$/;"	c	class:CFDoc.Model
+MappingSet	lib/cfdoc/model/mapping_set.rb	/^    class MappingSet < CFDoc::Model::Element$/;"	c	class:CFDoc.Model
+Member	lib/service/model/member.rb	/^class Member$/;"	c
+MemberRepresenter	lib/service/representer/member_representer.rb	/^module MemberRepresenter$/;"	m
+Metadata	lib/cfdoc/model/metadata.rb	/^    class Metadata < CFDoc::Model::Element$/;"	c	class:CFDoc.Model
+Model	lib/cfdoc/model/code_block.rb	/^  module Model$/;"	m	class:CFDoc
+Model	lib/cfdoc/model/description.rb	/^  module Model$/;"	m	class:CFDoc
+Model	lib/cfdoc/model/description_support.rb	/^  module Model$/;"	m	class:CFDoc
+Model	lib/cfdoc/model/element.rb	/^  module Model$/;"	m	class:CFDoc
+Model	lib/cfdoc/model/function.rb	/^  module Model$/;"	m	class:CFDoc
+Model	lib/cfdoc/model/list.rb	/^  module Model$/;"	m	class:CFDoc
+Model	lib/cfdoc/model/mapping.rb	/^  module Model$/;"	m	class:CFDoc
+Model	lib/cfdoc/model/mapping_set.rb	/^  module Model$/;"	m	class:CFDoc
+Model	lib/cfdoc/model/metadata.rb	/^  module Model$/;"	m	class:CFDoc
+Model	lib/cfdoc/model/output.rb	/^  module Model$/;"	m	class:CFDoc
+Model	lib/cfdoc/model/parameter.rb	/^  module Model$/;"	m	class:CFDoc
+Model	lib/cfdoc/model/platform.rb	/^  module Model$/;"	m	class:CFDoc
+Model	lib/cfdoc/model/property.rb	/^  module Model$/;"	m	class:CFDoc
+Model	lib/cfdoc/model/property_support.rb	/^  module Model$/;"	m	class:CFDoc
+Model	lib/cfdoc/model/ref.rb	/^  module Model$/;"	m	class:CFDoc
+Model	lib/cfdoc/model/resource.rb	/^  module Model$/;"	m	class:CFDoc
+Model	lib/cfdoc/model/resource_support.rb	/^  module Model$/;"	m	class:CFDoc
+Model	lib/cfdoc/model/stack.rb	/^  module Model$/;"	m	class:CFDoc
+Model	lib/cfdoc/model/stack_template.rb	/^  module Model$/;"	m	class:CFDoc
+Model	lib/cfdoc/model/user_data.rb	/^  module Model$/;"	m	class:CFDoc
+Model	lib/cfdoc/model/vendor.rb	/^  module Model$/;"	m	class:CFDoc
+Model	lib/cfdoc/model/vendor_support.rb	/^  module Model$/;"	m	class:CFDoc
+NewsEvent	lib/service/model/news_event.rb	/^class NewsEvent$/;"	c
+NewsEventApiApp	app/news_event_api_app.rb	/^class NewsEventApiApp < ApiBase$/;"	c
+NewsEventQuery	lib/service/model/news_event_query.rb	/^class NewsEventQuery$/;"	c
+NewsEventQueryRepresenter	lib/service/representer/news_event_query_representer.rb	/^module NewsEventQueryRepresenter$/;"	m
+NewsEventRepresenter	lib/service/representer/news_event_representer.rb	/^module NewsEventRepresenter$/;"	m
+Node	lib/service/model/node.rb	/^class Node$/;"	c
+NodeLink	lib/service/model/node_link.rb	/^class NodeLink$/;"	c
+NodeLinkRepresenter	lib/service/representer/node_link_representer.rb	/^module NodeLinkRepresenter$/;"	m
+NodeRepresenter	lib/service/representer/node_representer.rb	/^module NodeRepresenter$/;"	m
+NodesRepresenter	lib/service/representer/nodes_representer.rb	/^module NodesRepresenter$/;"	m
+Org	lib/service/model/org.rb	/^class Org$/;"	c
+OrgApiApp	app/org_api_app.rb	/^class OrgApiApp < ApiBase$/;"	c
+OrgRepresenter	lib/service/representer/org_representer.rb	/^module OrgRepresenter$/;"	m
+Output	lib/cfdoc/model/output.rb	/^    class Output < CFDoc::Model::Element$/;"	c	class:CFDoc.Model
+Parameter	lib/cfdoc/model/parameter.rb	/^    class Parameter < CFDoc::Model::Element$/;"	c	class:CFDoc.Model
+Parser	lib/cfdoc/parser/cf_parser.rb	/^  module Parser$/;"	m	class:CFDoc
+Platform	lib/cfdoc/model/platform.rb	/^    class Platform < CFDoc::Model::Vendor$/;"	c	class:CFDoc.Model
+Presenter	lib/cfdoc/presenter/base.rb	/^  module Presenter$/;"	m	class:CFDoc
+Presenter	lib/cfdoc/presenter/stack_template_presenter.rb	/^  module Presenter$/;"	m	class:CFDoc
+Price	lib/service/model/price.rb	/^class Price$/;"	c
+PriceRepresenter	lib/service/representer/price_representer.rb	/^module PriceRepresenter$/;"	m
+PricesImporter	lib/service/importer/prices_importer.rb	/^class PricesImporter$/;"	c
+Project	lib/service/model/project.rb	/^class Project$/;"	c
+ProjectApiApp	app/project_api_app.rb	/^class ProjectApiApp < ApiBase$/;"	c
+ProjectMembership	lib/service/model/account.rb	/^  class ProjectMembership$/;"	c	class:Account.subscriptions=.project_memberships=
+ProjectMembershipRepresenter	lib/service/representer/project_membership_representer.rb	/^module ProjectMembershipRepresenter$/;"	m
+ProjectQuery	lib/service/model/project_query.rb	/^class ProjectQuery$/;"	c
+ProjectQueryRepresenter	lib/service/representer/project_query_representer.rb	/^module ProjectQueryRepresenter$/;"	m
+ProjectRepresenter	lib/service/representer/project_representer.rb	/^module ProjectRepresenter$/;"	m
+ProjectVersion	lib/service/model/project_version.rb	/^class ProjectVersion$/;"	c
+ProjectVersionApiApp	app/project_version_api_app.rb	/^class ProjectVersionApiApp < ApiBase$/;"	c
+ProjectVersionRepresenter	lib/service/representer/project_version_representer.rb	/^module ProjectVersionRepresenter$/;"	m
+Property	lib/cfdoc/model/property.rb	/^    class Property < CFDoc::Model::Element$/;"	c	class:CFDoc.Model
+PropertySupport	lib/cfdoc/model/property_support.rb	/^    module PropertySupport$/;"	m	class:CFDoc.Model
+ProvisionedInstance	lib/service/model/provisioned_instance.rb	/^class ProvisionedInstance$/;"	c
+ProvisionedInstanceRepresenter	lib/service/representer/provisioned_instance_representer.rb	/^module ProvisionedInstanceRepresenter$/;"	m
+ProvisionedInstancesRepresenter	lib/service/representer/provisioned_instances_representer.rb	/^module ProvisionedInstancesRepresenter$/;"	m
+ProvisionedVersion	lib/service/model/provisioned_version.rb	/^class ProvisionedVersion$/;"	c
+ProvisionedVersionRepresenter	lib/service/representer/provisioned_version_representer.rb	/^module ProvisionedVersionRepresenter$/;"	m
+ProvisionedVersionSummaryRepresenter	lib/service/representer/provisioned_version_summary_representer.rb	/^module ProvisionedVersionSummaryRepresenter$/;"	m
+ProvisioningApiApp	app/provisioning_api_app.rb	/^class ProvisioningApiApp < ApiBase$/;"	c
+Query	lib/service/model/query.rb	/^class Query$/;"	c
+QueryRepresenter	lib/service/representer/query_representer.rb	/^module QueryRepresenter$/;"	m
+Ref	lib/cfdoc/model/ref.rb	/^    class Ref < CFDoc::Model::Element$/;"	c	class:CFDoc.Model
+ReportApiApp	app/report_api_app.rb	/^class ReportApiApp < ApiBase$/;"	c
+ReportRepresenter	lib/service/representer/report_representer.rb	/^module ReportRepresenter$/;"	m
+Resource	lib/cfdoc/model/resource.rb	/^    class Resource < CFDoc::Model::Element$/;"	c	class:CFDoc.Model
+ResourceSupport	lib/cfdoc/model/resource_support.rb	/^    module ResourceSupport$/;"	m	class:CFDoc.Model
+RootApp	app/root_app.rb	/^class RootApp < Sinatra::Base$/;"	c
+Service	lib/service.rb	/^module Service$/;"	m
+ServiceConfig	lib/service/service_config.rb	/^class ServiceConfig$/;"	c
+Stack	lib/cfdoc/model/stack.rb	/^    class Stack$/;"	c	class:CFDoc.Model
+Stack	lib/service/model/stack.rb	/^class Stack$/;"	c
+StackApiApp	app/stack_api_app.rb	/^class StackApiApp < ApiBase$/;"	c
+StackQuery	lib/service/model/stack_query.rb	/^class StackQuery$/;"	c
+StackQueryRepresenter	lib/service/representer/stack_query_representer.rb	/^module StackQueryRepresenter$/;"	m
+StackRepresenter	lib/service/representer/stack_representer.rb	/^module StackRepresenter$/;"	m
+StackTemplate	lib/cfdoc/model/stack_template.rb	/^    class StackTemplate$/;"	c	class:CFDoc.Model
+StackTemplatePresenter	lib/cfdoc/presenter/stack_template_presenter.rb	/^    class StackTemplatePresenter < CFDoc::Presenter::Base$/;"	c	class:CFDoc.Presenter
+String	lib/core/ext/string_ext.rb	/^class String$/;"	c
+Subscriber	lib/service/model/subscriber.rb	/^class Subscriber$/;"	c
+SubscriberRepresenter	lib/service/representer/subscriber_representer.rb	/^module SubscriberRepresenter$/;"	m
+Subscription	lib/service/model/subscription.rb	/^class Subscription$/;"	c
+SubscriptionRepresenter	lib/service/representer/subscription_representer.rb	/^module SubscriptionRepresenter$/;"	m
+Template	lib/service/model/template.rb	/^class Template$/;"	c
+TemplateApiApp	app/template_api_app.rb	/^class TemplateApiApp < ApiBase$/;"	c
+TemplateRepresenter	lib/service/representer/template_representer.rb	/^module TemplateRepresenter$/;"	m
+TemplateSummaryRepresenter	lib/service/representer/template_summary_representer.rb	/^module TemplateSummaryRepresenter$/;"	m
+UpdateAccountRepresenter	lib/service/representer/update_account_representer.rb	/^module UpdateAccountRepresenter$/;"	m
+UpdateAuditLogRepresenter	lib/service/representer/update_audit_log_representer.rb	/^module UpdateAuditLogRepresenter$/;"	m
+UpdateCategoryRepresenter	lib/service/representer/update_category_representer.rb	/^module UpdateCategoryRepresenter$/;"	m
+UpdateCloudAccountRepresenter	lib/service/representer/update_cloud_account_representer.rb	/^module UpdateCloudAccountRepresenter$/;"	m
+UpdateCloudMappingRepresenter	lib/service/representer/update_cloud_mapping_representer.rb	/^module UpdateCloudMappingRepresenter$/;"	m
+UpdateCloudRepresenter	lib/service/representer/update_cloud_representer.rb	/^module UpdateCloudRepresenter$/;"	m
+UpdateCloudServiceRepresenter	lib/service/representer/update_cloud_service_representer.rb	/^module UpdateCloudServiceRepresenter$/;"	m
+UpdateElementRepresenter	lib/service/representer/update_element_representer.rb	/^module UpdateElementRepresenter$/;"	m
+UpdateEmbeddedProjectRepresenter	lib/service/representer/update_embedded_project_representer.rb	/^module UpdateEmbeddedProjectRepresenter$/;"	m
+UpdateEnvironmentRepresenter	lib/service/representer/update_environment_representer.rb	/^module UpdateEnvironmentRepresenter$/;"	m
+UpdateKeyPairRepresenter	lib/service/representer/update_key_pair_representer.rb	/^module UpdateKeyPairRepresenter$/;"	m
+UpdateMemberRepresenter	lib/service/representer/update_member_representer.rb	/^module UpdateMemberRepresenter$/;"	m
+UpdateNewsEventRepresenter	lib/service/representer/update_news_event_representer.rb	/^module UpdateNewsEventRepresenter$/;"	m
+UpdateNodeRepresenter	lib/service/representer/update_node_representer.rb	/^module UpdateNodeRepresenter$/;"	m
+UpdateOrgRepresenter	lib/service/representer/update_org_representer.rb	/^module UpdateOrgRepresenter$/;"	m
+UpdatePriceRepresenter	lib/service/representer/update_price_representer.rb	/^module UpdatePriceRepresenter$/;"	m
+UpdateProjectRepresenter	lib/service/representer/update_project_representer.rb	/^module UpdateProjectRepresenter$/;"	m
+UpdateProvisionedInstanceRepresenter	lib/service/representer/update_provisioned_instance_representer.rb	/^module UpdateProvisionedInstanceRepresenter$/;"	m
+UpdateProvisionedVersionRepresenter	lib/service/representer/update_provisioned_version_representer.rb	/^module UpdateProvisionedVersionRepresenter$/;"	m
+UpdateStackRepresenter	lib/service/representer/update_stack_representer.rb	/^module UpdateStackRepresenter$/;"	m
+UpdateSubscriptionRepresenter	lib/service/representer/update_subscription_representer.rb	/^module UpdateSubscriptionRepresenter$/;"	m
+UpdateVariantRepresenter	lib/service/representer/update_variant_representer.rb	/^module UpdateVariantRepresenter$/;"	m
+UserData	lib/cfdoc/model/user_data.rb	/^    class UserData < CFDoc::Model::CodeBlock$/;"	c	class:CFDoc.Model
+Variant	lib/service/model/variant.rb	/^class Variant$/;"	c
+VariantRepresenter	lib/service/representer/variant_representer.rb	/^module VariantRepresenter$/;"	m
+Vendor	lib/cfdoc/model/vendor.rb	/^    class Vendor < CFDoc::Model::Element$/;"	c	class:CFDoc.Model
+VendorSupport	lib/cfdoc/model/vendor_support.rb	/^    module VendorSupport$/;"	m	class:CFDoc.Model
+Version	lib/service/model/version.rb	/^class Version$/;"	c
+VersionRepresenter	lib/service/representer/version_representer.rb	/^module VersionRepresenter$/;"	m
+[]	lib/cfdoc/model/element.rb	/^      def [](key)$/;"	f	class:CFDoc.Model.Element
+account_must_exist	lib/service/model/create_stack.rb	/^  def account_must_exist$/;"	f	class:CreateStack
+active!	lib/service/model/project.rb	/^  def active!$/;"	f	class:Project
+active?	lib/service/model/project.rb	/^  def active?$/;"	f	class:Project
+add_audit_log!	lib/service/model/account.rb	/^  def add_audit_log!(cloud_account_id, audit_log)$/;"	f	class:Account.subscriptions=
+add_cloud_account!	lib/service/model/account.rb	/^  def add_cloud_account!(cloud_id, cloud_account)$/;"	f	class:Account.subscriptions=
+add_environment!	lib/service/model/project.rb	/^  def add_environment!(environment)$/;"	f	class:Project
+add_key_pair!	lib/service/model/account.rb	/^  def add_key_pair!(cloud_account_id, key_pair)$/;"	f	class:Account.subscriptions=
+add_link!	lib/service/model/node.rb	/^  def add_link!(node_link)$/;"	f	class:Node
+add_result	lib/service/model/import_results.rb	/^  def add_result(id, status)$/;"	f	class:ImportResults
+add_subscriber!	lib/service/model/org.rb	/^  def add_subscriber!(product, account, role)$/;"	f	class:Org
+allowed_pattern	lib/cfdoc/model/parameter.rb	/^      def allowed_pattern; fields['allowed_pattern']; end$/;"	f	class:CFDoc.Model.Parameter
+allowed_values	lib/cfdoc/model/parameter.rb	/^      def allowed_values; fields['allowed_values']; end$/;"	f	class:CFDoc.Model.Parameter
+app	spec/app/account_api_app_spec.rb	/^  def app$/;"	f
+app	spec/app/category_api_app_spec.rb	/^  def app$/;"	f
+app	spec/app/cloud_api_app_spec.rb	/^  def app$/;"	f
+app	spec/app/identity_api_app_spec.rb	/^  def app$/;"	f
+app	spec/app/news_event_api_app_spec.rb	/^  def app$/;"	f
+app	spec/app/org_api_app_spec.rb	/^  def app$/;"	f
+app	spec/app/project_api_app_spec.rb	/^  def app$/;"	f
+app	spec/app/provisioning_api_app_spec.rb	/^  def app$/;"	f
+app	spec/app/stack_api_app_spec.rb	/^  def app$/;"	f
+app	spec/app/template_api_app_spec.rb	/^  def app$/;"	f
+archive!	lib/service/model/project.rb	/^  def archive!$/;"	f	class:Project
+archived?	lib/service/model/project.rb	/^  def archived?$/;"	f	class:Project
+auth	lib/service/model/account.rb	/^  def auth(pass, now=Time.now)$/;"	f	class:Account
+auth_request	spec/app/identity_api_app_spec.rb	/^def auth_request(login, password)$/;"	f
+bcrypt_cost	lib/service/model/account.rb	/^  def bcrypt_cost$/;"	f	class:Account
+build_map	lib/service/importer/aws_default_image_mapping_importer.rb	/^  def build_map(name, properties)$/;"	f	class:AwsDefaultImageMappingImporter
+calc_group	lib/cfdoc/model/resource_support.rb	/^      def calc_group$/;"	f	class:CFDoc.Model.ResourceSupport
+category_must_exist	lib/service/model/create_stack.rb	/^  def category_must_exist$/;"	f	class:CreateStack
+child	lib/cfdoc/model/element.rb	/^      def child(name)$/;"	f	class:CFDoc.Model.Element
+children?	lib/cfdoc/model/element.rb	/^      def children?$/;"	f	class:CFDoc.Model.Element
+cloud_account	lib/service/model/account.rb	/^  def cloud_account(cloud_account_id)$/;"	f	class:Account
+cloud_account	lib/service/model/project.rb	/^  def cloud_account$/;"	f	class:Project
+cloud_account=	lib/service/model/project.rb	/^  def cloud_account=(cloud_account)$/;"	f	class:Project
+cloud_name	lib/service/model/cloud_account.rb	/^  def cloud_name$/;"	f	class:CloudAccount
+cloud_name=	lib/service/model/cloud_account.rb	/^  def cloud_name=(name); end; # no-op: for the representer only$/;"	f	class:CloudAccount
+cloud_provider	lib/service/model/cloud_account.rb	/^  def cloud_provider$/;"	f	class:CloudAccount.cloud_name=
+cloud_provider=	lib/service/model/cloud_account.rb	/^  def cloud_provider=(name); end # no-op: for the representer only$/;"	f	class:CloudAccount.cloud_name=
+code_block?	lib/cfdoc/model/element.rb	/^      def code_block?$/;"	f	class:CFDoc.Model.Element
+constraint_description	lib/cfdoc/model/parameter.rb	/^      def constraint_description; fields['constraint_description']; end$/;"	f	class:CFDoc.Model.Parameter
+country_code	lib/service/model/account.rb	/^  def country_code$/;"	f	class:Account
+country_code=	lib/service/model/account.rb	/^  def country_code=(code)$/;"	f	class:Account
+create_account_request	spec/app/identity_api_app_spec.rb	/^def create_account_request(new_account)$/;"	f
+create_current_version	lib/service/model/project.rb	/^  def create_current_version$/;"	f	class:Project
+create_owner_membership	lib/service/model/project.rb	/^  def create_owner_membership$/;"	f	class:Project
+create_project	spec/spec_helper.rb	/^def create_project$/;"	f
+create_template	spec/app/template_api_app_spec.rb	/^def create_template(json="{}")$/;"	f
+current_version	lib/service/model/project.rb	/^  def current_version$/;"	f	class:Project
+default	lib/cfdoc/model/parameter.rb	/^      def default; fields['default']; end$/;"	f	class:CFDoc.Model.Parameter
+description	lib/cfdoc/model/output.rb	/^      def description$/;"	f	class:CFDoc.Model.Output
+description	lib/cfdoc/model/parameter.rb	/^      def description; fields['description']; end$/;"	f	class:CFDoc.Model.Parameter
+description?	lib/cfdoc/model/element.rb	/^      def description?$/;"	f	class:CFDoc.Model.Element
+descriptions	lib/cfdoc/model/description_support.rb	/^      def descriptions$/;"	f	class:CFDoc.Model.DescriptionSupport
+downloaded!	lib/service/model/stack.rb	/^  def downloaded!$/;"	f	class:Stack
+embedded_project_name	lib/service/model/embedded_project.rb	/^  def embedded_project_name$/;"	f	class:EmbeddedProject
+empty?	lib/cfdoc/model/element.rb	/^      def empty?$/;"	f	class:CFDoc.Model.Element
+escape	lib/cfdoc/presenter/stack_template_presenter.rb	/^      def escape(orig)$/;"	f	class:CFDoc.Presenter.StackTemplatePresenter
+extract_code	lib/cfdoc/parser/cf_parser.rb	/^      def extract_code(fields)$/;"	f	class:CFDoc.Parser.CFParser
+fetch_page	lib/service/importer/aws_template_importer.rb	/^  def fetch_page(url='http:\/\/aws.amazon.com\/cloudformation\/aws-cloudformation-templates\/')$/;"	f	class:AwsTemplateImporter
+fields=	lib/cfdoc/model/element.rb	/^      def fields=(fields_hash)$/;"	f	class:CFDoc.Model.Element
+fields=	lib/cfdoc/model/resource.rb	/^      def fields=(fields)$/;"	f	class:CFDoc.Model.Resource
+file	spec/spec_helper.rb	/^def file(filename)$/;"	f
+find_by_code	lib/service/model/country.rb	/^  def self.find_by_code(code)$/;"	F	class:Country
+find_by_login	lib/service/model/account.rb	/^  def self.find_by_login(login)$/;"	F	class:Account
+find_by_permalink	lib/service/model/category.rb	/^  def self.find_by_permalink(perma)$/;"	F	class:Category
+find_by_permalink	lib/service/model/cloud.rb	/^  def self.find_by_permalink(perma)$/;"	F	class:Cloud
+find_by_permalink	lib/service/model/stack.rb	/^  def self.find_by_permalink(perma)$/;"	F	class:Stack
+find_cloud_account	lib/service/model/account.rb	/^  def self.find_cloud_account(cloud_account_id)$/;"	F	class:Account
+find_element	lib/service/model/project_version.rb	/^  def find_element(element_id)$/;"	f	class:ProjectVersion
+find_embedded_project	lib/service/model/project_version.rb	/^  def find_embedded_project(embedded_project_id)$/;"	f	class:ProjectVersion
+find_for_project	lib/service/model/project_version.rb	/^  def self.find_for_project(project_id, version_id)$/;"	F	class:ProjectVersion
+find_for_project	lib/service/model/provisioned_version.rb	/^  def self.find_for_project(project_id, version, env)$/;"	F	class:ProvisionedVersion
+find_instance	lib/service/model/provisioned_version.rb	/^  def find_instance(instance_id)$/;"	f	class:ProvisionedVersion
+find_membership	lib/service/model/project.rb	/^  def find_membership(account_id)$/;"	f	class:Project
+find_node	lib/service/model/project_version.rb	/^  def find_node(node_id)$/;"	f	class:ProjectVersion
+find_price	lib/service/model/cloud.rb	/^  def find_price(price_id)$/;"	f	class:Cloud
+find_variant	lib/service/model/embedded_project.rb	/^  def find_variant(variant_id)$/;"	f	class:EmbeddedProject
+find_variant	lib/service/model/project_version.rb	/^  def find_variant(variant_id)$/;"	f	class:ProjectVersion
+freeze!	lib/service/model/project.rb	/^  def freeze!(new_version)$/;"	f	class:Project
+function?	lib/cfdoc/model/element.rb	/^      def function?$/;"	f	class:CFDoc.Model.Element
+group_details	lib/cfdoc/model/resource_support.rb	/^      def group_details(group_id)$/;"	f	class:CFDoc.Model.ResourceSupport
+has_link?	lib/service/model/node.rb	/^  def has_link?(link)$/;"	f	class:Node
+import	lib/service/importer/aws_cf_mapping_importer.rb	/^  def import(cloud)$/;"	f	class:AwsCfMappingImporter
+import	lib/service/importer/aws_default_image_mapping_importer.rb	/^  def import(cloud)$/;"	f	class:AwsDefaultImageMappingImporter
+import	lib/service/importer/aws_template_importer.rb	/^  def import(account)$/;"	f	class:AwsTemplateImporter
+import	lib/service/importer/prices_importer.rb	/^	def import(cloud)$/;"	f	class:PricesImporter
+import_stack	lib/service/importer/aws_template_importer.rb	/^  def import_stack(account, cat, url, name, description)$/;"	f	class:AwsTemplateImporter
+import_template	spec/app/template_api_app_spec.rb	/^def import_template(name="Test Template", json="{}")$/;"	f
+in_group?	lib/cfdoc/model/resource_support.rb	/^      def in_group?(group_id)$/;"	f	class:CFDoc.Model.ResourceSupport
+initialize	lib/cfdoc/model/code_block.rb	/^      def initialize(name, code)$/;"	f	class:CFDoc.Model.CodeBlock
+initialize	lib/cfdoc/model/description.rb	/^      def initialize(name, description)$/;"	f	class:CFDoc.Model.Description
+initialize	lib/cfdoc/model/element.rb	/^      def initialize(name)$/;"	f	class:CFDoc.Model.Element
+initialize	lib/cfdoc/model/function.rb	/^      def initialize(name)$/;"	f	class:CFDoc.Model.Function
+initialize	lib/cfdoc/model/list.rb	/^      def initialize(name=nil)$/;"	f	class:CFDoc.Model.List
+initialize	lib/cfdoc/model/property.rb	/^      def initialize(name, value=nil)$/;"	f	class:CFDoc.Model.Property
+initialize	lib/cfdoc/model/stack.rb	/^      def initialize$/;"	f	class:CFDoc.Model.Stack
+initialize	lib/cfdoc/model/stack_template.rb	/^      def initialize$/;"	f	class:CFDoc.Model.StackTemplate
+initialize	lib/cfdoc/model/vendor.rb	/^      def initialize(name, description)$/;"	f	class:CFDoc.Model.Vendor
+initialize	lib/service/model/account.rb	/^    def initialize(org_id=nil, org_name=nil, product=nil, billing_level=nil, role=nil)$/;"	f	class:Account.subscriptions=.AccountSubscription
+initialize	lib/service/model/account.rb	/^    def initialize(project_id=nil, project_name=nil, role=nil, project_status=nil, last_opened_at=nil)$/;"	f	class:Account.subscriptions=.project_memberships=.ProjectMembership
+initialize	lib/service/model/category_query.rb	/^  def initialize(query=nil, categories=nil)$/;"	f	class:CategoryQuery
+initialize	lib/service/model/cloud_query.rb	/^  def initialize(query=nil, clouds=nil)$/;"	f	class:CloudQuery
+initialize	lib/service/model/country_query.rb	/^  def initialize(query=nil, countries=nil)$/;"	f	class:CountryQuery
+initialize	lib/service/model/import_results.rb	/^  def initialize$/;"	f	class:ImportResults
+initialize	lib/service/model/link.rb	/^  def initialize(rel=nil, href=nil)$/;"	f	class:Link
+initialize	lib/service/model/news_event_query.rb	/^  def initialize(query=nil, news_events=nil)$/;"	f	class:NewsEventQuery
+initialize	lib/service/model/project_query.rb	/^  def initialize(query=nil, projects=nil)$/;"	f	class:ProjectQuery
+initialize	lib/service/model/query.rb	/^  def initialize(total=nil, page=nil, offset=nil, per_page=nil)$/;"	f	class:Query
+initialize	lib/service/model/stack_query.rb	/^  def initialize(query=nil, stacks=nil)$/;"	f	class:StackQuery
+json_base64	lib/service/model/import_template.rb	/^  def json_base64$/;"	f	class:ImportTemplate
+json_base64=	lib/service/model/import_template.rb	/^  def json_base64=(encoded)$/;"	f	class:ImportTemplate
+key	lib/cfdoc/model/element.rb	/^      def key$/;"	f	class:CFDoc.Model.Element
+list?	lib/cfdoc/model/element.rb	/^      def list?$/;"	f	class:CFDoc.Model.Element
+log	lib/service/importer/aws_cf_mapping_importer.rb	/^  def log(message)$/;"	f	class:AwsCfMappingImporter
+log	lib/service/importer/aws_default_image_mapping_importer.rb	/^  def log(message)$/;"	f	class:AwsDefaultImageMappingImporter
+log	lib/service/importer/aws_template_importer.rb	/^  def log(message)$/;"	f	class:AwsTemplateImporter
+mapping?	lib/cfdoc/model/element.rb	/^      def mapping?$/;"	f	class:CFDoc.Model.Element
+mapping_set?	lib/cfdoc/model/element.rb	/^      def mapping_set?$/;"	f	class:CFDoc.Model.Element
+mapping_sets	lib/cfdoc/model/stack_template.rb	/^      def mapping_sets$/;"	f	class:CFDoc.Model.StackTemplate
+max_length	lib/cfdoc/model/parameter.rb	/^      def max_length; fields['max_length']; end$/;"	f	class:CFDoc.Model.Parameter
+max_value	lib/cfdoc/model/parameter.rb	/^      def max_value; fields['max_value']; end$/;"	f	class:CFDoc.Model.Parameter
+metadata?	lib/cfdoc/model/element.rb	/^      def metadata?$/;"	f	class:CFDoc.Model.Element
+min_length	lib/cfdoc/model/parameter.rb	/^      def min_length; fields['min_length']; end$/;"	f	class:CFDoc.Model.Parameter
+min_value	lib/cfdoc/model/parameter.rb	/^      def min_value; fields['min_value']; end$/;"	f	class:CFDoc.Model.Parameter
+must_be_valid_json	lib/service/model/template.rb	/^  def must_be_valid_json$/;"	f	class:Template
+name_from_url	lib/service/importer/aws_template_importer.rb	/^  def name_from_url(url)$/;"	f	class:AwsTemplateImporter
+no_echo	lib/cfdoc/model/parameter.rb	/^      def no_echo; fields['no_echo']; end$/;"	f	class:CFDoc.Model.Parameter
+opened_by!	lib/service/model/project.rb	/^  def opened_by!(account_id, at=Time.now)$/;"	f	class:Project
+other_elements	lib/cfdoc/model/description_support.rb	/^      def other_elements$/;"	f	class:CFDoc.Model.DescriptionSupport
+other_elements	lib/cfdoc/model/property_support.rb	/^      def other_elements$/;"	f	class:CFDoc.Model.PropertySupport
+output	lib/cfdoc/model/stack_template.rb	/^      def output(name)$/;"	f	class:CFDoc.Model.StackTemplate
+output?	lib/cfdoc/model/element.rb	/^      def output?$/;"	f	class:CFDoc.Model.Element
+outputs	lib/cfdoc/model/stack_template.rb	/^      def outputs$/;"	f	class:CFDoc.Model.StackTemplate
+parameter	lib/cfdoc/model/stack_template.rb	/^      def parameter(name)$/;"	f	class:CFDoc.Model.StackTemplate
+parameter?	lib/cfdoc/model/element.rb	/^      def parameter?$/;"	f	class:CFDoc.Model.Element
+parameters	lib/cfdoc/model/stack_template.rb	/^      def parameters$/;"	f	class:CFDoc.Model.StackTemplate
+parse_element	lib/cfdoc/parser/cf_parser.rb	/^      def parse_element(element, fields)$/;"	f	class:CFDoc.Parser.CFParser
+parse_function	lib/cfdoc/parser/cf_parser.rb	/^      def parse_function(function, args)$/;"	f	class:CFDoc.Parser.CFParser
+parse_mapping	lib/cfdoc/parser/cf_parser.rb	/^      def parse_mapping(element, fields)$/;"	f	class:CFDoc.Parser.CFParser
+parse_mapping_set	lib/cfdoc/parser/cf_parser.rb	/^      def parse_mapping_set(parsed_json)$/;"	f	class:CFDoc.Parser.CFParser
+parse_output	lib/cfdoc/parser/cf_parser.rb	/^      def parse_output(parsed_json)$/;"	f	class:CFDoc.Parser.CFParser
+parse_parameter	lib/cfdoc/parser/cf_parser.rb	/^      def parse_parameter(parsed_json)$/;"	f	class:CFDoc.Parser.CFParser
+parse_properties	lib/cfdoc/parser/cf_parser.rb	/^      def parse_properties(element, properties)$/;"	f	class:CFDoc.Parser.CFParser
+parse_resource	lib/cfdoc/parser/cf_parser.rb	/^      def parse_resource(parsed_json)$/;"	f	class:CFDoc.Parser.CFParser
+password=	lib/service/model/account.rb	/^  def password=(pass)$/;"	f	class:Account
+product_subscription	lib/service/model/org.rb	/^  def product_subscription(product)$/;"	f	class:Org
+project_memberships	lib/service/model/account.rb	/^  def project_memberships$/;"	f	class:Account.subscriptions=
+project_memberships=	lib/service/model/account.rb	/^  def project_memberships=(args); end; # empty impl to satisfy the representer$/;"	f	class:Account.subscriptions=
+properties	lib/cfdoc/model/property_support.rb	/^      def properties$/;"	f	class:CFDoc.Model.PropertySupport
+property?	lib/cfdoc/model/element.rb	/^      def property?$/;"	f	class:CFDoc.Model.Element
+public?	lib/service/model/stack.rb	/^  def public?$/;"	f	class:Stack
+publish!	lib/service/model/stack.rb	/^  def publish!$/;"	f	class:Stack
+published?	lib/service/model/template.rb	/^  def published?$/;"	f	class:Template
+ref?	lib/cfdoc/model/element.rb	/^      def ref?$/;"	f	class:CFDoc.Model.Element
+remove_cloud_account!	lib/service/model/account.rb	/^  def remove_cloud_account!(cloud_account_id)$/;"	f	class:Account.subscriptions=
+remove_environment!	lib/service/model/project.rb	/^  def remove_environment!(environment_name)$/;"	f	class:Project
+remove_key_pair!	lib/service/model/account.rb	/^  def remove_key_pair!(cloud_account_id, key_pair_id)$/;"	f	class:Account.subscriptions=
+remove_mapping!	lib/service/model/cloud.rb	/^  def remove_mapping!(mapping_id)$/;"	f	class:Cloud
+remove_mapping!	lib/service/model/org.rb	/^  def remove_mapping!(mapping_id)$/;"	f	class:Org
+remove_member!	lib/service/model/project.rb	/^  def remove_member!(member_id)$/;"	f	class:Project
+remove_price!	lib/service/model/cloud.rb	/^  def remove_price!(price_id)$/;"	f	class:Cloud
+remove_service!	lib/service/model/cloud.rb	/^  def remove_service!(service_id)$/;"	f	class:Cloud
+remove_subscriber!	lib/service/model/org.rb	/^  def remove_subscriber!(product, account)$/;"	f	class:Org
+remove_variant_for!	lib/service/model/embedded_project.rb	/^  def remove_variant_for!(environment)$/;"	f	class:EmbeddedProject
+remove_variant_for!	lib/service/model/project_version.rb	/^  def remove_variant_for!(environment)$/;"	f	class:ProjectVersion
+render_argument_html	lib/cfdoc/presenter/stack_template_presenter.rb	/^      def render_argument_html(args, join_str='<span class="fn_separator">, <\/span>')$/;"	f	class:CFDoc.Presenter.StackTemplatePresenter
+render_description_html	lib/cfdoc/presenter/stack_template_presenter.rb	/^      def render_description_html(description)$/;"	f	class:CFDoc.Presenter.StackTemplatePresenter
+render_descriptions_html	lib/cfdoc/presenter/stack_template_presenter.rb	/^      def render_descriptions_html(resource)$/;"	f	class:CFDoc.Presenter.StackTemplatePresenter
+render_element_html	lib/cfdoc/presenter/stack_template_presenter.rb	/^      def render_element_html(element)$/;"	f	class:CFDoc.Presenter.StackTemplatePresenter
+render_erb	lib/cfdoc/presenter/base.rb	/^      def render_erb(bindings, html_template)$/;"	f	class:CFDoc.Presenter.Base
+render_function_html	lib/cfdoc/presenter/stack_template_presenter.rb	/^      def render_function_html(function, join_str='<span class="fn_separator">, <\/span>')$/;"	f	class:CFDoc.Presenter.StackTemplatePresenter
+render_html	lib/cfdoc/presenter/stack_template_presenter.rb	/^      def render_html(stack_template, html_template='default_theme\/stack_template.html.erb')$/;"	f	class:CFDoc.Presenter.StackTemplatePresenter
+render_inspect	lib/cfdoc/presenter/stack_template_presenter.rb	/^      def render_inspect(stack_template)$/;"	f	class:CFDoc.Presenter.StackTemplatePresenter
+render_mapping_html	lib/cfdoc/presenter/stack_template_presenter.rb	/^      def render_mapping_html(mapping)$/;"	f	class:CFDoc.Presenter.StackTemplatePresenter
+render_property_html	lib/cfdoc/presenter/stack_template_presenter.rb	/^      def render_property_html(element)$/;"	f	class:CFDoc.Presenter.StackTemplatePresenter
+render_resource_groups_html	lib/cfdoc/presenter/stack_template_presenter.rb	/^      def render_resource_groups_html(stack_template, groups_list)$/;"	f	class:CFDoc.Presenter.StackTemplatePresenter
+render_resource_html	lib/cfdoc/presenter/stack_template_presenter.rb	/^      def render_resource_html(resource)$/;"	f	class:CFDoc.Presenter.StackTemplatePresenter
+render_source_html	lib/cfdoc/presenter/stack_template_presenter.rb	/^      def render_source_html(io)$/;"	f	class:CFDoc.Presenter.StackTemplatePresenter
+render_value_html	lib/cfdoc/presenter/stack_template_presenter.rb	/^      def render_value_html(value)$/;"	f	class:CFDoc.Presenter.StackTemplatePresenter
+render_vendors_html	lib/cfdoc/presenter/stack_template_presenter.rb	/^      def render_vendors_html(resource)$/;"	f	class:CFDoc.Presenter.StackTemplatePresenter
+resource	lib/cfdoc/model/stack_template.rb	/^      def resource(name)$/;"	f	class:CFDoc.Model.StackTemplate
+resource?	lib/cfdoc/model/element.rb	/^      def resource?$/;"	f	class:CFDoc.Model.Element
+resource_group_ids	lib/cfdoc/model/stack_template.rb	/^      def resource_group_ids$/;"	f	class:CFDoc.Model.StackTemplate
+resources	lib/cfdoc/model/stack_template.rb	/^      def resources$/;"	f	class:CFDoc.Model.StackTemplate
+resources_in_group	lib/cfdoc/model/stack_template.rb	/^      def resources_in_group(group_id)$/;"	f	class:CFDoc.Model.StackTemplate
+run	lib/cfdoc/cli.rb	/^  def self.run(target, options)$/;"	F	class:CFDoc
+scan	lib/cfdoc/parser/cf_parser.rb	/^      def scan(io)$/;"	f	class:CFDoc.Parser.CFParser
+set_permalink	lib/service/model/category.rb	/^  def set_permalink$/;"	f	class:Category
+set_permalink	lib/service/model/cloud.rb	/^  def set_permalink$/;"	f	class:Cloud
+set_permalink	lib/service/model/stack.rb	/^  def set_permalink$/;"	f	class:Stack
+simple_format	lib/cfdoc/presenter/stack_template_presenter.rb	/^      def simple_format(text)$/;"	f	class:CFDoc.Presenter.StackTemplatePresenter
+split	lib/service/model/version.rb	/^  def split$/;"	f	class:Version
+stats	lib/service/model/account.rb	/^  def stats$/;"	f	class:Account.subscriptions=.project_memberships=
+subscriptions	lib/service/model/account.rb	/^  def subscriptions$/;"	f	class:Account
+subscriptions=	lib/service/model/account.rb	/^  def subscriptions=(args); end; # empty impl to satisfy the representer$/;"	f	class:Account
+supported?	lib/cfdoc/model/stack.rb	/^      def supported?(obj)$/;"	f	class:CFDoc.Model.Stack
+template_must_be_unpublished	lib/service/model/create_stack.rb	/^  def template_must_be_unpublished$/;"	f	class:CreateStack
+template_must_exist	lib/service/model/create_stack.rb	/^  def template_must_exist$/;"	f	class:CreateStack
+template_summaries	lib/service/model/stack.rb	/^  def template_summaries$/;"	f	class:Stack
+template_summaries=	lib/service/model/stack.rb	/^  def template_summaries=(list)$/;"	f	class:Stack
+to_permalink	lib/core/ext/string_ext.rb	/^  def to_permalink$/;"	f	class:String
+to_stack	lib/service/model/create_stack.rb	/^  def to_stack$/;"	f	class:CreateStack
+type	lib/cfdoc/model/parameter.rb	/^      def type; fields['type']; end$/;"	f	class:CFDoc.Model.Parameter
+type	lib/cfdoc/model/resource.rb	/^      def type$/;"	f	class:CFDoc.Model.Resource
+underscore	lib/core/ext/string_ext.rb	/^  def underscore$/;"	f	class:String
+update_resource_groups!	lib/service/model/stack.rb	/^  def update_resource_groups!$/;"	f	class:Stack
+validate_format	lib/service/model/version.rb	/^  def validate_format$/;"	f	class:Version
+validate_project_active	lib/service/model/project.rb	/^  def validate_project_active$/;"	f	class:Project
+validate_version_number	lib/service/model/version.rb	/^  def validate_version_number(existing_versions)$/;"	f	class:Version
+value	lib/cfdoc/model/output.rb	/^      def value$/;"	f	class:CFDoc.Model.Output
+vendor?	lib/cfdoc/model/element.rb	/^      def vendor?$/;"	f	class:CFDoc.Model.Element
+vendors	lib/cfdoc/model/vendor_support.rb	/^      def vendors$/;"	f	class:CFDoc.Model.VendorSupport
