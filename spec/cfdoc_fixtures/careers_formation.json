@@ -1,0 +1,190 @@
+{
+  "Description" : "On-demand infrastructure to post jobs to Twitter",
+  "Parameters" : {
+	"EmailAddress" : {
+	  "Description" : "Email address for infrastructure notifications",
+	  "Type" : "String"
+	},
+    "KeyName" : {
+      "Description" : "The EC2 Key Pair to allow SSH access to the instances",
+      "Type" : "String"
+    },
+	"QueueName" : {
+	  "Description" : "Name of SQS input queue",
+	  "Type" : "String"	
+	}
+  },
+  "Resources" : {
+      "QueueUser" : {
+        "Type" : "AWS::IAM::User"
+      },	
+      "QueueGroup" : {
+        "Type" : "AWS::IAM::Group"
+      },
+      "QueueUsers" : {
+        "Type" : "AWS::IAM::UserToGroupAddition",
+        "Properties" : {
+          "GroupName": { "Ref" : "QueueGroup" },
+          "Users" : [ { "Ref" : "QueueUser" } ]
+        }
+      },
+      "CFNUserPolicies" : {
+        "Type" : "AWS::IAM::Policy",
+        "Properties" : {
+          "PolicyName" : "QueueUsers",
+          "PolicyDocument" : {
+            "Statement": [{
+              "Effect"   : "Allow",
+              "Action"   : [
+                "sqs:*", 
+ 			    "s3:*", 
+ 			    "cloudformation:DescribeStackResource"
+                ],
+              "Resource" : "*"
+            }]
+          },
+          "Groups" : [{ "Ref" : "QueueGroup" }]
+        }
+      },
+      "QueueUserKeys" : {
+        "Type" : "AWS::IAM::AccessKey",
+        "Properties" : {
+          "UserName" : { "Ref": "QueueUser" }
+        }
+      },
+    "ProcessorInstance" : {
+      "Type" : "AWS::AutoScaling::AutoScalingGroup",
+      "Properties" : {
+        "AvailabilityZones" : { "Fn::GetAZs" : ""},
+        "LaunchConfigurationName" : { "Ref" : "LaunchConfig" },
+        "MinSize" : "0",
+        "MaxSize" : "1",
+        "Cooldown" : "300",
+        "NotificationConfiguration" : {
+          "TopicARN" : { "Ref" : "EmailTopic" },
+          "NotificationTypes" : [ "autoscaling:EC2_INSTANCE_LAUNCH",
+                                  "autoscaling:EC2_INSTANCE_LAUNCH_ERROR",
+                                  "autoscaling:EC2_INSTANCE_TERMINATE", 
+                                  "autoscaling:EC2_INSTANCE_TERMINATE_ERROR"]
+        }
+      }
+    },
+    "LaunchConfig" : {
+      "Type" : "AWS::AutoScaling::LaunchConfiguration",
+      "Properties" : {
+        "KeyName" : { "Ref" : "KeyName" },
+        "ImageId" : "ami-7f418316",
+        "SecurityGroups" : [ { "Ref" : "InstanceSecurityGroup" } ],
+        "InstanceType" : "t1.micro",
+		"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", 
+		           ["#!/bin/sh\n",
+		            "/opt/aws/bin/cfn-init ", " -s ", { "Ref" : "AWS::StackName" }, " -r LaunchConfig ", 
+		              "--access-key=", { "Ref" : "QueueUserKeys" }, " ", "--secret-key=", { "Fn::GetAtt" : ["QueueUserKeys", "SecretAccessKey"]}, "\n",
+					"/usr/bin/ruby /home/ec2-user/post.rb /home/ec2-user/config.yml &\n"]]}}
+      },
+      "Metadata" : {
+        "AWS::CloudFormation::Init" : {
+          "config" : {
+			  "packages" : {
+		           "yum" : {
+		             "ruby-devel" : [],
+		             "rubygems" : [],
+		             "libxml2" : [],
+		             "libxml2-devel" : [],
+		             "libxslt" : [],
+		             "libxslt-devel" : [],
+		             "gcc" : [],
+		             "make" : []
+		           },
+		           "rubygems" : {
+		             "aws-sdk" : [],
+					 "twitter" : []
+		           }
+				},
+	            "files" : {
+					"/home/ec2-user/post.rb" : {
+						"mode" : "000644", "owner" : "ec2-user", "group" : "ec2-user",
+						"source" : "http://cfn-twitter.s3.amazonaws.com/post.rb" 
+					},
+					"/home/ec2-user/config.yml" : {
+						"mode" : "000644", "owner" : "ec2-user", "group" : "ec2-user",
+						"content" : { "Fn::Join" : ["", [
+						    "config:\n",
+							"  access_key_id: ", { "Ref" : "QueueUserKeys" }, "\n",
+							"  secret_access_key: ", { "Fn::GetAtt" : ["QueueUserKeys", "SecretAccessKey"] }, "\n",
+							"  queue: ", { "Ref" : "QueueName" }, "\n",
+							"  log: /home/ec2-user/worker.log\n",							
+							"  twitter_consumer_key: xxx\n",
+							"  twitter_consumer_secret: xxx\n",
+							"  twitter_oauth_token: xxx\n",
+							"  twitter_oauth_token_secret: xxx\n"
+		             	] ] }
+		        	}
+	        	}
+          	}
+        }
+      }
+    },
+    "EmailTopic" : {
+      "Type" : "AWS::SNS::Topic",
+      "Properties" : {
+        "Subscription" : [ {
+          "Endpoint" : { "Ref" : "EmailAddress" },
+          "Protocol" : "email"
+        } ]
+      }
+    },
+    "QueueNonEmptyAlarm" : {
+      "Type" : "AWS::CloudWatch::Alarm",
+      "Properties" : {
+        "AlarmDescription" : "Fire when queue contains messages",
+        "AlarmActions" : [ { "Ref" : "EmailTopic" } ],
+        "OKActions" : [ { "Ref" : "EmailTopic" } ],
+        "InsufficientDataActions" : [ { "Ref" : "EmailTopic" } ],
+        "EvaluationPeriods" : "1",
+        "Threshold" : "1",
+        "ComparisonOperator" : "GreaterThanThreshold",
+        "MetricName" : "ApproximateNumberOfMessagesVisible",
+        "Namespace" : "AWS/SQS",
+        "Dimensions" : [ {
+          "Name" : "QueueName",
+          "Value" : { "Ref" : "QueueName" }
+        } ],
+        "Statistic" : "Sum",
+        "Period" : "300"
+      }
+    },
+    "JobQueueDepthTrigger" : {
+      "Type" : "AWS::AutoScaling::Trigger",
+      "Properties" : {
+        "AutoScalingGroupName" : { "Ref" : "ProcessorInstance" },
+        "MetricName" : "ApproximateNumberOfMessagesVisible",
+        "Namespace" : "AWS/SQS",
+        "Dimensions" : [ {
+          "Name" : "QueueName",
+          "Value" : { "Ref" : "QueueName" }
+        } ],
+        "BreachDuration" : "300",
+        "Statistic" : "Sum",
+        "Period" : "300",
+        "UpperBreachScaleIncrement" : "1",
+        "LowerBreachScaleIncrement" : "-1",
+        "UpperThreshold" : "0",
+        "LowerThreshold" : "1"
+      }
+    },
+    "InstanceSecurityGroup" : {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription" : "Enable SSH",
+        "SecurityGroupIngress" : [ {
+          "IpProtocol" : "tcp",
+          "FromPort" : "22",
+          "ToPort" : "22",
+          "CidrIp" : "0.0.0.0/0"
+        } ]
+      }
+    }
+  },
+  "AWSTemplateFormatVersion" : "2010-09-09"
+}
