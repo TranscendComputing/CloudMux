@@ -5,7 +5,7 @@ class AwsMonitorApp < ResourceApiBase
 	#
 	# Alarms
 	#
-	post '/alarms/describe' do
+	get '/alarms/describe' do
 		monitor = get_monitor_interface(params[:cred_id])
 		if(monitor.nil?)
 			[BAD_REQUEST]
@@ -31,6 +31,39 @@ class AwsMonitorApp < ResourceApiBase
 				[BAD_REQUEST]
 			else
 				response = monitor.alarms.create(json_body["alarm"])
+				[OK, response.to_json]
+			end
+		end
+	end
+	
+	delete '/alarms/delete' do
+		monitor = get_monitor_interface(params[:cred_id])
+		if(monitor.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil? || json_body["alarm"].nil?)
+				[BAD_REQUEST]
+			else
+				response = monitor.alarms.get(json_body["alarm"]["name"]).destroy
+				[OK, response.to_json]
+			end
+		end
+	end
+	
+	#
+	# Metric Statistics
+	#
+	get '/metric_statistics/describe' do
+		monitor = get_monitor_interface(params[:cred_id])
+		if(monitor.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil? || json_body["conditions"].nil?)
+				[BAD_REQUEST]
+			else
+				response = monitor.metric_statistics.all(json_body["conditions"])
 				[OK, response.to_json]
 			end
 		end

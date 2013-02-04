@@ -5,7 +5,7 @@ class AwsComputeApp < ResourceApiBase
 	#
 	# Compute Instance
 	#
-	post '/instances/describe' do
+	get '/instances/describe' do
 		compute = get_compute_interface(params[:cred_id])
 		if(compute.nil?)
 			[BAD_REQUEST]
@@ -99,7 +99,7 @@ class AwsComputeApp < ResourceApiBase
 	#
 	# Compute Security Group
 	#
-	post '/security_groups/describe' do
+	get '/security_groups/describe' do
 		compute = get_compute_interface(params[:cred_id])
 		if(compute.nil?)
 			[BAD_REQUEST]
@@ -149,7 +149,7 @@ class AwsComputeApp < ResourceApiBase
 	#
 	# Compute Key Pairs
 	#
-	post '/key_pairs/describe' do
+	get '/key_pairs/describe' do
 		compute = get_compute_interface(params[:cred_id])
 		if(compute.nil?)
 			[BAD_REQUEST]
@@ -198,7 +198,7 @@ class AwsComputeApp < ResourceApiBase
 	#
 	# Compute Spot Requests
 	#
-	post '/spot_requests/describe' do
+	get '/spot_requests/describe' do
 		compute = get_compute_interface(params[:cred_id])
 		if(compute.nil?)
 			[BAD_REQUEST]
@@ -247,7 +247,7 @@ class AwsComputeApp < ResourceApiBase
 	#
 	# Compute Elastic Ips
 	#
-	post '/addresses/describe' do
+	get '/addresses/describe' do
 		compute = get_compute_interface(params[:cred_id])
 		if(compute.nil?)
 			[BAD_REQUEST]
@@ -326,7 +326,7 @@ class AwsComputeApp < ResourceApiBase
 	#
 	# Compute Reserved Instances
 	#
-	post '/reserved_instances/describe' do
+	get '/reserved_instances/describe' do
 		compute = get_compute_interface(params[:cred_id])
 		if(compute.nil?)
 			[BAD_REQUEST]
@@ -360,7 +360,7 @@ class AwsComputeApp < ResourceApiBase
 	#
 	# VPCs
 	#
-	post '/vpcs/describe' do
+	get '/vpcs/describe' do
 		compute = get_compute_interface(params[:cred_id])
 		if(compute.nil?)
 			[BAD_REQUEST]
@@ -394,7 +394,7 @@ class AwsComputeApp < ResourceApiBase
 	#
 	# DHCPs
 	#
-	post '/dhcp_options/describe' do
+	get '/dhcp_options/describe' do
 		compute = get_compute_interface(params[:cred_id])
 		if(compute.nil?)
 			[BAD_REQUEST]
@@ -428,7 +428,7 @@ class AwsComputeApp < ResourceApiBase
 	#
 	# Internet Gateways
 	#
-	post '/internet_gateways/describe' do
+	get '/internet_gateways/describe' do
 		compute = get_compute_interface(params[:cred_id])
 		if(compute.nil?)
 			[BAD_REQUEST]
@@ -462,7 +462,7 @@ class AwsComputeApp < ResourceApiBase
 	#
 	# Subnets
 	#
-	post '/subnets/describe' do
+	get '/subnets/describe' do
 		compute = get_compute_interface(params[:cred_id])
 		if(compute.nil?)
 			[BAD_REQUEST]

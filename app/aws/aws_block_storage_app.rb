@@ -5,7 +5,7 @@ class AwsBlockStorageApp < ResourceApiBase
 	#
 	# Volumes
 	#
-	post '/volumes/describe' do
+	get '/volumes/describe' do
 		block_storage = get_block_storage_interface(params[:cred_id])
 		if(block_storage.nil?)
 			[BAD_REQUEST]
@@ -54,7 +54,7 @@ class AwsBlockStorageApp < ResourceApiBase
 	#
 	# Snapshots
 	#
-	post '/snapshots/describe' do
+	get '/snapshots/describe' do
 		block_storage = get_block_storage_interface(params[:cred_id])
 		if(block_storage.nil?)
 			[BAD_REQUEST]

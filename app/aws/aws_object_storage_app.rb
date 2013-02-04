@@ -5,7 +5,7 @@ class AwsObjectStorageApp < ResourceApiBase
 	#
 	# Buckets
 	#
-	post '/directories/describe' do
+	get '/directories/describe' do
 		object_storage = get_object_storage_interface(params[:cred_id])
 		if(object_storage.nil?)
 			[BAD_REQUEST]
@@ -54,7 +54,7 @@ class AwsObjectStorageApp < ResourceApiBase
 	#
 	# Files
 	#
-	post '/directory/files' do
+	get '/directory/files' do
 		object_storage = get_object_storage_interface(params[:cred_id])
 		if(object_storage.nil?)
 			[BAD_REQUEST]
