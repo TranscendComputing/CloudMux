@@ -12,6 +12,8 @@ class ApiBase < Sinatra::Base
 
   # make the default content type JSON. Actions that require something else can simply change it using the same call
   before { content_type 'application/json', :charset => 'utf-8' }
+  
+  before { headers "Access-Control-Allow-Origin" => "*" }
 
   # catch errors when a find(id) fails
   error Mongoid::Errors::DocumentNotFound do
