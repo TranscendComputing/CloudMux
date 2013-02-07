@@ -105,8 +105,8 @@ class IdentityApiApp < ApiBase
 
   # Update an existing cloud account
   put '/:id/cloud_accounts/:cloud_account_id' do
-	  account = Account.find(params[:id])
-	  update_cloud_account = account.cloud_account(params[:cloud_account_id])
+	  update_account = Account.find(params[:id])
+	  update_cloud_account = update_account.cloud_account(params[:cloud_account_id])
 	  if update_cloud_account.nil?
 		  return [NOT_FOUND]
 	  end
@@ -114,9 +114,9 @@ class IdentityApiApp < ApiBase
 	  update_cloud_account.from_json(request.body.read)
 	  if update_cloud_account.valid?
 		  update_cloud_account.save!
-		  updated_cloud_account = account.cloud_account(update_cloud_account.id)
-		  updated_cloud_account.extend(CloudAccountRepresenter)
-		  [OK, updated_cloud_account.to_json]
+		  updated_cloud_account = update_account.cloud_account(update_cloud_account.id)
+		  update_account.extend(AccountRepresenter)
+		  [OK, update_account.to_json]
 	  else
 		  message = Error.new.extend(ErrorRepresenter)
 		  message.message = "#{update_cloud_account.errors.full_messages.join(";")}"
