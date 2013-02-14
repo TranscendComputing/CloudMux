@@ -97,6 +97,38 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	#
+	# Compute Availability Zones
+	#
+	get '/availability_zones/describe' do
+		compute = get_compute_interface(params[:cred_id])
+		if(compute.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil?)
+				response = compute.describe_availability_zones.body["availabilityZoneInfo"]
+			else
+				filters = json_body["filters"]
+				response = compute.describe_availability_zones(filters).body["availabilityZoneInfo"]
+			end
+			[OK, response.to_json]
+		end
+	end
+	
+	#
+	# Compute Flavors
+	#
+	get '/flavors/describe' do
+		compute = get_compute_interface(params[:cred_id])
+		if(compute.nil?)
+			[BAD_REQUEST]
+		else
+			response = compute.flavors
+			[OK, response.to_json]
+		end
+	end
+	
+	#
 	# Compute Security Group
 	#
 	get '/security_groups/describe' do
