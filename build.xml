@@ -1,0 +1,132 @@
+<project name="CloudMux" basedir="." default="package">
+
+	<property name="name" value="CloudMux" />
+	<property name="env" value="devint" />
+	<property file="${user.home}/${name}.properties"/>
+	<property file="${user.home}/build.properties"/>
+	<property name="config.filename" value="${user.name}.properties"/>
+	<property file="${config.filename}"/>
+	<property file="build.properties"/>
+
+	<property name="project.base.dir" value="${basedir}" />
+	<property name="src" value="${project.base.dir}/src" />
+	<property name="test" value="${project.base.dir}/test" />
+	<property name="build" value="${project.base.dir}/build" />
+	<property name="classes" value="${build}/classes" />
+	<property name="jar.dir" value="${project.base.dir}/build/lib/" />
+	<property name="lib" value="${build}/lib" />
+	<property name="external" value="${build}/external" />
+	<property name="external.jars" value="${build}/external/lib" />
+	<property name="resources" value="${project.base.dir}/resources" />
+	<property name="hudson.url" value="jenkins.momentumsoftware.com:8080/" />
+	<property name="dir.output" value="${basedir}/public/bin" />
+	<property name="dist" value="${project.base.dir}/dist" />
+	<property name="package.file" value="cloudmux.tar.gz"/>
+	<property name="cloudmux.home" value="/home/cloudmux"/>
+
+	<property name="env.properties" value="resources/${env}.properties"/>
+	<property file="${env.properties}"/>
+
+	<target name="init">
+		<mkdir dir="${build}" />
+		<echo message="Base build directory = ${basedir}" />
+		<mkdir dir="${dist}" />
+	</target>
+
+	<target name="configure.ruby" depends="init">
+		<copy todir="${build}" overwrite="true">
+			<fileset dir="${resources}/">
+				<include name="seed/**"/>
+			</fileset>
+			<filterset filtersfile="${env.core.properties}"/>
+		</copy>
+	</target>
+
+	<target name="bundle">
+		<exec executable="ruby" failonerror="true">
+			<arg value="-v" />
+		</exec>
+		<exec executable="bundle" failonerror="true">
+			<arg value="install" />
+			<arg value="--deployment" />
+			<arg value="--without" />
+			<arg value="development" />
+			<arg value="test" />
+		</exec>
+	</target>
+
+	<target name="seed" depends="bundle">
+		<exec executable="which" failonerror="true">
+			<arg value="bundle" />
+		</exec>
+		<exec executable="bundle" failonerror="true">
+			<env key="STACK_PLACE_SERVICE_ENDPOINT" value="${env.stackplace.endpoint}"/>
+			<env key="MONGO_URI" value="${env.mongouri}"/>
+			<env key="RACK_ENV" value="${env.fullname}"/>
+			<env key="RAILS_ENV" value="${env.fullname}"/>
+			<arg value="exec" />
+			<arg value="rake" />
+			<arg value="db:seed" />
+		</exec>
+	</target>
+
+	<target name="warble" depends="bundle">
+		<exec executable="jruby" failonerror="true">
+			<arg value="-S" />
+			<arg value="warble" />
+			<arg value="compiled" />
+			<arg value="war" />
+		</exec>
+	</target>
+	
+	<target name="deploy" depends="bundle, package">
+        <echo message="Deploying StackCore to ${deploy.ip}"/>
+		<exec command="scp ${build}/${package.file} ${deploy.ip}:/${cloudmux.home}" failonerror="true"/>
+		<exec command="ssh ${deploy.ip} sudo tar xvzf ${cloudmux.home}/${package.file} -C ${cloudmux.home}" failonerror="true"/>
+		<exec command="ssh ${deploy.ip} sudo chmod 755 ${cloudmux.home}/CloudMux" failonerror="true"/>
+		<exec command="ssh ${deploy.ip} sudo find ${cloudmux.home}/CloudMux -type d -exec chmod 755 {} \;" failonerror="true"/>
+        <exec command="ssh ${deploy.ip} sudo find ${cloudmux.home}/CloudMux -type f -exec chmod 644 {} \;" failonerror="true"/>
+        <exec command="ssh ${deploy.ip} sudo chown -R cloudmux:cloudmux ${cloudmux.home}/CloudMux" failonerror="true"/>
+        <exec command="ssh ${deploy.ip} '. /usr/local/etc/stack.env; bundle install --gemfile=${cloudmux.home}/CloudMux/Gemfile --without development test --path ${cloudmux.home}/stack-core'" failonerror="true"/>
+		<exec command="ssh ${deploy.ip} '. /usr/local/etc/stack.env; cd ${cloudmux.home}/CloudMux; bundle exec rake db:seed'" failonerror="true"/>
+        <exec command="ssh ${deploy.ip} sudo /etc/init.d/${sstudio.webserver} restart" failonerror="true"/>
+	</target>
+
+	<target name="package" depends="clean,init">
+		<tar destfile="${build}/${package.file}" compression="gzip">
+           <tarfileset dir="${project.base.dir}" prefix="CloudMux">
+               <exclude name=".git/**"/>
+               <exclude name=".bundle/**"/>
+               <exclude name="resources/**"/>
+               <exclude name="vendor/**"/>
+               <exclude name="build/**"/>
+               <exclude name="dist/**"/>
+           </tarfileset>
+       </tar>
+	</target>
+
+    <!-- This target is like package, but includes diff. seed file w/o passwords. -->
+	<target name="dist" depends="clean,init">
+		<tar destfile="${dist}/${package.file}" compression="gzip">
+           <tarfileset dir="${project.base.dir}" prefix="CloudMux">
+               <exclude name=".git/**"/>
+               <exclude name=".bundle/**"/>
+               <exclude name="resources/**"/>
+               <exclude name="vendor/**"/>
+               <exclude name="build/**"/>
+               <exclude name="dist/**"/>
+               <!-- dist-specific excludes. -->
+               <exclude name="api-docs/**"/>
+               <exclude name="seed/*.rb"/>
+           </tarfileset>
+	       <tarfileset dir="${resources}" prefix="CloudMux">
+	           <include name="seed/**"/>
+	       </tarfileset>
+       </tar>
+	</target>
+
+	<target name="clean">
+		<delete dir="${project.base.dir}/build" />
+	</target>
+
+</project>
