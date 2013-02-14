@@ -24,8 +24,16 @@
 	<property name="package.file" value="cloudmux.tar.gz"/>
 	<property name="cloudmux.home" value="/home/cloudmux"/>
 
-	<property name="env.properties" value="resources/${env}.properties"/>
-	<property file="${env.properties}"/>
+    <property name="dist.suffix" value="" />
+    <property name="toughresources" value="ToughResources${dist.suffix}" />
+    <property name="toughresources.dir" value="${project.base.dir}/../${toughresources}"/>
+    <import file="${toughresources.dir}/common.build.xml" />
+
+	<!--All projects rely on toughresources so just have all property files reside there-->
+	<property name="env" value="dev"/>
+	<!-- if not specified before, assume dev. (won't deploy to a remote instance...-->
+	<property name="env.core.properties" value="${toughresources.dir}/resources/env/${env}.properties"/>
+	<property file="${env.core.properties}"/>
 
 	<target name="init">
 		<mkdir dir="${build}" />
@@ -81,6 +89,7 @@
 	
 	<target name="deploy" depends="bundle, package">
         <echo message="Deploying StackCore to ${deploy.ip}"/>
+		<echo message="scp ${build}/${package.file} ${deploy.ip}:/${cloudmux.home}"/>
 		<exec command="scp ${build}/${package.file} ${deploy.ip}:/${cloudmux.home}" failonerror="true"/>
 		<exec command="ssh ${deploy.ip} sudo tar xvzf ${cloudmux.home}/${package.file} -C ${cloudmux.home}" failonerror="true"/>
 		<exec command="ssh ${deploy.ip} sudo chmod 755 ${cloudmux.home}/CloudMux" failonerror="true"/>
