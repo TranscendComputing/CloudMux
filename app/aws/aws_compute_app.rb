@@ -319,7 +319,7 @@ class AwsComputeApp < ResourceApiBase
 			if(json_body.nil? || json_body["address"].nil?)
 				[BAD_REQUEST]
 			else
-				response = compute.addresses.get(json_body["address"]["publicIp"]).destroy
+				response = compute.addresses.get(json_body["address"]["public_ip"]).destroy
 				[OK, response.to_json]
 			end
 		end
@@ -331,10 +331,10 @@ class AwsComputeApp < ResourceApiBase
 			[BAD_REQUEST]
 		else
 			json_body = body_to_json(request)
-			if(json_body.nil? || json_body["associate"].nil?)
+			if(json_body.nil? || json_body["address"].nil?)
 				[BAD_REQUEST]
 			else
-				response = compute.associate_address(json_body["associate"]["instanceId"], json_body["associate"]["publicIp"])
+				response = compute.associate_address(json_body["address"]["server_id"], json_body["address"]["public_ip"])
 				[OK, response.to_json]
 			end
 		end
@@ -346,10 +346,14 @@ class AwsComputeApp < ResourceApiBase
 			[BAD_REQUEST]
 		else
 			json_body = body_to_json(request)
-			if(json_body.nil? || json_body["disassociate"].nil?)
+			if(json_body.nil? || json_body["address"].nil?)
 				[BAD_REQUEST]
 			else
-				response = compute.disassociate_address(json_body["disassociate"]["publicIp"])
+				begin
+					response = compute.disassociate_address(json_body["address"]["public_ip"])
+				rescue
+					response = {}
+				end
 				[OK, response.to_json]
 			end
 		end
