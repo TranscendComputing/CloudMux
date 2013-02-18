@@ -276,6 +276,38 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 	
+	get '/spot_prices/describe' do
+		compute = get_compute_interface(params[:cred_id])
+		if(compute.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil?)
+				response = compute.describe_spot_price_history.body["spotPriceHistorySet"]
+			else
+				filters = json_body["filters"]
+				response = compute.describe_spot_price_history(filters).body["spotPriceHistorySet"]
+			end
+			[OK, response.to_json]
+		end
+	end
+	
+	post '/spot_prices/current' do
+		compute = get_compute_interface(params[:cred_id])
+		if(compute.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil? || json_body["filters"].nil?)
+				[BAD_REQUEST]
+			else
+				filters = json_body["filters"]
+				response = compute.describe_spot_price_history(filters).body["spotPriceHistorySet"].first
+				[OK, response.to_json]
+			end
+		end
+	end
+	
 	#
 	# Compute Elastic Ips
 	#
