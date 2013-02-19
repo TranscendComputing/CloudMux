@@ -10,11 +10,10 @@ class AwsMonitorApp < ResourceApiBase
 		if(monitor.nil?)
 			[BAD_REQUEST]
 		else
-			json_body = body_to_json(request)
-			if(json_body.nil?)
+			filters = params[:filters]
+			if(filters.nil?)
 				response = monitor.alarms
 			else
-				filters = json_body["filters"]
 				response = monitor.alarms.all(filters)
 			end
 			[OK, response.to_json]
@@ -59,11 +58,11 @@ class AwsMonitorApp < ResourceApiBase
 		if(monitor.nil?)
 			[BAD_REQUEST]
 		else
-			json_body = body_to_json(request)
-			if(json_body.nil? || json_body["conditions"].nil?)
+			conditions = params[:conditions]
+			if(conditions.nil?)
 				[BAD_REQUEST]
 			else
-				response = monitor.metric_statistics.all(json_body["conditions"])
+				response = monitor.metric_statistics.all(conditions)
 				[OK, response.to_json]
 			end
 		end
