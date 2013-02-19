@@ -10,11 +10,10 @@ class AwsObjectStorageApp < ResourceApiBase
 		if(object_storage.nil?)
 			[BAD_REQUEST]
 		else
-			json_body = body_to_json(request)
-			if(json_body.nil?)
+			filters = params[:filters]
+			if(filters.nil?)
 				response = object_storage.directories
 			else
-				filters = json_body["filters"]
 				response = object_storage.directories.all(filters)
 			end
 			[OK, response.to_json]

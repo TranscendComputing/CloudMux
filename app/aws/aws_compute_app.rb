@@ -10,11 +10,10 @@ class AwsComputeApp < ResourceApiBase
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
-			json_body = body_to_json(request)
-			if(json_body.nil?)
+			filters = params[:filters]
+			if(filters.nil?)
 				response = compute.servers
 			else
-				filters = json_body["filters"]
 				response = compute.servers.all(filters)
 			end
 			[OK, response.to_json]
@@ -104,11 +103,10 @@ class AwsComputeApp < ResourceApiBase
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
-			json_body = body_to_json(request)
-			if(json_body.nil?)
+			filters = params[:filters]
+			if(filters.nil?)
 				response = compute.describe_availability_zones.body["availabilityZoneInfo"]
 			else
-				filters = json_body["filters"]
 				response = compute.describe_availability_zones(filters).body["availabilityZoneInfo"]
 			end
 			[OK, response.to_json]
@@ -136,11 +134,10 @@ class AwsComputeApp < ResourceApiBase
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
-			json_body = body_to_json(request)
-			if(json_body.nil?)
+			filters = params[:filters]
+			if(filters.nil?)
 				response = compute.security_groups
 			else
-				filters = json_body["filters"]
 				response = compute.security_groups.all(filters)
 			end
 			[OK, response.to_json]
@@ -186,11 +183,10 @@ class AwsComputeApp < ResourceApiBase
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
-			json_body = body_to_json(request)
-			if(json_body.nil?)
+			filters = params[:filters]
+			if(filters.nil?)
 				response = compute.key_pairs
 			else
-				filters = json_body["filters"]
 				response = compute.key_pairs.all(filters)
 			end
 			[OK, response.to_json]
@@ -235,11 +231,10 @@ class AwsComputeApp < ResourceApiBase
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
-			json_body = body_to_json(request)
-			if(json_body.nil?)
+			filters = params[:filters]
+			if(filters.nil?)
 				response = compute.spot_requests
 			else
-				filters = json_body["filters"]
 				response = compute.spot_requests.all(filters)
 			end
 			[OK, response.to_json]
@@ -281,11 +276,10 @@ class AwsComputeApp < ResourceApiBase
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
-			json_body = body_to_json(request)
-			if(json_body.nil?)
+			filters = params[:filters]
+			if(filters.nil?)
 				response = compute.describe_spot_price_history.body["spotPriceHistorySet"]
 			else
-				filters = json_body["filters"]
 				response = compute.describe_spot_price_history(filters).body["spotPriceHistorySet"]
 			end
 			[OK, response.to_json]
@@ -316,11 +310,10 @@ class AwsComputeApp < ResourceApiBase
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
-			json_body = body_to_json(request)
-			if(json_body.nil?)
+			filters = params[:filters]
+			if(filters.nil?)
 				response = compute.addresses
 			else
-				filters = json_body["filters"]
 				response = compute.addresses.all(filters)
 			end
 			[OK, response.to_json]
@@ -399,11 +392,10 @@ class AwsComputeApp < ResourceApiBase
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
-			json_body = body_to_json(request)
-			if(json_body.nil?)
+			filters = params[:filters]
+			if(filters.nil?)
 				response = compute.describe_reserved_instances.body["reservedInstanceSet"]
 			else
-				filters = json_body["filters"]
 				response = compute.describe_reserved_instances(filters).body["reservedInstanceSet"]
 			end
 			[OK, response.to_json]
@@ -433,11 +425,10 @@ class AwsComputeApp < ResourceApiBase
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
-			json_body = body_to_json(request)
-			if(json_body.nil?)
+			filters = params[:filters]
+			if(filters.nil?)
 				response = compute.vpcs
 			else
-				filters = json_body["filters"]
 				response = compute.vpcs.all(filters)
 			end
 			[OK, response.to_json]
@@ -467,11 +458,10 @@ class AwsComputeApp < ResourceApiBase
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
-			json_body = body_to_json(request)
-			if(json_body.nil?)
+			filters = params[:filters]
+			if(filters.nil?)
 				response = compute.dhcp_options
 			else
-				filters = json_body["filters"]
 				response = compute.dhcp_options.all(filters)
 			end
 			[OK, response.to_json]
@@ -501,11 +491,10 @@ class AwsComputeApp < ResourceApiBase
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
-			json_body = body_to_json(request)
-			if(json_body.nil?)
+			filters = params[:filters]
+			if(filters.nil?)
 				response = compute.internet_gateways
 			else
-				filters = json_body["filters"]
 				response = compute.internet_gateways.all(filters)
 			end
 			[OK, response.to_json]
@@ -535,11 +524,10 @@ class AwsComputeApp < ResourceApiBase
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
-			json_body = body_to_json(request)
-			if(json_body.nil?)
+			filters = params[:filters]
+			if(filters.nil?)
 				response = compute.subnets
 			else
-				filters = json_body["filters"]
 				response = compute.subnets.all(filters)
 			end
 			[OK, response.to_json]

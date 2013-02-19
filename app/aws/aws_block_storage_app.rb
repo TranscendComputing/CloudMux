@@ -10,11 +10,10 @@ class AwsBlockStorageApp < ResourceApiBase
 		if(block_storage.nil?)
 			[BAD_REQUEST]
 		else
-			json_body = body_to_json(request)
-			if(json_body.nil?)
+			filters = params[:filters]
+			if(filters.nil?)
 				response = block_storage.volumes
 			else
-				filters = json_body["filters"]
 				response = block_storage.volumes.all(filters)
 			end
 			[OK, response.to_json]
@@ -59,11 +58,10 @@ class AwsBlockStorageApp < ResourceApiBase
 		if(block_storage.nil?)
 			[BAD_REQUEST]
 		else
-			json_body = body_to_json(request)
-			if(json_body.nil?)
+			filters = params[:filters]
+			if(filters.nil?)
 				response = block_storage.snapshots
 			else
-				filters = json_body["filters"]
 				response = block_storage.snapshots.all(filters)
 			end
 			[OK, response.to_json]
