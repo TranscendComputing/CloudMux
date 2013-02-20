@@ -193,17 +193,17 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 	
-	put '/key_pairs/create' do
+	post '/key_pairs/create' do
 		compute = get_compute_interface(params[:cred_id])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
-			json_body = body_to_json(request)
-			if(json_body.nil?)
+			if(params[:name].nil?)
 				[BAD_REQUEST]
 			else
-				response = compute.key_pairs.create(json_body["key_pair"])
-				[OK, response.to_json]
+				response = compute.key_pairs.create({"name"=>params[:name]})
+				headers["Content-disposition"] = "attachment; filename=" + response.name + ".pem"
+				[OK, response.private_key]
 			end
 		end
 	end
