@@ -50,6 +50,51 @@ class AwsBlockStorageApp < ResourceApiBase
 		end
 	end
 	
+	post '/volumes/attach' do
+		block_storage = get_block_storage_interface(params[:cred_id])
+		if(block_storage.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil? || json_body["volume"].nil?)
+				[BAD_REQUEST]
+			else
+				response = block_storage.attach_volume(json_body["volume"]["server_id"], json_body["volume"]["id"], json_body["volume"]["device"])
+				[OK, response.to_json]
+			end
+		end
+	end
+	
+	post '/volumes/detach' do
+		block_storage = get_block_storage_interface(params[:cred_id])
+		if(block_storage.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil? || json_body["volume"].nil?)
+				[BAD_REQUEST]
+			else
+				response = block_storage.detach_volume(json_body["volume"]["id"])
+				[OK, response.to_json]
+			end
+		end
+	end
+	
+	post '/volumes/force_detach' do
+		block_storage = get_block_storage_interface(params[:cred_id])
+		if(block_storage.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil? || json_body["volume"].nil?)
+				[BAD_REQUEST]
+			else
+				response = block_storage.detach_volume(json_body["volume"]["id"], {"Force"=>true})
+				[OK, response.to_json]
+			end
+		end
+	end
+	
 	#
 	# Snapshots
 	#
