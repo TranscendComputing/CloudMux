@@ -327,11 +327,11 @@ class AwsComputeApp < ResourceApiBase
 		else
 			json_body = body_to_json(request)
 			if(json_body.nil?)
-				[BAD_REQUEST]
+				response = compute.addresses.create
 			else
 				response = compute.addresses.create(json_body["address"])
-				[OK, response.to_json]
 			end
+			[OK, response.to_json]
 		end
 	end
 	
