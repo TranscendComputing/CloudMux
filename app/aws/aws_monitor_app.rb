@@ -51,6 +51,30 @@ class AwsMonitorApp < ResourceApiBase
 	end
 	
 	#
+	# Metrics
+	#
+	get '/metrics/describe' do
+		monitor = get_monitor_interface(params[:cred_id])
+		if(monitor.nil?)
+			[BAD_REQUEST]
+		else
+			filters = params[:filters]
+			if(filters["Dimensions"].is_a?String)
+				filters["Dimensions"] = [{"Name"=>filters["Dimensions"]}]
+			end
+			if(filters.nil?)
+				raw_response = monitor.metrics
+			else
+				raw_response = monitor.metrics.all(filters)
+			end
+			#Cast to and from JSON to workaround circular reference bug
+			new_response = JSON.parse(raw_response.to_json)
+			response = new_response.sort_by {|s| s["dimensions"].first["Value"]}
+			[OK, response.to_json]
+		end
+	end
+	
+	#
 	# Metric Statistics
 	#
 	get '/metric_statistics/describe' do
