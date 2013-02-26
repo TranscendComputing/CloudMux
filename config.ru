@@ -24,6 +24,7 @@ require 'app/aws/aws_compute_app'
 require 'app/aws/aws_block_storage_app'
 require 'app/aws/aws_object_storage_app'
 require 'app/aws/aws_monitor_app'
+require 'app/aws/aws_notification_app'
 
 
 # By default, Ruby buffers its output to stdout. To take advantage of
@@ -151,4 +152,11 @@ end
 #
 map "/stackstudio/v1/cloud_management/aws/monitor" do
   run AwsMonitorApp
+end
+
+#
+# AWS Notification API
+#
+map "/stackstudio/v1/cloud_management/aws/notification" do
+  run AwsNotificationApp
 end
