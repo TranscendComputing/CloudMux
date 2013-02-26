@@ -44,7 +44,7 @@ class AwsMonitorApp < ResourceApiBase
 			if(json_body.nil? || json_body["alarm"].nil?)
 				[BAD_REQUEST]
 			else
-				response = monitor.alarms.get(json_body["alarm"]["name"]).destroy
+				response = monitor.alarms.get(json_body["alarm"]["id"]).destroy
 				[OK, response.to_json]
 			end
 		end
