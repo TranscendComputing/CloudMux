@@ -44,7 +44,7 @@ class AwsObjectStorageApp < ResourceApiBase
 			if(json_body.nil? || json_body["directory"].nil?)
 				[BAD_REQUEST]
 			else
-				response = object_storage.directories.get(json_body["directory"]["name"]).destroy
+				response = object_storage.directories.get(json_body["directory"]["key"]).destroy
 				[OK, response.to_json]
 			end
 		end
@@ -58,11 +58,11 @@ class AwsObjectStorageApp < ResourceApiBase
 		if(object_storage.nil?)
 			[BAD_REQUEST]
 		else
-			json_body = body_to_json(request)
-			if(json_body.nil? || json_body["directory"].nil?)
+			directory = params[:directory]
+			if(directory.nil?)
 				[BAD_REQUEST]
 			else
-				response = object_storage.directories.get(json_body["directory"]["name"]).files
+				response = object_storage.directories.get(directory).files
 				[OK, response.to_json]
 			end
 		end
@@ -73,12 +73,14 @@ class AwsObjectStorageApp < ResourceApiBase
 		if(object_storage.nil?)
 			[BAD_REQUEST]
 		else
-			json_body = body_to_json(request)
-			if(json_body.nil? || json_body["file"].nil?)
+			file = params[:file]
+			directory = params[:directory]
+			if(file.nil? || directory.nil?)
 				[BAD_REQUEST]
 			else
-				response = object_storage.get_object(json_body["file"]["directory_name"], json_body["file"]["name"]).body
-				[OK, response.to_json]
+				response = object_storage.get_object(directory, file).body
+				headers["Content-disposition"] = "attachment; filename=" + file
+				[OK, response]
 			end
 		end
 	end
@@ -88,11 +90,12 @@ class AwsObjectStorageApp < ResourceApiBase
 		if(object_storage.nil?)
 			[BAD_REQUEST]
 		else
-			json_body = body_to_json(request)
-			if(json_body.nil? || json_body["file"].nil?)
+			file = params[:file_upload]
+			directory = params[:directory]
+			if(file.nil? || directory.nil?)
 				[BAD_REQUEST]
 			else
-				response = object_storage.put_object(json_body["file"]["directory_name"], json_body["file"]["name"], json_body["file"]["body"])
+				response = object_storage.put_object(directory, file[:filename], file[:tempfile])
 				[OK, response.to_json]
 			end
 		end
@@ -103,11 +106,12 @@ class AwsObjectStorageApp < ResourceApiBase
 		if(object_storage.nil?)
 			[BAD_REQUEST]
 		else
-			json_body = body_to_json(request)
-			if(json_body.nil? || json_body["file"].nil?)
+			file = params[:file]
+			directory = params[:directory]
+			if(file.nil? || directory.nil?)
 				[BAD_REQUEST]
 			else
-				response = object_storage.delete_object(json_body["file"]["directory_name"], json_body["file"]["name"])
+				response = object_storage.delete_object(directory, file).body
 				[OK, response.to_json]
 			end
 		end
