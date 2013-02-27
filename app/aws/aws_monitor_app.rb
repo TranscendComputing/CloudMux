@@ -82,11 +82,20 @@ class AwsMonitorApp < ResourceApiBase
 		if(monitor.nil?)
 			[BAD_REQUEST]
 		else
-			conditions = params[:conditions]
-			if(conditions.nil?)
+			if(	params[:time_range].nil? || params[:namespace].nil? || params[:metric_name].nil? || params[:period].nil? ||
+				params[:statistic].nil? || params[:dimension_name].nil? || params[:dimension_value].nil?)
 				[BAD_REQUEST]
 			else
-				response = monitor.metric_statistics.all(conditions)
+				options = {
+					"Period"=>params[:period].to_i,
+					"Statistics"=>params[:statistic],
+					"Namespace"=>params[:namespace],
+					"Dimensions"=>[{"Name"=>params[:dimension_name], "Value"=>params[:dimension_value]}],
+					"MetricName"=>params[:metric_name],
+					"StartTime"=>DateTime.now - params[:time_range].to_i.seconds,
+					"EndTime"=>DateTime.now
+				}
+				response = monitor.get_metric_statistics(options).body['GetMetricStatisticsResult']['Datapoints']
 				[OK, response.to_json]
 			end
 		end
