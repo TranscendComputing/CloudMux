@@ -29,8 +29,12 @@ class AwsComputeApp < ResourceApiBase
 			if(json_body.nil?)
 				[BAD_REQUEST]
 			else
-				response = compute.servers.create(json_body["instance"])
-				[OK, response.to_json]
+				begin
+					response = compute.servers.create(json_body["instance"])
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -44,8 +48,12 @@ class AwsComputeApp < ResourceApiBase
 			if(json_body.nil? || json_body["instance"].nil?)
 				[BAD_REQUEST]
 			else
-				response = compute.servers.get(json_body["instance"]["id"]).start
-				[OK, response.to_json]
+				begin
+					response = compute.servers.get(json_body["instance"]["id"]).start
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -59,8 +67,12 @@ class AwsComputeApp < ResourceApiBase
 			if(json_body.nil? || json_body["instance"].nil?)
 				[BAD_REQUEST]
 			else
-				response = compute.servers.get(json_body["instance"]["id"]).stop
-				[OK, response.to_json]
+				begin
+					response = compute.servers.get(json_body["instance"]["id"]).stop
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -74,8 +86,12 @@ class AwsComputeApp < ResourceApiBase
 			if(json_body.nil? || json_body["instance"].nil?)
 				[BAD_REQUEST]
 			else
-				response = compute.servers.get(json_body["instance"]["id"]).reboot
-				[OK, response.to_json]
+				begin
+					response = compute.servers.get(json_body["instance"]["id"]).reboot
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -89,8 +105,12 @@ class AwsComputeApp < ResourceApiBase
 			if(json_body.nil? || json_body["instance"].nil?)
 				[BAD_REQUEST]
 			else
-				response = compute.servers.get(json_body["instance"]["id"]).destroy
-				[OK, response.to_json]
+				begin
+					response = compute.servers.get(json_body["instance"]["id"]).destroy
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -153,8 +173,12 @@ class AwsComputeApp < ResourceApiBase
 			if(json_body.nil?)
 				[BAD_REQUEST]
 			else
-				response = compute.security_groups.create(json_body["security_group"])
-				[OK, response.to_json]
+				begin
+					response = compute.security_groups.create(json_body["security_group"])
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -168,8 +192,12 @@ class AwsComputeApp < ResourceApiBase
 			if(json_body.nil? || json_body["security_group"].nil?)
 				[BAD_REQUEST]
 			else
-				response = compute.security_groups.get(json_body["security_group"]["name"]).destroy
-				[OK, response.to_json]
+				begin
+					response = compute.security_groups.get(json_body["security_group"]["name"]).destroy
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -201,9 +229,13 @@ class AwsComputeApp < ResourceApiBase
 			if(params[:name].nil?)
 				[BAD_REQUEST]
 			else
-				response = compute.key_pairs.create({"name"=>params[:name]})
-				headers["Content-disposition"] = "attachment; filename=" + response.name + ".pem"
-				[OK, response.private_key]
+				begin
+					response = compute.key_pairs.create({"name"=>params[:name]})
+					headers["Content-disposition"] = "attachment; filename=" + response.name + ".pem"
+					[OK, response.private_key]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -217,8 +249,12 @@ class AwsComputeApp < ResourceApiBase
 			if(json_body.nil? || json_body["key_pair"].nil?)
 				[BAD_REQUEST]
 			else
-				response = compute.key_pairs.get(json_body["key_pair"]["name"]).destroy
-				[OK, response.to_json]
+				begin
+					response = compute.key_pairs.get(json_body["key_pair"]["name"]).destroy
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -250,8 +286,12 @@ class AwsComputeApp < ResourceApiBase
 			if(json_body.nil?)
 				[BAD_REQUEST]
 			else
-				response = compute.spot_requests.create(json_body["spot_request"])
-				[OK, response.to_json]
+				begin
+					response = compute.spot_requests.create(json_body["spot_request"])
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -265,8 +305,12 @@ class AwsComputeApp < ResourceApiBase
 			if(json_body.nil? || json_body["spot_request"].nil?)
 				[BAD_REQUEST]
 			else
-				response = compute.spot_requests.get(json_body["spot_request"]["id"]).destroy
-				[OK, response.to_json]
+				begin
+					response = compute.spot_requests.get(json_body["spot_request"]["id"]).destroy
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -329,7 +373,11 @@ class AwsComputeApp < ResourceApiBase
 			if(json_body.nil?)
 				response = compute.addresses.create
 			else
-				response = compute.addresses.create(json_body["address"])
+				begin
+					response = compute.addresses.create(json_body["address"])
+				rescue => error
+					handle_error(error)
+				end
 			end
 			[OK, response.to_json]
 		end
@@ -344,8 +392,12 @@ class AwsComputeApp < ResourceApiBase
 			if(json_body.nil? || json_body["address"].nil?)
 				[BAD_REQUEST]
 			else
-				response = compute.addresses.get(json_body["address"]["public_ip"]).destroy
-				[OK, response.to_json]
+				begin
+					response = compute.addresses.get(json_body["address"]["public_ip"]).destroy
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -359,8 +411,12 @@ class AwsComputeApp < ResourceApiBase
 			if(json_body.nil? || json_body["address"].nil?)
 				[BAD_REQUEST]
 			else
-				response = compute.associate_address(json_body["address"]["server_id"], json_body["address"]["public_ip"])
-				[OK, response.to_json]
+				begin
+					response = compute.associate_address(json_body["address"]["server_id"], json_body["address"]["public_ip"])
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -376,10 +432,10 @@ class AwsComputeApp < ResourceApiBase
 			else
 				begin
 					response = compute.disassociate_address(json_body["address"]["public_ip"])
-				rescue
-					response = {}
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
 				end
-				[OK, response.to_json]
 			end
 		end
 	end
@@ -411,8 +467,12 @@ class AwsComputeApp < ResourceApiBase
 			if(json_body.nil?)
 				[BAD_REQUEST]
 			else
-				response = compute.addresses.create(json_body["reserved_instance"])
-				[OK, response.to_json]
+				begin
+					response = compute.addresses.create(json_body["reserved_instance"])
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -444,8 +504,12 @@ class AwsComputeApp < ResourceApiBase
 			if(json_body.nil?)
 				[BAD_REQUEST]
 			else
-				response = compute.vpcs.create(json_body["vpc"])
-				[OK, response.to_json]
+				begin
+					response = compute.vpcs.create(json_body["vpc"])
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -477,8 +541,12 @@ class AwsComputeApp < ResourceApiBase
 			if(json_body.nil?)
 				[BAD_REQUEST]
 			else
-				response = compute.dhcp_options.create(json_body["dhcp"])
-				[OK, response.to_json]
+				begin
+					response = compute.dhcp_options.create(json_body["dhcp"])
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -510,8 +578,12 @@ class AwsComputeApp < ResourceApiBase
 			if(json_body.nil?)
 				[BAD_REQUEST]
 			else
-				response = compute.internet_gateways.create(json_body["internet_gateway"])
-				[OK, response.to_json]
+				begin
+					response = compute.internet_gateways.create(json_body["internet_gateway"])
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -543,8 +615,12 @@ class AwsComputeApp < ResourceApiBase
 			if(json_body.nil?)
 				[BAD_REQUEST]
 			else
-				response = compute.subnets.create(json_body["subnet"])
-				[OK, response.to_json]
+				begin
+					response = compute.subnets.create(json_body["subnet"])
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end

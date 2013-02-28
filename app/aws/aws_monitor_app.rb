@@ -58,19 +58,23 @@ class AwsMonitorApp < ResourceApiBase
 		if(monitor.nil?)
 			[BAD_REQUEST]
 		else
-			filters = params[:filters]
-			if(filters["Dimensions"].is_a?String)
-				filters["Dimensions"] = [{"Name"=>filters["Dimensions"]}]
+			begin
+				filters = params[:filters]
+				if(filters["Dimensions"].is_a?String)
+					filters["Dimensions"] = [{"Name"=>filters["Dimensions"]}]
+				end
+				if(filters.nil?)
+					raw_response = monitor.metrics
+				else
+					raw_response = monitor.metrics.all(filters)
+				end
+				#Cast to and from JSON to workaround circular reference bug
+				new_response = JSON.parse(raw_response.to_json)
+				response = new_response.sort_by {|s| s["dimensions"].first["Value"]}
+				[OK, response.to_json]
+			rescue => error
+				handle_error(error)
 			end
-			if(filters.nil?)
-				raw_response = monitor.metrics
-			else
-				raw_response = monitor.metrics.all(filters)
-			end
-			#Cast to and from JSON to workaround circular reference bug
-			new_response = JSON.parse(raw_response.to_json)
-			response = new_response.sort_by {|s| s["dimensions"].first["Value"]}
-			[OK, response.to_json]
 		end
 	end
 	
@@ -86,17 +90,21 @@ class AwsMonitorApp < ResourceApiBase
 				params[:statistic].nil? || params[:dimension_name].nil? || params[:dimension_value].nil?)
 				[BAD_REQUEST]
 			else
-				options = {
-					"Period"=>params[:period].to_i,
-					"Statistics"=>params[:statistic],
-					"Namespace"=>params[:namespace],
-					"Dimensions"=>[{"Name"=>params[:dimension_name], "Value"=>params[:dimension_value]}],
-					"MetricName"=>params[:metric_name],
-					"StartTime"=>DateTime.now - params[:time_range].to_i.seconds,
-					"EndTime"=>DateTime.now
-				}
-				response = monitor.get_metric_statistics(options).body['GetMetricStatisticsResult']['Datapoints']
-				[OK, response.to_json]
+				begin
+					options = {
+						"Period"=>params[:period].to_i,
+						"Statistics"=>params[:statistic],
+						"Namespace"=>params[:namespace],
+						"Dimensions"=>[{"Name"=>params[:dimension_name], "Value"=>params[:dimension_value]}],
+						"MetricName"=>params[:metric_name],
+						"StartTime"=>DateTime.now - params[:time_range].to_i.seconds,
+						"EndTime"=>DateTime.now
+					}
+					response = monitor.get_metric_statistics(options).body['GetMetricStatisticsResult']['Datapoints']
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
