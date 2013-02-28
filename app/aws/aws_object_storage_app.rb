@@ -29,8 +29,12 @@ class AwsObjectStorageApp < ResourceApiBase
 			if(json_body.nil?)
 				[BAD_REQUEST]
 			else
-				response = object_storage.directories.create(json_body["directory"])
-				[OK, response.to_json]
+				begin
+					response = object_storage.directories.create(json_body["directory"])
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -44,8 +48,12 @@ class AwsObjectStorageApp < ResourceApiBase
 			if(json_body.nil? || json_body["directory"].nil?)
 				[BAD_REQUEST]
 			else
-				response = object_storage.directories.get(json_body["directory"]["key"]).destroy
-				[OK, response.to_json]
+				begin
+					response = object_storage.directories.get(json_body["directory"]["key"]).destroy
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -62,8 +70,12 @@ class AwsObjectStorageApp < ResourceApiBase
 			if(directory.nil?)
 				[BAD_REQUEST]
 			else
-				response = object_storage.directories.get(directory).files
-				[OK, response.to_json]
+				begin
+					response = object_storage.directories.get(directory).files
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -78,9 +90,13 @@ class AwsObjectStorageApp < ResourceApiBase
 			if(file.nil? || directory.nil?)
 				[BAD_REQUEST]
 			else
-				response = object_storage.get_object(directory, file).body
-				headers["Content-disposition"] = "attachment; filename=" + file
-				[OK, response]
+				begin
+					response = object_storage.get_object(directory, file).body
+					headers["Content-disposition"] = "attachment; filename=" + file
+					[OK, response]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -95,8 +111,12 @@ class AwsObjectStorageApp < ResourceApiBase
 			if(file.nil? || directory.nil?)
 				[BAD_REQUEST]
 			else
-				response = object_storage.put_object(directory, file[:filename], file[:tempfile])
-				[OK, response.to_json]
+				begin
+					response = object_storage.put_object(directory, file[:filename], file[:tempfile])
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -111,8 +131,12 @@ class AwsObjectStorageApp < ResourceApiBase
 			if(file.nil? || directory.nil?)
 				[BAD_REQUEST]
 			else
-				response = object_storage.delete_object(directory, file).body
-				[OK, response.to_json]
+				begin
+					response = object_storage.delete_object(directory, file).body
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
