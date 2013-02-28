@@ -32,13 +32,13 @@ gem 'redcarpet', '~> 2.1.0'
 
 # Cloud Management
 gem 'fog', '~> 1.8', :require => 'fog'
+gem 'ruby-debug19', :require => 'ruby-debug'
 
 # Flex support hack - allow _method to be passed as a URL parameter for PUT and DELETE
 gem 'rack-methodoverride-with-params', '~>1.0.0'
 
 # Test-only
 group :development, :test do
-  gem 'ruby-debug19', :require => 'ruby-debug'
   gem 'rspec', '~> 2.4'
   gem 'heroku'
   gem 'foreman'
