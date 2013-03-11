@@ -505,7 +505,50 @@ class AwsComputeApp < ResourceApiBase
 				[BAD_REQUEST]
 			else
 				begin
-					response = compute.vpcs.create(json_body["vpc"])
+					if(json_body["vpc"]["InstanceTenancy"].nil?)
+						options = {}
+					else
+						options = {"InstanceTenancy"=>json_body["vpc"]["InstanceTenancy"]}
+					end
+					response = compute.create_vpc(json_body["vpc"]["CidrBlock"], options)
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
+			end
+		end
+	end
+
+	delete '/vpcs/delete' do
+		compute = get_compute_interface(params[:cred_id])
+		if(compute.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil? || json_body["vpc"].nil?)
+				[BAD_REQUEST]
+			else
+				begin
+					response = compute.vpcs.get(json_body["vpc"]["id"]).destroy
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
+			end
+		end
+	end
+
+	post '/vpcs/associate_dhcp_options' do
+		compute = get_compute_interface(params[:cred_id])
+		if(compute.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil? || json_body["vpc"].nil?)
+				[BAD_REQUEST]
+			else
+				begin
+					response = compute.associate_dhcp_options(json_body["vpc"]["dhcp_options_id"], json_body["vpc"]["id"])
 					[OK, response.to_json]
 				rescue => error
 					handle_error(error)
