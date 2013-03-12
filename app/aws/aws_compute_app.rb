@@ -585,7 +585,26 @@ class AwsComputeApp < ResourceApiBase
 				[BAD_REQUEST]
 			else
 				begin
-					response = compute.dhcp_options.create(json_body["dhcp"])
+					response = compute.dhcp_options.create(json_body["dhcp_option"])
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
+			end
+		end
+	end
+
+	delete '/dhcp_options/delete' do
+		compute = get_compute_interface(params[:cred_id])
+		if(compute.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil? || json_body["dhcp_option"].nil?)
+				[BAD_REQUEST]
+			else
+				begin
+					response = compute.dhcp_options.get(json_body["dhcp_option"]["id"]).destroy
 					[OK, response.to_json]
 				rescue => error
 					handle_error(error)
