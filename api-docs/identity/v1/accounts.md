@@ -193,8 +193,8 @@ Retrieves a list of all registered countries available. This API currently does 
 None
 
 
-## POST /identity/v1/accounts/:id/:cloud\_id/cloud\_accounts
-Register a new cloud account to an existing user account
+## POST /identity/v1/accounts/:id/:cloud\_account\_id/cloud\_credentials
+Register a cloud credentials to an existing user account
 
 ### Response Status Codes:
 
@@ -203,13 +203,13 @@ Register a new cloud account to an existing user account
 
 ### Example Request:
 
-    POST /identity/v1/accounts/4f32af1ebe8a7c6ef0000001/4f7b5b48be8a7c5521000001/cloud_accounts HTTP/1.1
+    POST /identity/v1/accounts/4f32af1ebe8a7c6ef0000001/4f7b5b48be8a7c5521000001/cloud_credentials HTTP/1.1
     Connection: close
     Host: api.stackplace.com
     Content-Length: 70
     Content-Type: application/x-www-form-urlencoded
 
-    {"cloud_account":{"name":"Cloud Acct 1","description","Test cloud account","access_key":"my access","secret_key":"my secret"}}
+    {"cloud_credential":{"name":"Cloud Cred 1","description","Test cloud credential","access_key":"my access","secret_key":"my secret"}}
 
 ### Response:
 
@@ -221,7 +221,7 @@ Register a new cloud account to an existing user account
     Connection: close
     Server: thin 1.3.1 codename Triple Espresso
 
-    {"account":{"id":"4f32af1ebe8a7c6ef0000001","login":"tester","email":"info@example.com","subscriptions":[],"cloud_accounts":[{"cloud_account":{"id":"4f7f4ae2be8a7c052a000001","cloud_id":"4f7b5b48be8a7c5521000001","cloud_name":"Test Cloud","name":"Cloud Acct 1","access_key":"my access","secret_key":"my secret","key_pairs":[]}}]}}
+    {"account":{"id":"4f32af1ebe8a7c6ef0000001","login":"tester","email":"info@example.com","subscriptions":[],"cloud_credentials":[{"cloud_credential":{"id":"4f7f4ae2be8a7c052a000001","cloud_id":"4f7b5b48be8a7c5521000001","cloud_name":"Test Cloud","name":"Cloud Cred 1","access_key":"my access","secret_key":"my secret","key_pairs":[]}}]}}
 
 ### Error Response:
 
@@ -235,23 +235,23 @@ Register a new cloud account to an existing user account
 
     {"error":{"message":"Name can't be blank","validation_errors":{"name":["can't be blank"]}}}
 
-## PUT /identity/v1/accounts/:id/cloud\_accounts/:cloud\_account\_id
-Update an existing cloud account for an existing user account
+## PUT /identity/v1/accounts/:id/cloud\_credentials/:cloud\_credential\_id
+Update an existing cloud credential for an existing user account
 
 ### Response Status Codes:
 
 * 200 - Updated successfully
-* 404 - Account or Cloud Account not found
+* 404 - Account or Cloud Credential not found
 
 ### Example Request:
 
-    PUT /identity/v1/accounts/4f32af1ebe8a7c6ef0000001/cloud_accounts/4f7f4ae2be8a7c052a000001 HTTP/1.1
+    PUT /identity/v1/accounts/4f32af1ebe8a7c6ef0000001/cloud_credentials/4f7f4ae2be8a7c052a000001 HTTP/1.1
     Connection: close
     Host: api.stackplace.com
     Content-Length: 70
     Content-Type: application/x-www-form-urlencoded
 
-    {"cloud_account":{"name":"Cloud Acct 1", "description":"Test cloud account","access_key":"my access","secret_key":"my secret"}}
+    {"cloud_credential":{"name":"Cloud Cred 1", "description":"Test cloud credential","access_key":"my access","secret_key":"my secret"}}
 
 ### Response:
 
@@ -263,24 +263,24 @@ Update an existing cloud account for an existing user account
     Connection: close
     Server: thin 1.3.1 codename Triple Espresso
 
-    {"account":{"id":"4f32af1ebe8a7c6ef0000001","login":"tester","email":"info@example.com","subscriptions":[],"cloud_accounts":[{"cloud_account":{"id":"4f7f4ae2be8a7c052a000001","cloud_id":"4f7b5b48be8a7c5521000001","cloud_name":"Test Cloud","name":"Cloud Acct 1","access_key":"my access","secret_key":"my secret","key_pairs":[]}}]}}
+    {"account":{"id":"4f32af1ebe8a7c6ef0000001","login":"tester","email":"info@example.com","subscriptions":[],"cloud_credentials":[{"cloud_credential":{"id":"4f7f4ae2be8a7c052a000001","cloud_id":"4f7b5b48be8a7c5521000001","cloud_name":"Test Cloud","name":"Cloud Cred 1","access_key":"my access","secret_key":"my secret","key_pairs":[]}}]}}
     
 
 ### Error Response:
 None
 
 
-## DELETE /identity/v1/accounts/:id/cloud\_accounts/:cloud\_account\_id
-Remove an existing cloud account from an existing user account
+## DELETE /identity/v1/accounts/:id/cloud\_credentials/:cloud\_credential\_id
+Remove an existing cloud credential from an existing user account
 
 ### Response Status Codes:
 
 * 200 - Deleted successfully
-* 404 - Account or Cloud Account not found
+* 404 - Account or Cloud Credential not found
 
 ### Example Request:
 
-    DELETE /identity/v1/accounts/4f32af1ebe8a7c6ef0000001/cloud_accounts/4f7f4ae2be8a7c052a000001 HTTP/1.1
+    DELETE /identity/v1/accounts/4f32af1ebe8a7c6ef0000001/cloud_credentials/4f7f4ae2be8a7c052a000001 HTTP/1.1
     Connection: close
     Host: api.stackplace.com
     Content-Length: 70
@@ -302,8 +302,8 @@ Remove an existing cloud account from an existing user account
 None
 
 
-## POST /identity/v1/accounts/:id/:cloud\_account\_id/key\_pairs
-Register a new key pair for a cloud account
+## POST /identity/v1/accounts/:id/:cloud\_credential\_id/key\_pairs
+Register a new key pair for a cloud credential
 
 ### Response Status Codes:
 
@@ -330,7 +330,7 @@ Register a new key pair for a cloud account
     Connection: close
     Server: thin 1.3.1 codename Triple Espresso
 
-    {"account":{"id":"4f32af1ebe8a7c6ef0000001","login":"tester","email":"info@example.com","subscriptions":[],"cloud_accounts":[{"cloud_account":{"id":"4f7f4ae2be8a7c052a000001","cloud_id":"4f7b5b48be8a7c5521000001","cloud_name":"Test Cloud","name":"Cloud Acct 1","access_key":"my access","secret_key":"my secret","key_pairs":[{"key_pair":{"id":"4f7f4c14be8a7c052a000002","name":"Key Pair 1","fingerprint":"my fingerprint","material":"my material"}}]}}]}}
+    {"account":{"id":"4f32af1ebe8a7c6ef0000001","login":"tester","email":"info@example.com","subscriptions":[],"cloud_credentials":[{"cloud_credential":{"id":"4f7f4ae2be8a7c052a000001","cloud_id":"4f7b5b48be8a7c5521000001","cloud_name":"Test Cloud","name":"Cloud Cred 1","access_key":"my access","secret_key":"my secret","key_pairs":[{"key_pair":{"id":"4f7f4c14be8a7c052a000002","name":"Key Pair 1","fingerprint":"my fingerprint","material":"my material"}}]}}]}}
 
 ### Error Response:
 
@@ -344,17 +344,17 @@ Register a new key pair for a cloud account
 
     {"error":{"message":"Name can't be blank","validation_errors":{"name":["can't be blank"]}}}
 
-## DELETE /identity/v1/accounts/:id/:cloud\_account\_id/:key\_pair\_id
-Remove an existing key pair from a user account's cloud account
+## DELETE /identity/v1/accounts/:id/:cloud\_credential\_id/:key\_pair\_id
+Remove an existing key pair from a user account's cloud credential
 
 ### Response Status Codes:
 
 * 200 - Deleted successfully
-* 404 - Account, Cloud Account, or Key Pair not found
+* 404 - Account, Cloud Credential, or Key Pair not found
 
 ### Example Request:
 
-    DELETE /identity/v1/accounts/4f32af1ebe8a7c6ef0000001/cloud_accounts/4f7f4ae2be8a7c052a000001/key_pairs/4f7f4c14be8a7c052a000002 HTTP/1.1
+    DELETE /identity/v1/accounts/4f32af1ebe8a7c6ef0000001/cloud_credentials/4f7f4ae2be8a7c052a000001/key_pairs/4f7f4c14be8a7c052a000002 HTTP/1.1
     Connection: close
     Host: api.stackplace.com
     Content-Length: 70
@@ -370,13 +370,13 @@ Remove an existing key pair from a user account's cloud account
     Connection: close
     Server: thin 1.3.1 codename Triple Espresso
 
-    {"account":{"id":"4f32af1ebe8a7c6ef0000001","login":"tester","email":"info@example.com","subscriptions":[],"cloud_accounts":[{"cloud_account":{"id":"4f7f4ae2be8a7c052a000001","cloud_id":"4f7b5b48be8a7c5521000001","cloud_name":"Test Cloud","name":"Cloud Acct 1","access_key":"my access","secret_key":"my secret","key_pairs":[]}}]}}
+    {"account":{"id":"4f32af1ebe8a7c6ef0000001","login":"tester","email":"info@example.com","subscriptions":[],"cloud_credentials":[{"cloud_credential":{"id":"4f7f4ae2be8a7c052a000001","cloud_id":"4f7b5b48be8a7c5521000001","cloud_name":"Test Cloud","name":"Cloud Cred 1","access_key":"my access","secret_key":"my secret","key_pairs":[]}}]}}
 
 ### Error Response:
 None
 
-## POST /identity/v1/accounts/:id/:cloud\_account\_id/audit\_logs
-Log a cloud api request for a cloud account
+## POST /identity/v1/accounts/:id/:cloud\_credential\_id/audit\_logs
+Log a cloud api request for a cloud credential
 
 ### Response Status Codes:
 
@@ -402,7 +402,7 @@ Log a cloud api request for a cloud account
     Connection: close
     Server: thin 1.3.1 codename Triple Espresso
 
-    {"account":{"id":"4f32af1ebe8a7c6ef0000001","login":"tester","email":"info@example.com","subscriptions":[],"cloud_accounts":[{"cloud_account":{"id":"4f7f4ae2be8a7c052a000001","cloud_id":"4f7b5b48be8a7c5521000001","cloud_name":"Test Cloud","name":"Cloud Acct 1","access_key":"my access","secret_key":"my secret","key_pairs":[{"key_pair":{"id":"4f7f4c14be8a7c052a000002","name":"Key Pair 1","fingerprint":"my fingerprint","material":"my material"}}],"audit_logs":[{"audit_log":{"id":"4f6r4c14bf6a7c134a000002","service_type":"EC2","action":"launch_instances","parameters":{"instance_type":"m1.small","image_id":"ami-00000000", "key_name":"mykey"},"response_status_code":"200","errors":{},"date":"2012-06-14 14:00:00 -500"}}]}}]}}
+    {"account":{"id":"4f32af1ebe8a7c6ef0000001","login":"tester","email":"info@example.com","subscriptions":[],"cloud_credentials":[{"cloud_credential":{"id":"4f7f4ae2be8a7c052a000001","cloud_id":"4f7b5b48be8a7c5521000001","cloud_name":"Test Cloud","name":"Cloud Cred 1","access_key":"my access","secret_key":"my secret","key_pairs":[{"key_pair":{"id":"4f7f4c14be8a7c052a000002","name":"Key Pair 1","fingerprint":"my fingerprint","material":"my material"}}],"audit_logs":[{"audit_log":{"id":"4f6r4c14bf6a7c134a000002","service_type":"EC2","action":"launch_instances","parameters":{"instance_type":"m1.small","image_id":"ami-00000000", "key_name":"mykey"},"response_status_code":"200","errors":{},"date":"2012-06-14 14:00:00 -500"}}]}}]}}
 
 ### Error Response:
 None
@@ -426,7 +426,7 @@ Register a permission for an account
 
 ### Response:
 
-    {"account":{"id":"4f32af1ebe8a7c6ef0000001","login":"tester","email":"info@example.com","subscriptions":[],"cloud_accounts":[{"cloud_account":{"id":"4f7f4ae2be8a7c052a000001","cloud_id":"4f7b5b48be8a7c5521000001","cloud_name":"Test Cloud","name":"Cloud Acct 1","access_key":"my access","secret_key":"my secret","key_pairs":[{"key_pair":{"id":"4f7f4c14be8a7c052a000002","name":"Key Pair 1","fingerprint":"my fingerprint","material":"my material"}}],"audit_logs":[{"audit_log":{"id":"4f6r4c14bf6a7c134a000002","service_type":"EC2","action":"launch_instances","parameters":{"instance_type":"m1.small","image_id":"ami-00000000", "key_name":"mykey"},"response_status_code":"200","errors":{},"date":"2012-06-14 14:00:00 -500"}}]}}]}}
+    {"account":{"id":"4f32af1ebe8a7c6ef0000001","login":"tester","email":"info@example.com","subscriptions":[],"cloud_credentials":[{"cloud_credential":{"id":"4f7f4ae2be8a7c052a000001","cloud_id":"4f7b5b48be8a7c5521000001","cloud_name":"Test Cloud","name":"Cloud Cred 1","access_key":"my access","secret_key":"my secret","key_pairs":[{"key_pair":{"id":"4f7f4c14be8a7c052a000002","name":"Key Pair 1","fingerprint":"my fingerprint","material":"my material"}}],"audit_logs":[{"audit_log":{"id":"4f6r4c14bf6a7c134a000002","service_type":"EC2","action":"launch_instances","parameters":{"instance_type":"m1.small","image_id":"ami-00000000", "key_name":"mykey"},"response_status_code":"200","errors":{},"date":"2012-06-14 14:00:00 -500"}}]}}]}}
 
 ## DELETE /identity/v1/accounts/:id/permissions/:permission\_id
 Register a permission for an account
@@ -445,11 +445,11 @@ Register a permission for an account
 
 ### Response:
 
-    {"account":{"id":"4f32af1ebe8a7c6ef0000001","login":"tester","email":"info@example.com","subscriptions":[],"cloud_accounts":[{"cloud_account":{"id":"4f7f4ae2be8a7c052a000001","cloud_id":"4f7b5b48be8a7c5521000001","cloud_name":"Test Cloud","name":"Cloud Acct 1","access_key":"my access","secret_key":"my secret","key_pairs":[{"key_pair":{"id":"4f7f4c14be8a7c052a000002","name":"Key Pair 1","fingerprint":"my fingerprint","material":"my material"}}],"audit_logs":[{"audit_log":{"id":"4f6r4c14bf6a7c134a000002","service_type":"EC2","action":"launch_instances","parameters":{"instance_type":"m1.small","image_id":"ami-00000000", "key_name":"mykey"},"response_status_code":"200","errors":{},"date":"2012-06-14 14:00:00 -500"}}]}}]}}
+    {"account":{"id":"4f32af1ebe8a7c6ef0000001","login":"tester","email":"info@example.com","subscriptions":[],"cloud_credentials":[{"cloud_credential":{"id":"4f7f4ae2be8a7c052a000001","cloud_id":"4f7b5b48be8a7c5521000001","cloud_name":"Test Cloud","name":"Cloud Cred 1","access_key":"my access","secret_key":"my secret","key_pairs":[{"key_pair":{"id":"4f7f4c14be8a7c052a000002","name":"Key Pair 1","fingerprint":"my fingerprint","material":"my material"}}],"audit_logs":[{"audit_log":{"id":"4f6r4c14bf6a7c134a000002","service_type":"EC2","action":"launch_instances","parameters":{"instance_type":"m1.small","image_id":"ami-00000000", "key_name":"mykey"},"response_status_code":"200","errors":{},"date":"2012-06-14 14:00:00 -500"}}]}}]}}
 
 	
-## GET /identity/v1/accounts/cloud_accounts/:id.json
-Retrieves a cloud account that exists within a user's account. This is strictly for provisioning purposes, as cloud accounts do not exist outside of an account.
+## GET /identity/v1/accounts/cloud_credentials/:id.json
+Retrieves a cloud credential that exists within a user's account. This is strictly for provisioning purposes, as cloud credentials do not exist outside of an account.
 
 ### Response Status Codes:
 
@@ -458,7 +458,7 @@ Retrieves a cloud account that exists within a user's account. This is strictly 
 
 ### Example Request:
 
-    GET /identity/v1/accounts/cloud_accounts/4f7f4ae2be8a7c052a000001.json HTTP/1.1
+    GET /identity/v1/accounts/cloud_credentials/4f7f4ae2be8a7c052a000001.json HTTP/1.1
     Connection: close
     Host: api.stackplace.com
 
@@ -472,7 +472,7 @@ Retrieves a cloud account that exists within a user's account. This is strictly 
     Connection: close
     Server: thin 1.3.1 codename Triple Espresso
 
-     {"cloud_account":{"id":"4f7f4ae2be8a7c052a000001","cloud_id":"4f7b5b48be8a7c5521000001","cloud_name":"James Test Cloud","name":"James Cloud Acct 1","access_key":"my access","secret_key":"my secret","key_pairs":[{"key_pair":{"id":"4f7f4c14be8a7c052a000002","name":"Key Pair 1","fingerprint":"my fingerprint","material":"my material"}}]}}
+     {"cloud_credential":{"id":"4f7f4ae2be8a7c052a000001","cloud_id":"4f7b5b48be8a7c5521000001","cloud_name":"James Test Cloud","name":"James Cloud Cred 1","access_key":"my access","secret_key":"my secret","key_pairs":[{"key_pair":{"id":"4f7f4c14be8a7c052a000002","name":"Key Pair 1","fingerprint":"my fingerprint","material":"my material"}}]}}
 
 ### Error Response:
 None

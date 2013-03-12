@@ -4,7 +4,6 @@ describe UpdateCloudRepresenter do
 
   before :each do
     @cloud = FactoryGirl.build(:cloud)
-    @cloud.cloud_services = FactoryGirl.build_list(:cloud_service, 2)
     @cloud.set_permalink # force it to be calc'ed, without saving it
   end
 
@@ -12,7 +11,7 @@ describe UpdateCloudRepresenter do
     it "should export to json" do
       @cloud.extend(UpdateCloudRepresenter)
       result = @cloud.to_json
-      result.should eq("{\"cloud\":{\"name\":\"#{@cloud.name}\",\"permalink\":\"#{@cloud.permalink}\",\"public\":true,\"topstack_enabled\":#{@cloud.topstack_enabled},\"topstack_id\":\"#{@cloud.topstack_id}\"}}")
+      result.should eq("{\"cloud\":{\"name\":\"#{@cloud.name}\",\"permalink\":\"#{@cloud.permalink}\",\"public\":true}}")
     end
   end
 

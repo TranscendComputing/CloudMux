@@ -25,7 +25,7 @@ class Account
   belongs_to :country
 
   # StackStudio
-  embeds_many :cloud_accounts
+  embeds_many :cloud_credentials
   embeds_many :permissions
 
   # Stats for reporting
@@ -34,7 +34,7 @@ class Account
 
   # indexes
   index :login, unique: true
-  index "cloud_accounts._id"
+  index "cloud_credentials._id"
 
   # Validation Rules
   validates_presence_of :login
@@ -49,16 +49,16 @@ class Account
     return Account.find(:first, :conditions=>{ :login=>login}) || Account.find(:first, :conditions=>{ :email=>login})
   end
 
-  # finds the account that contains the cloud account and returns it
-  def self.find_cloud_account(cloud_account_id)
-    return nil if cloud_account_id.nil?
-    account = Account.where({"cloud_accounts._id"=>BSON::ObjectId.from_string(cloud_account_id.to_s)}).first
-    (account.nil? ? nil : account.cloud_account(cloud_account_id))
+  # finds the account that contains the cloud credentials and returns it
+  def self.find_cloud_credential(cloud_credential_id)
+    return nil if cloud_credential_id.nil?
+    account = Account.where({"cloud_credentials._id"=>BSON::ObjectId.from_string(cloud_credential_id.to_s)}).first
+    (account.nil? ? nil : account.cloud_credential(cloud_credential_id))
   end
 
   # filters the embedded cloud accounts by ID
-  def cloud_account(cloud_account_id)
-    self.cloud_accounts.select { |ca| ca.id.to_s == cloud_account_id.to_s }.first
+  def cloud_credential(cloud_credential_id)
+    self.cloud_credentials.select { |ca| ca.id.to_s == cloud_credential_id.to_s }.first
   end
 
   # sets the country for the account based on the country code (Representer support)
@@ -130,14 +130,14 @@ class Account
     end
   end
 
-  def add_cloud_account!(cloud_id, cloud_account)
-    cloud_account.cloud = Cloud.find(cloud_id)
-    self.cloud_accounts << cloud_account
+  def add_cloud_credential!(cloud_account_id, cloud_credential)
+    cloud_credential.cloud_account = CloudAccount.find(cloud_account_id)
+    self.cloud_credentials << cloud_credential
     self.save!
   end
 
-  def remove_cloud_account!(cloud_account_id)
-    self.cloud_accounts.select { |c| c.id.to_s == cloud_account_id.to_s }.each { |c| c.delete }
+  def remove_cloud_credential!(cloud_credential_id)
+    self.cloud_credentials.select { |c| c.id.to_s == cloud_credential_id.to_s }.each { |c| c.delete }
     self.save!
   end
   
@@ -151,34 +151,34 @@ class Account
 	self.save!
   end
 
-  def add_key_pair!(cloud_account_id, key_pair)
-    cloud_account = self.cloud_accounts.select{ |c| c.id.to_s == cloud_account_id.to_s }.first
-    if cloud_account
-      cloud_account.key_pairs << key_pair
+  def add_key_pair!(cloud_credential_id, key_pair)
+    cloud_credential = self.cloud_credentials.select{ |c| c.id.to_s == cloud_credential_id.to_s }.first
+    if cloud_credential
+      cloud_credential.key_pairs << key_pair
       self.save!
     end
   end
 
-  def remove_key_pair!(cloud_account_id, key_pair_id)
-    cloud_account = self.cloud_accounts.select{ |c| c.id.to_s == cloud_account_id.to_s }.first
-    if cloud_account
-      cloud_account.key_pairs.select { |k| k.id.to_s == key_pair_id.to_s }.each { |k| k.delete }
+  def remove_key_pair!(cloud_credential_id, key_pair_id)
+    cloud_credential = self.cloud_credentials.select{ |c| c.id.to_s == cloud_credential_id.to_s }.first
+    if cloud_credential
+      cloud_credential.key_pairs.select { |k| k.id.to_s == key_pair_id.to_s }.each { |k| k.delete }
       self.save!
     end
   end
 
-  def add_audit_log!(cloud_account_id, audit_log)
-    cloud_account = self.cloud_accounts.select{ |c| c.id.to_s == cloud_account_id.to_s }.first
-    if cloud_account
-      cloud_account.audit_logs << audit_log
+  def add_audit_log!(cloud_credential_id, audit_log)
+    cloud_credential = self.cloud_credentials.select{ |c| c.id.to_s == cloud_credential_id.to_s }.first
+    if cloud_credential
+      cloud_credential.audit_logs << audit_log
       self.save!
     end
   end
 
-  def add_cloud_resource!(cloud_account_id, cloud_resource)
-    cloud_account = self.cloud_accounts.select{ |c| c.id.to_s == cloud_account_id.to_s }.first
-    if cloud_account
-      cloud_account.cloud_resources << cloud_resource
+  def add_cloud_resource!(cloud_credential_id, cloud_resource)
+    cloud_credential = self.cloud_credentials.select{ |c| c.id.to_s == cloud_credential_id.to_s }.first
+    if cloud_credential
+      cloud_credential.cloud_resources << cloud_resource
       self.save!
     end
   end
@@ -254,7 +254,7 @@ class Account
     stats[:last_login_at] = self.last_login_at
     stats[:total_projects_owned] = Project.count(:conditions=>{ "members.account_id"=> self.id, "role"=>Member::OWNER})
     stats[:total_projects_member] = Project.count(:conditions=>{ "members.account_id"=> self.id, "role"=>Member::MEMBER})
-    stats[:total_cloud_accounts] = self.cloud_accounts.count
+    stats[:total_cloud_credentials] = self.cloud_credentials.count
     return stats
   end
 end

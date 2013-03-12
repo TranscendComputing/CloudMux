@@ -18,28 +18,28 @@ class IdentityApiApp < ApiBase
     new_account = Account.new.extend(UpdateAccountRepresenter)
     new_account.from_json(request.body.read)
     if new_account.valid?
-	  # Create organization if account does not belong to one
-	  if new_account.org_id.nil?
-		if new_account.company.nil?
-			new_account.company = "MyOrganization"
-		end
-		org = Org.new.extend(UpdateOrgRepresenter)
-		org.name = new_account.company
-		org.save!
-		Group.create!(:name => "Development", :description => "default development group", :org => org)
-		Group.create!(:name => "Test", :description => "default test group", :org => org)
-		Group.create!(:name => "Stage", :description => "default stage group", :org => org)
-		Group.create!(:name => "Production", :description => "default production group", :org => org)
-	  else
-		org_id = new_account.org_id
-		new_account.org_id = nil
-		org = Org.find(org_id)
-		if new_account.company.nil?
-			new_account.company = org.name
-		end
-	  end
-	  new_account.save!
-	  org.accounts << new_account
+  	  # Create organization if account does not belong to one
+  	  if new_account.org_id.nil?
+    		if new_account.company.nil?
+    			new_account.company = "MyOrganization"
+    		end
+    		org = Org.new.extend(UpdateOrgRepresenter)
+    		org.name = new_account.company
+    		org.save!
+    		Group.create!(:name => "Development", :description => "default development group", :org => org)
+    		Group.create!(:name => "Test", :description => "default test group", :org => org)
+    		Group.create!(:name => "Stage", :description => "default stage group", :org => org)
+    		Group.create!(:name => "Production", :description => "default production group", :org => org)
+  	  else
+    		org_id = new_account.org_id
+    		new_account.org_id = nil
+    		org = Org.find(org_id)
+    		if new_account.company.nil?
+    			new_account.company = org.name
+    		end
+	    end
+	    new_account.save!
+	    org.accounts << new_account
       # refresh without the Update representer, so that we don't serialize private data back
       account = Account.find(new_account.id).extend(AccountRepresenter)
       [CREATED, account.to_json]
@@ -93,93 +93,93 @@ class IdentityApiApp < ApiBase
 	  [OK]
   end
 
-  # Register a new cloud account to an existing user account
-  post '/:id/:cloud_id/cloud_accounts' do
+  # Register a new cloud credential to an existing user account
+  post '/:id/:cloud_credential_id/cloud_credentials' do
     update_account = Account.find(params[:id])
-    cloud_account = CloudAccount.new.extend(UpdateCloudAccountRepresenter)
-    cloud_account.from_json(request.body.read)
-    update_account.add_cloud_account!(params[:cloud_id], cloud_account)
+    cloud_credential = CloudCredential.new.extend(UpdateCloudCredentialRepresenter)
+    cloud_credential.from_json(request.body.read)
+    update_account.add_cloud_credential!(params[:cloud_id], cloud_credential)
     update_account.extend(AccountRepresenter)
     [CREATED, update_account.to_json]
   end
 
-  # Update an existing cloud account
-  put '/:id/cloud_accounts/:cloud_account_id' do
+  # Update an existing cloud credential
+  put '/:id/cloud_credentials/:cloud_credential_id' do
 	  update_account = Account.find(params[:id])
-	  update_cloud_account = update_account.cloud_account(params[:cloud_account_id])
-	  if update_cloud_account.nil?
+	  update_cloud_credential = update_account.cloud_credential(params[:cloud_credential_id])
+	  if update_cloud_credential.nil?
 		  return [NOT_FOUND]
 	  end
-	  update_cloud_account.extend(UpdateCloudAccountRepresenter)
-	  update_cloud_account.from_json(request.body.read)
-	  if update_cloud_account.valid?
-		  update_cloud_account.save!
-		  updated_cloud_account = update_account.cloud_account(update_cloud_account.id)
+	  update_cloud_credential.extend(UpdateCloudCredentialRepresenter)
+	  update_cloud_credential.from_json(request.body.read)
+	  if update_cloud_credential.valid?
+		  update_cloud_credential.save!
+		  updated_cloud_credential = update_account.cloud_credential(update_cloud_credential.id)
 		  update_account.extend(AccountRepresenter)
 		  [OK, update_account.to_json]
 	  else
 		  message = Error.new.extend(ErrorRepresenter)
-		  message.message = "#{update_cloud_account.errors.full_messages.join(";")}"
-		  message.validation_errors = update_cloud_account.errors.to_hash
+		  message.message = "#{update_cloud_credential.errors.full_messages.join(";")}"
+		  message.validation_errors = update_cloud_credential.errors.to_hash
 		  [BAD_REQUEST, message.to_json]
 	  end
   end
 
-  # Remove an existing cloud account from an existing user account
-  delete '/:id/cloud_accounts/:cloud_account_id' do
+  # Remove an existing cloud credential from an existing user account
+  delete '/:id/cloud_credentials/:cloud_credential_id' do
     update_account = Account.find(params[:id])
-    update_account.remove_cloud_account!(params[:cloud_account_id])
+    update_account.remove_cloud_credential!(params[:cloud_credential_id])
     update_account.extend(AccountRepresenter)
     [OK, update_account.to_json]
   end
 
-  # Register a new key pair for a cloud account
+  # Register a new key pair for a cloud credential
   # Note: no longer needed, as they query AWS for key pairs. Not sure how other cloud providers will need this handled, so will leave for now
-  post '/:id/:cloud_account_id/key_pairs' do
+  post '/:id/:cloud_credential_id/key_pairs' do
     update_account = Account.find(params[:id])
     key_pair = KeyPair.new.extend(UpdateKeyPairRepresenter)
     key_pair.from_json(request.body.read)
-    update_account.add_key_pair!(params[:cloud_account_id], key_pair)
+    update_account.add_key_pair!(params[:cloud_credential_id], key_pair)
     update_account.extend(AccountRepresenter)
     [CREATED, update_account.to_json]
   end
 
-  # Register a new key pair for a cloud account
+  # Register a new key pair for a cloud credential
   # Note: no longer needed, as they query AWS for key pairs. Not sure how other cloud providers will need this handled, so will leave for now
-  delete '/:id/:cloud_account_id/key_pairs/:key_pair_id' do
+  delete '/:id/:cloud_credential_id/key_pairs/:key_pair_id' do
     update_account = Account.find(params[:id])
-    update_account.remove_key_pair!(params[:cloud_account_id], params[:key_pair_id])
+    update_account.remove_key_pair!(params[:cloud_credential_id], params[:key_pair_id])
     update_account.extend(AccountRepresenter)
     [OK, update_account.to_json]
   end
 
-  # returns a cloud account that exists within a user's account. This is strictly for provisioning purposes, as cloud accounts do not exist outside of an account
-  get '/cloud_accounts/:id.json' do
-    cloud_account = Account.find_cloud_account(params[:id])
-    if cloud_account.nil?
+  # returns a cloud credential that exists within a user's account. This is strictly for provisioning purposes, as cloud credentials do not exist outside of an account
+  get '/cloud_credentials/:id.json' do
+    cloud_credential = Account.find_cloud_credential(params[:id])
+    if cloud_credential.nil?
       [NOT_FOUND]
     else
-      cloud_account.extend(CloudAccountRepresenter)
-      [OK, cloud_account.to_json]
+      cloud_credential.extend(CloudCredentialRepresenter)
+      [OK, cloud_credential.to_json]
     end
   end
 
-  # Log a cloud action made by user with cloud account
-  post '/:id/:cloud_account_id/audit_logs' do
+  # Log a cloud action made by user with cloud credential
+  post '/:id/:cloud_credential_id/audit_logs' do
 	  update_account = Account.find(params[:id])
 	  audit_log = AuditLog.new.extend(AuditLogRepresenter)
 	  audit_log.from_json(request.body.read)
-	  update_account.add_audit_log!(params[:cloud_account_id], audit_log)
+	  update_account.add_audit_log!(params[:cloud_credential_id], audit_log)
 	  update_account.extend(AccountRepresenter)
 	  [CREATED, update_account.to_json]
   end
   
   # Capture cloud resource properties
-  post '/:id/:cloud_account_id/cloud_resources' do
+  post '/:id/:cloud_credential_id/cloud_resources' do
 	  update_account = Account.find(params[:id])
 	  cloud_resource = CloudResource.new.extend(CloudResourceRepresenter)
 	  cloud_resource.from_json(request.body.read)
-	  update_account.add_cloud_resource!(params[:cloud_account_id], cloud_resource)
+	  update_account.add_cloud_resource!(params[:cloud_credential_id], cloud_resource)
 	  update_account.extend(AccountRepresenter)
 	  [CREATED, update_account.to_json]
   end  

@@ -4,24 +4,24 @@ class TopstackServiceImporter
 # The data can then be loaded with the rake db:seed (or created alongside the db with db:setup).
 
 ####### Creates default CF Template Image Mappings ############ 
-  def import(cloud)
-    puts "Removing any outdated Topstack Services for #{cloud.name} cloud"
+  def import(cloud_account)
+    puts "Removing any outdated Topstack Services for #{cloud_account.name} cloud_account"
     
     current_topstack_services = []
-	current_topstack_services << cloud.cloud_services.find(:first, :conditions=>{:service_type=>"AS"})
-    current_topstack_services << cloud.cloud_services.find(:first, :conditions=>{:service_type=>"ELB"})
-    current_topstack_services << cloud.cloud_services.find(:first, :conditions=>{:service_type=>"RDS"})
-    current_topstack_services << cloud.cloud_services.find(:first, :conditions=>{:service_type=>"AWSEB"})
-    current_topstack_services << cloud.cloud_services.find(:first, :conditions=>{:service_type=>"ELC"})
-    current_topstack_services << cloud.cloud_services.find(:first, :conditions=>{:service_type=>"ACW"})
-    current_topstack_services << cloud.cloud_services.find(:first, :conditions=>{:service_type=>"SQS"})
+	current_topstack_services << cloud_account.cloud_services.find(:first, :conditions=>{:service_type=>"AS"})
+    current_topstack_services << cloud_account.cloud_services.find(:first, :conditions=>{:service_type=>"ELB"})
+    current_topstack_services << cloud_account.cloud_services.find(:first, :conditions=>{:service_type=>"RDS"})
+    current_topstack_services << cloud_account.cloud_services.find(:first, :conditions=>{:service_type=>"AWSEB"})
+    current_topstack_services << cloud_account.cloud_services.find(:first, :conditions=>{:service_type=>"ELC"})
+    current_topstack_services << cloud_account.cloud_services.find(:first, :conditions=>{:service_type=>"ACW"})
+    current_topstack_services << cloud_account.cloud_services.find(:first, :conditions=>{:service_type=>"SQS"})
     
     current_topstack_services.each {|service| service.delete unless service.nil?}
     
     
-    puts "Creating Topstack Services for #{cloud.name} cloud"
+    puts "Creating Topstack Services for #{cloud_account.name} cloud_account"
     
-    if cloud.cloud_provider == "OpenStack" || cloud.cloud_provider == "HP"
+    if cloud_account.cloud_provider == "OpenStack" || cloud_account.cloud_provider == "HP"
         cloud_path = "uuid"
     else
         cloud_path = "ec2"
@@ -107,12 +107,12 @@ class TopstackServiceImporter
 
     services.each do |service|
         if service.enabled
-            puts "Adding \"#{service.service_type}\" service to #{cloud.name} cloud services"
+            puts "Adding \"#{service.service_type}\" service to #{cloud_account.name} cloud services"
         end
         
         begin
-            cloud.cloud_services << service
-            cloud.save!
+            cloud_account.cloud_services << service
+            cloud_account.save!
         rescue => e
             if service.enabled
                 log " skipping - failed to save: #{e}\n#{e.backtrace.join("\n")}"

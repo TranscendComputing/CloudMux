@@ -2,7 +2,7 @@ class Price
   # Mongoid Mappings
   include Mongoid::Document
 
-  embedded_in :cloud
+  embedded_in :cloud_account
 
   field :name, type:String
   field :type, type:String

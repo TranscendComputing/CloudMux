@@ -5,7 +5,8 @@ class Org
   include Mongoid::Document
 
   field :name, type:String
-  has_many :accounts
+  has_many :accounts, dependent: :delete
+  has_many :cloud_accounts, dependent: :delete
   has_many :groups, dependent: :delete
   embeds_many :subscriptions
   embeds_many :cloud_mappings, :as=>:mappable # CloudMapping
