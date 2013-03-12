@@ -31,7 +31,7 @@ Returns a paginated list of public clouds registered.
     Connection: close
     Server: thin 1.3.1 codename Triple Espresso
 
-    {"query":{"total":1,"page":1,"offset":0,"per_page":1000,"links":[]},"clouds":[{"cloud":{"id":"4f7daff2681151a840000001","name":"Cloud 1","permalink":"cloud-1","public":true,"cloud_services":[],"cloud_mappings":[]}}]}
+    {"query":{"total":1,"page":1,"offset":0,"per_page":1000,"links":[]},"clouds":[{"cloud":{"id":"4f7daff2681151a840000001","name":"Cloud 1","permalink":"cloud-1","public":true}}]}
 
 ### Error Response:
 None
@@ -65,7 +65,7 @@ Creates a new cloud in the system
     Connection: close
     Server: thin 1.3.1 codename Triple Espresso
 
-    {"cloud":{"id":"4f7daff2681151a840000001","name":"Cloud 1","permalink":"cloud-1","public":true,"cloud_services":[],"cloud_mappings":[]}}
+    {"cloud":{"id":"4f7daff2681151a840000001","name":"Cloud 1","permalink":"cloud-1","public":true}}
 
 ### Error Response:
 
@@ -103,7 +103,7 @@ Retrieves a representation of an cloud, including associated details, such as cl
     Connection: close
     Server: thin 1.3.1 codename Triple Espresso
 
-    {"cloud":{"id":"4f7daff2681151a840000001","name":"Cloud 1","permalink":"cloud-1","public":true,"cloud_services":[],"cloud_mappings":[]}}
+    {"cloud":{"id":"4f7daff2681151a840000001","name":"Cloud 1","permalink":"cloud-1","public":true}}
 
 ### Error Response:
 None
@@ -139,7 +139,7 @@ __NOTE:__ All details must be sent on the update, otherwise fields with missing 
     Connection: close
     Server: thin 1.3.1 codename Triple Espresso
 
-    {"cloud":{"id":"4f7daff2681151a840000001","name":"Cloud 2","permalink":"cloud-2","public":true,"cloud_services":[],"cloud_mappings":[]}}
+    {"cloud":{"id":"4f7daff2681151a840000001","name":"Cloud 2","permalink":"cloud-2","public":true}}
 
 ### Error Response:
 
@@ -151,107 +151,4 @@ __NOTE:__ All details must be sent on the update, otherwise fields with missing 
     Connection: close
     Server: thin 1.3.1 codename Triple Espresso
 
-    {"error":{"message":"Name can't be blank","validation_errors":{"name":["can't be blank"]}}}
-
-
-## POST /stackstudio/v1/clouds/:id/services
-
-Registers a new cloud service for a cloud.
-
-### Arguments
-
-* id - the cloud's id
-
-### Response Status Codes:
-
-* 200 - Service added
-
-### Example Request:
-
-    POST /stackstudio/v1/clouds/4f7daff2681151a840000001/services HTTP/1.1
-    Connection: close
-    Host: api.stackplace.com
-    Content-Length: 70
-    Content-Type: application/x-www-form-urlencoded
-
-    {"cloud_service":{"service_type":"My Type"}}
-
-### Response:
-
-The updated cloud payload
-
-## DELETE /stackstudio/v1/clouds/:id/services/:service_id
-
-Removes a cloud service from a cloud.
-
-### Arguments
-
-* id - the cloud's id
-* service\_id - the service id owned by the cloud
-
-### Response Status Codes:
-
-* 200 - Deleted
-
-### Example Request:
-
-    DELETE /stackstudio/v1/clouds/4f7daff2681151a840000001/services/4f7dcc04681151b0a5000001 HTTP/1.1
-    Connection: close
-    Host: api.stackplace.com
-    Content-Length: 70
-    Content-Type: application/x-www-form-urlencoded
-
-### Response:
-
-The updated cloud payload
-
-## POST /stackstudio/v1/clouds/:id/mappings
-
-Registers a new cloud mapping for a cloud.
-
-### Arguments
-
-* id - the cloud's id
-
-### Response Status Codes:
-
-* 200 - Mapping added
-
-### Example Request:
-
-    POST /stackstudio/v1/clouds/4f7daff2681151a840000001/mappings HTTP/1.1
-    Connection: close
-    Host: stackplace-mapping.herokuapp.com
-    Content-Length: 70
-    Content-Type: application/x-www-form-urlencoded
-
-    {"cloud_mapping":{"name":"My Mapping","mapping_type":"My Mapping Type","properties":{},"mapping_entries":[]}}
-
-### Response:
-
-The updated cloud payload
-
-## DELETE /stackstudio/v1/clouds/:id/mappings/:mapping_id
-
-Removes a cloud mapping from a cloud.
-
-### Arguments
-
-* id - the cloud's id
-* mapping\_id - the mapping id owned by the cloud
-
-### Response Status Codes:
-
-* 200 - Deleted
-
-### Example Request:
-
-    DELETE /stackstudio/v1/clouds/4f7daff2681151a840000001/mappings HTTP/1.1
-    Connection: close
-    Host: stackplace-mapping.herokuapp.com
-    Content-Length: 70
-    Content-Type: application/x-www-form-urlencoded
-
-### Response:
-
-The updated cloud payload
+    {"error":{"message":"Name can't be blank","validation_errors":{"name":["can't be blank"]}}}    

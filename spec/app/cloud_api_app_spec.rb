@@ -62,7 +62,6 @@ describe CloudApiApp do
       cloud.from_json(last_response.body)
       cloud.id.should eq(@cloud.id)
       cloud.name.should eq(@cloud.name)
-      cloud.name.should eq(@cloud.name)
     end
 
     it "should return 404 if not found" do

@@ -170,18 +170,18 @@ describe Account do
     end
   end
 
-  describe "#cloud_accounts" do
+  describe "#cloud_credentials" do
     before :each do
-      @cloud_account = FactoryGirl.build(:cloud_account)
+      @cloud_credential = FactoryGirl.build(:cloud_credential)
       @account_1 = FactoryGirl.build(:account, :login=>"standard_subscriber_1", :email=>"standard_1@example.com")
-      @account_1.cloud_accounts << @cloud_account
+      @account_1.cloud_credentials << @cloud_credential
       @account_1.save
     end
 
-    it "should find cloud account by id" do
-      cloud_account = Account.find_cloud_account(@cloud_account.id)
-      cloud_account.should_not eq(nil)
-      cloud_account.id.should eq(@cloud_account.id)
+    it "should find cloud cloud_credential by id" do
+      cloud_credential = Account.find_cloud_credential(@cloud_credential.id)
+      cloud_credential.should_not eq(nil)
+      cloud_credential.id.should eq(@cloud_credential.id)
     end
   end
 end

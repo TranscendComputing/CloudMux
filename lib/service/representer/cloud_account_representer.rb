@@ -5,18 +5,19 @@ module CloudAccountRepresenter
   self.representation_wrap = true
 
   property :id
+  property :name
   property :cloud_id
+  property :org_id
   property :cloud_name
   property :cloud_provider
-  property :name
-  property :description
-  property :access_key
-  property :secret_key
-  property :cloud_attributes
-  property :stack_preferences
-  property :topstack_id
+  property :url
+  property :protocol
+  property :host
+  property :port
+  property :public
   property :topstack_enabled
-  property :topstack_configured
-  collection :audit_logs, :class=>AuditLog, :extend => AuditLogRepresenter
-  collection :cloud_resources, :class=>CloudResource, :extend => CloudResourceRepresenter
+  property :topstack_id
+  collection :prices, :class=>Price, :extend => PriceRepresenter
+  collection :cloud_services, :class=>CloudService, :extend => CloudServiceRepresenter
+  collection :cloud_mappings, :class=>CloudMapping, :extend => CloudMappingRepresenter
 end

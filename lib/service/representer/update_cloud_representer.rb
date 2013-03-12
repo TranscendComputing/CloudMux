@@ -7,11 +7,5 @@ module UpdateCloudRepresenter
   property :name
   property :cloud_provider
   property :permalink
-  property :url
-  property :protocol
-  property :host
-  property :port
   property :public
-  property :topstack_enabled
-  property :topstack_id
 end

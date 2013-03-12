@@ -8,10 +8,10 @@ class OrgApiApp < ApiBase
     new_org.from_json(request.body.read)
     if new_org.valid?
       new_org.save!
-	  Group.create!(:name => "Development", :description => "default development group", :org => new_org)
-	  Group.create!(:name => "Test", :description => "default test group", :org => new_org)
-	  Group.create!(:name => "Stage", :description => "default stage group", :org => new_org)
-	  Group.create!(:name => "Production", :description => "default production group", :org => new_org)
+  	  Group.create!(:name => "Development", :description => "default development group", :org => new_org)
+  	  Group.create!(:name => "Test", :description => "default test group", :org => new_org)
+  	  Group.create!(:name => "Stage", :description => "default stage group", :org => new_org)
+  	  Group.create!(:name => "Production", :description => "default production group", :org => new_org)
       org = Org.find(new_org.id).extend(OrgRepresenter)
       [CREATED, org.to_json]
     else
