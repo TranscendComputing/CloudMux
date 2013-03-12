@@ -686,6 +686,25 @@ class AwsComputeApp < ResourceApiBase
 			end
 		end
 	end
+
+	delete '/subnets/delete' do
+		compute = get_compute_interface(params[:cred_id])
+		if(compute.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil? || json_body["subnet"].nil?)
+				[BAD_REQUEST]
+			else
+				begin
+					response = compute.subnets.get(json_body["subnet"]["subnet_id"]).destroy
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
+			end
+		end
+	end
 	
 	
 	def get_compute_interface(cred_id)
