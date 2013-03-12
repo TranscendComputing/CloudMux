@@ -25,6 +25,8 @@ require 'app/aws/aws_block_storage_app'
 require 'app/aws/aws_object_storage_app'
 require 'app/aws/aws_monitor_app'
 require 'app/aws/aws_notification_app'
+require 'app/openstack/openstack_compute_app'
+
 
 
 # By default, Ruby buffers its output to stdout. To take advantage of
