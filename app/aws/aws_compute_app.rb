@@ -636,12 +636,64 @@ class AwsComputeApp < ResourceApiBase
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
+			begin
+				response = compute.internet_gateways.create
+				[OK, response.to_json]
+			rescue => error
+				handle_error(error)
+			end
+		end
+	end
+
+	post '/internet_gateways/attach' do
+		compute = get_compute_interface(params[:cred_id])
+		if(compute.nil?)
+			[BAD_REQUEST]
+		else
 			json_body = body_to_json(request)
-			if(json_body.nil?)
+			if(json_body.nil? || json_body["internet_gateway"].nil?)
 				[BAD_REQUEST]
 			else
 				begin
-					response = compute.internet_gateways.create(json_body["internet_gateway"])
+					response = compute.attach_internet_gateway(json_body["internet_gateway"]["id"], json_body["internet_gateway"]["vpc_id"])
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
+			end
+		end
+	end
+
+	post '/internet_gateways/detach' do
+		compute = get_compute_interface(params[:cred_id])
+		if(compute.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil? || json_body["internet_gateway"].nil?)
+				[BAD_REQUEST]
+			else
+				begin
+					response = compute.detach_internet_gateway(json_body["internet_gateway"]["id"], json_body["internet_gateway"]["vpc_id"])
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
+			end
+		end
+	end
+
+	delete '/internet_gateways/delete' do
+		compute = get_compute_interface(params[:cred_id])
+		if(compute.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil? || json_body["internet_gateway"].nil?)
+				[BAD_REQUEST]
+			else
+				begin
+					response = compute.internet_gateways.get(json_body["internet_gateway"]["id"]).destroy
 					[OK, response.to_json]
 				rescue => error
 					handle_error(error)
