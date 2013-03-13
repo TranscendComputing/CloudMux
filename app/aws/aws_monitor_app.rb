@@ -101,6 +101,25 @@ class AwsMonitorApp < ResourceApiBase
 						"EndTime"=>DateTime.now
 					}
 					response = monitor.get_metric_statistics(options).body['GetMetricStatisticsResult']['Datapoints']
+					first_datapoint = response.first
+					statistic = ""
+					if(!first_datapoint.nil?)
+						if(first_datapoint.has_key?("Average"))
+							statistic = "Average"
+						elsif(first_datapoint.has_key?("Sum"))
+							statistic = "Sum"
+						elsif(first_datapoint.has_key?("SampleCount"))
+							statistic = "SampleCount"
+						elsif(first_datapoint.has_key?("Maximum"))
+							statistic = "Maximum"
+						elsif(first_datapoint.has_key?("Minimum"))
+							statistic = "Minimum"
+						end
+
+						if(statistic != "")
+							response.each {|d| d[statistic] = d[statistic].round(5)}
+						end
+					end
 					[OK, response.to_json]
 				rescue => error
 					handle_error(error)
