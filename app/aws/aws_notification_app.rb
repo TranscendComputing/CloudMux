@@ -27,7 +27,7 @@ class AwsNotificationApp < ResourceApiBase
 		if(cred_id.nil?)
 			return nil
 		else
-			cloud_cred = Account.find_cloud_account(cred_id)
+			cloud_cred = get_creds(cred_id)
 			if cloud_cred.nil?
 				return nil
 			else

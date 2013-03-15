@@ -13,6 +13,7 @@ require 'app/stack_api_app'
 require 'app/identity_api_app'
 require 'app/org_api_app'
 require 'app/category_api_app'
+require 'app/cloud_account_api_app'
 require 'app/cloud_api_app'
 require 'app/project_api_app'
 require 'app/provisioning_api_app'
@@ -94,6 +95,13 @@ map "/stackstudio/v1/clouds" do
 end
 
 #
+# Cloud Accounts API (internal)
+#
+map "/stackstudio/v1/cloud_accounts" do
+  run CloudAccountApiApp
+end
+
+#
 # Projects API (internal)
 #
 map "/stackstudio/v1/projects" do
@@ -161,4 +169,11 @@ end
 #
 map "/stackstudio/v1/cloud_management/aws/notification" do
   run AwsNotificationApp
+end
+
+#
+# Openstack Compute API
+#
+map "/stackstudio/v1/cloud_management/openstack/compute" do
+  run OpenstackComputeApp
 end

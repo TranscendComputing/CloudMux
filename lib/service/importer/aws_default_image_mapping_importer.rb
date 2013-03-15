@@ -239,8 +239,8 @@ UBUNTU_12_CLUSTER = {
 
 
 ####### Creates default CF Template Image Mappings ############ 
-  def import(cloud)
-    puts "Creating #{cloud.name} Default Image Mappings (for cloud management use)"
+  def import(cloud_account)
+    puts "Creating #{cloud_account.name} Default Image Mappings (for cloud_account management use)"
 
     @default_maps = []
     
@@ -263,8 +263,8 @@ UBUNTU_12_CLUSTER = {
     build_map("Ubuntu Server 12.04 LTS for Cluster Instances", UBUNTU_12_CLUSTER)
 
     @default_maps.each do |map|
-        puts "Adding \"#{map.name}\" to #{cloud.name} cloud mappings"
-        map.mappable = cloud
+        puts "Adding \"#{map.name}\" to #{cloud_account.name} cloud_account mappings"
+        map.mappable = cloud_account
         begin
             map.save!
         rescue => e

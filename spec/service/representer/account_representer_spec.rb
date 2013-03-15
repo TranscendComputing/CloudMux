@@ -10,7 +10,7 @@ describe AccountRepresenter do
     it "should export to json" do
       @account.extend(AccountRepresenter)
       result = @account.to_json
-      result.should eq("{\"account\":{\"id\":\"#{@account.id}\",\"login\":\"#{@account.login}\",\"email\":\"#{@account.email}\",\"subscriptions\":[],\"cloud_accounts\":[],\"project_memberships\":[]}}")
+      result.should eq("{\"account\":{\"id\":\"#{@account.id}\",\"login\":\"#{@account.login}\",\"email\":\"#{@account.email}\",\"permissions\":[],\"subscriptions\":[],\"cloud_credentials\":[],\"project_memberships\":[]}}")
     end
   end
 

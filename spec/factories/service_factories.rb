@@ -63,6 +63,10 @@ FactoryGirl.define do
   factory :cloud, :class => Cloud do |a|
     a.name 'My Public Cloud'
     a.public true
+  end
+
+  factory :cloud_account, :class => CloudAccount do |a|
+    a.name 'My Cloud Account'
     a.topstack_enabled true
     a.topstack_id 'cloud_zone'
   end
@@ -71,7 +75,7 @@ FactoryGirl.define do
     a.name 'My Mapping'
   end
 
-  factory :cloud_account, :class => CloudAccount do |a|
+  factory :cloud_credential, :class => CloudCredential do |a|
     a.name 'My Cloud Account'
   end
 

@@ -1,6 +1,6 @@
 class PricesImporter
-	def import(cloud)
-		case cloud.cloud_provider
+	def import(cloud_account)
+		case cloud_account.cloud_provider
 			when "AWS"
 				##################################### Compute Prices #####################################
 				Price.create!(	:name=>"t1.micro", 
@@ -13,7 +13,7 @@ class PricesImporter
 												:memory=>"6 MB"}, 
 								:entries=>[{:price=>0.02,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"m1.small", 
 								:type=>"compute",
@@ -25,7 +25,7 @@ class PricesImporter
 												:memory=>"1.7 GB"}, 
 								:entries=>[{:price=>0.08,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"m1.medium", 
 								:type=>"compute",
@@ -37,7 +37,7 @@ class PricesImporter
 												:memory=>"3.7 GB"}, 
 								:entries=>[{:price=>0.16,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)			
 				Price.create!(	:name=>"m1.large", 
 								:type=>"compute",
@@ -49,7 +49,7 @@ class PricesImporter
 												:memory=>"7.5 GB"}, 
 								:entries=>[{:price=>0.32,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)	
 				Price.create!(	:name=>"m1.xlarge", 
 								:type=>"compute",
@@ -61,7 +61,7 @@ class PricesImporter
 												:memory=>"15 GB"}, 
 								:entries=>[{:price=>0.64,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"c1.medium", 
 								:type=>"compute",
@@ -73,7 +73,7 @@ class PricesImporter
 												:memory=>"1.7 GB"}, 
 								:entries=>[{:price=>0.165,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"c1.xlarge", 
 								:type=>"compute",
@@ -85,7 +85,7 @@ class PricesImporter
 												:memory=>"7 GB"}, 
 								:entries=>[{:price=>0.66,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"m2.xlarge", 
 								:type=>"compute",
@@ -97,7 +97,7 @@ class PricesImporter
 												:memory=>"17.1 GB"}, 
 								:entries=>[{:price=>0.45,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"m2.2xlarge", 
 								:type=>"compute",
@@ -109,7 +109,7 @@ class PricesImporter
 												:memory=>"34.2 GB"}, 
 								:entries=>[{:price=>0.90,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"m2.4xlarge", 
 								:type=>"compute",
@@ -121,7 +121,7 @@ class PricesImporter
 												:memory=>"68.4 GB"}, 
 								:entries=>[{:price=>1.80,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"cc1.4xlarge", 
 								:type=>"compute",
@@ -133,7 +133,7 @@ class PricesImporter
 												:memory=>"23 GB"}, 
 								:entries=>[{:price=>1.30,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"cc2.8xlarge",
 								:type=>"compute",
@@ -145,7 +145,7 @@ class PricesImporter
 												:memory=>"60 GB"}, 
 								:entries=>[{:price=>2.40,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"cg1.4xlarge", 
 								:type=>"compute",
@@ -157,7 +157,7 @@ class PricesImporter
 												:memory=>"22 GB"}, 
 								:entries=>[{:price=>2.10,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"detailed_monitoring", 
 								:type=>"compute",
@@ -167,7 +167,7 @@ class PricesImporter
 												:denominator=>"month"}, 
 								:entries=>[{:price=>3.50,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				##################################### Cache Prices #####################################
 				Price.create!(	:name=>"cache.m1.small",
@@ -179,7 +179,7 @@ class PricesImporter
 												:memory=>"1.3 GB"},
 								:entries=>[{:price=>0.09,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"cache.m1.large",
 								:type=>"elc",
@@ -190,7 +190,7 @@ class PricesImporter
 												:memory=>"7.1 GB"},
 								:entries=>[{:price=>0.36,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"cache.m1.xlarge",
 								:type=>"elc",
@@ -201,7 +201,7 @@ class PricesImporter
 												:memory=>"14.6 GB"},
 								:entries=>[{:price=>0.72,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"cache.m2.xlarge",
 								:type=>"elc",
@@ -212,7 +212,7 @@ class PricesImporter
 												:memory=>"16.7 GB"},
 								:entries=>[{:price=>0.505,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"cache.m2.2xlarge",
 								:type=>"elc",
@@ -223,7 +223,7 @@ class PricesImporter
 												:memory=>"33.8 GB"},
 								:entries=>[{:price=>1.01,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"cache.m2.4xlarge",
 								:type=>"elc",
@@ -234,7 +234,7 @@ class PricesImporter
 												:memory=>"68 GB"},
 								:entries=>[{:price=>2.02,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"cache.c1.xlarge",
 								:type=>"elc",
@@ -245,7 +245,7 @@ class PricesImporter
 												:memory=>"6.6 GB"},
 								:entries=>[{:price=>0.74,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				##################################### RDS Prices #####################################
 				Price.create!(	:name=>"db.t1.micro",
@@ -256,7 +256,7 @@ class PricesImporter
 												:denominator=>"hour"},
 								:entries=>[{:price=>0.025,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"db.m1.small",
 								:type=>"rds",
@@ -266,7 +266,7 @@ class PricesImporter
 												:denominator=>"hour"},
 								:entries=>[{:price=>0.105,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"db.m1.large",
 								:type=>"rds",
@@ -276,7 +276,7 @@ class PricesImporter
 												:denominator=>"hour"},
 								:entries=>[{:price=>0.415,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"db.m1.xlarge",
 								:type=>"rds",
@@ -286,7 +286,7 @@ class PricesImporter
 												:denominator=>"hour"},
 								:entries=>[{:price=>0.83,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"db.m2.xlarge",
 								:type=>"rds",
@@ -296,7 +296,7 @@ class PricesImporter
 												:denominator=>"hour"},
 								:entries=>[{:price=>0.585,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"db.m2.2xlarge",
 								:type=>"rds",
@@ -306,7 +306,7 @@ class PricesImporter
 												:denominator=>"hour"},
 								:entries=>[{:price=>1.17,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"db.m2.4xlarge",
 								:type=>"rds",
@@ -316,7 +316,7 @@ class PricesImporter
 												:denominator=>"hour"},
 								:entries=>[{:price=>2.34,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				##################################### ELB Prices #####################################			
 				Price.create!(	:name=>"load_balancer",
@@ -327,7 +327,7 @@ class PricesImporter
 												:denominator=>"hour"},
 								:entries=>[{:price=>0.025,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				##################################### Alarm Prices #####################################			
 				Price.create!(	:name=>"alarm",
@@ -338,7 +338,7 @@ class PricesImporter
 												:denominator=>"month"},
 								:entries=>[{:price=>0.1,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				##################################### EBS Prices #####################################			
 				Price.create!(	:name=>"block_storage",
@@ -349,7 +349,7 @@ class PricesImporter
 												:denominator=>"GB/month"},
 								:entries=>[{:price=>0.1,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"iops_storage",
 								:type=>"ebs",
@@ -359,7 +359,7 @@ class PricesImporter
 												:denominator=>"GB/month"},
 								:entries=>[{:price=>0.125,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"iops",
 								:type=>"ebs",
@@ -369,7 +369,7 @@ class PricesImporter
 												:denominator=>"IOPS/month"},
 								:entries=>[{:price=>0.1,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				##################################### DNS Prices #####################################			
 				Price.create!(	:name=>"hosted_zone",
@@ -380,7 +380,7 @@ class PricesImporter
 												:denominator=>"month"},
 								:entries=>[{:price=>0.5,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				##################################### S3 Prices #####################################			
 				Price.create!(	:name=>"s3",
@@ -391,7 +391,7 @@ class PricesImporter
 												:denominator=>"GB/month"},
 								:entries=>[{:price=>0.125,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 			when "OpenStack"
 				Price.create!(	:name=>"m1.medium", 
@@ -404,7 +404,7 @@ class PricesImporter
 												:memory=>"1.5 GB"}, 
 								:entries=>[{:price=>0.16,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"m1.large", 
 								:type=>"compute",
@@ -416,7 +416,7 @@ class PricesImporter
 												:memory=>"2 GB"}, 
 								:entries=>[{:price=>0.32,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"m1.tiny", 
 								:type=>"compute",
@@ -428,7 +428,7 @@ class PricesImporter
 												:memory=>"512 MB"}, 
 								:entries=>[{:price=>0.02,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)	
 				Price.create!(	:name=>"m1.xlarge", 
 								:type=>"compute",
@@ -440,7 +440,7 @@ class PricesImporter
 												:memory=>"3 GB"}, 
 								:entries=>[{:price=>0.64,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"m1.small", 
 								:type=>"compute",
@@ -452,7 +452,7 @@ class PricesImporter
 												:memory=>"1 GB"}, 
 								:entries=>[{:price=>0.08,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 			when "Eucalyptus"
 				Price.create!(	:name=>"m1.small", 
@@ -465,7 +465,7 @@ class PricesImporter
 												:memory=>"128 MB"}, 
 								:entries=>[{:price=>0.08,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"m1.large", 
 								:type=>"compute",
@@ -477,7 +477,7 @@ class PricesImporter
 												:memory=>"1 GB"}, 
 								:entries=>[{:price=>0.32,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"c1.medium", 
 								:type=>"compute",
@@ -489,7 +489,7 @@ class PricesImporter
 												:memory=>"1 GB"}, 
 								:entries=>[{:price=>0.165,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)	
 				Price.create!(	:name=>"m1.xlarge", 
 								:type=>"compute",
@@ -501,7 +501,7 @@ class PricesImporter
 												:memory=>"2 GB"}, 
 								:entries=>[{:price=>0.64,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"c1.xlarge", 
 								:type=>"compute",
@@ -513,7 +513,7 @@ class PricesImporter
 												:memory=>"2 GB"}, 
 								:entries=>[{:price=>0.66,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 			when "HP"
 				Price.create!(	:name=>"standard.xsmall", 
@@ -526,7 +526,7 @@ class PricesImporter
 												:memory=>"1 GB"}, 
 								:entries=>[{:price=>0.04,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"standard.small", 
 								:type=>"compute",
@@ -538,7 +538,7 @@ class PricesImporter
 												:memory=>"2 GB"}, 
 								:entries=>[{:price=>0.08,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"standard.2xlarge", 
 								:type=>"compute",
@@ -550,7 +550,7 @@ class PricesImporter
 												:memory=>"32 GB"}, 
 								:entries=>[{:price=>1.28,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)	
 				Price.create!(	:name=>"standard.large", 
 								:type=>"compute",
@@ -562,7 +562,7 @@ class PricesImporter
 												:memory=>"2 GB"}, 
 								:entries=>[{:price=>0.32,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"standard.medium", 
 								:type=>"compute",
@@ -574,7 +574,7 @@ class PricesImporter
 												:memory=>"4 GB"}, 
 								:entries=>[{:price=>0.16,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"standard.xlarge", 
 								:type=>"compute",
@@ -586,7 +586,7 @@ class PricesImporter
 												:memory=>"16 GB"}, 
 								:entries=>[{:price=>0.64,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 			when "Rackspace"
 				Price.create!(	:name=>"256 server", 
@@ -599,7 +599,7 @@ class PricesImporter
 												:memory=>"256 MB"}, 
 								:entries=>[{:price=>0.015,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"512 server", 
 								:type=>"compute",
@@ -611,7 +611,7 @@ class PricesImporter
 												:memory=>"512 MB"}, 
 								:entries=>[{:price=>0.022,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"1GB server", 
 								:type=>"compute",
@@ -623,7 +623,7 @@ class PricesImporter
 												:memory=>"1 GB"}, 
 								:entries=>[{:price=>0.06,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)	
 				Price.create!(	:name=>"2GB server", 
 								:type=>"compute",
@@ -635,7 +635,7 @@ class PricesImporter
 												:memory=>"2 GB"}, 
 								:entries=>[{:price=>0.12,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"4GB server", 
 								:type=>"compute",
@@ -647,7 +647,7 @@ class PricesImporter
 												:memory=>"4 GB"}, 
 								:entries=>[{:price=>0.24,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"8GB server", 
 								:type=>"compute",
@@ -659,7 +659,7 @@ class PricesImporter
 												:memory=>"8 GB"}, 
 								:entries=>[{:price=>0.48,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"15.5GB server", 
 								:type=>"compute",
@@ -671,7 +671,7 @@ class PricesImporter
 												:memory=>"15.5 GB"}, 
 								:entries=>[{:price=>0.90,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"30GB server", 
 								:type=>"compute",
@@ -683,7 +683,7 @@ class PricesImporter
 												:memory=>"30 GB"}, 
 								:entries=>[{:price=>1.20,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 			when "Joyent"
 				Price.create!(	:name=>"Small 1GB", 
@@ -696,7 +696,7 @@ class PricesImporter
 												:memory=>"1 GB"}, 
 								:entries=>[{:price=>0.085,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"Medium 2GB", 
 								:type=>"compute",
@@ -708,7 +708,7 @@ class PricesImporter
 												:memory=>"2 GB"}, 
 								:entries=>[{:price=>0.17,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"Medium 4GB", 
 								:type=>"compute",
@@ -720,7 +720,7 @@ class PricesImporter
 												:memory=>"4 GB"}, 
 								:entries=>[{:price=>0.24,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)	
 				Price.create!(	:name=>"Large 8GB", 
 								:type=>"compute",
@@ -732,7 +732,7 @@ class PricesImporter
 												:memory=>"8 GB"}, 
 								:entries=>[{:price=>0.36,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"Large 16GB", 
 								:type=>"compute",
@@ -744,7 +744,7 @@ class PricesImporter
 												:memory=>"16 GB"}, 
 								:entries=>[{:price=>0.64,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"XL 32GB", 
 								:type=>"compute",
@@ -756,7 +756,7 @@ class PricesImporter
 												:memory=>"32 GB"}, 
 								:entries=>[{:price=>1.12,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"XXL 48GB", 
 								:type=>"compute",
@@ -768,7 +768,7 @@ class PricesImporter
 												:memory=>"48 GB"}, 
 								:entries=>[{:price=>1.68,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"XXXL 64GB", 
 								:type=>"compute",
@@ -780,7 +780,7 @@ class PricesImporter
 												:memory=>"64 GB"}, 
 								:entries=>[{:price=>2.24,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"XL 8GB High CPU", 
 								:type=>"compute",
@@ -792,7 +792,7 @@ class PricesImporter
 												:memory=>"8 GB"}, 
 								:entries=>[{:price=>0.65,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"Medium 1GB High-CPU", 
 								:type=>"compute",
@@ -804,7 +804,7 @@ class PricesImporter
 												:memory=>"1 GB"}, 
 								:entries=>[{:price=>0.17,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 			when "CloudStack"
 				Price.create!(	:name=>"Small Instance", 
@@ -817,7 +817,7 @@ class PricesImporter
 												:memory=>"512 MB"}, 
 								:entries=>[{:price=>0.02,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 				Price.create!(	:name=>"Medium Instance", 
 								:type=>"compute",
@@ -829,7 +829,7 @@ class PricesImporter
 												:memory=>"1 GB"}, 
 								:entries=>[{:price=>0.06,
 											:date=>Time.parse("2012-08-01 00:00:00 -0500")}],
-								:cloud=>cloud
+								:cloud_account=>cloud_account
 							)
 		end
 	end
