@@ -1,22 +1,33 @@
 #
-# Captures details about cloud accounts attached to a user Account
+# Captures details about cloud account
 #
 class CloudAccount
   # Mongoid Mappings
   include Mongoid::Document
+  include Mongoid::Timestamps
 
   belongs_to :cloud
-  embedded_in :account
-  embeds_many :audit_logs
-  embeds_many :cloud_resources
+  belongs_to :org
+  embeds_many :cloud_services
+  embeds_many :prices
+  embeds_many :cloud_mappings, :as=>:mappable # CloudMapping
 
   field :name, type:String
-  field :description, type:String
-  field :access_key, type:String
-  field :secret_key, type:String
-  field :cloud_attributes, type:Hash
-  field :stack_preferences, type:Hash
-  field :topstack_configured, type:Boolean, default:false
+  field :url, type:String
+  field :protocol, type:String
+  field :host, type:String
+  field :port, type:String
+  field :topstack_enabled, type:Boolean, default:false
+  field :topstack_id, type:String
+
+  # Validation Rules
+  validates_presence_of :name
+  validates_uniqueness_of :name, :case_sensitive => false
+  validates_associated :org
+  validates_associated :cloud
+  
+  # indexes
+  index :name, unique: true
 
   def cloud_name
     (cloud.nil? ? nil : cloud.name)
@@ -24,17 +35,35 @@ class CloudAccount
   def cloud_name=(name); end; # no-op: for the representer only
   
   def cloud_provider
-  	(cloud.nil? ? nil : cloud.cloud_provider)
+    (cloud.nil? ? nil : cloud.cloud_provider)
   end
-  def cloud_provider=(name); end # no-op: for the representer only
+  def cloud_provider=(name); end # no-op: for the representer only  
+
+  def public
+    (cloud.nil? ? nil : cloud.public)
+  end
+  def public=(name); end # no-op: for the representer only  
   
-  def topstack_enabled
-  	(cloud.nil? ? nil : cloud.topstack_enabled)
+  def find_price(price_id)
+  prices.select { |e| e.id.to_s == price_id.to_s }.first
   end
-  def topstack_enabled=(name); end # no-op: for the representer only
+
+  def remove_service!(service_id)
+    cloud_services.select { |s| s.id.to_s == service_id.to_s }.each { |s| s.delete }
+    self.save!
+  end
+
+  def remove_mapping!(mapping_id)
+    cloud_mappings.select { |s| s.id.to_s == mapping_id.to_s }.each { |s| s.delete }
+    self.save!
+  end
   
-  def topstack_id
-  	(cloud.nil? ? nil : cloud.topstack_id)
+  def remove_price!(price_id)
+  prices.select{ |s| s.id.to_s == price_id.to_s }.each { |s| s.delete }
   end
-  def topstack_id=(name); end # no-op: for the representer only
+
+  def self.query_authorized?(account_id)
+    account = Account.find(account_id)
+    !account.permissions.detect {|p| p["name"] == "admin"}.nil?
+  end
 end

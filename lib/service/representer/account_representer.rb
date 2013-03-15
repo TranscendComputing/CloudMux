@@ -13,6 +13,6 @@ module AccountRepresenter
   property :company
   collection :permissions, :class=>Permission, :extend => PermissionRepresenter
   collection :subscriptions, :class=>Account::AccountSubscription, :extend => AccountSubscriptionRepresenter
-  collection :cloud_accounts, :class=>CloudAccount, :extend => CloudAccountRepresenter
+  collection :cloud_credentials, :class=>CloudCredential, :extend => CloudCredentialRepresenter
   collection :project_memberships, :class=>Account::ProjectMembership, :extend => ProjectMembershipRepresenter
 end

@@ -38,25 +38,4 @@ describe Cloud do
       Cloud.public_clouds.count.should eq(public_clouds.length)
     end
   end
-
-  describe "#remove_service!" do
-    it "should remove an existing service" do
-      @cloud.cloud_services = FactoryGirl.build_list(:cloud_service, 2)
-      @cloud.save!
-      @cloud.cloud_services.length.should eq(2)
-      @cloud.remove_service!(@cloud.cloud_services.first.id)
-      @cloud.reload
-      @cloud.cloud_services.length.should eq(1)
-    end
-
-    it "should ignore if service not found" do
-      @cloud.cloud_services = FactoryGirl.build_list(:cloud_service, 2)
-      @cloud.save!
-      @cloud.cloud_services.length.should eq(2)
-      @cloud.remove_service!("4f7b1405be8a7c3fc8000004")
-      @cloud.reload
-      @cloud.cloud_services.length.should eq(2)
-    end
-  end
-
 end

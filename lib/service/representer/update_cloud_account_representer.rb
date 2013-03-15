@@ -5,10 +5,11 @@ module UpdateCloudAccountRepresenter
   self.representation_wrap = true
 
   property :name
-  property :description
-  property :access_key
-  property :secret_key
-  property :cloud_attributes
-  property :stack_preferences
-  property :topstack_configured
+  property :cloud_provider
+  property :url
+  property :protocol
+  property :host
+  property :port
+  property :topstack_enabled
+  property :topstack_id
 end

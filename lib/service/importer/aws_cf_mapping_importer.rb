@@ -102,7 +102,7 @@ UBUNTU_64 = [
 ]
 
 ####### Creates default CF Template Image Mappings ############ 
-  def import(cloud)
+  def import(cloud_account)
     puts "Creating AWS CF Template Default Image Mappings"
 
     mappings = []
@@ -177,8 +177,8 @@ UBUNTU_64 = [
     mappings << ubuntu_64_mapping
 
     mappings.each do |map|
-        puts "Adding \"#{map.name}\" to #{cloud.name} cloud mappings"
-        map.mappable = cloud
+        puts "Adding \"#{map.name}\" to #{cloud_account.name} cloud_account mappings"
+        map.mappable = cloud_account
         begin
             map.save!
         rescue => e
