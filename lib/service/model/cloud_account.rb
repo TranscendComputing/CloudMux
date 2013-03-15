@@ -61,4 +61,9 @@ class CloudAccount
   def remove_price!(price_id)
   prices.select{ |s| s.id.to_s == price_id.to_s }.each { |s| s.delete }
   end
+
+  def self.query_authorized?(account_id)
+    account = Account.find(account_id)
+    !account.permissions.detect {|p| p["name"] == "admin"}.nil?
+  end
 end

@@ -6,6 +6,10 @@ class ResourceApiBase < ApiBase
 			return nil
 		end
 	end
+
+	def get_creds(cred_id)
+		Account.find_cloud_credential(cred_id)
+	end
 	
 	def handle_error(error)
 		case error

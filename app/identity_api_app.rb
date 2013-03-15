@@ -94,11 +94,11 @@ class IdentityApiApp < ApiBase
   end
 
   # Register a new cloud credential to an existing user account
-  post '/:id/:cloud_credential_id/cloud_credentials' do
+  post '/:id/:cloud_account_id/cloud_credentials' do
     update_account = Account.find(params[:id])
     cloud_credential = CloudCredential.new.extend(UpdateCloudCredentialRepresenter)
     cloud_credential.from_json(request.body.read)
-    update_account.add_cloud_credential!(params[:cloud_id], cloud_credential)
+    update_account.add_cloud_credential!(params[:cloud_account_id], cloud_credential)
     update_account.extend(AccountRepresenter)
     [CREATED, update_account.to_json]
   end
