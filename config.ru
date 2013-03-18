@@ -27,6 +27,7 @@ require 'app/aws/aws_object_storage_app'
 require 'app/aws/aws_monitor_app'
 require 'app/aws/aws_notification_app'
 require 'app/aws/aws_dns_app'
+require 'app/aws/aws_rds_app'
 require 'app/openstack/openstack_compute_app'
 
 
@@ -177,6 +178,13 @@ end
 #
 map "/stackstudio/v1/cloud_management/aws/dns" do
   run AwsDnsApp
+end
+
+#
+# AWS RDS API
+#
+map "/stackstudio/v1/cloud_management/aws/rds" do
+  run AwsRdsApp
 end
 
 #
