@@ -158,7 +158,6 @@ namespace :update do
               new_service.enabled = service["enabled"]
               cloud_account.cloud_services << new_service
             end
-            db_cloud.delete("cloud_services")
           end
           cloud_mappings = db_cloud["cloud_mappings"]
           unless cloud_mappings.nil?
@@ -170,7 +169,6 @@ namespace :update do
               new_mapping.mapping_entries = mapping["mapping_entries"]
               cloud_account.cloud_mappings << new_mapping
             end
-            db_cloud.delete("cloud_mappings")
           end
           prices = db_cloud["prices"]
           unless prices.nil?
@@ -184,9 +182,7 @@ namespace :update do
               new_price.entries = price["entries"]
               cloud_account.prices << new_price
             end
-            db_cloud.delete("prices")
           end
-          db["clouds"].update({:_id => db_cloud["id"]}, db_cloud)
           cloud_account.save
         end
 
@@ -211,8 +207,6 @@ namespace :update do
                 end
               end
             end
-            db_account.delete("cloud_accounts")
-            db["accounts"].update({:_id => db_account["id"]}, db_account)
           end
         end
       end
