@@ -21,13 +21,8 @@ class CloudAccount
   field :topstack_id, type:String
 
   # Validation Rules
-  validates_presence_of :name
-  validates_uniqueness_of :name, :case_sensitive => false
   validates_associated :org
   validates_associated :cloud
-  
-  # indexes
-  index :name, unique: true
 
   def cloud_name
     (cloud.nil? ? nil : cloud.name)
