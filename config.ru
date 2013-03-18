@@ -26,6 +26,7 @@ require 'app/aws/aws_block_storage_app'
 require 'app/aws/aws_object_storage_app'
 require 'app/aws/aws_monitor_app'
 require 'app/aws/aws_notification_app'
+require 'app/aws/aws_dns_app'
 require 'app/openstack/openstack_compute_app'
 
 
@@ -169,6 +170,13 @@ end
 #
 map "/stackstudio/v1/cloud_management/aws/notification" do
   run AwsNotificationApp
+end
+
+#
+# AWS DNS API
+#
+map "/stackstudio/v1/cloud_management/aws/dns" do
+  run AwsDnsApp
 end
 
 #
