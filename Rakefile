@@ -133,7 +133,11 @@ namespace :update do
     require 'mongo'
     include Mongo
     cli = MongoClient.new
-    db = cli.db("transcend_db")
+    if ENV['RACK_ENV'] == "development"
+      db = cli.db("stack_place_development")
+    else
+      db = cli.db("transcend_db")
+    end
     Org.find(:all).each do |org|
       Cloud.find(:all).each do |cloud|
         cloud_account = CloudAccount.where(:cloud_id => cloud.id, :org_id => org.id).first
