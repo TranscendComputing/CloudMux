@@ -132,10 +132,11 @@ namespace :update do
     Mongoid.load!('app/config/mongoid.yml')
     require 'mongo'
     include Mongo
-    cli = MongoClient.new
     if ENV['RACK_ENV'] == "development"
+      cli = MongoClient.new("localhost", 27017)
       db = cli.db("stack_place_development")
     else
+      cli = MongoClient.new
       db = cli.db("transcend_db")
     end
     Org.find(:all).each do |org|
