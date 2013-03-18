@@ -191,7 +191,6 @@ namespace :update do
             db_account = db["accounts"].find("_id" => account.id).to_a[0]
             cloud_accounts = db_account["cloud_accounts"]
             unless cloud_accounts.nil?
-              if account.cloud_credentials.nil? || account.cloud_credentials.empty?
               cloud_accounts.each do |ca|
                 if account.cloud_credentials.where(:name => ca["name"]).first.nil?
                   if ca["cloud_id"] == cloud.id
@@ -206,7 +205,6 @@ namespace :update do
                     account.add_cloud_credential!(cloud_account.id, new_credentials)
                   end
                 end
-              end
               end
             end
           end
