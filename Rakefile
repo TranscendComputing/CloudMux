@@ -196,7 +196,6 @@ namespace :update do
               cloud_accounts.each do |ca|
                 if ca["cloud_id"] == cloud.id
                   new_credentials = CloudCredential.new
-                  new_credentials.cloud_account = cloud_account
                   new_credentials.name = ca["name"]
                   new_credentials.description = ca["description"]
                   new_credentials.access_key = ca["access_key"]
@@ -204,8 +203,7 @@ namespace :update do
                   new_credentials.cloud_attributes = ca["cloud_attributes"]
                   new_credentials.stack_preferences = ca["stack_preferences"]
                   new_credentials.topstack_configured = ca["topstack_configured"]
-                  account.cloud_credentials << new_credentials
-                  account.save
+                  account.add_cloud_credential!(cloud_account.id, new_credentials)
                 end
               end
             end
