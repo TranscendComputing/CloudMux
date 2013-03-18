@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'debugger'
 
 task :environment do
   require File.join(File.dirname(__FILE__), 'app', 'init')
@@ -143,9 +144,9 @@ namespace :update do
       Cloud.find(:all).each do |cloud|
         cloud_account = CloudAccount.where(:cloud_id => cloud.id, :org_id => org.id).first
         if cloud_account.nil?
-          cloud_account = CloudAccount.create(:name => cloud.name)
-          cloud_account.org_id = org.id
-          cloud_account.cloud_id = cloud.id
+          cloud_account = CloudAccount.new(:name => cloud.name)
+          cloud_account.org = org
+          cloud_account.cloud = cloud
           db_cloud = db["clouds"].find("_id" => cloud.id).to_a[0]
           cloud_services = db_cloud["cloud_services"]
           unless cloud_services.nil?
@@ -183,6 +184,7 @@ namespace :update do
               cloud_account.prices << new_price
             end
           end
+          puts "Creating cloud account for org: #{org.name}, cloud: #{cloud.name}"
           cloud_account.save
         end
 
@@ -202,8 +204,8 @@ namespace :update do
                   new_credentials.cloud_attributes = ca["cloud_attributes"]
                   new_credentials.stack_preferences = ca["stack_preferences"]
                   new_credentials.topstack_configured = ca["topstack_configured"]
-                  new_credentials.account = account
-                  new_credentials.save
+                  account.cloud_credentials << new_credentials
+                  account.save
                 end
               end
             end
