@@ -758,7 +758,6 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 	
-	
 	def get_compute_interface(cred_id)
 		if(cred_id.nil?)
 			return nil
@@ -771,13 +770,4 @@ class AwsComputeApp < ResourceApiBase
 			end
 		end
 	end
-	
-	def body_to_json(request)
-		if(!request.content_length.nil? && request.content_length != "0")
-			return MultiJson.decode(request.body.read)
-		else
-			return nil
-		end
-	end
-
 end
