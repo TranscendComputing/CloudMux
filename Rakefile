@@ -126,6 +126,94 @@ namespace :update do
 			end
 		end
 	end
+
+  desc "Update cloud account and add cloud credentials model"
+  task :cloud_account_models => [:environment] do
+    Mongoid.load!('app/config/mongoid.yml')
+    require 'mongo'
+    include Mongo
+    cli = MongoClient.new
+    db = cli.db("transcend_db")
+    Org.find(:all).each do |org|
+      Cloud.find(:all).each do |cloud|
+        cloud_account = CloudAccount.where(:cloud_id => cloud.id, :org_id => org.id).first
+        if cloud_account.nil?
+          cloud_account = CloudAccount.create(:name => cloud.name)
+          cloud_account.org_id = org.id
+          cloud_account.cloud_id = cloud.id
+          db_cloud = db["clouds"].find("_id" => cloud.id).to_a[0]
+          cloud_services = db_cloud["cloud_services"]
+          unless cloud_services.nil?
+            cloud_services.each do |service|
+              new_service = CloudService.new
+              new_service.service_type = service["type"]
+              new_service.path = service["path"]
+              new_service.host = service["host"]
+              new_service.port = service["port"]
+              new_service.enabled = service["enabled"]
+              cloud_account.cloud_services << new_service
+            end
+            db_cloud.delete("cloud_services")
+          end
+          cloud_mappings = db_cloud["cloud_mappings"]
+          unless cloud_mappings.nil?
+            cloud_mappings.each do |mapping|
+              new_mapping = CloudMapping.new
+              new_mapping.name = mapping["name"]
+              new_mapping.mapping_type = mapping["mapping_type"]
+              new_mapping.properties = mapping["properties"]
+              new_mapping.mapping_entries = mapping["mapping_entries"]
+              cloud_account.cloud_mappings << new_mapping
+            end
+            db_cloud.delete("cloud_mappings")
+          end
+          prices = db_cloud["prices"]
+          unless prices.nil?
+            prices.each do |price|
+              new_price = Price.new
+              new_price.name = price["name"]
+              new_price.type = price["type"]
+              new_price.effective_price = price["effective_price"]
+              new_price.effective_date = price["effective_date"]
+              new_price.properties = price["properties"]
+              new_price.entries = price["entries"]
+              cloud_account.prices << new_price
+            end
+            db_cloud.delete("prices")
+          end
+          db["clouds"].update({:_id => db_cloud["id"]}, db_cloud)
+          cloud_account.save
+        end
+
+        org.accounts.each do |account|
+          db_account = db["accounts"].find("_id" => account.id).to_a[0]
+          cloud_accounts = db_account["cloud_accounts"]
+          unless cloud_accounts.nil?
+            if account.cloud_credentials.nil? || account.cloud_credentials.empty?
+              cloud_accounts.each do |ca|
+                if ca["cloud_id"] == cloud.id
+                  new_credentials = CloudCredential.new
+                  new_credentials.cloud_account = cloud_account
+                  new_credentials.name = ca["name"]
+                  new_credentials.description = ca["description"]
+                  new_credentials.access_key = ca["access_key"]
+                  new_credentials.secret_key = ca["secret_key"]
+                  new_credentials.cloud_attributes = ca["cloud_attributes"]
+                  new_credentials.stack_preferences = ca["stack_preferences"]
+                  new_credentials.topstack_configured = ca["topstack_configured"]
+                  new_credentials.account = account
+                  new_credentials.save
+                end
+              end
+            end
+            db_account.delete("cloud_accounts")
+            db["accounts"].update({:_id => db_account["id"]}, db_account)
+          end
+        end
+      end
+    end
+    cli.close
+  end
 end
 
 namespace :update do
