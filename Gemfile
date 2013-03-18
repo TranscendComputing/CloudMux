@@ -14,10 +14,10 @@ gem 'thin', '~> 1.3.1'
 gem 'rake'
 
 # Data Storage
-gem 'mongo', '1.5.2'
+gem 'mongo', '1.8.3'
 gem 'mongo_ext', '~> 0.19', :platform => :ruby # native extensions for performance
-gem 'bson_ext', '1.5.2', :platform => :ruby  # native extensions for performance
-gem 'bson', '1.5.2'
+gem 'bson_ext', '1.8.3', :platform => :ruby  # native extensions for performance
+gem 'bson', '1.8.3'
 gem 'mongoid', '2.4.3'
 
 # CLI and Offline documentation generator
