@@ -6,7 +6,7 @@ class AwsComputeApp < ResourceApiBase
 	# Compute Instance
 	#
 	get '/instances/describe' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -21,7 +21,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	put '/instances/create' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -40,7 +40,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	post '/instances/start' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -59,7 +59,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	post '/instances/stop' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -78,7 +78,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	post '/instances/reboot' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -97,7 +97,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	delete '/instances/terminate' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -119,7 +119,7 @@ class AwsComputeApp < ResourceApiBase
 	# Compute Availability Zones
 	#
 	get '/availability_zones/describe' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -137,7 +137,7 @@ class AwsComputeApp < ResourceApiBase
 	# Compute Flavors
 	#
 	get '/flavors/describe' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -150,7 +150,7 @@ class AwsComputeApp < ResourceApiBase
 	# Compute Security Group
 	#
 	get '/security_groups/describe' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -165,7 +165,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	put '/security_groups/create' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -184,7 +184,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	delete '/security_groups/delete' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -207,7 +207,7 @@ class AwsComputeApp < ResourceApiBase
 	# Compute Key Pairs
 	#
 	get '/key_pairs/describe' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -222,7 +222,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	post '/key_pairs/create' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -241,7 +241,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	delete '/key_pairs/delete' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -263,7 +263,7 @@ class AwsComputeApp < ResourceApiBase
 	# Compute Spot Requests
 	#
 	get '/spot_requests/describe' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -278,7 +278,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	put '/spot_requests/create' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -297,7 +297,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	delete '/spot_requests/delete' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -316,7 +316,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	get '/spot_prices/describe' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -331,7 +331,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	post '/spot_prices/current' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -350,7 +350,7 @@ class AwsComputeApp < ResourceApiBase
 	# Compute Elastic Ips
 	#
 	get '/addresses/describe' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -365,7 +365,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	put '/addresses/create' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -384,7 +384,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	delete '/addresses/delete' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -403,7 +403,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	post '/addresses/associate' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -422,7 +422,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	post '/addresses/disassociate' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -444,7 +444,7 @@ class AwsComputeApp < ResourceApiBase
 	# Compute Reserved Instances
 	#
 	get '/reserved_instances/describe' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -459,7 +459,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	put '/reserved_instances/create' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -481,7 +481,7 @@ class AwsComputeApp < ResourceApiBase
 	# VPCs
 	#
 	get '/vpcs/describe' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -496,7 +496,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	put '/vpcs/create' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -520,7 +520,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 
 	delete '/vpcs/delete' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -539,7 +539,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 
 	post '/vpcs/associate_dhcp_options' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -561,7 +561,7 @@ class AwsComputeApp < ResourceApiBase
 	# DHCPs
 	#
 	get '/dhcp_options/describe' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -576,7 +576,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	put '/dhcp_options/create' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -595,7 +595,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 
 	delete '/dhcp_options/delete' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -617,7 +617,7 @@ class AwsComputeApp < ResourceApiBase
 	# Internet Gateways
 	#
 	get '/internet_gateways/describe' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -632,7 +632,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	put '/internet_gateways/create' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -646,7 +646,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 
 	post '/internet_gateways/attach' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -665,7 +665,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 
 	post '/internet_gateways/detach' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -684,7 +684,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 
 	delete '/internet_gateways/delete' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -706,7 +706,7 @@ class AwsComputeApp < ResourceApiBase
 	# Subnets
 	#
 	get '/subnets/describe' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -721,7 +721,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	put '/subnets/create' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -740,7 +740,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 
 	delete '/subnets/delete' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
@@ -758,7 +758,7 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 	
-	def get_compute_interface(cred_id)
+	def get_compute_interface(cred_id, region)
 		if(cred_id.nil?)
 			return nil
 		else
@@ -766,7 +766,11 @@ class AwsComputeApp < ResourceApiBase
 			if cloud_cred.nil?
 				return nil
 			else
-				return Fog::Compute::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
+				if region.nil? and region != ""
+					return Fog::Compute::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
+				else
+					return Fog::Compute::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => region})
+				end
 			end
 		end
 	end
