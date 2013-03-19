@@ -6,7 +6,7 @@ class AwsBlockStorageApp < ResourceApiBase
 	# Volumes
 	#
 	get '/volumes/describe' do
-		block_storage = get_block_storage_interface(params[:cred_id])
+		block_storage = get_block_storage_interface(params[:cred_id], params[:region])
 		if(block_storage.nil?)
 			[BAD_REQUEST]
 		else
@@ -21,7 +21,7 @@ class AwsBlockStorageApp < ResourceApiBase
 	end
 	
 	put '/volumes/create' do
-		block_storage = get_block_storage_interface(params[:cred_id])
+		block_storage = get_block_storage_interface(params[:cred_id], params[:region])
 		if(block_storage.nil?)
 			[BAD_REQUEST]
 		else
@@ -36,7 +36,7 @@ class AwsBlockStorageApp < ResourceApiBase
 	end
 	
 	delete '/volumes/delete' do
-		block_storage = get_block_storage_interface(params[:cred_id])
+		block_storage = get_block_storage_interface(params[:cred_id], params[:region])
 		if(block_storage.nil?)
 			[BAD_REQUEST]
 		else
@@ -51,7 +51,7 @@ class AwsBlockStorageApp < ResourceApiBase
 	end
 	
 	post '/volumes/attach' do
-		block_storage = get_block_storage_interface(params[:cred_id])
+		block_storage = get_block_storage_interface(params[:cred_id], params[:region])
 		if(block_storage.nil?)
 			[BAD_REQUEST]
 		else
@@ -66,7 +66,7 @@ class AwsBlockStorageApp < ResourceApiBase
 	end
 	
 	post '/volumes/detach' do
-		block_storage = get_block_storage_interface(params[:cred_id])
+		block_storage = get_block_storage_interface(params[:cred_id], params[:region])
 		if(block_storage.nil?)
 			[BAD_REQUEST]
 		else
@@ -81,7 +81,7 @@ class AwsBlockStorageApp < ResourceApiBase
 	end
 	
 	post '/volumes/force_detach' do
-		block_storage = get_block_storage_interface(params[:cred_id])
+		block_storage = get_block_storage_interface(params[:cred_id], params[:region])
 		if(block_storage.nil?)
 			[BAD_REQUEST]
 		else
@@ -99,7 +99,7 @@ class AwsBlockStorageApp < ResourceApiBase
 	# Snapshots
 	#
 	get '/snapshots/describe' do
-		block_storage = get_block_storage_interface(params[:cred_id])
+		block_storage = get_block_storage_interface(params[:cred_id], params[:region])
 		if(block_storage.nil?)
 			[BAD_REQUEST]
 		else
@@ -114,7 +114,7 @@ class AwsBlockStorageApp < ResourceApiBase
 	end
 	
 	put '/snapshots/create' do
-		block_storage = get_block_storage_interface(params[:cred_id])
+		block_storage = get_block_storage_interface(params[:cred_id], params[:region])
 		if(block_storage.nil?)
 			[BAD_REQUEST]
 		else
@@ -129,7 +129,7 @@ class AwsBlockStorageApp < ResourceApiBase
 	end
 	
 	delete '/snapshots/delete' do
-		block_storage = get_block_storage_interface(params[:cred_id])
+		block_storage = get_block_storage_interface(params[:cred_id], params[:region])
 		if(block_storage.nil?)
 			[BAD_REQUEST]
 		else
@@ -143,7 +143,7 @@ class AwsBlockStorageApp < ResourceApiBase
 		end
 	end
 
-	def get_block_storage_interface(cred_id)
+	def get_block_storage_interface(cred_id, region)
 		if(cred_id.nil?)
 			return nil
 		else
@@ -151,7 +151,11 @@ class AwsBlockStorageApp < ResourceApiBase
 			if cloud_cred.nil?
 				return nil
 			else
-				return Fog::Compute::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
+				if region.nil? and region != ""
+					return Fog::Compute::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
+				else
+					return Fog::Compute::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => region})
+				end
 			end
 		end
 	end

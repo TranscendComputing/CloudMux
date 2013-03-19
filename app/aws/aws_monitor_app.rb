@@ -6,7 +6,7 @@ class AwsMonitorApp < ResourceApiBase
 	# Alarms
 	#
 	get '/alarms/describe' do
-		monitor = get_monitor_interface(params[:cred_id])
+		monitor = get_monitor_interface(params[:cred_id], params[:region])
 		if(monitor.nil?)
 			[BAD_REQUEST]
 		else
@@ -21,7 +21,7 @@ class AwsMonitorApp < ResourceApiBase
 	end
 	
 	put '/alarms/create' do
-		monitor = get_monitor_interface(params[:cred_id])
+		monitor = get_monitor_interface(params[:cred_id], params[:region])
 		if(monitor.nil?)
 			[BAD_REQUEST]
 		else
@@ -36,7 +36,7 @@ class AwsMonitorApp < ResourceApiBase
 	end
 	
 	delete '/alarms/delete' do
-		monitor = get_monitor_interface(params[:cred_id])
+		monitor = get_monitor_interface(params[:cred_id], params[:region])
 		if(monitor.nil?)
 			[BAD_REQUEST]
 		else
@@ -54,7 +54,7 @@ class AwsMonitorApp < ResourceApiBase
 	# Metrics
 	#
 	get '/metrics/describe' do
-		monitor = get_monitor_interface(params[:cred_id])
+		monitor = get_monitor_interface(params[:cred_id], params[:region])
 		if(monitor.nil?)
 			[BAD_REQUEST]
 		else
@@ -82,7 +82,7 @@ class AwsMonitorApp < ResourceApiBase
 	# Metric Statistics
 	#
 	get '/metric_statistics/describe' do
-		monitor = get_monitor_interface(params[:cred_id])
+		monitor = get_monitor_interface(params[:cred_id], params[:region])
 		if(monitor.nil?)
 			[BAD_REQUEST]
 		else
@@ -128,7 +128,7 @@ class AwsMonitorApp < ResourceApiBase
 		end
 	end
 
-	def get_monitor_interface(cred_id)
+	def get_monitor_interface(cred_id, region)
 		if(cred_id.nil?)
 			return nil
 		else
@@ -136,7 +136,11 @@ class AwsMonitorApp < ResourceApiBase
 			if cloud_cred.nil?
 				return nil
 			else
-				return Fog::AWS::CloudWatch.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
+				if region.nil? and region != ""
+					return Fog::AWS::CloudWatch.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
+				else
+					return Fog::AWS::CloudWatch.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => region})
+				end
 			end
 		end
 	end

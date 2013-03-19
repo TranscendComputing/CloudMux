@@ -6,7 +6,7 @@ class AwsObjectStorageApp < ResourceApiBase
 	# Buckets
 	#
 	get '/directories/describe' do
-		object_storage = get_object_storage_interface(params[:cred_id])
+		object_storage = get_object_storage_interface(params[:cred_id], params[:region])
 		if(object_storage.nil?)
 			[BAD_REQUEST]
 		else
@@ -21,7 +21,7 @@ class AwsObjectStorageApp < ResourceApiBase
 	end
 	
 	put '/directories/create' do
-		object_storage = get_object_storage_interface(params[:cred_id])
+		object_storage = get_object_storage_interface(params[:cred_id], params[:region])
 		if(object_storage.nil?)
 			[BAD_REQUEST]
 		else
@@ -40,7 +40,7 @@ class AwsObjectStorageApp < ResourceApiBase
 	end
 	
 	delete '/directories/delete' do
-		object_storage = get_object_storage_interface(params[:cred_id])
+		object_storage = get_object_storage_interface(params[:cred_id], params[:region])
 		if(object_storage.nil?)
 			[BAD_REQUEST]
 		else
@@ -62,7 +62,7 @@ class AwsObjectStorageApp < ResourceApiBase
 	# Files
 	#
 	get '/directory/files' do
-		object_storage = get_object_storage_interface(params[:cred_id])
+		object_storage = get_object_storage_interface(params[:cred_id], params[:region])
 		if(object_storage.nil?)
 			[BAD_REQUEST]
 		else
@@ -81,7 +81,7 @@ class AwsObjectStorageApp < ResourceApiBase
 	end
 	
 	post '/directory/file/download' do
-		object_storage = get_object_storage_interface(params[:cred_id])
+		object_storage = get_object_storage_interface(params[:cred_id], params[:region])
 		if(object_storage.nil?)
 			[BAD_REQUEST]
 		else
@@ -102,7 +102,7 @@ class AwsObjectStorageApp < ResourceApiBase
 	end
 	
 	post '/directory/file/upload' do
-		object_storage = get_object_storage_interface(params[:cred_id])
+		object_storage = get_object_storage_interface(params[:cred_id], params[:region])
 		if(object_storage.nil?)
 			[BAD_REQUEST]
 		else
@@ -122,7 +122,7 @@ class AwsObjectStorageApp < ResourceApiBase
 	end
 	
 	delete '/directory/file/delete' do
-		object_storage = get_object_storage_interface(params[:cred_id])
+		object_storage = get_object_storage_interface(params[:cred_id], params[:region])
 		if(object_storage.nil?)
 			[BAD_REQUEST]
 		else
@@ -141,7 +141,7 @@ class AwsObjectStorageApp < ResourceApiBase
 		end
 	end
 
-	def get_object_storage_interface(cred_id)
+	def get_object_storage_interface(cred_id, region)
 		if(cred_id.nil?)
 			return nil
 		else
@@ -149,7 +149,11 @@ class AwsObjectStorageApp < ResourceApiBase
 			if cloud_cred.nil?
 				return nil
 			else
-				return Fog::Storage::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
+				if region.nil? and region != ""
+					return Fog::Storage::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
+				else
+					return Fog::Storage::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => region})
+				end
 			end
 		end
 	end

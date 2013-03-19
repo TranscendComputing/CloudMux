@@ -6,7 +6,7 @@ class AwsRdsApp < ResourceApiBase
 	# Volumes
 	#
 	get '/databases/describe' do
-		rds = get_rds_interface(params[:cred_id])
+		rds = get_rds_interface(params[:cred_id], params[:region])
 		if(rds.nil?)
 			[BAD_REQUEST]
 		else
@@ -21,7 +21,7 @@ class AwsRdsApp < ResourceApiBase
 	end
 	
 	put '/databases/create' do
-		rds = get_rds_interface(params[:cred_id])
+		rds = get_rds_interface(params[:cred_id], params[:region])
 		if(rds.nil?)
 			[BAD_REQUEST]
 		else
@@ -36,7 +36,7 @@ class AwsRdsApp < ResourceApiBase
 	end
 	
 	delete '/databases/delete' do
-		rds = get_rds_interface(params[:cred_id])
+		rds = get_rds_interface(params[:cred_id], params[:region])
 		if(rds.nil?)
 			[BAD_REQUEST]
 		else
@@ -50,7 +50,7 @@ class AwsRdsApp < ResourceApiBase
 		end
 	end
 
-	def get_rds_interface(cred_id)
+	def get_rds_interface(cred_id, region)
 		if(cred_id.nil?)
 			return nil
 		else
@@ -58,7 +58,11 @@ class AwsRdsApp < ResourceApiBase
 			if cloud_cred.nil?
 				return nil
 			else
-				return Fog::AWS::RDS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
+				if region.nil? and region != ""
+					return Fog::AWS::RDS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
+				else
+					return Fog::AWS::RDS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => region})
+				end
 			end
 		end
 	end

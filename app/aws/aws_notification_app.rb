@@ -6,7 +6,7 @@ class AwsNotificationApp < ResourceApiBase
 	# Topics
 	#
 	get '/topics/describe' do
-		notification = get_notification_interface(params[:cred_id])
+		notification = get_notification_interface(params[:cred_id], params[:region])
 		if(notification.nil?)
 			[BAD_REQUEST]
 		else
@@ -23,7 +23,7 @@ class AwsNotificationApp < ResourceApiBase
 	end
 
 
-	def get_notification_interface(cred_id)
+	def get_notification_interface(cred_id, region)
 		if(cred_id.nil?)
 			return nil
 		else
@@ -31,7 +31,11 @@ class AwsNotificationApp < ResourceApiBase
 			if cloud_cred.nil?
 				return nil
 			else
-				return Fog::AWS::SNS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
+				if region.nil? and region != ""
+					return Fog::AWS::SNS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
+				else
+					return Fog::AWS::SNS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => region})
+				end
 			end
 		end
 	end
