@@ -31,7 +31,7 @@ gem 'bcrypt-ruby', '~> 3.0.1'
 gem 'redcarpet', '~> 2.1.0'
 
 # Cloud Management
-gem 'fog', '~> 1.10', :require => 'fog'
+gem 'fog', '1.8', :require => 'fog'
 gem 'debugger'
 
 # Flex support hack - allow _method to be passed as a URL parameter for PUT and DELETE
