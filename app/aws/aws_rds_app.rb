@@ -58,7 +58,7 @@ class AwsRdsApp < ResourceApiBase
 			if cloud_cred.nil?
 				return nil
 			else
-				if region.nil? and region != "undefined" and region != ""
+				if region.nil? or region == "undefined" or region == ""
 					return Fog::AWS::RDS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
 				else
 					return Fog::AWS::RDS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => region})

@@ -151,7 +151,7 @@ class AwsBlockStorageApp < ResourceApiBase
 			if cloud_cred.nil?
 				return nil
 			else
-				if region.nil? and region != "undefined" and region != ""
+				if region.nil? or region == "undefined" or region == ""
 					return Fog::Compute::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
 				else
 					return Fog::Compute::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => region})
