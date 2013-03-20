@@ -457,6 +457,21 @@ class AwsComputeApp < ResourceApiBase
 			[OK, response.to_json]
 		end
 	end
+
+	get '/reserved_instances/describe_offerings' do
+		compute = get_compute_interface(params[:cred_id])
+		if(compute.nil?)
+			[BAD_REQUEST]
+		else
+			filters = params[:filters]
+			if(filters.nil?)
+				response = compute.describe_reserved_instances_offerings.body["reservedInstancesOfferingsSet"]
+			else
+				response = compute.describe_reserved_instances_offerings(filters).body["reservedInstancesOfferingsSet"]
+			end
+			[OK, response.to_json]
+		end
+	end
 	
 	put '/reserved_instances/create' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
@@ -468,7 +483,7 @@ class AwsComputeApp < ResourceApiBase
 				[BAD_REQUEST]
 			else
 				begin
-					response = compute.addresses.create(json_body["reserved_instance"])
+					response = compute.purchase_reserved_instances_offering(json_body["reserved_instances_offering_id"], json_body["instance_count"])
 					[OK, response.to_json]
 				rescue => error
 					handle_error(error)
