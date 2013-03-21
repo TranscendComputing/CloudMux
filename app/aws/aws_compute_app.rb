@@ -459,7 +459,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 
 	get '/reserved_instances/describe_offerings' do
-		compute = get_compute_interface(params[:cred_id])
+		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
 			[BAD_REQUEST]
 		else
