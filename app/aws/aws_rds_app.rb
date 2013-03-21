@@ -29,8 +29,12 @@ class AwsRdsApp < ResourceApiBase
 			if(json_body.nil?)
 				[BAD_REQUEST]
 			else
-				response = rds.servers.create(json_body["relational_database"])
-				[OK, response.to_json]
+				begin
+					response = rds.servers.create(json_body["relational_database"])
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -44,8 +48,12 @@ class AwsRdsApp < ResourceApiBase
 			if(json_body.nil? || json_body["relational_database"].nil?)
 				[BAD_REQUEST]
 			else
-				response = rds.servers.get(json_body["relational_database"]["id"]).destroy
-				[OK, response.to_json]
+				begin
+					response = rds.servers.get(json_body["relational_database"]["id"]).destroy
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
