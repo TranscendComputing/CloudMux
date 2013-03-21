@@ -29,8 +29,12 @@ class AwsBlockStorageApp < ResourceApiBase
 			if(json_body.nil?)
 				[BAD_REQUEST]
 			else
-				response = block_storage.volumes.create(json_body["volume"])
-				[OK, response.to_json]
+				begin
+					response = block_storage.volumes.create(json_body["volume"])
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -44,8 +48,12 @@ class AwsBlockStorageApp < ResourceApiBase
 			if(json_body.nil? || json_body["volume"].nil?)
 				[BAD_REQUEST]
 			else
-				response = block_storage.volumes.get(json_body["volume"]["id"]).destroy
-				[OK, response.to_json]
+				begin
+					response = block_storage.volumes.get(json_body["volume"]["id"]).destroy
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -59,8 +67,12 @@ class AwsBlockStorageApp < ResourceApiBase
 			if(json_body.nil? || json_body["volume"].nil?)
 				[BAD_REQUEST]
 			else
-				response = block_storage.attach_volume(json_body["volume"]["server_id"], json_body["volume"]["id"], json_body["volume"]["device"])
-				[OK, response.to_json]
+				begin
+					response = block_storage.attach_volume(json_body["volume"]["server_id"], json_body["volume"]["id"], json_body["volume"]["device"])
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -74,8 +86,12 @@ class AwsBlockStorageApp < ResourceApiBase
 			if(json_body.nil? || json_body["volume"].nil?)
 				[BAD_REQUEST]
 			else
-				response = block_storage.detach_volume(json_body["volume"]["id"])
-				[OK, response.to_json]
+				begin
+					response = block_storage.detach_volume(json_body["volume"]["id"])
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -89,8 +105,12 @@ class AwsBlockStorageApp < ResourceApiBase
 			if(json_body.nil? || json_body["volume"].nil?)
 				[BAD_REQUEST]
 			else
-				response = block_storage.detach_volume(json_body["volume"]["id"], {"Force"=>true})
-				[OK, response.to_json]
+				begin
+					response = block_storage.detach_volume(json_body["volume"]["id"], {"Force"=>true})
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -122,8 +142,12 @@ class AwsBlockStorageApp < ResourceApiBase
 			if(json_body.nil?)
 				[BAD_REQUEST]
 			else
-				response = block_storage.snapshots.create(json_body["snapshot"])
-				[OK, response.to_json]
+				begin
+					response = block_storage.snapshots.create(json_body["snapshot"])
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -137,8 +161,12 @@ class AwsBlockStorageApp < ResourceApiBase
 			if(json_body.nil? || json_body["snapshot"].nil?)
 				[BAD_REQUEST]
 			else
-				response = block_storage.snapshots.get(json_body["snapshot"]["id"]).destroy
-				[OK, response.to_json]
+				begin
+					response = block_storage.snapshots.get(json_body["snapshot"]["id"]).destroy
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
