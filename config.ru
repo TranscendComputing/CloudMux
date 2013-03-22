@@ -28,6 +28,7 @@ require 'app/aws/aws_monitor_app'
 require 'app/aws/aws_notification_app'
 require 'app/aws/aws_dns_app'
 require 'app/aws/aws_rds_app'
+require 'app/aws/aws_load_balancer_app'
 require 'app/openstack/openstack_compute_app'
 
 
@@ -185,6 +186,13 @@ end
 #
 map "/stackstudio/v1/cloud_management/aws/rds" do
   run AwsRdsApp
+end
+
+#
+# AWS Load Balancer API
+#
+map "/stackstudio/v1/cloud_management/aws/load_balancer" do
+  run AwsLoadBalancerApp
 end
 
 #
