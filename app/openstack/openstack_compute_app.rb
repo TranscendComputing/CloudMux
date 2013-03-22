@@ -206,8 +206,29 @@ class OpenstackComputeApp < ResourceApiBase
             else
                 begin
                     group = compute.security_groups.get(json_body["group_id"])
-                    response = group.delete_security_group_rule(json_body["rule_id"]).body
-                    [OK, response.to_json]
+                    group.delete_security_group_rule(json_body["rule_id"])
+                    [OK, compute.security_groups.get(json_body["group_id"]).to_json]
+                rescue => error
+                    handle_error(error)
+                end
+            end
+        end
+    end
+
+    put '/security_groups/:id/add_rule' do
+        compute = get_compute_interface(params[:cred_id])
+        if(compute.nil?)
+            [BAD_REQUEST]
+        else
+            json_body = body_to_json(request)
+            if(json_body.nil? || json_body["rule"].nil?)
+                [BAD_REQUEST]
+            else
+                begin
+                    rule = json_body["rule"]
+                    group = compute.security_groups.get(params[:id])
+                    group.create_security_group_rule(rule["fromPort"], rule["toPort"], rule["ipProtocol"], rule["cidr"], rule["groupId"])
+                    [OK, compute.security_groups.get(params[:id]).to_json]
                 rescue => error
                     handle_error(error)
                 end
