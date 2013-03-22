@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'fog'
+require 'debugger'
 
 class AwsComputeApp < ResourceApiBase
 	#
