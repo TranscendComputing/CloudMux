@@ -16,7 +16,7 @@ class ResourceApiBase < ApiBase
 			when Excon::Errors::BadRequest
 				response_body = Nokogiri::XML(error.response.body)
 				message = response_body.css('Message').text
-				if message.nil?
+				if message.nil? || message.empty?
 					response_body = JSON.parse(error.response.body)
 					message = response_body["badRequest"]["message"]
 				end

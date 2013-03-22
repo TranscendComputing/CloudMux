@@ -40,12 +40,23 @@ require 'app/openstack/openstack_compute_app'
 # http://devcenter.heroku.com/articles/ruby#logging
 $stdout.sync = true
 
+
 # Sinatra now has logging - disable for tests
 configure(:test) { disable :logging }
+=begin
+register Sinatra::CrossOrigin
+configure do 
+  set :cross_origin, true
+  set :allow_origin, "*"
+  set :allow_methods, [:get, :post, :options, :put, :delete]
+  set :allow_credentials, true
+  set :allow_headers, "X-HTTP-Method-Override"
+  set :max_age, "1728000"
+end
+=end
 
 require 'rack-methodoverride-with-params'
 use Rack::MethodOverrideWithParams
-#use Rack::MethodOverride
 set :method_override, :true
 
 #

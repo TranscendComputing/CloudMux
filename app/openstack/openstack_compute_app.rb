@@ -142,7 +142,7 @@ class OpenstackComputeApp < ResourceApiBase
     #
     # Compute Security Group
     #
-    get '/security_groups/describe' do
+    get '/security_groups' do
         compute = get_compute_interface(params[:cred_id])
         if(compute.nil?)
             [BAD_REQUEST]
@@ -157,7 +157,7 @@ class OpenstackComputeApp < ResourceApiBase
         end
     end
     
-    put '/security_groups/create' do
+    put '/security_groups' do
         compute = get_compute_interface(params[:cred_id])
         if(compute.nil?)
             [BAD_REQUEST]
@@ -176,7 +176,7 @@ class OpenstackComputeApp < ResourceApiBase
         end
     end
     
-    delete '/security_groups/delete' do
+    delete '/security_groups' do
         compute = get_compute_interface(params[:cred_id])
         if(compute.nil?)
             [BAD_REQUEST]
@@ -186,8 +186,49 @@ class OpenstackComputeApp < ResourceApiBase
                 [BAD_REQUEST]
             else
                 begin
-                    response = compute.security_groups.get(json_body["security_group"]["name"]).destroy
+                    response = compute.security_groups.get(json_body["security_group"]["id"]).destroy
                     [OK, response.to_json]
+                rescue => error
+                    handle_error(error)
+                end
+            end
+        end
+    end
+
+    delete '/security_groups/delete_rule' do
+        compute = get_compute_interface(params[:cred_id])
+        if(compute.nil?)
+            [BAD_REQUEST]
+        else
+            json_body = body_to_json(request)
+            if(json_body.nil? || json_body["rule_id"].nil?)
+                [BAD_REQUEST]
+            else
+                begin
+                    group = compute.security_groups.get(json_body["group_id"])
+                    group.delete_security_group_rule(json_body["rule_id"])
+                    [OK, compute.security_groups.get(json_body["group_id"]).to_json]
+                rescue => error
+                    handle_error(error)
+                end
+            end
+        end
+    end
+
+    put '/security_groups/:id/add_rule' do
+        compute = get_compute_interface(params[:cred_id])
+        if(compute.nil?)
+            [BAD_REQUEST]
+        else
+            json_body = body_to_json(request)
+            if(json_body.nil? || json_body["rule"].nil?)
+                [BAD_REQUEST]
+            else
+                begin
+                    rule = json_body["rule"]
+                    group = compute.security_groups.get(params[:id])
+                    group.create_security_group_rule(rule["fromPort"], rule["toPort"], rule["ipProtocol"], rule["cidr"], rule["groupId"])
+                    [OK, compute.security_groups.get(params[:id]).to_json]
                 rescue => error
                     handle_error(error)
                 end
