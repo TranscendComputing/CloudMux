@@ -4,6 +4,8 @@
 class ApiBase < Sinatra::Base
   include HttpStatusCodes
 
+  #register Sinatra::CrossOrigin
+  
   disable :protection
 
   # capture the incoming host and port for generating complete links in actions.
@@ -14,7 +16,25 @@ class ApiBase < Sinatra::Base
   before { content_type 'application/json', :charset => 'utf-8' }
   
   before { headers "Access-Control-Allow-Origin" => "*" }
+  #before { headers 'Access-Control-Allow-Headers' => ["Content-Type", "X-HTTP-Method-Override"] }
 
+  #after { headers 'Access-Control-Allow-Methods' => "PUT" }
+  #after { headers 'Access-Control-Allow-Headers' => ["Content-Type", "X-HTTP-Method-Override"] }
+=begin
+  before do
+    headers['Access-Control-Allow-Origin'] = '*'
+    headers['Access-Control-Allow-Methods'] = ['post', 'get', 'OPTIONS', 'PUT', 'delete']
+    headers['Access-Control-Allow-Headers']  = ['x-http-method-override']
+    headers['Access-Control-Max-Age'] = '1728000'    
+  end
+
+  after do    
+    headers['Access-Control-Allow-Origin'] = '*'
+    headers['Access-Control-Allow-Methods'] = ['post', 'get', 'OPTIONS', 'PUT', 'delete']
+    headers['Access-Control-Allow-Headers']  = ['x-http-method-override']
+    headers['Access-Control-Max-Age'] = '1728000'
+  end
+=end
   # catch errors when a find(id) fails
   error Mongoid::Errors::DocumentNotFound do
     halt 404
