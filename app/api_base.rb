@@ -45,6 +45,10 @@ class ApiBase < Sinatra::Base
     halt 404
   end
 
+  options '/*' do
+    response["Access-Control-Allow-Headers"] = "origin, x-requested-with, content-type"
+  end
+
   # TODO: not sure if this is required for production
   # not_found do
   #   '{"error":{"message":"Not found","validation_errors":{}}}'
