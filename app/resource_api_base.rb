@@ -13,6 +13,14 @@ class ResourceApiBase < ApiBase
 	
 	def handle_error(error)
 		case error
+			when Excon::Errors::Conflict
+				response_body = Nokogiri::XML(error.response.body)
+				message = response_body.css('Message').text
+				if message.nil? || message.empty?
+					response_body = JSON.parse(error.response.body)
+					message = response_body["conflictingRequest"]["message"]
+				end
+				[BAD_REQUEST, message]
 			when Excon::Errors::BadRequest
 				response_body = Nokogiri::XML(error.response.body)
 				message = response_body.css('Message').text
