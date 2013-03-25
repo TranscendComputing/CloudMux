@@ -184,17 +184,12 @@ class OpenstackComputeApp < ResourceApiBase
     #
     # Compute Key Pairs
     #
-    get '/key_pairs/describe' do
-        filters = params[:filters]
-        if(filters.nil?)
-            response = @compute.key_pairs
-        else
-            response = @compute.key_pairs.all(filters)
-        end
+    get '/key_pairs' do
+        response = @compute.key_pairs
         [OK, response.to_json]
     end
     
-    post '/key_pairs/create' do
+    post '/key_pairs' do
         if(params[:name].nil?)
             [BAD_REQUEST]
         else
@@ -208,17 +203,12 @@ class OpenstackComputeApp < ResourceApiBase
         end
     end
     
-    delete '/key_pairs/delete' do
-        json_body = body_to_json(request)
-        if(json_body.nil? || json_body["key_pair"].nil?)
-            [BAD_REQUEST]
-        else
-            begin
-                response = @compute.key_pairs.get(json_body["key_pair"]["name"]).destroy
-                [OK, response.to_json]
-            rescue => error
-                handle_error(error)
-            end
+    delete '/key_pairs/:id' do
+        begin
+            response = @compute.key_pairs.get(params[:id]).destroy
+            [OK, response.to_json]
+        rescue => error
+            handle_error(error)
         end
     end
     
