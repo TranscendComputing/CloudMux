@@ -30,6 +30,7 @@ require 'app/aws/aws_dns_app'
 require 'app/aws/aws_rds_app'
 require 'app/aws/aws_load_balancer_app'
 require 'app/openstack/openstack_compute_app'
+require 'app/openstack/openstack_block_storage_app'
 
 
 
@@ -211,4 +212,11 @@ end
 #
 map "/stackstudio/v1/cloud_management/openstack/compute" do
   run OpenstackComputeApp
+end
+
+#
+# Openstack Block Storage API
+#
+map "/stackstudio/v1/cloud_management/openstack/block_storage" do
+  run OpenstackBlockStorageApp
 end
