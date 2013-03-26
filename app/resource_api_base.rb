@@ -76,6 +76,9 @@ class ResourceApiBase < ApiBase
 			when ArgumentError
 				message = error.to_s
 				[BAD_REQUEST, message]
+			when Fog::Compute::OpenStack::NotFound
+				message = "OpenStack resource not found."
+				[NOT_FOUND, message]
 			else
 				message = "Invalid request."
 				[BAD_REQUEST, message]
