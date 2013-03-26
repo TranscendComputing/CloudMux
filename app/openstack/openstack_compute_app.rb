@@ -91,6 +91,14 @@ class OpenstackComputeApp < ResourceApiBase
             handle_error(error)
         end
     end
+
+    #
+    # Compute IP Pools
+    #
+    get '/address_pools' do
+        response = @compute.list_address_pools.body["floating_ip_pools"]
+        [OK, response.to_json]
+    end
     
     #
     # Compute Host
