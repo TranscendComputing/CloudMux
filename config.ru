@@ -2,7 +2,6 @@
 # gems
 require 'sinatra'
 require 'fog'
-require 'ruby-debug'
 
 # require the dependencies
 require File.join(File.dirname(__FILE__), 'app', 'init')
@@ -32,6 +31,7 @@ require 'app/aws/aws_load_balancer_app'
 require 'app/openstack/openstack_compute_app'
 require 'app/openstack/openstack_block_storage_app'
 require 'app/openstack/openstack_object_storage_app'
+require 'app/openstack/openstack_identity_app'
 
 
 
@@ -227,4 +227,11 @@ end
 #
 map "/stackstudio/v1/cloud_management/openstack/object_storage" do
   run OpenstackObjectStorageApp
+end
+
+#
+# Openstack Identity API
+#
+map "/stackstudio/v1/cloud_management/openstack/identity" do
+  run OpenstackIdentityApp
 end
