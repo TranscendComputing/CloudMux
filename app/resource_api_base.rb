@@ -80,8 +80,7 @@ class ResourceApiBase < ApiBase
 				message = "OpenStack resource not found."
 				[NOT_FOUND, message]
 			else
-				message = "Invalid request."
-				[BAD_REQUEST, message]
+				[BAD_REQUEST, error.to_s]
 		end
 	end
 end
