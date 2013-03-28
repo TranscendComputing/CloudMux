@@ -5,3 +5,4 @@ vendor
 /dist
 tags
 *.sublime*
+.DS_Store
