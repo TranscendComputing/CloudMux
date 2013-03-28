@@ -46,7 +46,7 @@ class ApiBase < Sinatra::Base
   end
 
   options '/*' do
-    response["Access-Control-Allow-Headers"] = "origin, x-requested-with, content-type"
+    response["Access-Control-Allow-Headers"] = "origin, x-requested-with, content-type, X-HTTP-Method-Override"
   end
 
   # TODO: not sure if this is required for production

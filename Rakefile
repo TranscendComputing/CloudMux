@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'debugger'
 
 task :environment do
   require File.join(File.dirname(__FILE__), 'app', 'init')
