@@ -10,6 +10,7 @@ class ResourceApiBase < ApiBase
 	def get_creds(cred_id)
 		Account.find_cloud_credential(cred_id)
 	end
+
 	
 	def handle_error(error)
 		case error
@@ -42,20 +43,27 @@ class ResourceApiBase < ApiBase
 					response_body = Nokogiri::XML(error.response.body)
 					message = response_body.css('Message').text
 				rescue
-					message = "Unable to connect to service endpoint"
+					message = error.to_s
 				end
 				[NOT_FOUND, message]
 			when Excon::Errors::Forbidden
 				begin
 					response_body = JSON.parse(error.response.body)
 					message = response_body["forbidden"]["message"]
+					if message.nil? || message.empty?
+						message = response_body["error"]["message"]
+					end
 				rescue JSON::ParserError => json_error
 					response_body = Nokogiri::XML(error.response.body)
 					message = response_body.css('Message').text
+					if message.nil? || message.empty?
+						message = error.response.body.to_s.gsub("\n", " ")
+					end
 				rescue
-					message = "Unable to connect to service endpoint"
+					message = error.response.body.to_s.gsub("\n", " ")
 				end
 				[FORBIDDEN, message]
+
 			when Excon::Errors::Timeout
 				message = "Read Timeout Reached"
 				[TIMEOUT, message]
