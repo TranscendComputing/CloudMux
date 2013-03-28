@@ -22,8 +22,12 @@ class OpenstackObjectStorageApp < ResourceApiBase
 	# Buckets
 	#
 	get '/directories' do
-        response = @object_storage.directories
-		[OK, response.to_json]
+        begin
+            response = @object_storage.directories
+    		[OK, response.to_json]
+        rescue => error
+            handle_error(error)
+        end
 	end
 	
 	post '/directories' do

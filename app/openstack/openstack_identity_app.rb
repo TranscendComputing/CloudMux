@@ -27,8 +27,12 @@ class OpenstackIdentityApp < ResourceApiBase
     # If tenant_id is passed as URL param, then this action is filtered by tenants
     # Otherwise, all users are returned  
 	get '/users' do
-        response = @identity.list_users(params[:tenant_id]).body["users"]
-		[OK, response.to_json]
+        begin
+            response = @identity.list_users(params[:tenant_id]).body["users"]
+    		[OK, response.to_json]
+        rescue => error
+            handle_error(error)
+        end
 	end
 	
 	post '/users' do
@@ -58,8 +62,12 @@ class OpenstackIdentityApp < ResourceApiBase
 	# Tenants
 	#
 	get '/tenants' do
-        response = @identity.list_tenants.body["tenants"]
-		[OK, response.to_json]
+        begin
+            response = @identity.list_tenants.body["tenants"]
+    		[OK, response.to_json]
+        rescue => error
+            handle_error(error)
+        end
 	end
 	
     post '/tenants' do
@@ -89,8 +97,12 @@ class OpenstackIdentityApp < ResourceApiBase
     # Roles
     #
     get '/roles' do
-        response = @identity.list_roles.body["roles"]
-        [OK, response.to_json]
+        begin
+            response = @identity.list_roles.body["roles"]
+            [OK, response.to_json]
+        rescue => error
+            handle_error(error)
+        end
     end
     
     post '/roles' do
