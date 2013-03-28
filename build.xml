@@ -138,6 +138,7 @@
 		<delete dir="${project.base.dir}/build" />
         <delete dir="${build}" />
         <delete dir="${dist}"/>
+        <delete dir="${cloudmux.home}/CloudMux"/>
 	</target>
 
 </project>
