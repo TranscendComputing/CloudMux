@@ -91,6 +91,7 @@
         <echo message="Deploying StackCore to ${deploy.ip}"/>
 		<echo message="scp ${build}/${package.file} ${deploy.ip}:/${cloudmux.home}"/>
 		<exec command="scp ${build}/${package.file} ${deploy.ip}:/${cloudmux.home}" failonerror="true"/>
+        <exec command="ssh ${deploy.ip} sudo rm -r ${cloudmux.home}/CloudMux" failonerror="true"/>
 		<exec command="ssh ${deploy.ip} sudo tar xvzf ${cloudmux.home}/${package.file} -C ${cloudmux.home}" failonerror="true"/>
 		<exec command="ssh ${deploy.ip} sudo chmod 755 ${cloudmux.home}/CloudMux" failonerror="true"/>
 		<exec command="ssh ${deploy.ip} sudo find ${cloudmux.home}/CloudMux -type d -exec chmod 755 {} \;" failonerror="true"/>
@@ -136,9 +137,6 @@
 
 	<target name="clean">
 		<delete dir="${project.base.dir}/build" />
-        <delete dir="${build}" />
-        <delete dir="${dist}"/>
-        <delete dir="${cloudmux.home}/CloudMux"/>
 	</target>
 
 </project>
