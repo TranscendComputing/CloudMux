@@ -15,6 +15,7 @@ class OpenstackIdentityApp < ResourceApiBase
                 ## TEMP HACK UNTIL CORRECTY IDENTITY URL IS RESOLVED
                 management_url = options["openstack_auth_url"].gsub("/tokens", "")
                 @identity = Fog::Identity.new(options.merge({:openstack_management_url => management_url}))
+                #@identity = Fog::Identity.new(options.merge({:openstack_endpoint_type => 'publicURL'}))
                 halt [BAD_REQUEST] if @identity.nil?
             end
         end
@@ -87,6 +88,18 @@ class OpenstackIdentityApp < ResourceApiBase
     delete '/tenants/:id' do
         begin
             response = @identity.tenants.destroy(params[:id])
+            [OK, response.to_json]
+        rescue => error
+            handle_error(error)
+        end
+    end
+
+    # Completely removes user from tenant 
+    delete '/tenants/:id/users/:user_id' do
+        begin
+            roles = @identity.list_roles_for_user_on_tenant(params[:id], params[:user_id]).body["roles"]
+            roles.each {|role| @identity.remove_user_from_tenant(params[:id], params[:user_id], role["id"])}
+            response = @identity.list_users(params[:id]).body["users"]
             [OK, response.to_json]
         rescue => error
             handle_error(error)
