@@ -70,10 +70,13 @@ class ResourceApiBase < ApiBase
 			when Net::HTTPServerException
 				message = JSON.parse(error.response.body)["error"][0]
 				[ERROR, message]
+			when Fog::AWS::IAM::EntityAlreadyExists 
+				message = error.message
+				[NOT_ACCEPTABLE, message] 
 			when Fog::AWS::IAM::Error
 				error = error.message.split(" => ")
 				message = error[1]
-				[NOT_FOUND, message]     
+				[NOT_FOUND, message]   
 			when Fog::Compute::AWS::Error
 				error = error.message.split(" => ")
 				message = error[1]
