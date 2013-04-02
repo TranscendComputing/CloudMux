@@ -170,6 +170,44 @@ class AwsIamApp < ResourceApiBase
 			end
 		end
 	end
+
+	post '/groups/users/add' do
+		iam = get_iam_interface(params[:cred_id])
+		if(iam.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil? || json_body["group"].nil? || json_body["user"].nil?)
+				[BAD_REQUEST]
+			else
+				begin
+					response = iam.add_user_to_group(json_body["group"]["GroupName"], json_body["user"]["id"])
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
+			end
+		end
+	end
+
+	post '/groups/users/remove' do
+		iam = get_iam_interface(params[:cred_id])
+		if(iam.nil?)
+			[BAD_REQUEST]
+		else
+			json_body = body_to_json(request)
+			if(json_body.nil? || json_body["group"].nil? || json_body["user"].nil?)
+				[BAD_REQUEST]
+			else
+				begin
+					response = iam.remove_user_from_group(json_body["group"]["GroupName"], json_body["user"]["id"])
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
+			end
+		end
+	end
 	
 	delete '/groups/delete' do
 		iam = get_iam_interface(params[:cred_id])
@@ -181,7 +219,14 @@ class AwsIamApp < ResourceApiBase
 				[BAD_REQUEST]
 			else
 				begin
-					response = iam.delete_group(json_body["group"]["GroupName"]).destroy
+					# remove all group policies
+					policies = iam.list_group_policies(json_body["group"]["GroupName"]).body["PolicyNames"]
+					policies.each {|policy| iam.delete_group_policy(json_body["group"]["GroupName"], policy)}
+					# remove all group users
+					users = iam.get_group(json_body["group"]["GroupName"]).body["Users"]
+					users.each {|user| iam.remove_user_from_group(json_body["group"]["GroupName"], user["UserName"])}
+					#delete the group
+					response = iam.delete_group(json_body["group"]["GroupName"])
 					[OK, response.to_json]
 				rescue => error
 					handle_error(error)
