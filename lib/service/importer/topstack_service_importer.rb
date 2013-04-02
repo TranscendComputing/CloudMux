@@ -15,6 +15,7 @@ class TopstackServiceImporter
     current_topstack_services << cloud_account.cloud_services.find(:first, :conditions=>{:service_type=>"ELC"})
     current_topstack_services << cloud_account.cloud_services.find(:first, :conditions=>{:service_type=>"ACW"})
     current_topstack_services << cloud_account.cloud_services.find(:first, :conditions=>{:service_type=>"SQS"})
+    current_topstack_services << cloud_account.cloud_services.find(:first, :conditions=>{:service_type=>"DNS"})
     
     current_topstack_services.each {|service| service.delete unless service.nil?}
     

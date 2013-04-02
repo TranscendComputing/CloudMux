@@ -40,7 +40,15 @@ class CloudAccount
   def public=(name); end # no-op: for the representer only  
   
   def find_price(price_id)
-  prices.select { |e| e.id.to_s == price_id.to_s }.first
+    prices.select { |e| e.id.to_s == price_id.to_s }.first
+  end
+
+  def find_service(service_id)
+    cloud_services.select { |s| s.id.to_s == service_id.to_s }.first
+  end
+
+  def find_mapping(mapping_id)
+    cloud_mappings.select { |m| m.id.to_s == mapping_id.to_s }.first
   end
 
   def remove_service!(service_id)
