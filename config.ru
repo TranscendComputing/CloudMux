@@ -29,6 +29,7 @@ require 'app/aws/aws_dns_app'
 require 'app/aws/aws_rds_app'
 require 'app/aws/aws_load_balancer_app'
 require 'app/aws/aws_iam_app'
+require 'app/aws/aws_queue_app'
 require 'app/openstack/openstack_compute_app'
 require 'app/openstack/openstack_block_storage_app'
 require 'app/openstack/openstack_object_storage_app'
@@ -214,6 +215,13 @@ end
 #
 map "/stackstudio/v1/cloud_management/aws/iam" do
   run AwsIamApp
+end
+
+#
+# AWS Queue API
+#
+map "/stackstudio/v1/cloud_management/aws/queue" do
+  run AwsQueueApp
 end
 
 #
