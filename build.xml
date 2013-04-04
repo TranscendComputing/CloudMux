@@ -108,7 +108,7 @@
 		<exec command="scp ${build}/${package.file} ${deploy.ip}:/${cloudmux.home}" failonerror="true"/>
         <exec command="ssh ${deploy.ip} rm -r ${cloudmux.home}/CloudMux" failonerror="true"/>
 		<exec command="ssh ${deploy.ip} tar xvzf ${cloudmux.home}/${package.file} -C ${cloudmux.home}" failonerror="true"/>
-        <exec command="ssh ${deploy.ip} '. /usr/local/etc/stack.env; cd ${cloudmux.home}/CloudMux; bundle install'" failonerror="true"/>
+        <exec command="ssh ${deploy.ip} '. /etc/profile.d/rvm.sh; . /usr/local/etc/stack.env; cd ${cloudmux.home}/CloudMux; bundle install'" failonerror="true"/>
 		<exec command="ssh ${deploy.ip} '. /usr/local/etc/stack.env; cd ${cloudmux.home}/CloudMux; bundle exec rake db:seed'" failonerror="true"/>
 	</target>
 
