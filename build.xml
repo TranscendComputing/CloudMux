@@ -102,6 +102,17 @@
         <exec command="ssh ${deploy.ip} sudo /etc/init.d/apache2 restart" failonerror="true"/>
 	</target>
 
+	<target name="deployprod" depends="bundle, package">
+        <echo message="Deploying StackCore to ${deploy.ip}"/>
+		<echo message="scp ${build}/${package.file} ${deploy.ip}:/${cloudmux.home}"/>
+		<exec command="scp ${build}/${package.file} ${deploy.ip}:/${cloudmux.home}" failonerror="true"/>
+        <exec command="ssh ${deploy.ip} rm -r ${cloudmux.home}/CloudMux" failonerror="true"/>
+		<exec command="ssh ${deploy.ip} tar xvzf ${cloudmux.home}/${package.file} -C ${cloudmux.home}" failonerror="true"/>
+        <exec command="ssh ${deploy.ip} '. /usr/local/etc/stack.env; bundle install --gemfile=${cloudmux.home}/CloudMux/Gemfile --without development test --path ${cloudmux.home}/stack-core'" failonerror="true"/>
+		<exec command="ssh ${deploy.ip} '. /usr/local/etc/stack.env; cd ${cloudmux.home}/CloudMux; bundle exec rake db:seed'" failonerror="true"/>
+        <exec command="ssh ${deploy.ip} /etc/init.d/apache2 restart" failonerror="true"/>
+	</target>
+
 	<target name="package" depends="clean,init">
 		<tar destfile="${build}/${package.file}" compression="gzip">
            <tarfileset dir="${project.base.dir}" prefix="CloudMux">
