@@ -12,10 +12,14 @@ class OpenstackIdentityApp < ResourceApiBase
                 halt [NOT_FOUND, "Credentials not found."]
             else
                 options = cloud_cred.cloud_attributes.merge(:provider => "openstack")
+                @identity = Fog::Identity.new(options)
                 ## TEMP HACK UNTIL CORRECTY IDENTITY URL IS RESOLVED
-                management_url = options["openstack_auth_url"].gsub("/tokens", "")
-                @identity = Fog::Identity.new(options.merge({:openstack_management_url => management_url}))
-                #@identity = Fog::Identity.new(options.merge({:openstack_endpoint_type => 'publicURL'}))
+                ## Only required when using Essex, Folsom endpoints (service catalog) is 
+                ## setup correctly
+                if @identity.credentials[:openstack_management_url].include?("localhost")
+                    management_url = options["openstack_auth_url"].gsub("/tokens", "")
+                    @identity = Fog::Identity.new(options.merge({:openstack_management_url => management_url}))
+                end
                 halt [BAD_REQUEST] if @identity.nil?
             end
         end

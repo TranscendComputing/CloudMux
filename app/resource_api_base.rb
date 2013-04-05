@@ -91,6 +91,8 @@ class ResourceApiBase < ApiBase
 			when Fog::Compute::OpenStack::NotFound
 				message = "OpenStack resource not found."
 				[NOT_FOUND, message]
+			when Fog::Errors::NotFound
+				[NOT_FOUND, error.to_s]
 			else
 				[BAD_REQUEST, error.to_s]
 		end
