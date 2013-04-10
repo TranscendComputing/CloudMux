@@ -58,6 +58,55 @@ class AwsRdsApp < ResourceApiBase
 		end
 	end
 
+	get '/engine_versions/describe' do
+		rds = get_rds_interface(params[:cred_id], params[:region])
+		if(rds.nil?)
+			[BAD_REQUEST]
+		else
+			begin
+				engine_versions = rds.describe_db_engine_versions.body['DescribeDBEngineVersionsResult']['DBEngineVersions'].as_json
+				engine_versions.each do |v|
+					v.each_pair do |name, value|
+						v[name] = value.strip
+					end
+				end
+				[OK, engine_versions.to_json]
+			rescue => error
+				handle_error(error)
+			end
+		end
+	end
+
+	get '/parameter_groups/describe' do
+		rds = get_rds_interface(params[:cred_id], params[:region])
+		if(rds.nil?)
+			[BAD_REQUEST]
+		else
+			filters = params[:filters]
+			if(filters.nil?)
+				response = rds.parameter_groups
+			else
+				response = rds.parameter_groups.all(filters)
+			end
+			[OK, response.to_json]
+		end
+	end
+
+	get '/security_groups/describe' do
+		rds = get_rds_interface(params[:cred_id], params[:region])
+		if(rds.nil?)
+			[BAD_REQUEST]
+		else
+			filters = params[:filters]
+			if(filters.nil?)
+				response = rds.security_groups
+			else
+				response = rds.security_groups.all(filters)
+			end
+			[OK, response.to_json]
+		end
+	end
+
 	def get_rds_interface(cred_id, region)
 		if(cred_id.nil?)
 			return nil
