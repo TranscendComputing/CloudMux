@@ -35,6 +35,7 @@ require 'app/openstack/openstack_block_storage_app'
 require 'app/openstack/openstack_object_storage_app'
 require 'app/openstack/openstack_identity_app'
 require 'app/openstack/openstack_network_app'
+require 'app/openstack/openstack_load_balancer_app'
 
 
 
@@ -258,4 +259,11 @@ end
 #
 map "/stackstudio/v1/cloud_management/openstack/network" do
   run OpenstackNetworkApp
+end
+
+#
+# Openstack LoadBalancer API
+#
+map "/stackstudio/v1/cloud_management/openstack/load_balancer" do
+  run OpenstackLoadBalancerApp
 end
