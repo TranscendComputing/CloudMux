@@ -1,6 +1,13 @@
 require 'sinatra'
 
 class IdentityApiApp < ApiBase
+  ##~ sapi = source2swagger.namespace("identity")
+  ##~ sapi.swaggerVersion = "1.1"
+  ##~ sapi.apiVersion = "1.0"
+  ##~ a = sapi.apis.add
+   
+  ##~ a.set :path => "/identity/v1/accounts"
+  ##~ a.description = "Identity Accounts API"
   get '/countries.json' do
     countries = Country.all
     query = Query.new(Country.count, 1, 0, 500)
@@ -14,6 +21,15 @@ class IdentityApiApp < ApiBase
     account.to_json
   end
 
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Creates a new account in the system. An organization is also created if the account request does not have an org_id."  
+  ##~ op.notes = "Note: login and email must both be unique in the system to ensure that the user can login using either of these fields."  
+  ##~ op.nickname = "create_account"
+  ##~ op.parameters.add :name => "login", :description => "User login", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.parameters.add :name => "email", :description => "User email address", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.parameters.add :name => "password", :description => "User password", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.parameters.add :name => "country_code", :description => "Country code", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "body"
   post '/' do
     new_account = Account.new.extend(UpdateAccountRepresenter)
     new_account.from_json(request.body.read)

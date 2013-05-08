@@ -23,7 +23,7 @@ gem 'mongoid', '2.4.3'
 # CLI and Offline documentation generator
 gem 'httparty', '~> 0.8.1'
 gem 'activemodel', '~> 3.2.0'
-
+gem 'source2swagger'
 # Account/Auth support
 gem 'bcrypt-ruby', '~> 3.0.1'
 

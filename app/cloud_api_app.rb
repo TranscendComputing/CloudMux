@@ -1,6 +1,22 @@
 require 'sinatra'
 
 class CloudApiApp < ApiBase
+  ##~ sapi = source2swagger.namespace("clouds")
+  ##~ sapi.swaggerVersion = "1.1"
+  ##~ sapi.apiVersion = "1.0"
+
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/clouds"
+  ##~ a.description = "Manage clouds supported by the system"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "List configured clouds supported by the system"  
+  ##~ op.nickname = "list_clouds"
+  ##~ op.parameters.add :name => "page", :description => "The page number of the query. Defaults to 1 if not provided", :dataType => "integer", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.parameters.add :name => "per_page", :description => "Result set page size", :dataType => "integer", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Query successful", :code => 200
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
+
   get '/' do
     per_page = (params[:per_page] || 1000).to_i
     page = (params[:page] || 1).to_i
@@ -11,6 +27,16 @@ class CloudApiApp < ApiBase
     cloud_query = CloudQuery.new(query, clouds).extend(CloudQueryRepresenter)
     [OK, cloud_query.to_json]
   end
+
+  ##~ a = sapi.apis.add   
+  ##~ a.set :path => "/api/v1/clouds/{id}.{format}"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Retrieve a specific cloud supported by the system"  
+  ##~ op.nickname = "get_cloud"
+  ##~ op.parameters.add :name => "id", :description => "ID of the cloud", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Query successful", :code => 200
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
 
   get '/:id.json' do
     cloud = Cloud.find_by_permalink(params[:id]) || Cloud.find(params[:id])
