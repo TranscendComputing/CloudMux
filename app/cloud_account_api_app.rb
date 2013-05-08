@@ -1,6 +1,21 @@
 require 'sinatra'
 
 class CloudAccountApiApp < ApiBase
+  ##~ sapi = source2swagger.namespace("cloud_accounts")
+  ##~ sapi.swaggerVersion = "1.1"
+  ##~ sapi.apiVersion = "1.0"
+
+  ##~ a = sapi.apis.add   
+  ##~ a.set :path => "/api/v1/cloud_accounts"
+  ##~ a.description = "Manage clouds credentials"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "List available cloud credentials for the current user"  
+  ##~ op.nickname = "list_cloud_accounts"
+  ##~ op.parameters.add :name => "page", :description => "The page number of the query. Defaults to 1 if not provided", :dataType => "integer", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.parameters.add :name => "per_page", :description => "Result set page size", :dataType => "integer", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Query successful", :code => 200
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   get '/' do
     if params[:org_id].nil?
       message = Error.new.extend(ErrorRepresenter)

@@ -18,6 +18,22 @@ class OpenstackComputeApp < ResourceApiBase
         end
     end
     
+    ##~ sapi = source2swagger.namespace("compute_openstack")
+    ##~ sapi.swaggerVersion = "1.1"
+    ##~ sapi.apiVersion = "1.0"
+
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/openstack/compute/instances"
+    ##~ a.description = "Manage compute resources on the cloud (OpenStack)"
+    ##~ op = a.operations.add
+    ##~ op.set :httpMethod => "GET"
+    ##~ op.summary = "Describe current instances (OpenStack cloud)"  
+    ##~ op.nickname = "describe_instances"
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.parameters.add :name => "filters", :description => "Filters for instances", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+    ##~ op.errorResponses.add :reason => "Success, list of instances returned", :code => 200
+    ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
     get '/instances' do
         filters = params[:filters]
         if(filters.nil?)
@@ -28,6 +44,17 @@ class OpenstackComputeApp < ResourceApiBase
         [OK, response.to_json]
     end
     
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/openstack/compute/instances"
+    ##~ a.description = "Manage compute resources on the cloud (OpenStack)"
+    ##~ op = a.operations.add
+    ##~ op.set :httpMethod => "POST"
+    ##~ op.summary = "Run a new instance (OpenStack cloud)"  
+    ##~ op.nickname = "run_instance"
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.errorResponses.add :reason => "Success, new instance returned", :code => 200
+    ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
     post '/instances' do
         json_body = body_to_json(request)
         if(json_body.nil?)

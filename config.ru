@@ -65,6 +65,11 @@ require 'rack-methodoverride-with-params'
 use Rack::MethodOverrideWithParams
 set :method_override, :true
 
+# Following are Swagger directives, for REST API documentation.
+##~ sapi = source2swagger.namespace("CloudMux")
+##~ sapi.swaggerVersion = "1.1"
+##~ sapi.apiVersion = "1.0"
+
 #
 # Templates API
 #
@@ -82,6 +87,10 @@ end
 #
 # Accounts API (public)
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/accounts.{format}", :format => "json"
+##~ a.description = "Manage system accounts"
 map "/stackplace/v1/accounts" do
   run AccountApiApp
 end
@@ -89,6 +98,10 @@ end
 #
 # Identity Accounts API (internal)
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/identity.{format}", :format => "json"
+##~ a.description = "Manage system accounts"
 map "/identity/v1/accounts" do
   run IdentityApiApp
 end
@@ -110,14 +123,30 @@ end
 #
 # Clouds API (internal)
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/clouds.{format}", :format => "json"
+##~ a.description = "Manage defined clouds"
 map "/stackstudio/v1/clouds" do
+  run CloudApiApp
+end
+
+map "/api/v1/clouds" do
   run CloudApiApp
 end
 
 #
 # Cloud Accounts API (internal)
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/cloud_accounts.{format}", :format => "json"
+##~ a.description = "Manage defined clouds"
 map "/stackstudio/v1/cloud_accounts" do
+  run CloudAccountApiApp
+end
+
+map "/api/v1/cloud_accounts" do
   run CloudAccountApiApp
 end
 
@@ -159,7 +188,15 @@ end
 #
 # AWS Compute API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/compute_aws.{format}", :format => "json"
+##~ a.description = "AWS Cloud Compute API"
 map "/stackstudio/v1/cloud_management/aws/compute" do
+  run AwsComputeApp
+end
+
+map "/api/v1/cloud_management/aws/compute" do
   run AwsComputeApp
 end
 
@@ -230,6 +267,14 @@ end
 # Openstack Compute API
 #
 map "/stackstudio/v1/cloud_management/openstack/compute" do
+  run OpenstackComputeApp
+end
+
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/compute_openstack.{format}", :format => "json"
+##~ a.description = "OpenStack Cloud Compute API"
+map "/api/v1/cloud_management/openstack/compute" do
   run OpenstackComputeApp
 end
 

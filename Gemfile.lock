@@ -114,6 +114,8 @@ GEM
       rack (~> 1.4)
       rack-protection (~> 1.3)
       tilt (~> 1.3, >= 1.3.3)
+    source2swagger (0.0.2)
+      json
     spoon (0.0.1)
     thin (1.3.1)
       daemons (>= 1.0.9)
@@ -153,4 +155,5 @@ DEPENDENCIES
   roar (~> 0.9.1)
   rspec (~> 2.4)
   sinatra (~> 1.3.1)
+  source2swagger
   thin (~> 1.3.1)

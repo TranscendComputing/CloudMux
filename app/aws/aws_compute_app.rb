@@ -5,6 +5,22 @@ class AwsComputeApp < ResourceApiBase
 	#
 	# Compute Instance
 	#
+    ##~ sapi = source2swagger.namespace("compute_aws")
+    ##~ sapi.swaggerVersion = "1.1"
+    ##~ sapi.apiVersion = "1.0"
+
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/aws/compute/instances"
+    ##~ a.description = "Manage compute resources on the cloud (AWS)"
+    ##~ op = a.operations.add
+    ##~ op.set :httpMethod => "GET"
+    ##~ op.summary = "Describe current instances (AWS cloud)"  
+    ##~ op.nickname = "describe_instances"
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.parameters.add :name => "filters", :description => "Filters for instances", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+    ##~ op.errorResponses.add :reason => "Success, list of instances returned", :code => 200
+    ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/instances/describe' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
@@ -20,6 +36,17 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 	
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/aws/compute/instances"
+    ##~ a.description = "Manage compute resources on the cloud (AWS)"
+    ##~ op = a.operations.add
+    ##~ op.set :httpMethod => "POST"
+    ##~ op.summary = "Run a new instance (AWS cloud)"  
+    ##~ op.nickname = "run_instance"
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.errorResponses.add :reason => "Success, new instance returned", :code => 200
+    ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400	
 	put '/instances/create' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
