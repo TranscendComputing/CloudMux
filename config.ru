@@ -2,7 +2,6 @@
 # gems
 require 'sinatra'
 require 'fog'
-require 'ruby-debug'
 
 # require the dependencies
 require File.join(File.dirname(__FILE__), 'app', 'init')
@@ -28,7 +27,15 @@ require 'app/aws/aws_monitor_app'
 require 'app/aws/aws_notification_app'
 require 'app/aws/aws_dns_app'
 require 'app/aws/aws_rds_app'
+require 'app/aws/aws_load_balancer_app'
+require 'app/aws/aws_iam_app'
+require 'app/aws/aws_queue_app'
 require 'app/openstack/openstack_compute_app'
+require 'app/openstack/openstack_block_storage_app'
+require 'app/openstack/openstack_object_storage_app'
+require 'app/openstack/openstack_identity_app'
+require 'app/openstack/openstack_network_app'
+require 'app/openstack/openstack_load_balancer_app'
 
 
 
@@ -39,13 +46,29 @@ require 'app/openstack/openstack_compute_app'
 # http://devcenter.heroku.com/articles/ruby#logging
 $stdout.sync = true
 
+
 # Sinatra now has logging - disable for tests
 configure(:test) { disable :logging }
+=begin
+register Sinatra::CrossOrigin
+configure do 
+  set :cross_origin, true
+  set :allow_origin, "*"
+  set :allow_methods, [:get, :post, :options, :put, :delete]
+  set :allow_credentials, true
+  set :allow_headers, "X-HTTP-Method-Override"
+  set :max_age, "1728000"
+end
+=end
 
 require 'rack-methodoverride-with-params'
 use Rack::MethodOverrideWithParams
-#use Rack::MethodOverride
 set :method_override, :true
+
+# Following are Swagger directives, for REST API documentation.
+##~ sapi = source2swagger.namespace("CloudMux")
+##~ sapi.swaggerVersion = "1.1"
+##~ sapi.apiVersion = "1.0"
 
 #
 # Templates API
@@ -64,6 +87,10 @@ end
 #
 # Accounts API (public)
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/accounts.{format}", :format => "json"
+##~ a.description = "Manage system accounts"
 map "/stackplace/v1/accounts" do
   run AccountApiApp
 end
@@ -71,6 +98,10 @@ end
 #
 # Identity Accounts API (internal)
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/identity.{format}", :format => "json"
+##~ a.description = "Manage system accounts"
 map "/identity/v1/accounts" do
   run IdentityApiApp
 end
@@ -92,14 +123,30 @@ end
 #
 # Clouds API (internal)
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/clouds.{format}", :format => "json"
+##~ a.description = "Manage defined clouds"
 map "/stackstudio/v1/clouds" do
+  run CloudApiApp
+end
+
+map "/api/v1/clouds" do
   run CloudApiApp
 end
 
 #
 # Cloud Accounts API (internal)
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/cloud_accounts.{format}", :format => "json"
+##~ a.description = "Manage defined clouds"
 map "/stackstudio/v1/cloud_accounts" do
+  run CloudAccountApiApp
+end
+
+map "/api/v1/cloud_accounts" do
   run CloudAccountApiApp
 end
 
@@ -141,7 +188,15 @@ end
 #
 # AWS Compute API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/compute_aws.{format}", :format => "json"
+##~ a.description = "AWS Cloud Compute API"
 map "/stackstudio/v1/cloud_management/aws/compute" do
+  run AwsComputeApp
+end
+
+map "/api/v1/cloud_management/aws/compute" do
   run AwsComputeApp
 end
 
@@ -188,8 +243,72 @@ map "/stackstudio/v1/cloud_management/aws/rds" do
 end
 
 #
+# AWS Load Balancer API
+#
+map "/stackstudio/v1/cloud_management/aws/load_balancer" do
+  run AwsLoadBalancerApp
+end
+
+#
+# AWS IAM API
+#
+map "/stackstudio/v1/cloud_management/aws/iam" do
+  run AwsIamApp
+end
+
+#
+# AWS Queue API
+#
+map "/stackstudio/v1/cloud_management/aws/queue" do
+  run AwsQueueApp
+end
+
+#
 # Openstack Compute API
 #
 map "/stackstudio/v1/cloud_management/openstack/compute" do
   run OpenstackComputeApp
+end
+
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/compute_openstack.{format}", :format => "json"
+##~ a.description = "OpenStack Cloud Compute API"
+map "/api/v1/cloud_management/openstack/compute" do
+  run OpenstackComputeApp
+end
+
+#
+# Openstack Block Storage API
+#
+map "/stackstudio/v1/cloud_management/openstack/block_storage" do
+  run OpenstackBlockStorageApp
+end
+
+#
+# Openstack Block Storage API
+#
+map "/stackstudio/v1/cloud_management/openstack/object_storage" do
+  run OpenstackObjectStorageApp
+end
+
+#
+# Openstack Identity API
+#
+map "/stackstudio/v1/cloud_management/openstack/identity" do
+  run OpenstackIdentityApp
+end
+
+#
+# Openstack Network API
+#
+map "/stackstudio/v1/cloud_management/openstack/network" do
+  run OpenstackNetworkApp
+end
+
+#
+# Openstack LoadBalancer API
+#
+map "/stackstudio/v1/cloud_management/openstack/load_balancer" do
+  run OpenstackLoadBalancerApp
 end

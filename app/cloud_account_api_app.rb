@@ -1,6 +1,21 @@
 require 'sinatra'
 
 class CloudAccountApiApp < ApiBase
+  ##~ sapi = source2swagger.namespace("cloud_accounts")
+  ##~ sapi.swaggerVersion = "1.1"
+  ##~ sapi.apiVersion = "1.0"
+
+  ##~ a = sapi.apis.add   
+  ##~ a.set :path => "/api/v1/cloud_accounts"
+  ##~ a.description = "Manage clouds credentials"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "List available cloud credentials for the current user"  
+  ##~ op.nickname = "list_cloud_accounts"
+  ##~ op.parameters.add :name => "page", :description => "The page number of the query. Defaults to 1 if not provided", :dataType => "integer", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.parameters.add :name => "per_page", :description => "Result set page size", :dataType => "integer", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Query successful", :code => 200
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   get '/' do
     if params[:org_id].nil?
       message = Error.new.extend(ErrorRepresenter)
@@ -82,6 +97,28 @@ class CloudAccountApiApp < ApiBase
     [OK, update_cloud_account.to_json]
   end
 
+  # Update a service for an existing cloud_account
+  put '/:id/services/:service_id' do
+    update_cloud_account = CloudAccount.find(params[:id])
+    update_service = update_cloud_account.find_service(params[:service_id])
+    if update_service.nil?
+      return [NOT_FOUND]
+    end
+    update_service.extend(UpdateCloudServiceRepresenter)
+    update_service.from_json(request.body.read)
+    if update_service.valid?
+      update_service.save!
+      updated_service = update_cloud_account.find_service(update_service.id)
+      updated_service.extend(CloudServiceRepresenter)
+      [OK, updated_service.to_json]
+    else
+      message = Error.new.extend(ErrorRepresenter)
+      message.message = "#{update_service.errors.full_messages.join(";")}"
+      message.validation_errors = update_service.errors.to_hash
+      [BAD_REQUEST, message.to_json]
+    end
+  end
+
   # Remove a service from an existing cloud_account
   delete '/:id/services/:service_id' do
     update_cloud_account = CloudAccount.find(params[:id])
@@ -103,6 +140,28 @@ class CloudAccountApiApp < ApiBase
     update_cloud_account.extend(CloudAccountRepresenter)
     [OK, update_cloud_account.to_json]
   end
+
+  # Update a mapping for an existing cloud_account
+  put '/:id/mappings/:mapping_id' do
+    update_cloud_account = CloudAccount.find(params[:id])
+    update_mapping = update_cloud_account.find_mapping(params[:mapping_id])
+    if update_mapping.nil?
+      return [NOT_FOUND]
+    end
+    update_mapping.extend(UpdateCloudMappingRepresenter)
+    update_mapping.from_json(request.body.read)
+    if update_mapping.valid?
+      update_mapping.save!
+      updated_mapping = update_cloud_account.find_mapping(update_mapping.id)
+      updated_mapping.extend(CloudMappingRepresenter)
+      [OK, updated_mapping.to_json]
+    else
+      message = Error.new.extend(ErrorRepresenter)
+      message.message = "#{update_mapping.errors.full_messages.join(";")}"
+      message.validation_errors = update_mapping.errors.to_hash
+      [BAD_REQUEST, message.to_json]
+    end
+  end  
 
   # Remove a mapping from an existing cloud_account
   delete '/:id/mappings/:mapping_id' do

@@ -29,8 +29,12 @@ class AwsMonitorApp < ResourceApiBase
 			if(json_body.nil?)
 				[BAD_REQUEST]
 			else
-				response = monitor.alarms.create(json_body["alarm"])
-				[OK, response.to_json]
+				begin
+					response = monitor.alarms.create(json_body["alarm"])
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end
@@ -44,8 +48,12 @@ class AwsMonitorApp < ResourceApiBase
 			if(json_body.nil? || json_body["alarm"].nil?)
 				[BAD_REQUEST]
 			else
-				response = monitor.alarms.get(json_body["alarm"]["id"]).destroy
-				[OK, response.to_json]
+				begin
+					response = monitor.alarms.get(json_body["alarm"]["id"]).destroy
+					[OK, response.to_json]
+				rescue => error
+					handle_error(error)
+				end
 			end
 		end
 	end

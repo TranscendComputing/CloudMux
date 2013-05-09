@@ -210,7 +210,7 @@ Removes an existing account as a subscriber to an organization's product subscri
 
 <empty>
 
-## POST /stackplace/v1/orgs/:id/mappings
+## POST /identity/v1/orgs/:id/mappings
 
 Registers a new cloud mapping for a cloud.
 
@@ -224,7 +224,7 @@ Registers a new cloud mapping for a cloud.
 
 ### Example Request:
 
-    POST /stackplace/v1/orgs/4f7daff2681151a840000001/mappings HTTP/1.1
+    POST /identity/v1/orgs/4f7daff2681151a840000001/mappings HTTP/1.1
     Connection: close
     Host: stackplace-mapping.herokuapp.com
     Content-Length: 70
@@ -236,7 +236,7 @@ Registers a new cloud mapping for a cloud.
 
 The updated org payload
 
-## DELETE /stackplace/v1/orgs/:id/mappings/:mapping_id
+## DELETE /identity/v1/orgs/:id/mappings/:mapping_id
 
 Removes a cloud mapping from a cloud.
 
@@ -251,7 +251,7 @@ Removes a cloud mapping from a cloud.
 
 ### Example Request:
 
-    DELETE /stackplace/v1/orgs/4f7daff2681151a840000001/mappings/4f7dcc04681151b0a5000001 HTTP/1.1
+    DELETE /identity/v1/orgs/4f7daff2681151a840000001/mappings/4f7dcc04681151b0a5000001 HTTP/1.1
     Connection: close
     Host: stackplace-mapping.herokuapp.com
     Content-Length: 70
@@ -261,7 +261,7 @@ Removes a cloud mapping from a cloud.
 
 The updated org payload
 
-## POST /stackplace/v1/orgs/:id/groups
+## POST /identity/v1/orgs/:id/groups
 
 Registers a new group to the org.
 
@@ -275,7 +275,7 @@ Registers a new group to the org.
 
 ### Example Request:
 
-    POST /stackplace/v1/orgs/4f7daff2681151a840000001/groups HTTP/1.1
+    POST /identity/v1/orgs/4f7daff2681151a840000001/groups HTTP/1.1
     Connection: close
     Host: stackplace-mapping.herokuapp.com
     Content-Length: 70
@@ -287,7 +287,7 @@ Registers a new group to the org.
 
 The updated org payload
 
-## DELETE /stackplace/v1/orgs/:id/groups/:group_id
+## DELETE /identity/v1/orgs/:id/groups/:group_id
 
 Removes a group from an org.
 
@@ -302,7 +302,7 @@ Removes a group from an org.
 
 ### Example Request:
 
-    DELETE /stackplace/v1/orgs/4f7daff2681151a840000001/groups/4f8dbc04681151b0a5000012 HTTP/1.1
+    DELETE /identity/v1/orgs/4f7daff2681151a840000001/groups/4f8dbc04681151b0a5000012 HTTP/1.1
     Connection: close
     Host: stackplace-mapping.herokuapp.com
     Content-Length: 70
@@ -312,7 +312,7 @@ Removes a group from an org.
 
 The updated org payload
 
-## POST /stackplace/v1/orgs/:id/groups/:group_id/accounts/:account_id
+## POST /identity/v1/orgs/:id/groups/:group_id/accounts/:account_id
 
 Registers a new account to the group.
 
@@ -328,7 +328,7 @@ Registers a new account to the group.
 
 ### Example Request:
 
-    POST /stackplace/v1/orgs/4f7daff2681151a840000001/groups/4f8dbc04681151b0a5000012/accounts/5c7dbc04681151b0a5000002 HTTP/1.1
+    POST /identity/v1/orgs/4f7daff2681151a840000001/groups/4f8dbc04681151b0a5000012/accounts/5c7dbc04681151b0a5000002 HTTP/1.1
     Connection: close
     Host: stackplace-mapping.herokuapp.com
     Content-Length: 70
@@ -338,7 +338,7 @@ Registers a new account to the group.
 
 The updated org payload
 
-## DELETE /stackplace/v1/orgs/:id/groups/:group_id/accounts/:account_id
+## DELETE /identity/v1/orgs/:id/groups/:group_id/accounts/:account_id
 
 Removes an account from a group.
 
@@ -354,7 +354,7 @@ Removes an account from a group.
 
 ### Example Request:
 
-    DELETE /stackplace/v1/orgs/4f7daff2681151a840000001/groups/4f8dbc04681151b0a5000012/accounts/5c7dbc04681151b0a5000002 HTTP/1.1
+    DELETE /identity/v1/orgs/4f7daff2681151a840000001/groups/4f8dbc04681151b0a5000012/accounts/5c7dbc04681151b0a5000002 HTTP/1.1
     Connection: close
     Host: stackplace-mapping.herokuapp.com
     Content-Length: 70

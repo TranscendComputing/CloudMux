@@ -1,0 +1,18 @@
+{
+    "apis": [
+        {
+            "path": "/docs/users.{format}",
+            "description": ""
+        },
+        {
+            "path": "/docs/teams.{format}",
+            "description": ""
+        },
+        {
+            "path": "/docs/apps.{format}",
+            "description": ""
+        }
+    ],
+    "apiVersion": "1.0",
+    "swaggerVersion": "1.1"
+}

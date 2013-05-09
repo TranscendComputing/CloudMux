@@ -4,3 +4,5 @@ vendor
 /build
 /dist
 tags
+*.sublime*
+.DS_Store

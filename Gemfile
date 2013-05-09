@@ -23,7 +23,7 @@ gem 'mongoid', '2.4.3'
 # CLI and Offline documentation generator
 gem 'httparty', '~> 0.8.1'
 gem 'activemodel', '~> 3.2.0'
-
+gem 'source2swagger'
 # Account/Auth support
 gem 'bcrypt-ruby', '~> 3.0.1'
 
@@ -31,7 +31,7 @@ gem 'bcrypt-ruby', '~> 3.0.1'
 gem 'redcarpet', '~> 2.1.0'
 
 # Cloud Management
-gem 'fog', '1.8', :require => 'fog'
+gem 'fog', '1.10.0', :require => 'fog'
 gem 'debugger'
 
 # Flex support hack - allow _method to be passed as a URL parameter for PUT and DELETE
