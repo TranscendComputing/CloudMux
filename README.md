@@ -5,10 +5,10 @@ The CloudMux project provides a RESTful service layer for the management of mult
 
 CloudMux currently supports the following clouds:
 
-* â Amazon (AWS)
-* â OpenStack (Essex & Folsom)
+* Amazon (AWS)
+* OpenStack (Essex & Folsom)
 
-You can explore the REST API at the [API Doc browser](/docs/).
+<!--- You can explore the REST API at the [API Doc browser](/docs/). -->
 
 ![CloudMux Architecture](/docs/CloudMuxArchitecture.png "CloudMux Architecture")
 
