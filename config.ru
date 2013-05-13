@@ -51,7 +51,7 @@ $stdout.sync = true
 configure(:test) { disable :logging }
 =begin
 register Sinatra::CrossOrigin
-configure do 
+configure do
   set :cross_origin, true
   set :allow_origin, "*"
   set :allow_methods, [:get, :post, :options, :put, :delete]
@@ -88,7 +88,7 @@ end
 # Accounts API (public)
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/accounts.{format}", :format => "json"
 ##~ a.description = "Manage system accounts"
 map "/stackplace/v1/accounts" do
@@ -99,7 +99,7 @@ end
 # Identity Accounts API (internal)
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/identity.{format}", :format => "json"
 ##~ a.description = "Manage system accounts"
 map "/identity/v1/accounts" do
@@ -124,7 +124,7 @@ end
 # Clouds API (internal)
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/clouds.{format}", :format => "json"
 ##~ a.description = "Manage defined clouds"
 map "/stackstudio/v1/clouds" do
@@ -139,7 +139,7 @@ end
 # Cloud Accounts API (internal)
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/cloud_accounts.{format}", :format => "json"
 ##~ a.description = "Manage defined clouds"
 map "/stackstudio/v1/cloud_accounts" do
@@ -157,6 +157,10 @@ map "/stackstudio/v1/projects" do
   run ProjectApiApp
 end
 
+map "/api/v1/projects" do
+  run ProjectApiApp
+end
+
 #
 # Provisioning API (internal)
 #
@@ -164,10 +168,18 @@ map "/stackstudio/v1/provisioning" do
   run ProvisioningApiApp
 end
 
+map "/api/v1/provisioning" do
+  run ProvisioningApiApp
+end
+
 #
 # Reports API (internal)
 #
 map "/stackstudio/v1/report" do
+  run ReportApiApp
+end
+
+map "/api/v1/report" do
   run ReportApiApp
 end
 
@@ -189,7 +201,7 @@ end
 # AWS Compute API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/compute_aws.{format}", :format => "json"
 ##~ a.description = "AWS Cloud Compute API"
 map "/stackstudio/v1/cloud_management/aws/compute" do
@@ -207,10 +219,22 @@ map "/stackstudio/v1/cloud_management/aws/block_storage" do
   run AwsBlockStorageApp
 end
 
+##~ a = sapi.apis.add
+##
+##~ a.set :path => "/block_storage_aws.{format}", :format => "json"
+##~ a.description = "AWS Cloud Block Storage API"
+map "/api/v1/cloud_management/aws/block_storage" do
+  run AwsBlockStorageApp
+end
+
 #
 # AWS Object Storage API
 #
 map "/stackstudio/v1/cloud_management/aws/object_storage" do
+  run AwsObjectStorageApp
+end
+
+map "/api/v1/cloud_management/aws/object_storage" do
   run AwsObjectStorageApp
 end
 
@@ -221,10 +245,18 @@ map "/stackstudio/v1/cloud_management/aws/monitor" do
   run AwsMonitorApp
 end
 
+map "/api/v1/cloud_management/aws/monitor" do
+  run AwsMonitorApp
+end
+
 #
 # AWS Notification API
 #
 map "/stackstudio/v1/cloud_management/aws/notification" do
+  run AwsNotificationApp
+end
+
+map "/api/v1/cloud_management/aws/notification" do
   run AwsNotificationApp
 end
 
@@ -235,10 +267,18 @@ map "/stackstudio/v1/cloud_management/aws/dns" do
   run AwsDnsApp
 end
 
+map "/api/v1/cloud_management/aws/dns" do
+  run AwsDnsApp
+end
+
 #
 # AWS RDS API
 #
 map "/stackstudio/v1/cloud_management/aws/rds" do
+  run AwsRdsApp
+end
+
+map "/api/v1/cloud_management/aws/rds" do
   run AwsRdsApp
 end
 
@@ -249,6 +289,10 @@ map "/stackstudio/v1/cloud_management/aws/load_balancer" do
   run AwsLoadBalancerApp
 end
 
+map "/api/v1/cloud_management/aws/load_balancer" do
+  run AwsLoadBalancerApp
+end
+
 #
 # AWS IAM API
 #
@@ -256,10 +300,18 @@ map "/stackstudio/v1/cloud_management/aws/iam" do
   run AwsIamApp
 end
 
+map "/api/v1/cloud_management/aws/iam" do
+  run AwsIamApp
+end
+
 #
 # AWS Queue API
 #
 map "/stackstudio/v1/cloud_management/aws/queue" do
+  run AwsQueueApp
+end
+
+map "/api/v1/cloud_management/aws/queue" do
   run AwsQueueApp
 end
 
@@ -271,7 +323,7 @@ map "/stackstudio/v1/cloud_management/openstack/compute" do
 end
 
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/compute_openstack.{format}", :format => "json"
 ##~ a.description = "OpenStack Cloud Compute API"
 map "/api/v1/cloud_management/openstack/compute" do
@@ -285,10 +337,18 @@ map "/stackstudio/v1/cloud_management/openstack/block_storage" do
   run OpenstackBlockStorageApp
 end
 
+map "/api/v1/cloud_management/openstack/block_storage" do
+  run OpenstackBlockStorageApp
+end
+
 #
 # Openstack Block Storage API
 #
 map "/stackstudio/v1/cloud_management/openstack/object_storage" do
+  run OpenstackObjectStorageApp
+end
+
+map "/api/v1/cloud_management/openstack/object_storage" do
   run OpenstackObjectStorageApp
 end
 
@@ -299,6 +359,10 @@ map "/stackstudio/v1/cloud_management/openstack/identity" do
   run OpenstackIdentityApp
 end
 
+map "/api/v1/cloud_management/openstack/identity" do
+  run OpenstackIdentityApp
+end
+
 #
 # Openstack Network API
 #
@@ -306,9 +370,17 @@ map "/stackstudio/v1/cloud_management/openstack/network" do
   run OpenstackNetworkApp
 end
 
+map "/api/v1/cloud_management/openstack/network" do
+  run OpenstackNetworkApp
+end
+
 #
 # Openstack LoadBalancer API
 #
 map "/stackstudio/v1/cloud_management/openstack/load_balancer" do
+  run OpenstackLoadBalancerApp
+end
+
+map "/api/v1/cloud_management/openstack/load_balancer" do
   run OpenstackLoadBalancerApp
 end
