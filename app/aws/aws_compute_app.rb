@@ -156,8 +156,8 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.parameters.add :name => ":cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	##~ op.parameters.add :name => ":region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	##~ op.parameters.add :name => ":filters", :description => "Filters for availability zones", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
-	##~ op.errorResponses.add :reason "Success, list of availability zones returned", :code => 200
-	##~ op.errorResponses.add :reason "Credentials not supported by cloud", :code => 400
+	##~ op.errorResponses.add :reason => "Success, list of availability zones returned", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/availability_zones/describe' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
@@ -186,8 +186,8 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.nickname = "describe_flavors"
 	##~ op.parameters.add :name => ":cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	##~ op.parameters.add :name => ":region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	##~ op.errorResponses.add :reason "Success, list of flavors returned", :code => 200
-	##~ op.errorResponses.add :reason "Credentials not supported by cloud", :code => 400
+	##~ op.errorResponses.add :reason => "Success, list of flavors returned", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/flavors/describe' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
@@ -203,7 +203,7 @@ class AwsComputeApp < ResourceApiBase
 	#
 
 	##~ a = sapi.apis.add
-	##~ a.set :path => "/api/v`/cloud_management/aws/security_groups"
+	##~ a.set :path => "/api/v1/cloud_management/aws/security_groups"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
 	##~ op = a.operations.add
 	##~ op.set :httpMethod => "GET"
@@ -211,7 +211,7 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.nickname = "describe_security_groups"
 	##~ op.parameters.add :name => ":cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	##~ op.parameters.add :name => ":region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	##~ op.parameters.add :name => ":filters", :description => "Filters for security groups", dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+	##~ op.parameters.add :name => ":filters", :description => "Filters for security groups", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
 	##~ op.errorResponses.add :reason => "Success, list of security groups returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/security_groups/describe' do
@@ -359,9 +359,9 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.set :httpMethod => "GET"
 	##~ op.summary = "Describe current spot requests (AWS cloud)"
 	##~ op.nickname = "describe_spot_requests"
-	##~ op.parameters.add :name => ":cred_id", :description => "Cloud credentials to use", dataType => "string", :allowMultiple => false, :required => true, paramType => "query"
-	##~ op.parameters.add :name => ":region", :description => "Cloud region to examine", dataType => "string", :allowMultiple => false, :required => true, paramType => "query"
-	##~ op.parameters.add :name => ":filters", :description => "Filters for spot requests", dataType => "string", :allowMulitple => false, :required => false, paramType => "query"
+	##~ op.parameters.add :name => ":cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => ":region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => ":filters", :description => "Filters for spot requests", :dataType => "string", :allowMulitple => false, :required => false, :paramType => "query"
 	##~ op.errorResponses.add :reason => "Success, list of spot requests returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/spot_requests/describe' do
@@ -509,8 +509,8 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.set :httpMethod => "PUT"
 	##~ op.summary = "Create new address (AWS cloud)"
 	##~ op.nickname = "create_address"
-	##~ op.parameters.add :name => ":cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType = "query"
-	##~ op.parameters.add :name => ":region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType = "query"
+	##~ op.parameters.add :name => ":cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => ":region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	##~ op.errorResponses.add :reason => "Success, new address returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", code => 400
 	put '/addresses/create' do
@@ -652,8 +652,8 @@ class AwsComputeApp < ResourceApiBase
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
 	##~ op = a.operations.add
 	##~ op.set :httpMethod => "PUT"
-	##~ op.summary => "Run new reserved instance (AWS cloud)"
-	##~ op.nickname => "run_reserved_instance"
+	##~ op.summary = "Run new reserved instance (AWS cloud)"
+	##~ op.nickname = "run_reserved_instance"
 	##~ op.parameters.add :name => ":cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	##~ op.parameters.add :name => ":region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	##~ op.errorResponses.add :reason => "Success, new reserved instance returned", :code => 200
@@ -709,7 +709,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	##~ a = sapi.apis.add
-	##~ a.set :path "/api/v1/cloud_management/aws/vpcs"
+	##~ a.set :path => "/api/v1/cloud_management/aws/vpcs"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
 	##~ op = a.operations.add
 	##~ op.set :httpMethod => "PUT"
@@ -787,7 +787,7 @@ class AwsComputeApp < ResourceApiBase
 
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/dhcp_options"
-	##~ a.description => "Manage compute resources on the cloud (AWS)"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
 	##~ op = a.operations.add
 	##~ op.set :httpMethod => "GET"
 	##~ op.summary = "Describe current DHCP options (AWS cloud)"
@@ -813,7 +813,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	##~ a = sapi.apis.add
-	##~ a.set :path "/api/v1/cloud_management/aws/dhcp_options"
+	##~ a.set :path => "/api/v1/cloud_management/aws/dhcp_options"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
 	##~ op = a.operations.add
 	##~ op.set :httpMethod => "PUT"
@@ -866,7 +866,7 @@ class AwsComputeApp < ResourceApiBase
 	#
 
 	##~ a = sapi.apis.add
-	##~ a.set :path "/api/v1/cloud_management/aws/internet_gateways"
+	##~ a.set :path => "/api/v1/cloud_management/aws/internet_gateways"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
 	##~ op = a.operations.add
 	##~ op.set :httpMethod => "GET"
@@ -893,7 +893,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 	
 	##~ a = sapi.apis.add
-	##~ a.set :path "/api/v1/cloud_management/aws/internet_gateways"
+	##~ a.set :path => "/api/v1/cloud_management/aws/internet_gateways"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
 	##~ op = a.operations.add
 	##~ op.set :httpMethod => "PUT"
