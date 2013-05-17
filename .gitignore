@@ -1,6 +1,6 @@
 vendor
 .bundle
-
+/docs/*.json
 /build
 /dist
 tags
