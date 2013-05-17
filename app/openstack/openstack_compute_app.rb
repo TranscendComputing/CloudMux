@@ -72,7 +72,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.set :httpMethod => "POST"
     ##~ op.summary = "Disassociate address from instance (OpenStack cloud)"  
     ##~ op.nickname = "disassociate_address_instance"
-    ##~ op.parameters.add :name => "id", :description => "Instance ID", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+    ##~ op.parameters.add :name => "id", :description => "Instance ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, address associated with instance", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
     post '/instances/:id/disassociate_address' do
@@ -96,7 +96,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.set :httpMethod => "POST"
     ##~ op.summary = "Unpause instance (OpenStack cloud)"  
     ##~ op.nickname = "unpause_instance"
-    ##~ op.parameters.add :name => "id", :description => "Instance ID", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+    ##~ op.parameters.add :name => "id", :description => "Instance ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, instance unpaused", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
     post '/instances/:id/unpause' do
@@ -115,7 +115,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.set :httpMethod => "POST"
     ##~ op.summary = "Pause instance (OpenStack cloud)"  
     ##~ op.nickname = "pause_instance"
-    ##~ op.parameters.add :name => "id", :description => "Instance ID", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+    ##~ op.parameters.add :name => "id", :description => "Instance ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, instance paused", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
     post '/instances/:id/pause' do
@@ -134,7 +134,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.set :httpMethod => "POST"
     ##~ op.summary = "Reboot instance (OpenStack cloud)"  
     ##~ op.nickname = "reboot_instance"
-    ##~ op.parameters.add :name => "id", :description => "Instance ID", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+    ##~ op.parameters.add :name => "id", :description => "Instance ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, instance rebooted", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
     post '/instances/:id/reboot' do
@@ -153,7 +153,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.set :httpMethod => "DELETE"
     ##~ op.summary = "Delete instance (OpenStack cloud)"  
     ##~ op.nickname = "delete_instance"
-    ##~ op.parameters.add :name => "id", :description => "Instance ID", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+    ##~ op.parameters.add :name => "id", :description => "Instance ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, instance deleted", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
     delete '/instances/:id' do
@@ -320,7 +320,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.set :httpMethod => "PUT"
     ##~ op.summary = "Add security groups rule (OpenStack cloud)"  
     ##~ op.nickname = "add_rule_security_groups"
-    ##~ op.parameters.add :name => "id", :description => "Instance ID", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+    ##~ op.parameters.add :name => "id", :description => "Instance ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, security groups rule added", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
     put '/security_groups/:id/add_rule' do
@@ -365,7 +365,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.set :httpMethod => "POST"
     ##~ op.summary = "Names key pair (OpenStack cloud)"  
     ##~ op.nickname = "name_key_pair"
-    ##~ op.parameters.add :name => "name", :description => "Name for key pair", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+    ##~ op.parameters.add :name => "name", :description => "Name for key pair", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, key pair named", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
     post '/key_pairs' do
@@ -389,7 +389,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.set :httpMethod => "DELETE"
     ##~ op.summary = "Delete key pair (OpenStack cloud)"  
     ##~ op.nickname = "delete_key_pair"
-    ##~ op.parameters.add :name => "id", :description => "Key pair ID", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+    ##~ op.parameters.add :name => "id", :description => "Key pair ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, list of security groups returned", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
     delete '/key_pairs/:id' do
@@ -412,7 +412,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.set :httpMethod => "GET"
     ##~ op.summary = "Describe addresses (OpenStack cloud)"  
     ##~ op.nickname = "describe_addresses"
-    ##~ op.parameters.add :name => "filters", :description => "Filters for addresses", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+    ##~ op.parameters.add :name => "filters", :description => "Filters for addresses", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, list of addresses returned", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
     get '/addresses' do
@@ -455,7 +455,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.set :httpMethod => "DELETE"
     ##~ op.summary = "Delete address (OpenStack cloud)"  
     ##~ op.nickname = "delete_address"
-    ##~ op.parameters.add :name => "id", :description => "Address ID", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+    ##~ op.parameters.add :name => "id", :description => "Address ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, address deleted", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
     delete '/addresses/:id' do
@@ -474,8 +474,8 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.set :httpMethod => "POST"
     ##~ op.summary = "Associate address with server (OpenStack cloud)"  
     ##~ op.nickname = "associate_server_address"
-    ##~ op.parameters.add :name => "id", :description => "Address ID", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
-    ##~ op.parameters.add :name => "server_id", :description => "Server ID", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+    ##~ op.parameters.add :name => "id", :description => "Address ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.parameters.add :name => "server_id", :description => "Server ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, address and server associated", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
     post '/addresses/:id/associate/:server_id' do
@@ -495,7 +495,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.set :httpMethod => "POST"
     ##~ op.summary = "Disassociate address from server (OpenStack cloud)"  
     ##~ op.nickname = "disassociate_address"
-    ##~ op.parameters.add :name => "id", :description => "Address ID", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+    ##~ op.parameters.add :name => "id", :description => "Address ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, address deleted", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
     post '/addresses/:id/disassociate' do
