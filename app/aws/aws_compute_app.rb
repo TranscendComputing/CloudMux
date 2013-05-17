@@ -40,7 +40,7 @@ class AwsComputeApp < ResourceApiBase
     ##~ a.set :path => "/api/v1/cloud_management/aws/compute/instances/create"
     ##~ a.description = "Manage compute resources on the cloud (AWS)"
     ##~ op = a.operations.add
-    ##~ op.set :httpMethod => "POST"
+    ##~ op.set :httpMethod => "PUT"
     ##~ op.summary = "Run a new instance (AWS cloud)"  
     ##~ op.nickname = "run_instance"
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
