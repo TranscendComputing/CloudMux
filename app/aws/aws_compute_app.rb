@@ -1114,7 +1114,7 @@ class AwsComputeApp < ResourceApiBase
 	end
 
 	##~ a = sapi.apis.add
-	##~ a.set :path => "/api/v1/cloud_management/aws/compute/"internet_gateways/detach"
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/internet_gateways/detach"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
 	##~ op = a.operations.add
 	##~ op.set :httpMethod => "POST"
