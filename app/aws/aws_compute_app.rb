@@ -66,6 +66,17 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 	
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/instances/start"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "POST"
+	##~ op.summary = "Starts an instance (AWS cloud)"
+	##~ op.nickname = "start_instance"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, instance started", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/instances/start' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
@@ -85,6 +96,17 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 	
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/instances/stop"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "POST"
+	##~ op.summary = "Stops an instance (AWS cloud)"
+	##~ op.nickname = "stop_instance"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, instance stopped", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/instances/stop' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
@@ -104,6 +126,17 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 	
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/instances/reboot"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "POST"
+	##~ op.summary = "Reboots an instance (AWS cloud)"
+	##~ op.nickname = "reboot_instance"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, instance rebooted", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/instances/reboot' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
@@ -123,6 +156,17 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 	
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/instances/terminate"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "DELETE"
+	##~ op.summary = "Terminates an instance (AWS cloud)"
+	##~ op.nickname = "terminate_instance"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, instance terminated", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	delete '/instances/terminate' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
@@ -259,6 +303,17 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 	
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/security_groups/delete"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "DELETE"
+	##~ op.summary = "Deletes security group (AWS cloud)"
+	##~ op.nickname = "delete_security_group"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, security group deleted", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	delete '/security_groups/delete' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
@@ -310,6 +365,18 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 	
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/key_pairs/create"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "POST"
+	##~ op.summary = "Creates key pair (AWS cloud)"
+	##~ op.nickname = "create_key_pair"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "name", :description => "Name to give key pair", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, instance terminated", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/key_pairs/create' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
@@ -329,6 +396,17 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 	
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/key_pairs/delete"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "DELETE"
+	##~ op.summary = "Deletes key pair (AWS cloud)"
+	##~ op.nickname = "delete_key_pair"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, key pair deleted", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	delete '/key_pairs/delete' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
@@ -409,6 +487,17 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 	
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/spot_requests/delete"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "DELETE"
+	##~ op.summary = "Delete spot request (AWS cloud)"
+	##~ op.nickname = "delete_spot_request"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, instance terminated", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	delete '/spot_requests/delete' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
@@ -433,12 +522,12 @@ class AwsComputeApp < ResourceApiBase
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
 	##~ op = a.operations.add
 	##~ op.set :httpMethod => "GET"
-	##~ op.summary = "Describe current spot prices (AWS cloud)"
+	##~ op.summary = "Describe spot price history (AWS cloud)"
 	##~ op.nickname = "describe_spot_prices"
 	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	##~ op.parameters.add :name => "filters", :description => "Filters for spot prices", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
-	##~ op.errorResponses.add :reason => "Success, list of spot prices returned", :code => 200
+	##~ op.errorResponses.add :reason => "Success, history of spot prices returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/spot_prices/describe' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
@@ -455,6 +544,17 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 	
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/spot_prices/current"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "POST"
+	##~ op.summary = "Returns current spot prices (AWS cloud)"
+	##~ op.nickname = "current_spot_prices"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, current spot prices returned", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/spot_prices/current' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
@@ -532,6 +632,17 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 	
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/addresses/delete"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "DELETE"
+	##~ op.summary = "Delete address (AWS cloud)"
+	##~ op.nickname = "delete_address"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, address deleted", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", code => 400
 	delete '/addresses/delete' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
@@ -551,6 +662,17 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 	
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/addresses/associate"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "POST"
+	##~ op.summary = "Associate addresses (AWS cloud)"
+	##~ op.nickname = "associate_addresses"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, addresses associated", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", code => 400
 	post '/addresses/associate' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
@@ -570,6 +692,17 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 	
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/addresses/dissassoicate"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "POST"
+	##~ op.summary = "Disassociate addresses (AWS cloud)"
+	##~ op.nickname = "disassociate_addresses"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, addresses disassociated", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", code => 400
 	post '/addresses/disassociate' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
@@ -743,6 +876,17 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/vpcs/delete"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "PUT"
+	##~ op.summary = "Delete VPC (AWS cloud)"
+	##~ op.nickname = "delete_vpc"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, VPC deleted", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", code => 400
 	delete '/vpcs/delete' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
@@ -762,6 +906,17 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/vpcs/associate_dhcp_options"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "POST"
+	##~ op.summary = "Associate DHCP options with VPC (AWS cloud)"
+	##~ op.nickname = "associate_dhcp_options_vpcs"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, DHCP options and VPC associated", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", code => 400
 	post '/vpcs/associate_dhcp_options' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
@@ -842,6 +997,17 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/chcp_options/delete"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "DELETE"
+	##~ op.summary = "Delete DHCP option (AWS cloud)"
+	##~ op.nickname = "delete_dhcp_option"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, DHCP option deleted", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", code => 400
 	delete '/dhcp_options/delete' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
@@ -917,6 +1083,17 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/internet_gateways/attach"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "POST"
+	##~ op.summary = "Attach internet gateway (AWS cloud)"
+	##~ op.nickname = "attach_internet_gateway"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, internet gateway attached", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", code => 400
 	post '/internet_gateways/attach' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
@@ -936,6 +1113,17 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/"internet_gateways/detach"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "POST"
+	##~ op.summary = "Detach internet gateway (AWS cloud)"
+	##~ op.nickname = "detach_internet gateway"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, internet gateway detached", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", code => 400
 	post '/internet_gateways/detach' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
@@ -955,6 +1143,17 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/internet_gateways/delete"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "DELETE"
+	##~ op.summary = "Delete internet gateway (AWS cloud)"
+	##~ op.nickname = "delete_internet_gateway"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, internet gateway deleted", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", code => 400
 	delete '/internet_gateways/delete' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
@@ -1035,6 +1234,17 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/subnets/delete"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "DELETE"
+	##~ op.summary = "Delete subnet (AWS cloud)"
+	##~ op.nickname = "delete_subnet"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, subnet deleted", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", code => 400
 	delete '/subnets/delete' do
 		compute = get_compute_interface(params[:cred_id], params[:region])
 		if(compute.nil?)
