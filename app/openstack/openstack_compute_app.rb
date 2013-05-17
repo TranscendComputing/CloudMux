@@ -321,7 +321,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.summary = "Add security groups rule (OpenStack cloud)"  
     ##~ op.nickname = "add_rule_security_groups"
     ##~ op.parameters.add :name => "id", :description => "Instance ID", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
-    ##~ op.errorResponses.add :reason => "Success, security groups rule added" :code => 200
+    ##~ op.errorResponses.add :reason => "Success, security groups rule added", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
     put '/security_groups/:id/add_rule' do
         json_body = body_to_json(request)
