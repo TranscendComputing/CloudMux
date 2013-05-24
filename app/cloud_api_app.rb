@@ -44,6 +44,15 @@ class CloudApiApp < ApiBase
     cloud.to_json
   end
 
+  ##~ a = sapi.apis.add   
+  ##~ a.set :path => "/api/v1/clouds"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Create a new cloud"  
+  ##~ op.nickname = "create_cloud"
+  ##~ op.parameters.add :name => "id", :description => "ID of the cloud", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Query successful", :code => 200
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   post '/' do
     new_cloud = Cloud.new.extend(UpdateCloudRepresenter)
     new_cloud.from_json(request.body.read)
@@ -60,6 +69,15 @@ class CloudApiApp < ApiBase
     end
   end
 
+  ##~ a = sapi.apis.add   
+  ##~ a.set :path => "/api/v1/clouds/{id}"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "PUT"
+  ##~ op.summary = "Update cloud"  
+  ##~ op.nickname = "update_cloud"
+  ##~ op.parameters.add :name => "id", :description => "ID of the cloud", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Query successful", :code => 200
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   put '/:id' do
     update_cloud = Cloud.find(params[:id])
     update_cloud.extend(UpdateCloudRepresenter)
@@ -77,6 +95,15 @@ class CloudApiApp < ApiBase
     end
   end
 
+  ##~ a = sapi.apis.add   
+  ##~ a.set :path => "/api/v1/clouds/{id}"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Delete cloud"  
+  ##~ op.nickname = "delete_cloud"
+  ##~ op.parameters.add :name => "id", :description => "ID of the cloud", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Query successful", :code => 200
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   delete '/:id' do
 	  cloud = Cloud.find(params[:id])
 	  cloud.delete
