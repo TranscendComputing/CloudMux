@@ -2,189 +2,126 @@ require 'sinatra'
 require 'fog'
 
 class AwsBlockStorageApp < ResourceApiBase
+
+	before do
+		if ! params[:cred_id].nil?
+			cloud_cred = get_creds(params[:cred_id])
+			if ! cloud_cred.nil?
+				if params[:region].nil? || params[:region] == "undefined" || params[:region] == ""
+					@block_storage = Fog::Compute::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
+				else
+					@block_storage = Fog::Compute::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => params[:region]})
+				end
+			end
+		end
+		halt [BAD_REQUEST] if @block_storage.nil?
+    end
+
 	#
 	# Volumes
 	#
-	get '/volumes/describe' do
-		block_storage = get_block_storage_interface(params[:cred_id], params[:region])
-		if(block_storage.nil?)
+	get '/volumes' do
+		filters = params[:filters]
+		if(filters.nil?)
+			response = @block_storage.volumes
+		else
+			response = @block_storage.volumes.all(filters)
+		end
+		[OK, response.to_json]
+	end
+	
+	post '/volumes' do
+		json_body = body_to_json(request)
+		if(json_body.nil?)
 			[BAD_REQUEST]
 		else
-			filters = params[:filters]
-			if(filters.nil?)
-				response = block_storage.volumes
-			else
-				response = block_storage.volumes.all(filters)
+			begin
+				response = @block_storage.volumes.create(json_body["volume"])
+				[OK, response.to_json]
+			rescue => error
+				handle_error(error)
 			end
+		end
+	end
+	
+	delete '/volumes/:id' do
+		begin
+			response = @block_storage.volumes.get(params[:id]).destroy
 			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 	
-	put '/volumes/create' do
-		block_storage = get_block_storage_interface(params[:cred_id], params[:region])
-		if(block_storage.nil?)
+	post '/volumes/:id/attach' do
+		json_body = body_to_json(request)
+		if(json_body.nil? || json_body["server_id"].nil? || json_body["device"].nil?)
 			[BAD_REQUEST]
 		else
-			json_body = body_to_json(request)
-			if(json_body.nil?)
-				[BAD_REQUEST]
-			else
-				begin
-					response = block_storage.volumes.create(json_body["volume"])
-					[OK, response.to_json]
-				rescue => error
-					handle_error(error)
-				end
+			begin
+				response = @block_storage.attach_volume(json_body["server_id"], params[:id], json_body["device"])
+				[OK, response.to_json]
+			rescue => error
+				handle_error(error)
 			end
 		end
 	end
 	
-	delete '/volumes/delete' do
-		block_storage = get_block_storage_interface(params[:cred_id], params[:region])
-		if(block_storage.nil?)
+	post '/volumes/:id/detach' do
+		if(params[:id])
 			[BAD_REQUEST]
 		else
-			json_body = body_to_json(request)
-			if(json_body.nil? || json_body["volume"].nil?)
-				[BAD_REQUEST]
-			else
-				begin
-					response = block_storage.volumes.get(json_body["volume"]["id"]).destroy
-					[OK, response.to_json]
-				rescue => error
-					handle_error(error)
-				end
+			begin
+				response = @block_storage.detach_volume(params[:id])
+				[OK, response.to_json]
+			rescue => error
+				handle_error(error)
 			end
 		end
 	end
 	
-	post '/volumes/attach' do
-		block_storage = get_block_storage_interface(params[:cred_id], params[:region])
-		if(block_storage.nil?)
-			[BAD_REQUEST]
-		else
-			json_body = body_to_json(request)
-			if(json_body.nil? || json_body["volume"].nil?)
-				[BAD_REQUEST]
-			else
-				begin
-					response = block_storage.attach_volume(json_body["volume"]["server_id"], json_body["volume"]["id"], json_body["volume"]["device"])
-					[OK, response.to_json]
-				rescue => error
-					handle_error(error)
-				end
-			end
-		end
-	end
-	
-	post '/volumes/detach' do
-		block_storage = get_block_storage_interface(params[:cred_id], params[:region])
-		if(block_storage.nil?)
-			[BAD_REQUEST]
-		else
-			json_body = body_to_json(request)
-			if(json_body.nil? || json_body["volume"].nil?)
-				[BAD_REQUEST]
-			else
-				begin
-					response = block_storage.detach_volume(json_body["volume"]["id"])
-					[OK, response.to_json]
-				rescue => error
-					handle_error(error)
-				end
-			end
-		end
-	end
-	
-	post '/volumes/force_detach' do
-		block_storage = get_block_storage_interface(params[:cred_id], params[:region])
-		if(block_storage.nil?)
-			[BAD_REQUEST]
-		else
-			json_body = body_to_json(request)
-			if(json_body.nil? || json_body["volume"].nil?)
-				[BAD_REQUEST]
-			else
-				begin
-					response = block_storage.detach_volume(json_body["volume"]["id"], {"Force"=>true})
-					[OK, response.to_json]
-				rescue => error
-					handle_error(error)
-				end
-			end
+	post '/volumes/:id/force_detach' do
+		begin
+			response = @block_storage.detach_volume(params[:id], {"Force"=>true})
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 	
 	#
 	# Snapshots
 	#
-	get '/snapshots/describe' do
-		block_storage = get_block_storage_interface(params[:cred_id], params[:region])
-		if(block_storage.nil?)
+	get '/snapshots' do
+		filters = params[:filters]
+		if(filters.nil?)
+			response = @block_storage.snapshots
+		else
+			response = @block_storage.snapshots.all(filters)
+		end
+		[OK, response.to_json]
+	end
+	
+	post '/snapshots' do
+		json_body = body_to_json(request)
+		if(json_body.nil? || json_body["snapshot"].nil?)
 			[BAD_REQUEST]
 		else
-			filters = params[:filters]
-			if(filters.nil?)
-				response = block_storage.snapshots
-			else
-				response = block_storage.snapshots.all(filters)
+			begin
+				response = @block_storage.snapshots.create(json_body["snapshot"])
+				[OK, response.to_json]
+			rescue => error
+				handle_error(error)
 			end
+		end
+	end
+	
+	delete '/snapshots/:id' do
+		begin
+			response = block_storage.snapshots.get(params[:id]).destroy
 			[OK, response.to_json]
-		end
-	end
-	
-	put '/snapshots/create' do
-		block_storage = get_block_storage_interface(params[:cred_id], params[:region])
-		if(block_storage.nil?)
-			[BAD_REQUEST]
-		else
-			json_body = body_to_json(request)
-			if(json_body.nil?)
-				[BAD_REQUEST]
-			else
-				begin
-					response = block_storage.snapshots.create(json_body["snapshot"])
-					[OK, response.to_json]
-				rescue => error
-					handle_error(error)
-				end
-			end
-		end
-	end
-	
-	delete '/snapshots/delete' do
-		block_storage = get_block_storage_interface(params[:cred_id], params[:region])
-		if(block_storage.nil?)
-			[BAD_REQUEST]
-		else
-			json_body = body_to_json(request)
-			if(json_body.nil? || json_body["snapshot"].nil?)
-				[BAD_REQUEST]
-			else
-				begin
-					response = block_storage.snapshots.get(json_body["snapshot"]["id"]).destroy
-					[OK, response.to_json]
-				rescue => error
-					handle_error(error)
-				end
-			end
-		end
-	end
-
-	def get_block_storage_interface(cred_id, region)
-		if(cred_id.nil?)
-			return nil
-		else
-			cloud_cred = get_creds(cred_id)
-			if cloud_cred.nil?
-				return nil
-			else
-				if region.nil? or region == "undefined" or region == ""
-					return Fog::Compute::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
-				else
-					return Fog::Compute::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => region})
-				end
-			end
+		rescue => error
+			handle_error(error)
 		end
 	end
 end
