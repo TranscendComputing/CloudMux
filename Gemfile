@@ -32,6 +32,7 @@ gem 'redcarpet', '~> 2.1.0'
 
 # Cloud Management
 gem 'fog', '1.12.1', :require => 'fog'
+gem 'rb-readline'
 gem 'debugger'
 
 # Flex support hack - allow _method to be passed as a URL parameter for PUT and DELETE
