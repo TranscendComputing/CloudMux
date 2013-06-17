@@ -69,11 +69,39 @@ class AwsNotificationApp < ResourceApiBase
 	end
 
 	delete '/topics/:id' do
-		if(params[:id].nil?)
+		begin
+			response = @notification.delete_topic(params[:id])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
+		end
+	end
+
+	post '/topics/:id/publish' do
+		json_body = body_to_json(request)
+		if(json_body.nil?)
 			[BAD_REQUEST]
 		else
 			begin
-				response = @notification.delete_topic(params[:id])
+				if(json_body["publish"]["options"].nil?)
+					response = @notification.publish(params[:id], json_body["publish"]["message"])
+				else
+					response = @notification.publish(params[:id], json_body["publish"]["message"], json_body["publish"]["options"])
+				end
+				[OK, response.to_json]
+			rescue => error
+				handle_error(error)
+			end
+		end
+	end
+
+	post '/topics/:id/set_attribute' do
+		json_body = body_to_json(request)
+		if(json_body.nil?)
+			[BAD_REQUEST]
+		else
+			begin
+				response = @notification.set_topic_attributes(params[:id], json_body["attribute"]["name"], json_body["attribute"]["value"])
 				[OK, response.to_json]
 			rescue => error
 				handle_error(error)
