@@ -53,4 +53,27 @@ class AwsCacheApp < ResourceApiBase
 		end
 	end
   
+  #
+  #Additional Methods
+  #
+	get '/parameter_groups' do
+		filters = params[:filters]
+		if(filters.nil?)
+			response = @elasticache.parameter_groups
+		else
+			response = @elasticache.parameter_groups.all(filters)
+		end
+		[OK, response.to_json]
+	end
+
+	get '/security_groups' do
+		filters = params[:filters]
+		if(filters.nil?)
+			response = @elasticache.security_groups
+		else
+			response = @elasticache.security_groups.all(filters)
+		end
+		[OK, response.to_json]
+	end
+  
 end
