@@ -28,6 +28,7 @@ require 'app/aws/aws_notification_app'
 require 'app/aws/aws_dns_app'
 require 'app/aws/aws_rds_app'
 require 'app/aws/aws_load_balancer_app'
+require 'app/aws/aws_cache_app'
 require 'app/aws/aws_iam_app'
 require 'app/aws/aws_queue_app'
 require 'app/openstack/openstack_compute_app'
@@ -247,6 +248,13 @@ end
 #
 map "/stackstudio/v1/cloud_management/aws/load_balancer" do
   run AwsLoadBalancerApp
+end
+
+#
+# AWS Cache API
+#
+map "/stackstudio/v1/cloud_management/aws/cache" do
+  run AwsCacheApp
 end
 
 #
