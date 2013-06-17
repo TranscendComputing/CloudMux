@@ -86,19 +86,15 @@ class AwsNotificationApp < ResourceApiBase
 	#
 	get '/topics/:id/subscriptions' do
 		filters = params[:filters]
-		if(topic.nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				if(filters.nil?)
-					response = @notification.list_subscriptions_by_topic(params[:id])
-				else
-					response = @notification.list_subscriptions_by_topic(params[:id], filters)
-				end
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
+		begin
+			if(filters.nil?)
+				response = @notification.list_subscriptions_by_topic(params[:id]).body["Subscriptions"]
+			else
+				response = @notification.list_subscriptions_by_topic(params[:id], filters).body["Subscriptions"]
 			end
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 
@@ -108,7 +104,7 @@ class AwsNotificationApp < ResourceApiBase
 			[BAD_REQUEST]
 		else
 			begin
-				response = @notification.subscribe(params[:id], json_body["endpoint"], json_body["protocol"])
+				response = @notification.subscribe(params[:id], json_body["subscription"]["endpoint"], json_body["subscription"]["protocol"])
 				[OK, response.to_json]
 			rescue => error
 				handle_error(error)
