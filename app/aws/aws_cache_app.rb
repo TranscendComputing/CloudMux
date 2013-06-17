@@ -76,4 +76,20 @@ class AwsCacheApp < ResourceApiBase
 		[OK, response.to_json]
 	end
   
+	post '/clusters/modify/:id' do
+		json_body = body_to_json(request)
+		if(json_body.nil?)
+			[BAD_REQUEST]
+		else
+			begin
+        #require "debugger"
+        #debugger
+				response = @elasticache.modify_cache_cluster(params[:id],json_body["options"])
+				[OK, response.to_json]
+			rescue => error
+				handle_error(error)
+			end
+		end
+	end
+  
 end
