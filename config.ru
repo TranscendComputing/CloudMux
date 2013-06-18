@@ -21,6 +21,7 @@ require 'app/news_event_api_app'
 require 'app/root_app'
 require 'app/resource_api_base'
 require 'app/aws/aws_compute_app'
+require 'app/aws/aws_autoscale_app'
 require 'app/aws/aws_block_storage_app'
 require 'app/aws/aws_object_storage_app'
 require 'app/aws/aws_monitor_app'
@@ -198,6 +199,13 @@ end
 
 map "/api/v1/cloud_management/aws/compute" do
   run AwsComputeApp
+end
+
+#
+# AWS Autoscale API
+#
+map "/stackstudio/v1/cloud_management/aws/autoscale" do
+  run AwsAutoscaleApp
 end
 
 #
