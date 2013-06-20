@@ -40,6 +40,7 @@ require 'app/openstack/openstack_identity_app'
 require 'app/openstack/openstack_network_app'
 require 'app/openstack/openstack_load_balancer_app'
 require 'app/openstack/openstack_autoscale_app'
+require 'app/openstack/openstack_monitor_app'
 
 
 
@@ -343,4 +344,11 @@ end
 #
 map "/stackstudio/v1/cloud_management/openstack/autoscale" do
   run OpenstackAutoscaleApp
+end
+
+#
+# Openstack Monitor API
+#
+map "/stackstudio/v1/cloud_management/openstack/monitor" do
+  run OpenstackMonitorApp
 end
