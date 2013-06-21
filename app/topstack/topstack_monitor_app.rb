@@ -1,7 +1,7 @@
 require 'sinatra'
 require 'fog'
 
-class OpenstackMonitorApp < ResourceApiBase
+class TopStackMonitorApp < ResourceApiBase
 
 	before do
 		if(params[:cred_id].nil?)

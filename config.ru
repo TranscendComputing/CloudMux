@@ -38,9 +38,9 @@ require 'app/openstack/openstack_block_storage_app'
 require 'app/openstack/openstack_object_storage_app'
 require 'app/openstack/openstack_identity_app'
 require 'app/openstack/openstack_network_app'
-require 'app/openstack/openstack_load_balancer_app'
-require 'app/openstack/openstack_autoscale_app'
-require 'app/openstack/openstack_monitor_app'
+require 'app/topstack/topstack_autoscale_app'
+require 'app/topstack/topstack_load_balancer_app'
+require 'app/topstack/topstack_monitor_app'
 
 
 
@@ -333,22 +333,22 @@ map "/stackstudio/v1/cloud_management/openstack/network" do
 end
 
 #
-# Openstack LoadBalancer API
+# TopStack LoadBalancer API
 #
-map "/stackstudio/v1/cloud_management/openstack/load_balancer" do
-  run OpenstackLoadBalancerApp
+map "/stackstudio/v1/cloud_management/topstack/load_balancer" do
+  run TopStackLoadBalancerApp
 end
 
 #
-# Openstack AutoScale API
+# TopStack AutoScale API
 #
-map "/stackstudio/v1/cloud_management/openstack/autoscale" do
-  run OpenstackAutoscaleApp
+map "/stackstudio/v1/cloud_management/topstack/autoscale" do
+  run TopStackAutoscaleApp
 end
 
 #
-# Openstack Monitor API
+# TopStack Monitor API
 #
-map "/stackstudio/v1/cloud_management/openstack/monitor" do
-  run OpenstackMonitorApp
+map "/stackstudio/v1/cloud_management/topstack/monitor" do
+  run TopStackMonitorApp
 end
