@@ -1,7 +1,7 @@
 require 'sinatra'
 require 'fog'
 
-class OpenstackAutoscaleApp < ResourceApiBase
+class TopStackAutoscaleApp < ResourceApiBase
 
 	before do
 		if(params[:cred_id].nil?)
