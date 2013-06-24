@@ -18,7 +18,7 @@ class AwsRdsApp < ResourceApiBase
     end
 
 	#
-	# Volumes
+	# Databases
 	#
 	get '/databases' do
 		filters = params[:filters]
