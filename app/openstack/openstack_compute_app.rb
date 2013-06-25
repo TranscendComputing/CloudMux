@@ -200,7 +200,30 @@ class OpenstackComputeApp < ResourceApiBase
         response = @compute.list_hosts.body["hosts"].find_all {|h| h["service"] == "@compute"}
         [OK, response.to_json]
     end
-    
+
+    #
+    # Compute Images
+    #
+
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/openstack/compute/images"
+    ##~ a.description = "Manage compute resources on the cloud (OpenStack)"
+    ##~ op = a.operations.add
+    ##~ op.set :httpMethod => "GET"
+    ##~ op.summary = "Describe images (OpenStack cloud)"  
+    ##~ op.nickname = "describe_images"
+    ##~ op.errorResponses.add :reason => "Success, list of images returned", :code => 200
+    ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    get '/images' do
+        filters = params[:filters]
+        if(filters.nil?)
+            response = @compute.images
+        else
+            response = @compute.images.all(filters)
+        end
+        [OK, response.to_json]
+    end
+
     #
     # Compute Flavors
     #
@@ -440,11 +463,16 @@ class OpenstackComputeApp < ResourceApiBase
             response = @compute.addresses.create
         else
             begin
-                response = @compute.addresses.create
+                response = @compute.addresses.create(json_body["address"])
             rescue => error
                 handle_error(error)
             end
         end
+        [OK, response.to_json]
+    end
+
+    get '/address_pools' do
+        response = @compute.list_address_pools
         [OK, response.to_json]
     end
     
