@@ -28,16 +28,14 @@ class OpenstackIdentityApp < ResourceApiBase
 	#
 	# Users
 	#
-    
-    # If tenant_id is passed as URL param, then this action is filtered by tenants
-    # Otherwise, all users are returned  
+
 	get '/users' do
-        begin
+        if(params[:tenant_id].nil?)
+            response = @identity.list_users.body["users"]
+        else
             response = @identity.list_users(params[:tenant_id]).body["users"]
-    		[OK, response.to_json]
-        rescue => error
-            handle_error(error)
         end
+        [OK, response.to_json]
 	end
 	
 	post '/users' do
@@ -62,35 +60,18 @@ class OpenstackIdentityApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-
-    # Get roles for users in tenant
-    get '/users/:id/:tenant_id/roles' do
-        begin
-            user_roles = @identity.list_roles_for_user_on_tenant(params[:tenant_id], params[:id]).body["roles"]
-            all_roles = @identity.list_roles.body["roles"]
-            available_roles = []
-            all_roles.select do |role|
-                unless user_roles.detect {|r| r["id"] == role["id"]}
-                    available_roles << role
-                end
-            end
-            response = {:available_roles => available_roles, :roles => user_roles}
-            [OK, response.to_json]
-        rescue => error
-            handle_error(error)
-        end
-    end
 	
 	#
 	# Tenants
 	#
 	get '/tenants' do
-        begin
-            response = @identity.list_tenants.body["tenants"]
-    		[OK, response.to_json]
-        rescue => error
-            handle_error(error)
+        filters = params[:filters]
+        if(filters.nil?)
+            response = @identity.tenants
+        else
+            response = @identity.tenants.all(filters)
         end
+        [OK, response.to_json]
 	end
 	
     post '/tenants' do
@@ -116,41 +97,47 @@ class OpenstackIdentityApp < ResourceApiBase
         end
     end
 
-    # Completely removes user from tenant if no specific roles are passed
-    # Otherwise, removes role from user on tenant
-    delete '/tenants/:id/users/:user_id' do
-        json_body = body_to_json(request)
-        if(json_body.nil? || json_body["role_id"].nil?)
-            begin
-                roles = @identity.list_roles_for_user_on_tenant(params[:id], params[:user_id]).body["roles"]
-                roles.each {|role| @identity.remove_user_from_tenant(params[:id], params[:user_id], role["id"])}
-                response = @identity.list_users(params[:id]).body["users"]
-                [OK, response.to_json]
-            rescue => error
-                handle_error(error)
+    get '/tenants/:id/users/:user_id/roles' do
+        begin
+            user_roles = @identity.list_roles_for_user_on_tenant(params[:tenant_id], params[:id]).body["roles"]
+            availabilty_roles = []
+            user_roles.each do |role|
+                availabile_roles << @identity.roles.get(role["id"])
             end
-        else
-            begin
-                response = @identity.remove_user_from_tenant(params[:id], params[:user_id], json_body["role_id"]).body
-                [OK, response.to_json]
-            rescue => error
-                handle_error(error)
-            end
+            response = {:available_roles => available_roles, :roles => user_roles}
+            [OK, response.to_json]
+        rescue => error
+            handle_error(error)
         end
     end
 
-    # Add role for user to tenant
-    post '/tenants/:id/users/:user_id' do
-        json_body = body_to_json(request)
-        if(json_body.nil? || json_body["role_id"].nil?)
-            [BAD_REQUEST]
-        else
-            begin
-                response = @identity.add_user_to_tenant(params[:id], params[:user_id], json_body["role_id"]).body
-                [OK, response.to_json]
-            rescue => error
-                handle_error(error)
+    post '/tenants/:id/users/:user_id/roles/:role_id' do
+        begin
+            response = @identity.add_user_to_tenant(params[:id], params[:user_id], params[:role_id]).body
+            [OK, response.to_json]
+        rescue => error
+            handle_error(error)
+        end
+    end
+
+    delete '/tenants/:id/users/:user_id/roles' do
+        begin
+            user_roles = @identity.list_roles_for_user_on_tenant(params[:id], params[:user_id]).body["roles"]
+            user_roles.each do |role|
+                @identity.delete_user_role(params[:id], params[:user_id], role["id"])
             end
+            [OK]
+        rescue => error
+            handle_error(error)
+        end
+    end
+
+    delete '/tenants/:id/users/:user_id/roles/:role_id' do
+        begin
+            response = @identity.delete_user_role(params[:id], params[:user_id], params[:role_id])
+            [OK, response.to_json]
+        rescue => error
+            handle_error(error)
         end
     end
 
@@ -159,7 +146,7 @@ class OpenstackIdentityApp < ResourceApiBase
     #
     get '/roles' do
         begin
-            response = @identity.list_roles.body["roles"]
+            response = @identity.roles
             [OK, response.to_json]
         rescue => error
             handle_error(error)
