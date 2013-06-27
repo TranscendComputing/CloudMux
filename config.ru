@@ -42,6 +42,7 @@ require 'app/topstack/topstack_autoscale_app'
 require 'app/topstack/topstack_load_balancer_app'
 require 'app/topstack/topstack_monitor_app'
 require 'app/topstack/topstack_rds_app'
+require 'app/topstack/topstack_queue_app'
 
 
 
@@ -359,4 +360,11 @@ end
 #
 map "/stackstudio/v1/cloud_management/topstack/rds" do
   run TopStackRdsApp
+end
+
+#
+# TopStack Queue API
+#
+map "/stackstudio/v1/cloud_management/topstack/queue" do
+  run TopStackQueueApp
 end
