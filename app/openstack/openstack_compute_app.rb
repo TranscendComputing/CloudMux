@@ -5,11 +5,11 @@ class OpenstackComputeApp < ResourceApiBase
 
     before do
         if(params[:cred_id].nil?)
-            return nil
+            halt [BAD_REQUEST]
         else
             cloud_cred = get_creds(params[:cred_id])
             if cloud_cred.nil?
-                return nil
+                halt [NOT_FOUND, "Credentials not found."]
             else
                 options = cloud_cred.cloud_attributes.merge(:provider => "openstack")
                 @compute = Fog::Compute.new(options)
