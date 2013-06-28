@@ -86,4 +86,76 @@ class AwsRdsApp < ResourceApiBase
 		end
 		[OK, response.to_json]
 	end
+  
+  #
+  #Create Security/Parameter Groups
+  #
+	post '/security_groups' do
+		json_body = body_to_json(request)
+		if(json_body.nil?)
+			[BAD_REQUEST]
+		else
+			begin
+				response = @rds.security_groups.create(json_body["security_group"])
+				[OK, response.to_json]
+			rescue => error
+				handle_error(error)
+			end
+		end
+	end
+  
+	post '/parameter_groups' do
+		json_body = body_to_json(request)
+		if(json_body.nil?)
+			[BAD_REQUEST]
+		else
+			begin
+				response = @rds.parameter_groups.create(json_body["parameter_group"])
+				[OK, response.to_json]
+			rescue => error
+				handle_error(error)
+			end
+		end
+	end
+  
+  #
+  #Delete Security/Parameter Groups
+  #
+	delete '/security_groups/:id' do
+		begin
+			response = @rds.security_groups.get(params[:id]).destroy
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
+		end
+	end
+  
+	delete '/parameter_groups/:id' do
+		begin
+			response = @rds.parameter_groups.get(params[:id]).destroy
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
+		end
+	end
+  
+  #
+  #Describe Parameter Group
+  #
+	post '/parameter_groups/describe/:id' do
+		json_body = body_to_json(request)
+		if(json_body.nil?)
+			[BAD_REQUEST]
+		else
+			begin
+        #require "debugger"
+        #debugger
+				response = @rds.describe_db_parameters(params[:id],json_body["options"])
+				[OK, response.to_json]
+			rescue => error
+				handle_error(error)
+			end
+		end
+	end
+	
 end
