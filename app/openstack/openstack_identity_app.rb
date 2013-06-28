@@ -30,12 +30,16 @@ class OpenstackIdentityApp < ResourceApiBase
 	#
 
 	get '/users' do
-        if(params[:tenant_id].nil?)
-            response = @identity.list_users.body["users"]
-        else
-            response = @identity.list_users(params[:tenant_id]).body["users"]
+        begin
+            if(params[:tenant_id].nil?)
+                response = @identity.list_users.body["users"]
+            else
+                response = @identity.list_users(params[:tenant_id]).body["users"]
+            end
+            [OK, response.to_json]
+        rescue => error
+            handle_error(error)
         end
-        [OK, response.to_json]
 	end
 	
 	post '/users' do
