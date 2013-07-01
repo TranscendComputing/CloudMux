@@ -12,7 +12,7 @@ class TopStackLoadBalancerApp < ResourceApiBase
                 halt [NOT_FOUND, "Credentials not found."]
             else
                 begin
-                    # Find AutoScale service endpoint
+                    # Find LoadBalancer service endpoint
                     endpoint = cloud_cred.cloud_account.cloud_services.where({"service_type"=>"ELB"}).first
                     halt [BAD_REQUEST] if endpoint.nil?
                     fog_options = {:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key}
