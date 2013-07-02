@@ -43,6 +43,7 @@ require 'app/topstack/topstack_load_balancer_app'
 require 'app/topstack/topstack_monitor_app'
 require 'app/topstack/topstack_rds_app'
 require 'app/topstack/topstack_queue_app'
+require 'app/topstack/topstack_cache_app'
 
 
 
@@ -367,4 +368,11 @@ end
 #
 map "/stackstudio/v1/cloud_management/topstack/queue" do
   run TopStackQueueApp
+end
+
+#
+# TopStack Cache API
+#
+map "/stackstudio/v1/cloud_management/topstack/cache" do
+  run TopStackCacheApp
 end
