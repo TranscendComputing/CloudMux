@@ -145,4 +145,23 @@ class AwsCacheApp < ResourceApiBase
 		end
 	end
   
+  #
+  #Describe Parameter Group
+  #
+	post '/parameter_groups/describe/:id' do
+		json_body = body_to_json(request)
+		if(json_body.nil?)
+			[BAD_REQUEST]
+		else
+			begin
+        #require "debugger"
+        #debugger
+				response = @elasticache.describe_cache_parameters(params[:id],json_body["options"])
+				[OK, response.to_json]
+			rescue => error
+				handle_error(error)
+			end
+		end
+	end
+  
 end
