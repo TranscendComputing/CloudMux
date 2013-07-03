@@ -45,6 +45,7 @@ require 'app/topstack/topstack_monitor_app'
 require 'app/topstack/topstack_rds_app'
 require 'app/topstack/topstack_queue_app'
 require 'app/topstack/topstack_cache_app'
+require 'app/topstack/topstack_dns_app'
 
 
 
@@ -383,4 +384,11 @@ end
 #
 map "/stackstudio/v1/cloud_management/topstack/cache" do
   run TopStackCacheApp
+end
+
+#
+# TopStack DNS API
+#
+map "/stackstudio/v1/cloud_management/topstack/dns" do
+  run TopStackDnsApp
 end
