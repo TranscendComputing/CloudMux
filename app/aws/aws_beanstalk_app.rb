@@ -64,5 +64,39 @@ class AwsBeanstalkApp < ResourceApiBase
   			handle_error(error)
   		end
   	end
+    
+    #
+    #Application Environments
+    #
+  	post '/applications/environments' do
+  		json_body = body_to_json(request)
+  		if(json_body.nil?)
+  			[BAD_REQUEST]
+  		else
+  			begin
+  				response = @elasticbeanstalk.describe_environments(json_body["options"])
+  				[OK, response.to_json]
+  			rescue => error
+  				handle_error(error)
+  			end
+  		end
+  	end
+    
+    #
+    #Application Versions
+    #
+  	post '/applications/versions' do
+  		json_body = body_to_json(request)
+  		if(json_body.nil?)
+  			[BAD_REQUEST]
+  		else
+  			begin
+  				response = @elasticbeanstalk.describe_application_versions(json_body["options"])
+  				[OK, response.to_json]
+  			rescue => error
+  				handle_error(error)
+  			end
+  		end
+  	end
   
 end
