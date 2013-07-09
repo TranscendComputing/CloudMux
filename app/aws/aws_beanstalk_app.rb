@@ -82,6 +82,38 @@ class AwsBeanstalkApp < ResourceApiBase
   		end
   	end
     
+  	delete '/applications/environments/:id' do
+  		begin
+  			response = @elasticbeanstalk.environments.get(params[:id]).destroy
+  			[OK, response.to_json]
+  		rescue => error
+  			handle_error(error)
+  		end
+  	end
+    
+  	get '/applications/environments/:id' do
+  		begin
+  			response = @elasticbeanstalk.environments.get(params[:id])
+  			[OK, response.to_json]
+  		rescue => error
+  			handle_error(error)
+  		end
+  	end
+    
+  	post '/applications/environments/config' do
+  		json_body = body_to_json(request)
+  		if(json_body.nil?)
+  			[BAD_REQUEST]
+  		else
+  			begin
+  				response = @elasticbeanstalk.describe_configuration_settings(json_body["options"])
+  				[OK, response.to_json]
+  			rescue => error
+  				handle_error(error)
+  			end
+  		end
+  	end
+    
     #
     #Application Versions
     #
@@ -96,6 +128,15 @@ class AwsBeanstalkApp < ResourceApiBase
   			rescue => error
   				handle_error(error)
   			end
+  		end
+  	end
+    
+  	delete '/applications/:appid/versions/:vid' do
+  		begin
+  			response = @elasticbeanstalk.versions.get(params[:appid],params[:vid]).destroy
+  			[OK, response.to_json]
+  		rescue => error
+  			handle_error(error)
   		end
   	end
     
@@ -126,6 +167,21 @@ class AwsBeanstalkApp < ResourceApiBase
   		else
   			begin
   				response = @elasticbeanstalk.create_environment(json_body["environment"])
+  				[OK, response.to_json]
+  			rescue => error
+  				handle_error(error)
+  			end
+  		end
+  	end
+    
+    #Application Environment Update
+  	post '/applications/environments/update' do
+  		json_body = body_to_json(request)
+  		if(json_body.nil?)
+  			[BAD_REQUEST]
+  		else
+  			begin
+  				response = @elasticbeanstalk.update_environment(json_body["environment"])
   				[OK, response.to_json]
   			rescue => error
   				handle_error(error)
