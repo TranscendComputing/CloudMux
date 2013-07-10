@@ -188,5 +188,22 @@ class AwsBeanstalkApp < ResourceApiBase
   			end
   		end
   	end
+    
+    #
+    #Application Events
+    #
+  	post '/applications/events' do
+  		json_body = body_to_json(request)
+  		if(json_body.nil?)
+  			[BAD_REQUEST]
+  		else
+  			begin
+  				response = @elasticbeanstalk.describe_events(json_body["options"])
+  				[OK, response.to_json]
+  			rescue => error
+  				handle_error(error)
+  			end
+  		end
+  	end
   
 end
