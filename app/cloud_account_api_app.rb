@@ -68,6 +68,10 @@ class CloudAccountApiApp < ApiBase
   post '/' do
     new_cloud_account = CloudAccount.new.extend(UpdateCloudAccountRepresenter)
     new_cloud_account.from_json(request.body.read)
+    #Dev's Code
+    new_cloud_account.org = Org.find(params[:org_id])
+    new_cloud_account.cloud = Cloud.find(params[:cloud_id])
+    #Dev's Code
     if new_cloud_account.valid?
       new_cloud_account.save!
       # refresh without the Update representer, so that we don't serialize private data back
