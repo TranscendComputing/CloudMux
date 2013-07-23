@@ -88,7 +88,7 @@
 	</target>
 	
 	<target name="deploy" depends="bundle, package">
-        <echo message="Deploying StackCore to ${deploy.ip}"/>
+        <echo message="Deploying CloudMux to ${deploy.ip}"/>
 		<echo message="scp ${build}/${package.file} ${deploy.ip}:/${cloudmux.home}"/>
 		<exec command="scp ${build}/${package.file} ${deploy.ip}:/${cloudmux.home}" failonerror="true"/>
         <exec command="ssh ${deploy.ip} sudo rm -r ${cloudmux.home}/CloudMux" failonerror="true"/>
@@ -103,13 +103,13 @@
 	</target>
 
 	<target name="deployprod" depends="bundle, package">
-        <echo message="Deploying StackCore to ${deploy.ip}"/>
-		<echo message="scp ${build}/${package.file} ${deploy.ip}:/${cloudmux.home}"/>
+        <echo message="Deploying CloudMux to ${deploy.ip}"/>
 		<exec command="scp ${build}/${package.file} ${deploy.ip}:/${cloudmux.home}" failonerror="true"/>
         <exec command="ssh ${deploy.ip} rm -r ${cloudmux.home}/CloudMux" failonerror="true"/>
 		<exec command="ssh ${deploy.ip} tar xvzf ${cloudmux.home}/${package.file} -C ${cloudmux.home}" failonerror="true"/>
         <exec command="ssh ${deploy.ip} '. /etc/profile.d/rvm.sh; . /usr/local/etc/stack.env; cd ${cloudmux.home}/CloudMux; bundle install'" failonerror="true"/>
 		<exec command="ssh ${deploy.ip} '. /etc/profile.d/rvm.sh; . /usr/local/etc/stack.env; cd ${cloudmux.home}/CloudMux; bundle exec rake db:seed'" failonerror="true"/>
+		<exec command="ssh ${deploy.ip} sudo service apache2 restart" failonerror="true"/>
 	</target>
 
 	<target name="package" depends="clean,init">
