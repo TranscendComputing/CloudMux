@@ -213,6 +213,10 @@ end
 #
 # AWS Autoscale API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/autoscale_aws.{format}", :format => "json"
+##~ a.description = "AWS AutoScale API"
 map "/stackstudio/v1/cloud_management/aws/autoscale" do
   run AwsAutoscaleApp
 end

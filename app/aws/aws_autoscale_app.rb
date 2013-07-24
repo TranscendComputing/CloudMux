@@ -20,6 +20,23 @@ class AwsAutoscaleApp < ResourceApiBase
 	#
 	# Autoscale Groups
 	#
+  ##~ sapi = source2swagger.namespace("autoscale_aws")
+  ##~ sapi.swaggerVersion = "1.1"
+  ##~ sapi.apiVersion = "1.0"
+  ##~ sapi.models["Autoscale_Group"] = {:id => "Autoscale_Group", :properties => {:id => {:type => "string"}, :availability_zones => {:type => "string"}, :launch_configuration_name => {:type => "string"}, :max_size => {:type => "string"}, :min_size => {:type => "string"}}}
+  ##~ sapi.models["Launch_Configuration"] = {:id => "Launch_Configuration", :properties => {:id => {:type => "string"}, :image_id => {:type => "string"}, :instance_type => {:type => "string"}}}
+
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/autoscale/autoscale_groups"
+  ##~ a.description = "Manage Autoscale resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Autoscale_Group"
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Describe Autoscale Groups (AWS cloud)"
+  ##~ op.nickname = "describe_autoscale_groups"  
+  ##~ op.parameters.add :name => "filters", :description => "Filters for instances", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Success, list of autoscale groups returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	get '/autoscale_groups' do
 		filters = params[:filters]
 		if(filters.nil?)
@@ -30,6 +47,18 @@ class AwsAutoscaleApp < ResourceApiBase
 		[OK, response.to_json]
 	end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/autoscale/autoscale_groups"
+  ##~ a.description = "Manage Autoscale resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Autoscale_Group"
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Create a new Autoscale Group (AWS cloud)"  
+  ##~ op.nickname = "create_autoscale_groups"
+  ##~ op.parameters.add :name => "launch_configuration", :description => "Launch Configuration to use", :dataType => "Launch_Configuration", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.parameters.add :name => "autoscale_group", :description => "Autoscale Group Options", :dataType => "Autoscale_Group", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.errorResponses.add :reason => "Success, new Autoscale Group returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400	
 	post '/autoscale_groups' do
 		json_body = body_to_json(request)
 		if(json_body.nil? || json_body["launch_configuration"].nil? || json_body["autoscale_group"].nil?)
@@ -87,6 +116,17 @@ class AwsAutoscaleApp < ResourceApiBase
 		end
 	end
 	
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/autoscale/autoscale_groups/:id/spin_down"
+  ##~ a.description = "Update Autoscale Group on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Autoscale_Group"
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Update Autoscale Group on the cloud (AWS)"  
+  ##~ op.nickname = "spin_down"
+  ##~ op.parameters.add :name => "id", :description => "ID to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, Autoscale Group returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400	
 	post '/autoscale_groups/:id/spin_down' do
 		begin
 			response = @autoscale.update_auto_scaling_group(params[:id], {"MinSize" => 0, "MaxSize" => 0, "DesiredCapacity" => 0})
@@ -96,6 +136,17 @@ class AwsAutoscaleApp < ResourceApiBase
 		end
 	end
 	
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/autoscale/autoscale_groups/:id"
+  ##~ a.description = "Delete Autoscale Group on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Autoscale_Group"
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Delete Autoscale Group on the cloud (AWS)"  
+  ##~ op.nickname = "spin_down"
+  ##~ op.parameters.add :name => "id", :description => "ID to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, Autoscale Group Deleted", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400	
 	delete '/autoscale_groups/:id' do
 		begin
 			policies = @autoscale.describe_policies({"AutoScalingGroupName" => params[:id]}).body["DescribePoliciesResult"]["ScalingPolicies"]
