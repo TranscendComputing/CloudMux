@@ -224,6 +224,10 @@ end
 #
 # AWS Block Storage API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/block_storage_aws.{format}", :format => "json"
+##~ a.description = "AWS Block Storage API"
 map "/stackstudio/v1/cloud_management/aws/block_storage" do
   run AwsBlockStorageApp
 end
