@@ -280,6 +280,10 @@ end
 #
 # AWS Beanstalk API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/beanstalk_aws.{format}", :format => "json"
+##~ a.description = "AWS Beanstalk API"
 map "/stackstudio/v1/cloud_management/aws/beanstalk" do
   run AwsBeanstalkApp
 end
