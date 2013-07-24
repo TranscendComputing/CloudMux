@@ -86,8 +86,13 @@
 			<arg value="war" />
 		</exec>
 	</target>
+
+	<target name="make-docs" depends="bundle">
+		<exec executable="script/docs-gen.sh" failonerror="true">
+		</exec>
+	</target>
 	
-	<target name="deploy" depends="bundle, package">
+	<target name="deploy" depends="bundle, make-docs, package">
         <echo message="Deploying CloudMux to ${deploy.ip}"/>
 		<echo message="scp ${build}/${package.file} ${deploy.ip}:/${cloudmux.home}"/>
 		<exec command="scp ${build}/${package.file} ${deploy.ip}:/${cloudmux.home}" failonerror="true"/>
