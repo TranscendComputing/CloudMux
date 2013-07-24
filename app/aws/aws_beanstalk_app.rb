@@ -20,7 +20,7 @@ class AwsBeanstalkApp < ResourceApiBase
   	#
   	# Applications
   	#
-    ##~ sapi = source2swagger.namespace("beanstalk_aws")
+    ##~ sapi = source2swagger.namespace("aws_beanstalk")
     ##~ sapi.swaggerVersion = "1.1"
     ##~ sapi.apiVersion = "1.0"
     ##~ sapi.models["Application"] = {:id => "Application", :properties => {:name => {:type => "string"}, :description => {:type => "string"}}}

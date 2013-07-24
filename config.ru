@@ -200,7 +200,7 @@ end
 #
 ##~ a = sapi.apis.add
 ## 
-##~ a.set :path => "/compute_aws.{format}", :format => "json"
+##~ a.set :path => "/aws_compute.{format}", :format => "json"
 ##~ a.description = "AWS Cloud Compute API"
 map "/stackstudio/v1/cloud_management/aws/compute" do
   run AwsComputeApp
@@ -215,7 +215,7 @@ end
 #
 ##~ a = sapi.apis.add
 ## 
-##~ a.set :path => "/autoscale_aws.{format}", :format => "json"
+##~ a.set :path => "/aws_autoscale.{format}", :format => "json"
 ##~ a.description = "AWS AutoScale API"
 map "/stackstudio/v1/cloud_management/aws/autoscale" do
   run AwsAutoscaleApp
@@ -226,7 +226,7 @@ end
 #
 ##~ a = sapi.apis.add
 ## 
-##~ a.set :path => "/block_storage_aws.{format}", :format => "json"
+##~ a.set :path => "/aws_block_storage.{format}", :format => "json"
 ##~ a.description = "AWS Block Storage API"
 map "/stackstudio/v1/cloud_management/aws/block_storage" do
   run AwsBlockStorageApp
@@ -277,6 +277,10 @@ end
 #
 # AWS Cache API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/aws_cache.{format}", :format => "json"
+##~ a.description = "AWS Cache API"
 map "/stackstudio/v1/cloud_management/aws/cache" do
   run AwsCacheApp
 end
@@ -286,7 +290,7 @@ end
 #
 ##~ a = sapi.apis.add
 ## 
-##~ a.set :path => "/beanstalk_aws.{format}", :format => "json"
+##~ a.set :path => "/aws_beanstalk.{format}", :format => "json"
 ##~ a.description = "AWS Beanstalk API"
 map "/stackstudio/v1/cloud_management/aws/beanstalk" do
   run AwsBeanstalkApp

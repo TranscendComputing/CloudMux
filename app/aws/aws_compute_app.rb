@@ -20,7 +20,7 @@ class AwsComputeApp < ResourceApiBase
 	#
 	# Compute Instance
 	#
-    ##~ sapi = source2swagger.namespace("compute_aws")
+    ##~ sapi = source2swagger.namespace("aws_compute")
     ##~ sapi.swaggerVersion = "1.1"
     ##~ sapi.apiVersion = "1.0"
 

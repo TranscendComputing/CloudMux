@@ -20,6 +20,24 @@ class AwsCacheApp < ResourceApiBase
 	#
 	# Clusters
 	#
+  ##~ sapi = source2swagger.namespace("aws_cache")
+  ##~ sapi.swaggerVersion = "1.1"
+  ##~ sapi.apiVersion = "1.0"
+  ##~ sapi.models["Cluster"] = {:id => "Cluster", :properties => {:id => {:type => "string"}, :node_type => {:type => "string"}, :security_group_names => {:type => "string"}, :num_nodes => {:type => "string"}, :auto_minor_version_upgrade => {:type => "string"}, :engine => {:type => "string"}, :engine_version => {:type => "string"}, :notification_topic_arn => {:type => "string"}, :port => {:type => "string"}, :preferred_availablility_zone => {:type => "string"}, :preferred_maintenance_window => {:type => "string"}, :parameter_group_name => {:type => "string"}}}
+  ##~ sapi.models["ParameterGroup"] = {:id => "ParameterGroup", :properties => {:id => {:type => "string"}, :description => {:type => "string"}, :family => {:type => "string"}}}
+  ##~ sapi.models["SecurityGroup"] = {:id => "SecurityGroup", :properties => {:id => {:type => "string"}, :description => {:type => "string"}}}
+  
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/cache/clusters"
+  ##~ a.description = "Manage Elastic Cache resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Cluster"
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Describe Cache Clusters (AWS cloud)"
+  ##~ op.nickname = "describe_cache_clusters"  
+  ##~ op.parameters.add :name => "filters", :description => "Filters for clusters", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Success, list of cache clusters returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	get '/clusters' do
 		filters = params[:filters]
 		if(filters.nil?)
@@ -30,6 +48,17 @@ class AwsCacheApp < ResourceApiBase
 		[OK, response.to_json]
 	end
   
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/cache/clusters"
+  ##~ a.description = "Manage Elastic Cache resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Cluster"
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Create Cache Clusters (AWS cloud)"
+  ##~ op.nickname = "create_cache_clusters"  
+  ##~ op.parameters.add :name => "cluster", :description => "Cluster to Create", :dataType => "Cluster", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.errorResponses.add :reason => "Success, list of cache cluster created", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/clusters' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -44,6 +73,17 @@ class AwsCacheApp < ResourceApiBase
 		end
 	end
   
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/cache/clusters/:id"
+  ##~ a.description = "Manage Elastic Cache resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Cluster"
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Delete Cache Clusters (AWS cloud)"
+  ##~ op.nickname = "delete_cache_clusters"  
+  ##~ op.parameters.add :name => "id", :description => "Cluster to Delete", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, list of cache cluster deleted", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	delete '/clusters/:id' do
 		begin
 			response = @elasticache.clusters.get(params[:id]).destroy
@@ -56,6 +96,17 @@ class AwsCacheApp < ResourceApiBase
   #
   #Get Security/Parameter Groups
   #
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/cache/parameter_groups"
+  ##~ a.description = "Manage Elastic Cache resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "ParameterGroup"
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Describe Cache Cluster Parameter Groups (AWS cloud)"
+  ##~ op.nickname = "describe_cache_cluster_parameter_groups"  
+  ##~ op.parameters.add :name => "filters", :description => "Filters for parameter groups", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Success, list of cache cluster parameter groups returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	get '/parameter_groups' do
 		filters = params[:filters]
 		if(filters.nil?)
@@ -66,6 +117,17 @@ class AwsCacheApp < ResourceApiBase
 		[OK, response.to_json]
 	end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/cache/security_groups"
+  ##~ a.description = "Manage Elastic Cache resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "SecurityGroup"
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Describe Cache Cluster Security Groups (AWS cloud)"
+  ##~ op.nickname = "describe_cache_cluster_security_groups"  
+  ##~ op.parameters.add :name => "filters", :description => "Filters for security groups", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Success, list of cache cluster security groups returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	get '/security_groups' do
 		filters = params[:filters]
 		if(filters.nil?)
@@ -79,6 +141,17 @@ class AwsCacheApp < ResourceApiBase
   #
   #Create Security/Parameter Groups
   #
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/cache/security_groups"
+  ##~ a.description = "Manage Elastic Cache resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "SecurityGroup"
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Create Cache Cluster Security Groups (AWS cloud)"
+  ##~ op.nickname = "create_cache_cluster_security_groups"  
+  ##~ op.parameters.add :name => "security_group", :description => "Security Group to Create", :dataType => "SecurityGroup", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.errorResponses.add :reason => "Success, Security Group Created", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/security_groups' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -93,6 +166,17 @@ class AwsCacheApp < ResourceApiBase
 		end
 	end
   
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/cache/parameter_groups"
+  ##~ a.description = "Manage Elastic Cache resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "ParameterGroup"
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Create Cache Cluster Parameter Groups (AWS cloud)"
+  ##~ op.nickname = "create_cache_cluster_parameter_groups"  
+  ##~ op.parameters.add :name => "parameter_group", :description => "Parameter Group to Create", :dataType => "ParameterGroup", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.errorResponses.add :reason => "Success, Parameter Group Created", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/parameter_groups' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -110,6 +194,17 @@ class AwsCacheApp < ResourceApiBase
   #
   #Delete Security/Parameter Groups
   #
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/cache/security_groups/:id"
+  ##~ a.description = "Manage Elastic Cache resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "SecurityGroup"
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Delete Cache Cluster Security Group (AWS cloud)"
+  ##~ op.nickname = "delete_cache_cluster_security_group"  
+  ##~ op.parameters.add :name => "id", :description => "Cluster Security Group to Delete", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, Security Group deleted", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	delete '/security_groups/:id' do
 		begin
 			response = @elasticache.security_groups.get(params[:id]).destroy
@@ -119,6 +214,17 @@ class AwsCacheApp < ResourceApiBase
 		end
 	end
   
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/cache/parameter_groups/:id"
+  ##~ a.description = "Manage Elastic Cache resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "ParameterGroup"
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Delete Cache Cluster Parameter Group (AWS cloud)"
+  ##~ op.nickname = "delete_cache_cluster_parameter_group"  
+  ##~ op.parameters.add :name => "id", :description => "Cluster Parameter Group to Delete", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, Parameter Group deleted", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	delete '/parameter_groups/:id' do
 		begin
 			response = @elasticache.parameter_groups.get(params[:id]).destroy
@@ -131,6 +237,18 @@ class AwsCacheApp < ResourceApiBase
   #
   #Modify
   #
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/cache/clusters/modify/:id"
+  ##~ a.description = "Manage Elastic Cache resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Cluster"
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Modify Cache Clusters (AWS cloud)"
+  ##~ op.nickname = "modify_cache_clusters"  
+  ##~ op.parameters.add :name => "options", :description => "Cluster Options to Modify", :dataType => "Cluster", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.parameters.add :name => "id", :description => "Cluster ID to modify", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, cache cluster modified", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/clusters/modify/:id' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -148,6 +266,18 @@ class AwsCacheApp < ResourceApiBase
   #
   #Describe Parameter Group
   #
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/cache/parameter_groups/describe/:id"
+  ##~ a.description = "Manage Elastic Cache resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "ParameterGroup"
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Describe Cache Cluster Parameter Group (AWS cloud)"
+  ##~ op.nickname = "describe_cache_cluster_parameter_group"  
+  ##~ op.parameters.add :name => "options", :description => "Parameter Group Options", :dataType => "ParameterGroup", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.parameters.add :name => "id", :description => "Parameter Group to Describe", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, Parameter Group Description returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/parameter_groups/describe/:id' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)

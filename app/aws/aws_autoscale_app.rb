@@ -20,7 +20,7 @@ class AwsAutoscaleApp < ResourceApiBase
 	#
 	# Autoscale Groups
 	#
-  ##~ sapi = source2swagger.namespace("autoscale_aws")
+  ##~ sapi = source2swagger.namespace("aws_autoscale")
   ##~ sapi.swaggerVersion = "1.1"
   ##~ sapi.apiVersion = "1.0"
   ##~ sapi.models["Autoscale_Group"] = {:id => "Autoscale_Group", :properties => {:id => {:type => "string"}, :availability_zones => {:type => "string"}, :launch_configuration_name => {:type => "string"}, :max_size => {:type => "string"}, :min_size => {:type => "string"}}}

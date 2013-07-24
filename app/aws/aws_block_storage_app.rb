@@ -20,7 +20,7 @@ class AwsBlockStorageApp < ResourceApiBase
 	#
 	# Volumes
 	#
-  ##~ sapi = source2swagger.namespace("block_storage_aws")
+  ##~ sapi = source2swagger.namespace("aws_block_storage")
   ##~ sapi.swaggerVersion = "1.1"
   ##~ sapi.apiVersion = "1.0"
   ##~ sapi.models["Volume"] = {:id => "Volume", :properties => {:availability_zone => {:type => "string"}, :size => {:type => "string"}, :snapshot_id => {:type => "string"}, :iops => {:type => "string"}, :key => {:type => "string"}, :resource_id => {:type => "string"}, :value => {:type => "string"}}}
