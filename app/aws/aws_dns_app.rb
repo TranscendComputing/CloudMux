@@ -16,6 +16,23 @@ class AwsDnsApp < ResourceApiBase
 	#
 	# Hosted Zones
 	#
+  ##~ sapi = source2swagger.namespace("aws_dns")
+  ##~ sapi.swaggerVersion = "1.1"
+  ##~ sapi.apiVersion = "1.0"
+  ##~ sapi.models["Zone"] = {:id => "Zone", :properties => {:domain => {:type => "string"}, :caller_ref => {:type => "string"}, :comment => {:type => "string"}}}
+  ##~ sapi.models["Record"] = {:id => "Record", :properties => {:zone_id => {:type => "string"}}}
+  
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/dns/hosted_zones"
+  ##~ a.description = "Manage DNS resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Zone"
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Describe DNS Zones (AWS cloud)"
+  ##~ op.nickname = "describe_dns_zones"  
+  ##~ op.parameters.add :name => "filters", :description => "Filters for zones", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Success, list of DNS zones returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	get '/hosted_zones' do
 		filters = params[:filters]
 		if(filters.nil?)
@@ -26,6 +43,17 @@ class AwsDnsApp < ResourceApiBase
 		[OK, response.to_json]
 	end
 	
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/dns/hosted_zones"
+  ##~ a.description = "Manage DNS resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Zone"
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Create DNS Zones (AWS cloud)"
+  ##~ op.nickname = "create_dns_zones"  
+  ##~ op.parameters.add :name => "hosted_zone", :description => "Hosted Zone to Create", :dataType => "Zone", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.errorResponses.add :reason => "Success, DNS zones created", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/hosted_zones' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -40,6 +68,17 @@ class AwsDnsApp < ResourceApiBase
 		end
 	end
 	
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/dns/hosted_zones/:id"
+  ##~ a.description = "Manage DNS resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Zone"
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Delete DNS Zones (AWS cloud)"
+  ##~ op.nickname = "delete_dns_zones"  
+  ##~ op.parameters.add :name => "id", :description => "Zone ID to Delete", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, DNS zones deleted", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	delete '/hosted_zones/:id' do
 		begin
 			response = @dns.zones.get(params[:id]).destroy
@@ -52,6 +91,17 @@ class AwsDnsApp < ResourceApiBase
 	#
 	# Record Sets
 	#
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/dns/hosted_zones/:hosted_zone_id/record_sets"
+  ##~ a.description = "Manage DNS resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Record"
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Describe DNS Records (AWS cloud)"
+  ##~ op.nickname = "describe_dns_records"  
+  ##~ op.parameters.add :name => ":hosted_zone_id", :description => "Hosted Zone Id", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, list of DNS records returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	get '/hosted_zones/:hosted_zone_id/record_sets' do
 		begin
 			response = @dns.list_resource_record_sets(params[:hosted_zone_id]).body["ResourceRecordSets"]
@@ -61,6 +111,18 @@ class AwsDnsApp < ResourceApiBase
 		end
 	end
 	
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/dns/hosted_zones/:hosted_zone_id/record_sets/change"
+  ##~ a.description = "Manage DNS resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Record"
+  ##~ op.set :httpMethod => "PUT"
+  ##~ op.summary = "Change DNS Records (AWS cloud)"
+  ##~ op.nickname = "change_dns_records"
+  ##~ op.parameters.add :name => ":hosted_zone_id", :description => "Hosted Zone Id", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"  
+  ##~ op.parameters.add :name => ":record_set", :description => "Record Set to change", :dataType => "Record", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.errorResponses.add :reason => "Success, DNS record changed", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	put '/hosted_zones/:hosted_zone_id/record_sets/change' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)

@@ -256,6 +256,10 @@ end
 #
 # AWS DNS API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/aws_dns.{format}", :format => "json"
+##~ a.description = "AWS DNS API"
 map "/stackstudio/v1/cloud_management/aws/dns" do
   run AwsDnsApp
 end
