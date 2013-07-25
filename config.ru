@@ -303,6 +303,10 @@ end
 #
 # AWS IAM API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/aws_iam.{format}", :format => "json"
+##~ a.description = "AWS IAM API"
 map "/stackstudio/v1/cloud_management/aws/iam" do
   run AwsIamApp
 end

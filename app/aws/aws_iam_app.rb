@@ -16,6 +16,25 @@ class AwsIamApp < ResourceApiBase
 	#
 	# Users
 	#
+  ##~ sapi = source2swagger.namespace("aws_iam")
+  ##~ sapi.swaggerVersion = "1.1"
+  ##~ sapi.apiVersion = "1.0"
+  ##~ sapi.models["User"] = {:id => "User", :properties => {:Arn => {:type => "string"}, :UserId => {:type => "string"}, :UserName => {:type => "string"}, :Path => {:type => "string"}}}
+  ##~ sapi.models["UserList"] = {:id => "UserList", :properties => {:Users => {:type => "Array", :items => {:$ref => "User"}}}}
+  ##~ sapi.models["Group"] = {:id => "Group", :properties => {:id => {:type => "string"}, :availability_zones => {:type => "string"}, :launch_configuration_name => {:type => "string"}, :max_size => {:type => "string"}, :min_size => {:type => "string"}}}
+  ##~ sapi.models["GroupList"] = {:id => "GroupList", :properties => {:Users => {:type => "Array", :items => {:$ref => "Group"}}}}
+  
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/iam/users"
+  ##~ a.description = "Manage IAM resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "UserList"
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Describe IAM Users (AWS cloud)"
+  ##~ op.nickname = "describe_iam_users"  
+  ##~ op.parameters.add :name => "filters", :description => "Filters for instances", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Success, list of IAM users returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	get '/users' do
 		filters = params[:filters]
 		if(filters.nil?)
@@ -26,6 +45,17 @@ class AwsIamApp < ResourceApiBase
 		[OK, response.to_json]
 	end
 	
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/iam/users"
+  ##~ a.description = "Manage IAM resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "User"
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Create IAM Users (AWS cloud)"
+  ##~ op.nickname = "create_iam_users"  
+  ##~ op.parameters.add :name => "user", :description => "User definition", :dataType => "User", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Success, list of IAM users returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/users' do
 		json_body = body_to_json(request)
 		if(json_body.nil? || json_body["user"].nil?)
