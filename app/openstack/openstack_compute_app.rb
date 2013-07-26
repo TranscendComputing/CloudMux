@@ -18,7 +18,7 @@ class OpenstackComputeApp < ResourceApiBase
         end
     end
     
-    ##~ sapi = source2swagger.namespace("compute_openstack")
+    ##~ sapi = source2swagger.namespace("openstack_compute")
     ##~ sapi.swaggerVersion = "1.1"
     ##~ sapi.apiVersion = "1.0"
 

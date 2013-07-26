@@ -29,6 +29,11 @@ class TopStackMonitorApp < ResourceApiBase
 	#
 	# Alarms
 	#
+  ##~ sapi = source2swagger.namespace("topstack_monitor")
+  ##~ sapi.swaggerVersion = "1.1"
+  ##~ sapi.apiVersion = "1.0"
+  ##~ sapi.models["Alarm"] = {:id => "Alarm", :properties => {:id => {:type => "string"}, :availability_zones => {:type => "string"}, :launch_configuration_name => {:type => "string"}, :max_size => {:type => "string"}, :min_size => {:type => "string"}}}
+  
 	get '/alarms' do
 		filters = params[:filters]
 		if(filters.nil?)

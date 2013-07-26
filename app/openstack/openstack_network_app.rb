@@ -25,6 +25,10 @@ class OpenstackNetworkApp < ResourceApiBase
 	#
 	# Networks
 	#
+  ##~ sapi = source2swagger.namespace("openstack_network")
+  ##~ sapi.swaggerVersion = "1.1"
+  ##~ sapi.apiVersion = "1.0"
+  ##~ sapi.models["Network"] = {:id => "Network", :properties => {:id => {:type => "string"}, :availability_zones => {:type => "string"}, :launch_configuration_name => {:type => "string"}, :max_size => {:type => "string"}, :min_size => {:type => "string"}}}
     
 	get '/networks' do
         begin

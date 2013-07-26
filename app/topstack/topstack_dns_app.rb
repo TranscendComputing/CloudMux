@@ -29,6 +29,11 @@ class TopStackDnsApp < ResourceApiBase
 	#
 	# Hosted Zones
 	#
+  ##~ sapi = source2swagger.namespace("topstack_dns")
+  ##~ sapi.swaggerVersion = "1.1"
+  ##~ sapi.apiVersion = "1.0"
+  ##~ sapi.models["Zones"] = {:id => "Zones", :properties => {:id => {:type => "string"}, :availability_zones => {:type => "string"}, :launch_configuration_name => {:type => "string"}, :max_size => {:type => "string"}, :min_size => {:type => "string"}}}
+  
 	get '/hosted_zones' do
 		filters = params[:filters]
 		if(filters.nil?)

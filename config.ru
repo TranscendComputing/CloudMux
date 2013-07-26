@@ -235,6 +235,10 @@ end
 #
 # AWS Object Storage API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/aws_object_storage.{format}", :format => "json"
+##~ a.description = "AWS Object Storage API"
 map "/stackstudio/v1/cloud_management/aws/object_storage" do
   run AwsObjectStorageApp
 end
@@ -242,6 +246,10 @@ end
 #
 # AWS Monitor API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/aws_monitor.{format}", :format => "json"
+##~ a.description = "AWS monitor API"
 map "/stackstudio/v1/cloud_management/aws/monitor" do
   run AwsMonitorApp
 end
@@ -249,6 +257,10 @@ end
 #
 # AWS Notification API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/aws_notification.{format}", :format => "json"
+##~ a.description = "AWS Notification API"
 map "/stackstudio/v1/cloud_management/aws/notification" do
   run AwsNotificationApp
 end
@@ -267,6 +279,10 @@ end
 #
 # AWS RDS API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/aws_rds.{format}", :format => "json"
+##~ a.description = "AWS RDS API"
 map "/stackstudio/v1/cloud_management/aws/rds" do
   run AwsRdsApp
 end
@@ -274,6 +290,10 @@ end
 #
 # AWS Load Balancer API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/aws_load_balancer.{format}", :format => "json"
+##~ a.description = "AWS Load Balancer API"
 map "/stackstudio/v1/cloud_management/aws/load_balancer" do
   run AwsLoadBalancerApp
 end
@@ -314,6 +334,10 @@ end
 #
 # AWS Queue API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/aws_queue.{format}", :format => "json"
+##~ a.description = "AWS Queue API"
 map "/stackstudio/v1/cloud_management/aws/queue" do
   run AwsQueueApp
 end
@@ -321,6 +345,10 @@ end
 #
 # AWS SimpleDB API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/aws_simple_db.{format}", :format => "json"
+##~ a.description = "AWS Simple DB API"
 map "/stackstudio/v1/cloud_management/aws/simple_db" do
   run AwsSimpleDBApp
 end
@@ -334,7 +362,7 @@ end
 
 ##~ a = sapi.apis.add
 ## 
-##~ a.set :path => "/compute_openstack.{format}", :format => "json"
+##~ a.set :path => "/openstack_compute.{format}", :format => "json"
 ##~ a.description = "OpenStack Cloud Compute API"
 map "/api/v1/cloud_management/openstack/compute" do
   run OpenstackComputeApp
@@ -343,13 +371,21 @@ end
 #
 # Openstack Block Storage API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/openstack_block_storage.{format}", :format => "json"
+##~ a.description = "OpenStack Block Storage API"
 map "/stackstudio/v1/cloud_management/openstack/block_storage" do
   run OpenstackBlockStorageApp
 end
 
 #
-# Openstack Block Storage API
+# Openstack Object Storage API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/openstack_object_storage.{format}", :format => "json"
+##~ a.description = "OpenStack Object Storage API"
 map "/stackstudio/v1/cloud_management/openstack/object_storage" do
   run OpenstackObjectStorageApp
 end
@@ -357,6 +393,10 @@ end
 #
 # Openstack Identity API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/openstack_identity.{format}", :format => "json"
+##~ a.description = "OpenStack Identity API"
 map "/stackstudio/v1/cloud_management/openstack/identity" do
   run OpenstackIdentityApp
 end
@@ -364,6 +404,10 @@ end
 #
 # Openstack Network API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/openstack_network.{format}", :format => "json"
+##~ a.description = "OpenStack Network API"
 map "/stackstudio/v1/cloud_management/openstack/network" do
   run OpenstackNetworkApp
 end
@@ -371,6 +415,10 @@ end
 #
 # TopStack LoadBalancer API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/topstack_load_balancer.{format}", :format => "json"
+##~ a.description = "TopStack Load Balancer API"
 map "/stackstudio/v1/cloud_management/topstack/load_balancer" do
   run TopStackLoadBalancerApp
 end
@@ -378,6 +426,10 @@ end
 #
 # TopStack AutoScale API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/topstack_autoscale.{format}", :format => "json"
+##~ a.description = "TopStack AutoScale API"
 map "/stackstudio/v1/cloud_management/topstack/autoscale" do
   run TopStackAutoscaleApp
 end
@@ -385,6 +437,10 @@ end
 #
 # TopStack Monitor API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/topstack_monitor.{format}", :format => "json"
+##~ a.description = "TopStack Monitor API"
 map "/stackstudio/v1/cloud_management/topstack/monitor" do
   run TopStackMonitorApp
 end
@@ -392,6 +448,10 @@ end
 #
 # TopStack RDS API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/topstack_rds.{format}", :format => "json"
+##~ a.description = "TopStack RDS API"
 map "/stackstudio/v1/cloud_management/topstack/rds" do
   run TopStackRdsApp
 end
@@ -399,6 +459,10 @@ end
 #
 # TopStack Queue API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/topstack_queue.{format}", :format => "json"
+##~ a.description = "TopStack Queue API"
 map "/stackstudio/v1/cloud_management/topstack/queue" do
   run TopStackQueueApp
 end
@@ -406,6 +470,10 @@ end
 #
 # TopStack Cache API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/topstack_cache.{format}", :format => "json"
+##~ a.description = "TopStack Cache API"
 map "/stackstudio/v1/cloud_management/topstack/cache" do
   run TopStackCacheApp
 end
@@ -413,6 +481,10 @@ end
 #
 # TopStack DNS API
 #
+##~ a = sapi.apis.add
+## 
+##~ a.set :path => "/topstack_dns.{format}", :format => "json"
+##~ a.description = "TopStack DNS API"
 map "/stackstudio/v1/cloud_management/topstack/dns" do
   run TopStackDnsApp
 end

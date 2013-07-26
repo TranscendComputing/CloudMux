@@ -70,6 +70,17 @@ class AwsIamApp < ResourceApiBase
 		end
 	end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/iam/users/login_profile"
+  ##~ a.description = "Manage IAM resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "User"
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Create IAM User Login Profile (AWS cloud)"
+  ##~ op.nickname = "create_iam_users_login_profile"  
+  ##~ op.parameters.add :name => "user", :description => "User for profile", :dataType => "User", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.errorResponses.add :reason => "Success, lIAM user profile created", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/users/login_profile' do
 		json_body = body_to_json(request)
 		if(json_body.nil? || json_body["user"].nil?)

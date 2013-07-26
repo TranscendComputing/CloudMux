@@ -29,6 +29,11 @@ class TopStackQueueApp < ResourceApiBase
 	#
 	# Queues
 	#
+  ##~ sapi = source2swagger.namespace("topstack_queue")
+  ##~ sapi.swaggerVersion = "1.1"
+  ##~ sapi.apiVersion = "1.0"
+  ##~ sapi.models["Queue"] = {:id => "Queue", :properties => {:id => {:type => "string"}, :availability_zones => {:type => "string"}, :launch_configuration_name => {:type => "string"}, :max_size => {:type => "string"}, :min_size => {:type => "string"}}}
+  
 	get '/queues' do
 		filters = params[:filters]
 		if(filters.nil?)

@@ -29,6 +29,11 @@ class TopStackAutoscaleApp < ResourceApiBase
 	#
 	# Autoscale Groups
 	#
+  ##~ sapi = source2swagger.namespace("topstack_autoscale")
+  ##~ sapi.swaggerVersion = "1.1"
+  ##~ sapi.apiVersion = "1.0"
+  ##~ sapi.models["AutoscaleGroup"] = {:id => "AutoscaleGroup", :properties => {:id => {:type => "string"}, :availability_zones => {:type => "string"}, :launch_configuration_name => {:type => "string"}, :max_size => {:type => "string"}, :min_size => {:type => "string"}}}
+  
 	get '/autoscale_groups' do
 		filters = params[:filters]
 		if(filters.nil?)
