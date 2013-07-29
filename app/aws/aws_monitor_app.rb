@@ -23,8 +23,18 @@ class AwsMonitorApp < ResourceApiBase
   ##~ sapi = source2swagger.namespace("aws_monitor")
   ##~ sapi.swaggerVersion = "1.1"
   ##~ sapi.apiVersion = "1.0"
-  ##~ sapi.models["Alarms"] = {:id => "Alarms", :properties => {:id => {:type => "string"}, :availability_zones => {:type => "string"}, :launch_configuration_name => {:type => "string"}, :max_size => {:type => "string"}, :min_size => {:type => "string"}}}
+  ##~ sapi.models["Alarm"] = {:id => "Alarms", :properties => {:id => {:type => "string"}, :comparison_operator => {:type => "string"}, :evaluation_periods => {:type => "string"}, :metric_name => {:type => "string"}, :namespace => {:type => "string"}, :period => {:type => "string"}, :statistic => {:type => "string"}, :threshold => {:type => "string"}}}
   
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/monitor/alarms"
+  ##~ a.description = "Manage Monitor resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Describe Alarms (AWS cloud)"
+  ##~ op.nickname = "describe_alarms"  
+  ##~ op.parameters.add :name => "filters", :description => "Filters for alarms", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Success, list of alarms returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	get '/alarms' do
 		filters = params[:filters]
 		if(filters.nil?)
@@ -35,6 +45,16 @@ class AwsMonitorApp < ResourceApiBase
 		[OK, response.to_json]
 	end
 	
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/monitor/alarms"
+  ##~ a.description = "Manage Monitor resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Create Alarms (AWS cloud)"
+  ##~ op.nickname = "create_alarms"  
+  ##~ op.parameters.add :name => "alarm", :description => "Alarm to Create", :dataType => "Alarm", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.errorResponses.add :reason => "Success, alarm created", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/alarms' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -49,6 +69,16 @@ class AwsMonitorApp < ResourceApiBase
 		end
 	end
 	
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/monitor/alarms/:id"
+  ##~ a.description = "Manage Monitor resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Delete Alarms (AWS cloud)"
+  ##~ op.nickname = "delete_alarms"  
+  ##~ op.parameters.add :name => "id", :description => "Alarm to delete", :dataType => "Alarm", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, alarm deleted", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	delete '/alarms/:id' do
 		begin
 			response = @monitor.alarms.get(params[:id]).destroy
@@ -61,6 +91,16 @@ class AwsMonitorApp < ResourceApiBase
 	#
 	# Metrics
 	#
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/monitor/metrics"
+  ##~ a.description = "Manage Monitor resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Describe Metrics (AWS cloud)"
+  ##~ op.nickname = "describe_metrics"  
+  ##~ op.parameters.add :name => "filters", :description => "Filters for metrics", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Success, list of metrics returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	get '/metrics' do
 		begin
 			filters = params[:filters]
@@ -84,6 +124,22 @@ class AwsMonitorApp < ResourceApiBase
 	#
 	# Metric Statistics
 	#
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/monitor/metric_statistics"
+  ##~ a.description = "Manage Monitor resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Describe Metric Statistics (AWS cloud)"
+  ##~ op.nickname = "describe_metrics_statistics"  
+  ##~ op.parameters.add :name => ":time_range", :description => "timerange for metrics", :dataType => "Date", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => ":namespace", :description => "namespace for metrics", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => ":metric_name", :description => "metric name for metrics", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => ":period", :description => "period for metrics", :dataType => "int", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => ":statistic", :description => "statistic for metrics", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => ":dimension_name", :description => "dimension name for metrics", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => ":dimension_value", :description => "dimension value for metrics", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Success, list of metric statistics returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	get '/metric_statistics' do
 		if(	params[:time_range].nil? || params[:namespace].nil? || params[:metric_name].nil? || params[:period].nil? ||
 			params[:statistic].nil? || params[:dimension_name].nil? || params[:dimension_value].nil?)

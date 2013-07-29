@@ -53,7 +53,8 @@ class AwsIamApp < ResourceApiBase
   ##~ op.set :httpMethod => "POST"
   ##~ op.summary = "Create IAM Users (AWS cloud)"
   ##~ op.nickname = "create_iam_users"  
-  ##~ op.parameters.add :name => "user", :description => "User definition", :dataType => "User", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ sapi.models["CreateUser"] = {:id => "CreateUser", :properties => {:user_name => {:type => "string"}, :path => {:type => "string"}}}
+  ##~ op.parameters.add :name => "user", :description => "User definition", :dataType => "CreateUser", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.errorResponses.add :reason => "Success, list of IAM users returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/users' do
@@ -78,8 +79,9 @@ class AwsIamApp < ResourceApiBase
   ##~ op.set :httpMethod => "POST"
   ##~ op.summary = "Create IAM User Login Profile (AWS cloud)"
   ##~ op.nickname = "create_iam_users_login_profile"  
-  ##~ op.parameters.add :name => "user", :description => "User for profile", :dataType => "User", :allowMultiple => false, :required => true, :paramType => "body"
-  ##~ op.errorResponses.add :reason => "Success, lIAM user profile created", :code => 200
+  ##~ sapi.models["CreateLogin"] = {:id => "CreateLogin", :properties => {:id => {:type => "string"}, :password => {:type => "string"}}}
+  ##~ op.parameters.add :name => "user", :description => "User for profile", :dataType => "CreateLogin", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.errorResponses.add :reason => "Success, IAM user profile created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/users/login_profile' do
 		json_body = body_to_json(request)
@@ -95,6 +97,18 @@ class AwsIamApp < ResourceApiBase
 		end
 	end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/iam/users/access_key"
+  ##~ a.description = "Manage IAM resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "User"
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Create IAM User Access Key (AWS cloud)"
+  ##~ op.nickname = "create_iam_users_access_key"  
+  ##~ sapi.models["CreateAccessKey"] = {:id => "CreateAccessKey", :properties => {:UserName => {:type => "string"}}}
+  ##~ op.parameters.add :name => "options", :description => "User AccessKey options", :dataType => "CreateAccessKey", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.errorResponses.add :reason => "Success, IAM Access Key created", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/users/access_key' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -109,6 +123,17 @@ class AwsIamApp < ResourceApiBase
 		end
 	end
 	
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/iam/users/:id"
+  ##~ a.description = "Manage IAM resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "User"
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Delete IAM Users (AWS cloud)"
+  ##~ op.nickname = "delete_iam_users"  
+  ##~ op.parameters.add :name => "id", :description => "User id to delete", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, IAM User deleted", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	delete '/users/:id' do
 		begin
 			#Remove policies from user
@@ -144,6 +169,17 @@ class AwsIamApp < ResourceApiBase
 	#
 	# Groups
 	#
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/iam/groups"
+  ##~ a.description = "Manage IAM resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Group"
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Describe IAM Groups (AWS cloud)"
+  ##~ op.nickname = "describe_iam_groups"  
+  ##~ op.parameters.add :name => "filters", :description => "Filters for groups", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Success, list of IAM groups returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	get '/groups' do
 		filters = params[:filters]
 		if(filters.nil?)
@@ -154,6 +190,17 @@ class AwsIamApp < ResourceApiBase
 		[OK, response.to_json]
 	end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/iam/groups/:group_name/users"
+  ##~ a.description = "Manage IAM resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "User"
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Describe IAM Group Users (AWS cloud)"
+  ##~ op.nickname = "describe_iam_group_users"  
+  ##~ op.parameters.add :name => "group_name", :description => "Group Name", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, list of IAM group users returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	get '/groups/:group_name/users' do
 		begin
 			response = @iam.get_group(params[:group_name]).body["Users"]
@@ -163,6 +210,18 @@ class AwsIamApp < ResourceApiBase
 		end
 	end
 	
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/iam/groups"
+  ##~ a.description = "Manage IAM resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Group"
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Create IAM Group (AWS cloud)"
+  ##~ op.nickname = "create_iam_group"  
+  ##~ sapi.models["CreateGroup"] = {:id => "CreateGroup", :properties => {:GroupName => {:type => "string"}}}
+  ##~ op.parameters.add :name => "group", :description => "Group to Create", :dataType => "CreateGroup", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.errorResponses.add :reason => "Success, IAM group created", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/groups' do
 		json_body = body_to_json(request)
 		if(json_body.nil? || json_body["group"].nil?)
@@ -177,6 +236,18 @@ class AwsIamApp < ResourceApiBase
 		end
 	end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/iam/groups/:group_name/users/:user_id"
+  ##~ a.description = "Manage IAM resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Group"
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Add user to IAM Group (AWS cloud)"
+  ##~ op.nickname = "add_user_iam_group"  
+  ##~ op.parameters.add :name => "group_name", :description => "Group Name", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.parameters.add :name => "user_id", :description => "User ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, IAM group user added", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/groups/:group_name/users/:user_id' do
 		begin
 			response = @iam.add_user_to_group(params[:group_name], params[:user_id])
@@ -186,6 +257,18 @@ class AwsIamApp < ResourceApiBase
 		end
 	end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/iam/groups/:group_name/users/:user_id"
+  ##~ a.description = "Manage IAM resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Group"
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Remove user from IAM Group (AWS cloud)"
+  ##~ op.nickname = "remove_user_iam_group"  
+  ##~ op.parameters.add :name => "group_name", :description => "Group Name", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.parameters.add :name => "user_id", :description => "User ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, IAM group user removed", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	delete '/groups/:group_name/users/:user_id' do
 		begin
 			response = @iam.remove_user_from_group(params[:group_name], params[:user_id])
@@ -195,6 +278,17 @@ class AwsIamApp < ResourceApiBase
 		end
 	end
 	
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/iam/groups/:group_name/users/:user_id"
+  ##~ a.description = "Manage IAM resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Group"
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Remove IAM Group (AWS cloud)"
+  ##~ op.nickname = "remove_iam_group"  
+  ##~ op.parameters.add :name => "group_name", :description => "Group Name", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, IAM group removed", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	delete '/groups/:group_name' do
 		begin
 			# remove all group policies

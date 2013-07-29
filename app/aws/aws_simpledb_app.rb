@@ -25,7 +25,17 @@ class AwsSimpleDBApp < ResourceApiBase
   ##~ sapi.apiVersion = "1.0"
   ##~ sapi.models["Databases"] = {:id => "Databases", :properties => {:id => {:type => "string"}, :availability_zones => {:type => "string"}, :launch_configuration_name => {:type => "string"}, :max_size => {:type => "string"}, :min_size => {:type => "string"}}}
   
-	get '/databases' do
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/simple_db/databases"
+  ##~ a.description = "Manage Simple DB resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Describe Databases (AWS cloud)"
+  ##~ op.nickname = "describe_databases"  
+  ##~ op.parameters.add :name => "filters", :description => "Filters for topics", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Success, list of databases returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  get '/databases' do
 		filters = params[:filters]
 		if(filters.nil?)
 			db_list = @sdb.list_domains.body["Domains"]
@@ -41,6 +51,17 @@ class AwsSimpleDBApp < ResourceApiBase
 		[OK, response.to_json]
 	end
 	
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/simple_db/databases"
+  ##~ a.description = "Manage Simple DB resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Create Databases (AWS cloud)"
+  ##~ op.nickname = "create_databases"  
+  ##~ sapi.models["CreateDatabase"] = {:id => "CreateDatabase", :properties => {:DomainName => {:type => "string"}}}  
+  ##~ op.parameters.add :name => "simple_db", :description => "Database to Create", :dataType => "CreateDatabase", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.errorResponses.add :reason => "Success, databases created", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/databases' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -55,6 +76,16 @@ class AwsSimpleDBApp < ResourceApiBase
 		end
 	end
 	
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/simple_db/databases/:id"
+  ##~ a.description = "Manage Simple DB resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Delete Databases (AWS cloud)"
+  ##~ op.nickname = "delete_databases"   
+  ##~ op.parameters.add :name => "id", :description => "Database to Delete", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, databases deleted", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	delete '/databases/:id' do
 		begin
 			response = @sdb.delete_domain(params[:id])
@@ -64,6 +95,16 @@ class AwsSimpleDBApp < ResourceApiBase
 		end
 	end
 	
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/simple_db/databases/select"
+  ##~ a.description = "Manage Simple DB resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Select item data from Databases (AWS cloud)"
+  ##~ op.nickname = "select_databases"   
+  ##~ op.parameters.add :name => "select_expression", :description => "Select Expression", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.errorResponses.add :reason => "Success, databases item data selected", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/databases/select' do
 		json_body = body_to_json(request)
 		if(json_body.nil? || json_body["select_expression"])
@@ -91,6 +132,19 @@ class AwsSimpleDBApp < ResourceApiBase
 		end
 	end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/simple_db/databases/:id/items/:item_name"
+  ##~ a.description = "Manage Simple DB resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Put item attributes into a SimpleDB domain (AWS cloud)"
+  ##~ op.nickname = "put_attributes_databases"
+  ##~ sapi.models["SimpleDBAttribute"] = {:id => "SimpleDBAttribute", :properties => {:name => {:type => "string"},:value => {:type => "string"}}}   
+  ##~ op.parameters.add :name => "attributes", :description => "Attributes name/value pairs", :dataType => "Array", :items => {:$ref => "SimpleDBAttribute"}, :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.parameters.add :name => "id", :description => "Database to put attributes in", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.parameters.add :name => "item_name", :description => "Item name", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, attributes put into SimpleDB domain", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/databases/:id/items/:item_name' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -105,6 +159,17 @@ class AwsSimpleDBApp < ResourceApiBase
 		end
 	end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/simple_db/databases/:id/items/:item_name"
+  ##~ a.description = "Manage Simple DB resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Delete attributes from a SimpleDB domain (AWS cloud)"
+  ##~ op.nickname = "delete_attributes_databases"
+  ##~ op.parameters.add :name => "id", :description => "Database to delete attributes from", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.parameters.add :name => "item_name", :description => "Item name to delete", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, attributes deleted from SimpleDB domain", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	delete '/databases/:id/items/:item_name' do
 		begin
 			response = @sdb.delete_attributes(params[:id], params[:item_name])

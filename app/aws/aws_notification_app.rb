@@ -25,6 +25,16 @@ class AwsNotificationApp < ResourceApiBase
   ##~ sapi.apiVersion = "1.0"
   ##~ sapi.models["Topics"] = {:id => "Topics", :properties => {:id => {:type => "string"}, :availability_zones => {:type => "string"}, :launch_configuration_name => {:type => "string"}, :max_size => {:type => "string"}, :min_size => {:type => "string"}}}
   
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/notification/topics/list"
+  ##~ a.description = "Manage Notification resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "List Topics (AWS cloud)"
+  ##~ op.nickname = "list_topics"  
+  ##~ op.parameters.add :name => "filters", :description => "Filters for topics", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Success, list of topics returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	get '/topics/list' do
 		filters = params[:filters]
 		if(filters.nil?)
@@ -37,6 +47,16 @@ class AwsNotificationApp < ResourceApiBase
 		[OK, response.to_json]
 	end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/notification/topics"
+  ##~ a.description = "Manage Notification resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Describe Topics (AWS cloud)"
+  ##~ op.nickname = "describe_topics"  
+  ##~ op.parameters.add :name => "filters", :description => "Filters for topics", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Success, list of topics returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	get '/topics' do
 		filters = params[:filters]
 		if(filters.nil?)
@@ -59,6 +79,17 @@ class AwsNotificationApp < ResourceApiBase
 		[OK, response.to_json]
 	end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/notification/topics"
+  ##~ a.description = "Manage Notification resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Create Topics (AWS cloud)"
+  ##~ op.nickname = "create_topics"
+  ##~ sapi.models["CreateTopic"] = {:id => "CreateTopic", :properties => {:name => {:type => "string"}}}  
+  ##~ op.parameters.add :name => "topic", :description => "Topic to Create", :dataType => "CreateTopic", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.errorResponses.add :reason => "Success, topic created", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/topics' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -73,6 +104,16 @@ class AwsNotificationApp < ResourceApiBase
 		end
 	end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/notification/topics/:id"
+  ##~ a.description = "Manage Notification resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Delete Topics (AWS cloud)"
+  ##~ op.nickname = "delete_topics"
+  ##~ op.parameters.add :name => "id", :description => "Topic to delete", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, topic deleted", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	delete '/topics/:id' do
 		if(params[:id].nil?)
 			[BAD_REQUEST]
@@ -89,6 +130,17 @@ class AwsNotificationApp < ResourceApiBase
 	#
 	# Subscriptions
 	#
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/notification/topics/:id/subscriptions"
+  ##~ a.description = "Manage Notification resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Describe Subscriptions (AWS cloud)"
+  ##~ op.nickname = "describe_subscriptions"  
+  ##~ op.parameters.add :name => "filters", :description => "Filters for subscriptions", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.parameters.add :name => "id", :description => "Topic to get subscriptions for", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, list of topic subscriptions returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	get '/topics/:id/subscriptions' do
 		filters = params[:filters]
 		begin
@@ -103,6 +155,18 @@ class AwsNotificationApp < ResourceApiBase
 		end
 	end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/notification/topics/:id/subscriptions"
+  ##~ a.description = "Manage Notification resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Create Subscriptions (AWS cloud)"
+  ##~ op.nickname = "create_subscriptions"
+  ##~ sapi.models["CreateSubscription"] = {:id => "CreateSubscription", :properties => {:endpoint => {:type => "string"},:protocol => {:type => "string"}}}
+  ##~ op.parameters.add :name => "id", :description => "Topic to get subscriptions for", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.parameters.add :name => "subscription", :description => "Subscription to create", :dataType => "CreateSubscription", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.errorResponses.add :reason => "Success, subscription created", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/topics/:id/subscriptions' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -117,6 +181,16 @@ class AwsNotificationApp < ResourceApiBase
 		end
 	end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/aws/notification/subscriptions/:id"
+  ##~ a.description = "Manage Notification resources on the cloud (AWS)"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Unsuscribe subscriptions (AWS cloud)"
+  ##~ op.nickname = "unsubscribe_subscriptions"
+  ##~ op.parameters.add :name => "id", :description => "Subscription to unsubscribe", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, unsubscribed", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	delete '/subscriptions/:id' do
 		if(params[:id].nil?)
 			[BAD_REQUEST]
