@@ -34,6 +34,16 @@ class TopStackLoadBalancerApp < ResourceApiBase
     ##~ sapi.apiVersion = "1.0"
     ##~ sapi.models["LoadBalancer"] = {:id => "LoadBalancer", :properties => {:id => {:type => "string"}, :availability_zones => {:type => "string"}, :launch_configuration_name => {:type => "string"}, :max_size => {:type => "string"}, :min_size => {:type => "string"}}}
     
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/topstack/load_balancer/load_balancers"
+    ##~ a.description = "Manage Load Balancer resources on the cloud (Topstack)"
+    ##~ op = a.operations.add
+    ##~ op.set :httpMethod => "GET"
+    ##~ op.summary = "Describe Load Balancers (Topstack cloud)"
+    ##~ op.nickname = "describe_load_balancers"  
+    ##~ op.parameters.add :name => "filters", :description => "Filters for instances", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+    ##~ op.errorResponses.add :reason => "Success, list of load balancers returned", :code => 200
+    ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     get '/load_balancers' do
         filters = params[:filters]
         if(filters.nil?)
@@ -44,6 +54,18 @@ class TopStackLoadBalancerApp < ResourceApiBase
         [OK, response.to_json]
     end
     
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/topstack/load_balancer/load_balancers"
+    ##~ a.description = "Manage Load Balancer resources on the cloud (Topstack)"
+    ##~ op = a.operations.add
+    ##~ op.set :httpMethod => "POST"
+    ##~ op.summary = "Create Load Balancer (Topstack cloud)"
+    ##~ op.nickname = "create_load_balancers"
+    ##~ sapi.models["Listener"] = {:id => "Listener", :properties => {:Protocol => {:type => "string"},:LoadBalancerPort => {:type => "int"},:InstancePort => {:type => "int"},:InstanceProtocol => {:type => "string"},:SSLCertificateId => {:type => "string"}}}
+    ##~ sapi.models["CreateLoadBalancer"] = {:id => "CreateLoadBalancer", :properties => {:availability_zones => {:type => "Array", :items => {:$ref => "string"}}, :id => {:type => "string"}, :listeners => {:type => "Array", :items => {:$ref => "Listener"}}}}  
+    ##~ op.parameters.add :name => "load_balancer", :description => "Load Balancer to Create", :dataType => "CreateLoadBalancer", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.errorResponses.add :reason => "Success, load balancers created", :code => 200
+    ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     post '/load_balancers' do
         json_body = body_to_json(request)
         if(json_body.nil?)
@@ -63,6 +85,16 @@ class TopStackLoadBalancerApp < ResourceApiBase
         end
     end
     
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/topstack/load_balancer/load_balancers/:id"
+    ##~ a.description = "Manage Load Balancer resources on the cloud (Topstack)"
+    ##~ op = a.operations.add
+    ##~ op.set :httpMethod => "DELETE"
+    ##~ op.summary = "Delete Load Balancers (Topstack cloud)"
+    ##~ op.nickname = "delete_load_balancers"  
+    ##~ op.parameters.add :name => "id", :description => "Load Balancer ID to delete", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+    ##~ op.errorResponses.add :reason => "Success, load balancer deleted", :code => 200
+    ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     delete '/load_balancers/:id' do
         begin
             response = @elb.load_balancers.get(params[:id]).destroy
@@ -72,6 +104,18 @@ class TopStackLoadBalancerApp < ResourceApiBase
         end
     end
 
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/topstack/load_balancer/load_balancers/:id/configure_health_check"
+    ##~ a.description = "Manage Load Balancer resources on the cloud (Topstack)"
+    ##~ op = a.operations.add
+    ##~ op.set :httpMethod => "POST"
+    ##~ op.summary = "Configure Health Check on Load Balancers (Topstack cloud)"
+    ##~ op.nickname = "config_healthcheck_load_balancers"
+    ##~ sapi.models["ConfigHealthCheck"] = {:id => "ConfigHealthCheck", :properties => {:HealthyThreshold => {:type => "int"},:Interval => {:type => "int"},:Target => {:type => "string"},:Timeout => {:type => "int"},:UnhealthyThreshold => {:type => "int"}}}  
+    ##~ op.parameters.add :name => "id", :description => "Load Balancer ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+    ##~ op.parameters.add :name => "health_check", :description => "Health Check params", :dataType => "ConfigHealthCheck", :allowMultiple => false, :required => true, :paramType => "body"
+    ##~ op.errorResponses.add :reason => "Success, load balancer health check configured", :code => 200
+    ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     post '/load_balancers/:id/configure_health_check' do
         json_body = body_to_json(request)
         if(json_body.nil?)
@@ -86,6 +130,17 @@ class TopStackLoadBalancerApp < ResourceApiBase
         end
     end
 
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/topstack/load_balancer/load_balancers/:id/availability_zones/enable"
+    ##~ a.description = "Manage Load Balancer resources on the cloud (Topstack)"
+    ##~ op = a.operations.add
+    ##~ op.set :httpMethod => "POST"
+    ##~ op.summary = "Enable Availability Zone for Load Balancers (Topstack cloud)"
+    ##~ op.nickname = "enable_zone_load_balancers"  
+    ##~ op.parameters.add :name => "id", :description => "Load Balancer ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+    ##~ op.parameters.add :name => "availability_zones", :description => "Availability zones", :dataType => "Array", :items => {:$ref => "string"}, :allowMultiple => false, :required => true, :paramType => "body"
+    ##~ op.errorResponses.add :reason => "Success, load balancer zone enabled", :code => 200
+    ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     post '/load_balancers/:id/availability_zones/enable' do
         json_body = body_to_json(request)
         if(json_body.nil? || json_body["availability_zones"].nil?)
@@ -100,6 +155,17 @@ class TopStackLoadBalancerApp < ResourceApiBase
         end
     end
 
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/topstack/load_balancer/load_balancers/:id/availability_zones/disable"
+    ##~ a.description = "Manage Load Balancer resources on the cloud (Topstack)"
+    ##~ op = a.operations.add
+    ##~ op.set :httpMethod => "POST"
+    ##~ op.summary = "Disable Availability Zone for Load Balancers (Topstack cloud)"
+    ##~ op.nickname = "disable_zone_load_balancers"  
+    ##~ op.parameters.add :name => "id", :description => "Load Balancer ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+    ##~ op.parameters.add :name => "availability_zones", :description => "Availability zones", :dataType => "Array", :items => {:$ref => "string"}, :allowMultiple => false, :required => true, :paramType => "body"
+    ##~ op.errorResponses.add :reason => "Success, load balancer zone disabled", :code => 200
+    ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     post '/load_balancers/:id/availability_zones/disable' do
         json_body = body_to_json(request)
         if(json_body.nil? || json_body["availability_zones"].nil?)
@@ -114,6 +180,17 @@ class TopStackLoadBalancerApp < ResourceApiBase
         end
     end
 
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/topstack/load_balancer/load_balancers/:id/instances/register"
+    ##~ a.description = "Manage Load Balancer resources on the cloud (Topstack)"
+    ##~ op = a.operations.add
+    ##~ op.set :httpMethod => "POST"
+    ##~ op.summary = "Register Instances for Load Balancers (Topstack cloud)"
+    ##~ op.nickname = "register_instances_load_balancers"  
+    ##~ op.parameters.add :name => "id", :description => "Load Balancer ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+    ##~ op.parameters.add :name => "instance_ids", :description => "Instance ID's", :dataType => "Array", :items => {:$ref => "string"}, :allowMultiple => false, :required => true, :paramType => "body"
+    ##~ op.errorResponses.add :reason => "Success, load balancer instances registered", :code => 200
+    ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     post '/load_balancers/:id/instances/register' do
         json_body = body_to_json(request)
         if(json_body.nil? || json_body["instance_ids"].nil?)
@@ -128,6 +205,17 @@ class TopStackLoadBalancerApp < ResourceApiBase
         end
     end
 
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/topstack/load_balancer/load_balancers/:id/instances/deregister"
+    ##~ a.description = "Manage Load Balancer resources on the cloud (Topstack)"
+    ##~ op = a.operations.add
+    ##~ op.set :httpMethod => "POST"
+    ##~ op.summary = "DeRegister Instances for Load Balancers (Topstack cloud)"
+    ##~ op.nickname = "deregister_instances_load_balancers"  
+    ##~ op.parameters.add :name => "id", :description => "Load Balancer ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+    ##~ op.parameters.add :name => "instance_ids", :description => "Instance ID's", :dataType => "Array", :items => {:$ref => "string"}, :allowMultiple => false, :required => true, :paramType => "body"
+    ##~ op.errorResponses.add :reason => "Success, load balancer instances deregistered", :code => 200
+    ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     post '/load_balancers/:id/instances/deregister' do
         json_body = body_to_json(request)
         if(json_body.nil? || json_body["instance_ids"].nil?)
@@ -142,6 +230,19 @@ class TopStackLoadBalancerApp < ResourceApiBase
         end
     end
 
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/topstack/load_balancer/load_balancers/:id/describe_health"
+    ##~ a.description = "Manage Load Balancer resources on the cloud (Topstack)"
+    ##~ op = a.operations.add
+    ##~ op.set :httpMethod => "GET"
+    ##~ op.summary = "Describe Health for Load Balancers (Topstack cloud)"
+    ##~ op.nickname = "describe_health_load_balancers"  
+    ##~ op.parameters.add :name => "id", :description => "Load Balancer ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+    ##~ op.parameters.add :name => ":cred_id", :description => "Cred ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.parameters.add :name => ":region", :description => "Region", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.parameters.add :name => ":availability_zones", :description => "availability zone's", :dataType => "Array", :items => {:$ref => "string"}, :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.errorResponses.add :reason => "Success, load balancer health description returned", :code => 200
+    ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     get '/load_balancers/:id/describe_health' do
         if(params[:availability_zones].nil?)
             [BAD_REQUEST]
@@ -184,6 +285,16 @@ class TopStackLoadBalancerApp < ResourceApiBase
     #
     # Load Balancer Listeners
     #
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/topstack/load_balancer/load_balancers/:id/listeners"
+    ##~ a.description = "Manage Load Balancer resources on the cloud (Topstack)"
+    ##~ op = a.operations.add
+    ##~ op.set :httpMethod => "GET"
+    ##~ op.summary = "Describe Load Balancer Listeners (Topstack cloud)"
+    ##~ op.nickname = "describe_load_balancer_listeners"  
+    ##~ op.parameters.add :name => "id", :description => "Load Balancer ID to get listeners for", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+    ##~ op.errorResponses.add :reason => "Success, list of load balancer listeners returned", :code => 200
+    ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     get '/load_balancers/:id/listeners' do
         begin
             response = @elb.load_balancers.get(params[:id]).listeners
@@ -193,6 +304,17 @@ class TopStackLoadBalancerApp < ResourceApiBase
         end
     end
 
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/topstack/load_balancer/load_balancers/:id/listeners"
+    ##~ a.description = "Manage Load Balancer resources on the cloud (Topstack)"
+    ##~ op = a.operations.add
+    ##~ op.set :httpMethod => "POST"
+    ##~ op.summary = "Create Load Balancer Listeners (Topstack cloud)"
+    ##~ op.nickname = "create_load_balancer_listeners"  
+    ##~ op.parameters.add :name => "id", :description => "Load Balancer ID to create listeners for", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+    ##~ op.parameters.add :name => ":listeners", :description => "listeners", :dataType => "Array", :items => {:$ref => "Listener"}, :allowMultiple => false, :required => true, :paramType => "body"
+    ##~ op.errorResponses.add :reason => "Success, load balancer listeners created", :code => 200
+    ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     post '/load_balancers/:id/listeners' do
         json_body = body_to_json(request)
         if(json_body.nil?)
@@ -207,6 +329,17 @@ class TopStackLoadBalancerApp < ResourceApiBase
         end
     end
 
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/topstack/load_balancer/load_balancers/:id/listeners"
+    ##~ a.description = "Manage Load Balancer resources on the cloud (Topstack)"
+    ##~ op = a.operations.add
+    ##~ op.set :httpMethod => "DELETE"
+    ##~ op.summary = "Delete Load Balancer Listeners (Topstack cloud)"
+    ##~ op.nickname = "delete_load_balancer_listeners"  
+    ##~ op.parameters.add :name => "id", :description => "Load Balancer ID to delete listeners for", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+    ##~ op.parameters.add :name => ":ports", :description => "ports", :dataType => "Array", :items => {:$ref => "string"}, :allowMultiple => false, :required => true, :paramType => "body"
+    ##~ op.errorResponses.add :reason => "Success, load balancer listeners deleted", :code => 200
+    ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     delete '/load_balancers/:id/listeners' do
         json_body = body_to_json(request)
         if(json_body.nil?)

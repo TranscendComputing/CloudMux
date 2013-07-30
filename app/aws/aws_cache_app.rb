@@ -56,7 +56,8 @@ class AwsCacheApp < ResourceApiBase
   ##~ op.set :httpMethod => "POST"
   ##~ op.summary = "Create Cache Clusters (AWS cloud)"
   ##~ op.nickname = "create_cache_clusters"  
-  ##~ op.parameters.add :name => "cluster", :description => "Cluster to Create", :dataType => "Cluster", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ sapi.models["CreateCluster"] = {:id => "CreateCluster", :properties => {:id => {:type => "string"}, :node_type => {:type => "string"}, :security_group_names => {:type => "Array", :items => {:$ref => "string"}}, :num_nodes => {:type => "int"}, :auto_minor_version_upgrade => {:type => "boolean"}, :parameter_group_name => {:type => "string"}, :engine => {:type => "string"}, :engine_version => {:type => "string"}, :notification_topic_arn => {:type => "string"}, :port => {:type => "int"}, :preferred_availablility_zone => {:type => "string"}, :preferred_maintenance_window => {:type => "string"}}}
+  ##~ op.parameters.add :name => "cluster", :description => "Cluster to Create", :dataType => "CreateCluster", :allowMultiple => false, :required => true, :paramType => "body"
   ##~ op.errorResponses.add :reason => "Success, list of cache cluster created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/clusters' do
@@ -149,7 +150,8 @@ class AwsCacheApp < ResourceApiBase
   ##~ op.set :httpMethod => "POST"
   ##~ op.summary = "Create Cache Cluster Security Groups (AWS cloud)"
   ##~ op.nickname = "create_cache_cluster_security_groups"  
-  ##~ op.parameters.add :name => "security_group", :description => "Security Group to Create", :dataType => "SecurityGroup", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ sapi.models["CreateCacheSecurity"] = {:id => "CreateCacheSecurity", :properties => {:id => {:type => "string"},:description => {:type => "string"}}}  
+  ##~ op.parameters.add :name => "security_group", :description => "Cache Security Group to Create", :dataType => "CreateCacheSecurity", :allowMultiple => false, :required => true, :paramType => "body"
   ##~ op.errorResponses.add :reason => "Success, Security Group Created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/security_groups' do
@@ -174,7 +176,8 @@ class AwsCacheApp < ResourceApiBase
   ##~ op.set :httpMethod => "POST"
   ##~ op.summary = "Create Cache Cluster Parameter Groups (AWS cloud)"
   ##~ op.nickname = "create_cache_cluster_parameter_groups"  
-  ##~ op.parameters.add :name => "parameter_group", :description => "Parameter Group to Create", :dataType => "ParameterGroup", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ sapi.models["CreateCacheParameter"] = {:id => "CreateCacheParameter", :properties => {:id => {:type => "string"},:description => {:type => "string"}}}  
+  ##~ op.parameters.add :name => "parameter_group", :description => "Cache Parameter Group to Create", :dataType => "CreateCacheParameter", :allowMultiple => false, :required => true, :paramType => "body"
   ##~ op.errorResponses.add :reason => "Success, Parameter Group Created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/parameter_groups' do
@@ -245,7 +248,8 @@ class AwsCacheApp < ResourceApiBase
   ##~ op.set :httpMethod => "POST"
   ##~ op.summary = "Modify Cache Clusters (AWS cloud)"
   ##~ op.nickname = "modify_cache_clusters"  
-  ##~ op.parameters.add :name => "options", :description => "Cluster Options to Modify", :dataType => "Cluster", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ sapi.models["ModifyCluster"] = {:id => "ModifyCluster", :properties => {:apply_immediately => {:type => "boolean"}, :nodes_to_remove => {:type => "Array", :items => {:$ref => "string"}}, :security_group_names => {:type => "Array", :items => {:$ref => "string"}}, :num_nodes => {:type => "int"}, :auto_minor_version_upgrade => {:type => "boolean"}, :parameter_group_name => {:type => "string"}, :engine_version => {:type => "string"}, :notification_topic_arn => {:type => "string"}, :notification_topic_status => {:type => "string"}, :preferred_maintenance_window => {:type => "string"}}}
+  ##~ op.parameters.add :name => "options", :description => "Cluster Options to Modify", :dataType => "ModifyCluster", :allowMultiple => false, :required => true, :paramType => "body"
   ##~ op.parameters.add :name => "id", :description => "Cluster ID to modify", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.errorResponses.add :reason => "Success, cache cluster modified", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
@@ -274,7 +278,8 @@ class AwsCacheApp < ResourceApiBase
   ##~ op.set :httpMethod => "POST"
   ##~ op.summary = "Describe Cache Cluster Parameter Group (AWS cloud)"
   ##~ op.nickname = "describe_cache_cluster_parameter_group"  
-  ##~ op.parameters.add :name => "options", :description => "Parameter Group Options", :dataType => "ParameterGroup", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ sapi.models["DescribeParameters"] = {:id => "DescribeParameters", :properties => {:marker => {:type => "string"},:max_records => {:type => "int"},:source => {:type => "string"}}}  
+  ##~ op.parameters.add :name => "options", :description => "Cache Describe Parameter Group Options", :dataType => "DescribeParameters", :allowMultiple => false, :required => true, :paramType => "body"
   ##~ op.parameters.add :name => "id", :description => "Parameter Group to Describe", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.errorResponses.add :reason => "Success, Parameter Group Description returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400

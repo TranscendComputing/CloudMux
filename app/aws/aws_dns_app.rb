@@ -51,7 +51,8 @@ class AwsDnsApp < ResourceApiBase
   ##~ op.set :httpMethod => "POST"
   ##~ op.summary = "Create DNS Zones (AWS cloud)"
   ##~ op.nickname = "create_dns_zones"  
-  ##~ op.parameters.add :name => "hosted_zone", :description => "Hosted Zone to Create", :dataType => "Zone", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ sapi.models["CreateZone"] = {:id => "CreateZone", :properties => {:domain => {:type => "string"}, :caller_ref => {:type => "string"}, :comment => {:type => "string"}}}  
+  ##~ op.parameters.add :name => "hosted_zone", :description => "Hosted Zone to Create", :dataType => "CreateZone", :allowMultiple => false, :required => true, :paramType => "body"
   ##~ op.errorResponses.add :reason => "Success, DNS zones created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/hosted_zones' do
@@ -120,7 +121,9 @@ class AwsDnsApp < ResourceApiBase
   ##~ op.summary = "Change DNS Records (AWS cloud)"
   ##~ op.nickname = "change_dns_records"
   ##~ op.parameters.add :name => ":hosted_zone_id", :description => "Hosted Zone Id", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"  
-  ##~ op.parameters.add :name => ":record_set", :description => "Record Set to change", :dataType => "Record", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ sapi.models["Changes"] = {:id => "Changes", :properties => {:action => {:type => "string"},:name => {:type => "string"},:type => {:type => "string"},:ttl => {:type => "string"}}}
+  ##~ sapi.models["ChangeRecords"] = {:id => "ChangeRecords", :properties => {:change_batch => {:type => "Array", :items => {:$ref => "Changes"}}}}  
+  ##~ op.parameters.add :name => ":record_set", :description => "Record Set to change", :dataType => "ChangeRecords", :allowMultiple => false, :required => true, :paramType => "body"
   ##~ op.errorResponses.add :reason => "Success, DNS record changed", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	put '/hosted_zones/:hosted_zone_id/record_sets/change' do

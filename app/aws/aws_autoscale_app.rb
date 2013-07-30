@@ -55,9 +55,11 @@ class AwsAutoscaleApp < ResourceApiBase
   ##~ op.set :httpMethod => "POST"
   ##~ op.summary = "Create a new Autoscale Group (AWS cloud)"  
   ##~ op.nickname = "create_autoscale_groups"
-  ##~ op.parameters.add :name => "launch_configuration", :description => "Launch Configuration to use", :dataType => "Launch_Configuration", :allowMultiple => false, :required => true, :paramType => "body"
-  ##~ op.parameters.add :name => "autoscale_group", :description => "Autoscale Group Options", :dataType => "Autoscale_Group", :allowMultiple => false, :required => true, :paramType => "body"
-  ##~ op.errorResponses.add :reason => "Success, new Autoscale Group returned", :code => 200
+  ##~ sapi.models["CreateLaunchConfig"] = {:id => "CreateLaunchConfig", :properties => {:id => {:type => "string"}, :image_id => {:type => "string"}, :instance_type => {:type => "string"}}}
+  ##~ op.parameters.add :name => "launch_configuration", :description => "Launch Configuration to use", :dataType => "CreateLaunchConfig", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ sapi.models["CreateAutoscale"] = {:id => "CreateAutoscale", :properties => {:id => {:type => "string"}, :availability_zones => {:type => "Array", :items => {:$ref => "string"}}, :launch_configuration_name => {:type => "string"}, :max_size => {:type => "string"}, :min_size => {:type => "int"}, :AutoScalingGroupName => {:type => "string"}}}
+  ##~ op.parameters.add :name => "autoscale_group", :description => "Autoscale Group Options", :dataType => "CreateAutoscale", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.errorResponses.add :reason => "Success, new Autoscale Group created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400	
 	post '/autoscale_groups' do
 		json_body = body_to_json(request)

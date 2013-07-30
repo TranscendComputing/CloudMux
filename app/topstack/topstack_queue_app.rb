@@ -34,7 +34,17 @@ class TopStackQueueApp < ResourceApiBase
   ##~ sapi.apiVersion = "1.0"
   ##~ sapi.models["Queue"] = {:id => "Queue", :properties => {:id => {:type => "string"}, :availability_zones => {:type => "string"}, :launch_configuration_name => {:type => "string"}, :max_size => {:type => "string"}, :min_size => {:type => "string"}}}
   
-	get '/queues' do
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/topstack/queue/queues"
+  ##~ a.description = "Manage Queue resources on the cloud (Topstack)"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Describe Queues (Topstack cloud)"
+  ##~ op.nickname = "describe_queues"  
+  ##~ op.parameters.add :name => "filters", :description => "Filters for topics", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Success, list of queues returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  get '/queues' do
 		filters = params[:filters]
 		if(filters.nil?)
 			list_response = @sqs.list_queues.body["QueueUrls"]
@@ -64,7 +74,18 @@ class TopStackQueueApp < ResourceApiBase
 		[OK, response.to_json]
 	end
 
-	post '/queues' do
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/topstack/queue/queues"
+  ##~ a.description = "Manage Queue resources on the cloud (Topstack)"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Create Queues (Topstack cloud)"
+  ##~ op.nickname = "create_queues"
+  ##~ sapi.models["CreateQueue"] = {:id => "CreateQueue", :properties => {:QueueName => {:type => "string"},:VisibilityTimeout => {:type => "string"},:MessageRetentionPeriod => {:type => "string"},:MaximumMessageSize => {:type => "string"},:DelaySeconds => {:type => "string"},:ReceiveMessageWaitTimeSeconds => {:type => "string"}}}  
+  ##~ op.parameters.add :name => "queue", :description => "Queue to Create", :dataType => "CreateQueue", :allowMultiple => false, :required => false, :paramType => "body"
+  ##~ op.errorResponses.add :reason => "Success, queue created", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  post '/queues' do
 		json_body = body_to_json(request)
 		if(json_body.nil? || json_body["queue"].nil?)
 			[BAD_REQUEST]
@@ -87,6 +108,17 @@ class TopStackQueueApp < ResourceApiBase
 		end
 	end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/topstack/queue/queues"
+  ##~ a.description = "Manage Queue resources on the cloud (Topstack)"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Delete Queues (Topstack cloud)"
+  ##~ op.nickname = "delete_queues"
+  ##~ sapi.models["DeleteQueue"] = {:id => "DeleteQueue", :properties => {:QueueUrl => {:type => "string"}}}  
+  ##~ op.parameters.add :name => "queue", :description => "Queue to Delete", :dataType => "DeleteQueue", :allowMultiple => false, :required => false, :paramType => "body"
+  ##~ op.errorResponses.add :reason => "Success, queue deleted", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	delete '/queues' do
 		json_body = body_to_json(request)
 		if(json_body.nil? || json_body["queue"].nil?)

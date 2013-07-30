@@ -32,9 +32,22 @@ class TopStackCacheApp < ResourceApiBase
   ##~ sapi = source2swagger.namespace("topstack_cache")
   ##~ sapi.swaggerVersion = "1.1"
   ##~ sapi.apiVersion = "1.0"
-  ##~ sapi.models["Cluster"] = {:id => "Cluster", :properties => {:id => {:type => "string"}, :availability_zones => {:type => "string"}, :launch_configuration_name => {:type => "string"}, :max_size => {:type => "string"}, :min_size => {:type => "string"}}}
+  ##~ sapi.models["Cluster"] = {:id => "Cluster", :properties => {:id => {:type => "string"}, :node_type => {:type => "string"}, :security_group_names => {:type => "string"}, :num_nodes => {:type => "string"}, :auto_minor_version_upgrade => {:type => "string"}, :engine => {:type => "string"}, :engine_version => {:type => "string"}, :notification_topic_arn => {:type => "string"}, :port => {:type => "string"}, :preferred_availablility_zone => {:type => "string"}, :preferred_maintenance_window => {:type => "string"}, :parameter_group_name => {:type => "string"}}}
+  ##~ sapi.models["ParameterGroup"] = {:id => "ParameterGroup", :properties => {:id => {:type => "string"}, :description => {:type => "string"}, :family => {:type => "string"}}}
+  ##~ sapi.models["SecurityGroup"] = {:id => "SecurityGroup", :properties => {:id => {:type => "string"}, :description => {:type => "string"}}}
   
-	get '/clusters' do
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/topstack/cache/clusters"
+  ##~ a.description = "Manage Elastic Cache resources on the cloud (Topstack)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Cluster"
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Describe Cache Clusters (Topstack cloud)"
+  ##~ op.nickname = "describe_cache_clusters"  
+  ##~ op.parameters.add :name => "filters", :description => "Filters for clusters", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Success, list of cache clusters returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  get '/clusters' do
 		filters = params[:filters]
 		if(filters.nil?)
 			response = @elasticache.clusters
@@ -44,7 +57,19 @@ class TopStackCacheApp < ResourceApiBase
 		[OK, response.to_json]
 	end
   
-	post '/clusters' do
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/topstack/cache/clusters"
+  ##~ a.description = "Manage Elastic Cache resources on the cloud (Topstack)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Cluster"
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Create Cache Clusters (Topstack cloud)"
+  ##~ op.nickname = "create_cache_clusters"  
+  ##~ sapi.models["CreateCluster"] = {:id => "CreateCluster", :properties => {:id => {:type => "string"}, :node_type => {:type => "string"}, :security_group_names => {:type => "Array", :items => {:$ref => "string"}}, :num_nodes => {:type => "int"}, :auto_minor_version_upgrade => {:type => "boolean"}, :parameter_group_name => {:type => "string"}, :engine => {:type => "string"}, :engine_version => {:type => "string"}, :notification_topic_arn => {:type => "string"}, :port => {:type => "int"}, :preferred_availablility_zone => {:type => "string"}, :preferred_maintenance_window => {:type => "string"}}}
+  ##~ op.parameters.add :name => "cluster", :description => "Cluster to Create", :dataType => "CreateCluster", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.errorResponses.add :reason => "Success, list of cache cluster created", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  post '/clusters' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
 			[BAD_REQUEST]
@@ -58,7 +83,18 @@ class TopStackCacheApp < ResourceApiBase
 		end
 	end
   
-	delete '/clusters/:id' do
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/topstack/cache/clusters/:id"
+  ##~ a.description = "Manage Elastic Cache resources on the cloud (Topstack)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Cluster"
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Delete Cache Clusters (Topstack cloud)"
+  ##~ op.nickname = "delete_cache_clusters"  
+  ##~ op.parameters.add :name => "id", :description => "Cluster to Delete", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, list of cache cluster deleted", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  delete '/clusters/:id' do
 		begin
 			response = @elasticache.clusters.get(params[:id]).destroy
 			[OK, response.to_json]
@@ -70,6 +106,17 @@ class TopStackCacheApp < ResourceApiBase
   #
   #Get Security/Parameter Groups
   #
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/topstack/cache/parameter_groups"
+  ##~ a.description = "Manage Elastic Cache resources on the cloud (Topstack)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "ParameterGroup"
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Describe Cache Cluster Parameter Groups (Topstack cloud)"
+  ##~ op.nickname = "describe_cache_cluster_parameter_groups"  
+  ##~ op.parameters.add :name => "filters", :description => "Filters for parameter groups", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Success, list of cache cluster parameter groups returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	get '/parameter_groups' do
 		filters = params[:filters]
 		if(filters.nil?)
@@ -80,7 +127,18 @@ class TopStackCacheApp < ResourceApiBase
 		[OK, response.to_json]
 	end
 
-	get '/security_groups' do
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/topstack/cache/security_groups"
+  ##~ a.description = "Manage Elastic Cache resources on the cloud (Topstack)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "SecurityGroup"
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Describe Cache Cluster Security Groups (Topstack cloud)"
+  ##~ op.nickname = "describe_cache_cluster_security_groups"  
+  ##~ op.parameters.add :name => "filters", :description => "Filters for security groups", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Success, list of cache cluster security groups returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  get '/security_groups' do
 		filters = params[:filters]
 		if(filters.nil?)
 			response = @elasticache.security_groups
@@ -93,6 +151,18 @@ class TopStackCacheApp < ResourceApiBase
   #
   #Create Security/Parameter Groups
   #
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/topstack/cache/security_groups"
+  ##~ a.description = "Manage Elastic Cache resources on the cloud (Topstack)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "SecurityGroup"
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Create Cache Cluster Security Groups (Topstack cloud)"
+  ##~ op.nickname = "create_cache_cluster_security_groups"  
+  ##~ sapi.models["CreateCacheSecurity"] = {:id => "CreateCacheSecurity", :properties => {:id => {:type => "string"},:description => {:type => "string"}}}  
+  ##~ op.parameters.add :name => "security_group", :description => "Cache Security Group to Create", :dataType => "CreateCacheSecurity", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.errorResponses.add :reason => "Success, Security Group Created", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/security_groups' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -107,7 +177,19 @@ class TopStackCacheApp < ResourceApiBase
 		end
 	end
   
-	post '/parameter_groups' do
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/topstack/cache/parameter_groups"
+  ##~ a.description = "Manage Elastic Cache resources on the cloud (Topstack)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "ParameterGroup"
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Create Cache Cluster Parameter Groups (Topstack cloud)"
+  ##~ op.nickname = "create_cache_cluster_parameter_groups"  
+  ##~ sapi.models["CreateCacheParameter"] = {:id => "CreateCacheParameter", :properties => {:id => {:type => "string"},:description => {:type => "string"}}}  
+  ##~ op.parameters.add :name => "parameter_group", :description => "Cache Parameter Group to Create", :dataType => "CreateCacheParameter", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.errorResponses.add :reason => "Success, Parameter Group Created", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  post '/parameter_groups' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
 			[BAD_REQUEST]
@@ -124,6 +206,17 @@ class TopStackCacheApp < ResourceApiBase
   #
   #Delete Security/Parameter Groups
   #
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/topstack/cache/security_groups/:id"
+  ##~ a.description = "Manage Elastic Cache resources on the cloud (Topstack)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "SecurityGroup"
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Delete Cache Cluster Security Group (Topstack cloud)"
+  ##~ op.nickname = "delete_cache_cluster_security_group"  
+  ##~ op.parameters.add :name => "id", :description => "Cluster Security Group to Delete", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, Security Group deleted", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	delete '/security_groups/:id' do
 		begin
 			response = @elasticache.security_groups.get(params[:id]).destroy
@@ -133,7 +226,18 @@ class TopStackCacheApp < ResourceApiBase
 		end
 	end
   
-	delete '/parameter_groups/:id' do
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/topstack/cache/parameter_groups/:id"
+  ##~ a.description = "Manage Elastic Cache resources on the cloud (Topstack)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "ParameterGroup"
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Delete Cache Cluster Parameter Group (Topstack cloud)"
+  ##~ op.nickname = "delete_cache_cluster_parameter_group"  
+  ##~ op.parameters.add :name => "id", :description => "Cluster Parameter Group to Delete", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, Parameter Group deleted", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  delete '/parameter_groups/:id' do
 		begin
 			response = @elasticache.parameter_groups.get(params[:id]).destroy
 			[OK, response.to_json]
@@ -145,6 +249,19 @@ class TopStackCacheApp < ResourceApiBase
   #
   #Modify
   #
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/topstack/cache/clusters/modify/:id"
+  ##~ a.description = "Manage Elastic Cache resources on the cloud (Topstack)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Cluster"
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Modify Cache Clusters (Topstack cloud)"
+  ##~ op.nickname = "modify_cache_clusters"  
+  ##~ sapi.models["ModifyCluster"] = {:id => "ModifyCluster", :properties => {:apply_immediately => {:type => "boolean"}, :nodes_to_remove => {:type => "Array", :items => {:$ref => "string"}}, :security_group_names => {:type => "Array", :items => {:$ref => "string"}}, :num_nodes => {:type => "int"}, :auto_minor_version_upgrade => {:type => "boolean"}, :parameter_group_name => {:type => "string"}, :engine_version => {:type => "string"}, :notification_topic_arn => {:type => "string"}, :notification_topic_status => {:type => "string"}, :preferred_maintenance_window => {:type => "string"}}}
+  ##~ op.parameters.add :name => "options", :description => "Cluster Options to Modify", :dataType => "ModifyCluster", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.parameters.add :name => "id", :description => "Cluster ID to modify", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, cache cluster modified", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/clusters/modify/:id' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -162,6 +279,19 @@ class TopStackCacheApp < ResourceApiBase
   #
   #Describe Parameter Group
   #
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/topstack/cache/parameter_groups/describe/:id"
+  ##~ a.description = "Manage Elastic Cache resources on the cloud (Topstack)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "ParameterGroup"
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Describe Cache Cluster Parameter Group (Topstack cloud)"
+  ##~ op.nickname = "describe_cache_cluster_parameter_group"  
+  ##~ sapi.models["DescribeParameters"] = {:id => "DescribeParameters", :properties => {:marker => {:type => "string"},:max_records => {:type => "int"},:source => {:type => "string"}}}  
+  ##~ op.parameters.add :name => "options", :description => "Cache Describe Parameter Group Options", :dataType => "DescribeParameters", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.parameters.add :name => "id", :description => "Parameter Group to Describe", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, Parameter Group Description returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/parameter_groups/describe/:id' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
