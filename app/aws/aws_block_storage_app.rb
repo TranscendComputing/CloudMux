@@ -55,7 +55,8 @@ class AwsBlockStorageApp < ResourceApiBase
   ##~ op.set :httpMethod => "POST"
   ##~ op.summary = "Create Block Storage Volumes (AWS cloud)"
   ##~ op.nickname = "create_block_storage_volumes"  
-  ##~ op.parameters.add :name => "volume", :description => "Volume to create", :dataType => "Volume", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ sapi.models["CreateVolume"] = {:id => "CreateVolume", :properties => {:availability_zone => {:type => "string"}, :size => {:type => "int"}, :snapshot_id => {:type => "string"}, :type => {:type => "string"}, :iops => {:type => "int"}}}  
+  ##~ op.parameters.add :name => "volume", :description => "Volume to create", :dataType => "CreateVolume", :allowMultiple => false, :required => true, :paramType => "body"
   ##~ op.errorResponses.add :reason => "Success, volume created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/volumes' do
@@ -195,7 +196,8 @@ class AwsBlockStorageApp < ResourceApiBase
   ##~ op.set :httpMethod => "POST"
   ##~ op.summary = "Create Block Storage Snapshots (AWS cloud)"
   ##~ op.nickname = "create_block_storage_snapshots"  
-  ##~ op.parameters.add :name => "snapshot", :description => "Snapshot to create", :dataType => "Snapshot", :allowMultiple => false, :required => false, :paramType => "body"
+  ##~ sapi.models["CreateSnapshot"] = {:id => "CreateSnapshot", :properties => {:volume_id => {:type => "string"}, :description => {:type => "string"}}}  
+  ##~ op.parameters.add :name => "snapshot", :description => "Snapshot to create", :dataType => "CreateSnapshot", :allowMultiple => false, :required => false, :paramType => "body"
   ##~ op.errorResponses.add :reason => "Success, Snapshot created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
 	post '/snapshots' do

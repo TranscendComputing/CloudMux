@@ -145,7 +145,7 @@ class AwsObjectStorageApp < ResourceApiBase
   ##~ op.set :httpMethod => "POST"
   ##~ op.summary = "Object Storage Directory File Upload (AWS cloud)"
   ##~ op.nickname = "upload_directory_files_object"  
-  ##~ sapi.models["UploadFile"] = {:id => "UploadFile", :properties => {:filename => {:type => "string"},:tempfile => {:type => "string"}}}
+  ##~ sapi.models["UploadFile"] = {:id => "UploadFile", :properties => {:filename => {:type => "string"},:tempfile => {:type => "byte"}}}
   ##~ op.parameters.add :name => ":file_upload", :description => "File Upload", :dataType => "UploadFile", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "directory", :description => "Directory name", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.errorResponses.add :reason => "Success, object uploaded", :code => 200
