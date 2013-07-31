@@ -35,6 +35,8 @@ class AwsObjectStorageApp < ResourceApiBase
   ##~ op.parameters.add :name => "filters", :description => "Filters for topics", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
   ##~ op.errorResponses.add :reason => "Success, list of directories returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	get '/directories' do
 		filters = params[:filters]
 		if(filters.nil?)
@@ -56,6 +58,8 @@ class AwsObjectStorageApp < ResourceApiBase
   ##~ op.parameters.add :name => "directory", :description => "Directory to Create", :dataType => "CreateDirectory", :allowMultiple => false, :required => false, :paramType => "body"
   ##~ op.errorResponses.add :reason => "Success, directory created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/directories' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -80,6 +84,8 @@ class AwsObjectStorageApp < ResourceApiBase
   ##~ op.parameters.add :name => "id", :description => "Directory to delete", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.errorResponses.add :reason => "Success, directory deleted", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	delete '/directories/:id' do
 		begin
 			response = @object_storage.directories.get(params[:id]).destroy
@@ -102,6 +108,8 @@ class AwsObjectStorageApp < ResourceApiBase
   ##~ op.parameters.add :name => "id", :description => "Directory to get files for", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.errorResponses.add :reason => "Success, list of directory files returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	get '/directories/:id/files' do
 		begin
 			response = @object_storage.directories.get(params[:id]).files
@@ -122,6 +130,8 @@ class AwsObjectStorageApp < ResourceApiBase
   ##~ op.parameters.add :name => "directory", :description => "Directory name", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.errorResponses.add :reason => "Success, object returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/directory/file/download' do
 		file = params[:file]
 		directory = params[:directory]
@@ -150,6 +160,8 @@ class AwsObjectStorageApp < ResourceApiBase
   ##~ op.parameters.add :name => "directory", :description => "Directory name", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.errorResponses.add :reason => "Success, object uploaded", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/directory/file/upload' do
 		file = params[:file_upload]
 		directory = params[:directory]
@@ -176,6 +188,8 @@ class AwsObjectStorageApp < ResourceApiBase
   ##~ op.parameters.add :name => "file_id", :description => "File ID to delete", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.errorResponses.add :reason => "Success, directory file deleted", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	delete '/directories/:id/files/:file_id' do
 		begin
 			response = @object_storage.delete_object(params[:id], params[:file_id]).body

@@ -35,6 +35,8 @@ class AwsNotificationApp < ResourceApiBase
   ##~ op.parameters.add :name => "filters", :description => "Filters for topics", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
   ##~ op.errorResponses.add :reason => "Success, list of topics returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	get '/topics/list' do
 		filters = params[:filters]
 		if(filters.nil?)
@@ -57,6 +59,8 @@ class AwsNotificationApp < ResourceApiBase
   ##~ op.parameters.add :name => "filters", :description => "Filters for topics", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
   ##~ op.errorResponses.add :reason => "Success, list of topics returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	get '/topics' do
 		filters = params[:filters]
 		if(filters.nil?)
@@ -90,6 +94,8 @@ class AwsNotificationApp < ResourceApiBase
   ##~ op.parameters.add :name => "topic", :description => "Topic to Create", :dataType => "CreateTopic", :allowMultiple => false, :required => true, :paramType => "body"
   ##~ op.errorResponses.add :reason => "Success, topic created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/topics' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -114,6 +120,8 @@ class AwsNotificationApp < ResourceApiBase
   ##~ op.parameters.add :name => "id", :description => "Topic to delete", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.errorResponses.add :reason => "Success, topic deleted", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	delete '/topics/:id' do
 		if(params[:id].nil?)
 			[BAD_REQUEST]
@@ -141,6 +149,8 @@ class AwsNotificationApp < ResourceApiBase
   ##~ op.parameters.add :name => "id", :description => "Topic to get subscriptions for", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.errorResponses.add :reason => "Success, list of topic subscriptions returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	get '/topics/:id/subscriptions' do
 		filters = params[:filters]
 		begin
@@ -167,6 +177,8 @@ class AwsNotificationApp < ResourceApiBase
   ##~ op.parameters.add :name => "subscription", :description => "Subscription to create", :dataType => "CreateSubscription", :allowMultiple => false, :required => true, :paramType => "body"
   ##~ op.errorResponses.add :reason => "Success, subscription created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/topics/:id/subscriptions' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -191,6 +203,8 @@ class AwsNotificationApp < ResourceApiBase
   ##~ op.parameters.add :name => "id", :description => "Subscription to unsubscribe", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.errorResponses.add :reason => "Success, unsubscribed", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	delete '/subscriptions/:id' do
 		if(params[:id].nil?)
 			[BAD_REQUEST]

@@ -33,6 +33,8 @@ class AwsDnsApp < ResourceApiBase
   ##~ op.parameters.add :name => "filters", :description => "Filters for zones", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
   ##~ op.errorResponses.add :reason => "Success, list of DNS zones returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	get '/hosted_zones' do
 		filters = params[:filters]
 		if(filters.nil?)
@@ -55,6 +57,8 @@ class AwsDnsApp < ResourceApiBase
   ##~ op.parameters.add :name => "hosted_zone", :description => "Hosted Zone to Create", :dataType => "CreateZone", :allowMultiple => false, :required => true, :paramType => "body"
   ##~ op.errorResponses.add :reason => "Success, DNS zones created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/hosted_zones' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -80,6 +84,8 @@ class AwsDnsApp < ResourceApiBase
   ##~ op.parameters.add :name => "id", :description => "Zone ID to Delete", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.errorResponses.add :reason => "Success, DNS zones deleted", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	delete '/hosted_zones/:id' do
 		begin
 			response = @dns.zones.get(params[:id]).destroy
@@ -103,6 +109,8 @@ class AwsDnsApp < ResourceApiBase
   ##~ op.parameters.add :name => ":hosted_zone_id", :description => "Hosted Zone Id", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.errorResponses.add :reason => "Success, list of DNS records returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	get '/hosted_zones/:hosted_zone_id/record_sets' do
 		begin
 			response = @dns.list_resource_record_sets(params[:hosted_zone_id]).body["ResourceRecordSets"]
@@ -126,6 +134,8 @@ class AwsDnsApp < ResourceApiBase
   ##~ op.parameters.add :name => ":record_set", :description => "Record Set to change", :dataType => "ChangeRecords", :allowMultiple => false, :required => true, :paramType => "body"
   ##~ op.errorResponses.add :reason => "Success, DNS record changed", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	put '/hosted_zones/:hosted_zone_id/record_sets/change' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)

@@ -46,6 +46,7 @@ class OpenstackIdentityApp < ResourceApiBase
   ##~ op.parameters.add :name => ":tenant_id", :description => "Tenant ID to list users for", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"  
   ##~ op.errorResponses.add :reason => "Success, list of users returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   get '/users' do
         begin
             if(params[:tenant_id].nil?)
@@ -70,6 +71,7 @@ class OpenstackIdentityApp < ResourceApiBase
   ##~ op.parameters.add :name => "user", :description => "User to create", :dataType => "User", :allowMultiple => false, :required => true, :paramType => "body"  
   ##~ op.errorResponses.add :reason => "Success, users created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/users' do
         json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -95,6 +97,7 @@ class OpenstackIdentityApp < ResourceApiBase
   ##~ op.parameters.add :name => "id", :description => "User id to destroy", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"  
   ##~ op.errorResponses.add :reason => "Success, user deleted", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   delete '/users/:id' do
         begin
 			response = @identity.users.destroy(params[:id])
@@ -118,6 +121,7 @@ class OpenstackIdentityApp < ResourceApiBase
   ##~ op.parameters.add :name => "filters", :description => "Filters for tenants", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query" 
   ##~ op.errorResponses.add :reason => "Success, list of tenants returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	get '/tenants' do
         filters = params[:filters]
         if(filters.nil?)
@@ -139,6 +143,7 @@ class OpenstackIdentityApp < ResourceApiBase
   ##~ op.parameters.add :name => "tenant", :description => "Tenant to create", :dataType => "Tenant", :allowMultiple => false, :required => true, :paramType => "body"  
   ##~ op.errorResponses.add :reason => "Success, tenants created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/tenants' do
         json_body = body_to_json(request)
         if(json_body.nil?)
@@ -165,6 +170,7 @@ class OpenstackIdentityApp < ResourceApiBase
     ##~ op.parameters.add :name => "id", :description => "Tenant id to destroy", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"  
     ##~ op.errorResponses.add :reason => "Success, user deleted", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     delete '/tenants/:id' do
         begin
             response = @identity.tenants.destroy(params[:id])
@@ -186,6 +192,7 @@ class OpenstackIdentityApp < ResourceApiBase
     ##~ op.parameters.add :name => ":id", :description => "User ID to list roles for", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"  
     ##~ op.errorResponses.add :reason => "Success, list of roles returned", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     get '/tenants/:id/users/:user_id/roles' do
         begin
             user_roles = @identity.list_roles_for_user_on_tenant(params[:tenant_id], params[:id]).body["roles"]
@@ -213,6 +220,7 @@ class OpenstackIdentityApp < ResourceApiBase
     ##~ op.parameters.add :name => ":role_id", :description => "Role ID to add", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"  
     ##~ op.errorResponses.add :reason => "Success, role added", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/tenants/:id/users/:user_id/roles/:role_id' do
         begin
             response = @identity.add_user_to_tenant(params[:id], params[:user_id], params[:role_id]).body
@@ -234,6 +242,7 @@ class OpenstackIdentityApp < ResourceApiBase
     ##~ op.parameters.add :name => ":user_id", :description => "User ID to remove roles from", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"  
     ##~ op.errorResponses.add :reason => "Success, user roles removed", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     delete '/tenants/:id/users/:user_id/roles' do
         begin
             user_roles = @identity.list_roles_for_user_on_tenant(params[:id], params[:user_id]).body["roles"]
@@ -259,6 +268,7 @@ class OpenstackIdentityApp < ResourceApiBase
     ##~ op.parameters.add :name => ":role_id", :description => "Role ID to remove", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"  
     ##~ op.errorResponses.add :reason => "Success, user role removed", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     delete '/tenants/:id/users/:user_id/roles/:role_id' do
         begin
             response = @identity.delete_user_role(params[:id], params[:user_id], params[:role_id])
@@ -282,6 +292,7 @@ class OpenstackIdentityApp < ResourceApiBase
     ##~ op.parameters.add :name => "filters", :description => "Filters for tenants", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query" 
     ##~ op.errorResponses.add :reason => "Success, list of roles returned", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     get '/roles' do
         begin
             response = @identity.roles
@@ -302,6 +313,7 @@ class OpenstackIdentityApp < ResourceApiBase
     ##~ op.parameters.add :name => "role", :description => "Role to create", :dataType => "Role", :allowMultiple => false, :required => true, :paramType => "body"  
     ##~ op.errorResponses.add :reason => "Success, role created", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/roles' do
         json_body = body_to_json(request)
         if(json_body.nil?)
@@ -327,6 +339,7 @@ class OpenstackIdentityApp < ResourceApiBase
     ##~ op.parameters.add :name => "id", :description => "Role id to destroy", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"  
     ##~ op.errorResponses.add :reason => "Success, role deleted", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     delete '/roles/:id' do
         begin
             response = @identity.roles.destroy(params[:id])

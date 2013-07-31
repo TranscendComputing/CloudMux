@@ -43,6 +43,7 @@ class OpenstackNetworkApp < ResourceApiBase
   ##~ op.nickname = "describe_networks"  
   ##~ op.errorResponses.add :reason => "Success, list of networks returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   get '/networks' do
         begin
             response = @network.list_networks.body["networks"]
@@ -64,6 +65,7 @@ class OpenstackNetworkApp < ResourceApiBase
   ##~ op.parameters.add :name => "network", :description => "Network to create", :dataType => "CreateNetwork", :allowMultiple => false, :required => true, :paramType => "body"  
   ##~ op.errorResponses.add :reason => "Success, network created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/networks' do
         json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -89,6 +91,7 @@ class OpenstackNetworkApp < ResourceApiBase
   ##~ op.parameters.add :name => "id", :description => "Network id to destroy", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"  
   ##~ op.errorResponses.add :reason => "Success, network deleted", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   delete '/networks/:id' do
         begin
 			response = @network.networks.destroy(params[:id])
@@ -111,6 +114,7 @@ class OpenstackNetworkApp < ResourceApiBase
   ##~ op.nickname = "describe_subnets"  
   ##~ op.errorResponses.add :reason => "Success, list of subnets returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	get '/subnets' do
         begin
             response = @network.list_subnets.body["subnets"]
@@ -132,6 +136,7 @@ class OpenstackNetworkApp < ResourceApiBase
   ##~ op.parameters.add :name => "subnet", :description => "Subnet to create", :dataType => "CreateSubnet", :allowMultiple => false, :required => true, :paramType => "body"  
   ##~ op.errorResponses.add :reason => "Success, subnet created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/subnets' do
         json_body = body_to_json(request)
         if(json_body.nil?)
@@ -157,6 +162,7 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.parameters.add :name => "id", :description => "Subnet id to destroy", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"  
     ##~ op.errorResponses.add :reason => "Success, subnet deleted", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     delete '/subnets/:id' do
         begin
             response = @network.subnets.destroy(params[:id])
@@ -179,6 +185,7 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.nickname = "describe_ports"  
     ##~ op.errorResponses.add :reason => "Success, list of ports returned", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     get '/ports' do
         begin
             response = @network.list_ports.body["ports"]
@@ -200,6 +207,7 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.parameters.add :name => "port", :description => "Port to create", :dataType => "CreatePort", :allowMultiple => false, :required => true, :paramType => "body"  
     ##~ op.errorResponses.add :reason => "Success, port created", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/ports' do
         json_body = body_to_json(request)
         if(json_body.nil?)
@@ -225,6 +233,7 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.parameters.add :name => "id", :description => "Port id to destroy", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"  
     ##~ op.errorResponses.add :reason => "Success, port deleted", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     delete '/ports/:id' do
         begin
             response = @network.ports.destroy(params[:id])
@@ -247,6 +256,7 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.nickname = "describe_floating_ips"  
     ##~ op.errorResponses.add :reason => "Success, list of Floating IPs returned", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     get '/floating_ips' do
         begin
             response = @network.list_floating_ips.body["floating_ips"]
@@ -268,6 +278,7 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.parameters.add :name => "floating_ip", :description => "FloatingIP to create", :dataType => "CreateFloatingIP", :allowMultiple => false, :required => true, :paramType => "body"  
     ##~ op.errorResponses.add :reason => "Success, Floating IP created", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/floating_ips' do
         json_body = body_to_json(request)
         if(json_body.nil?)
@@ -293,6 +304,7 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.parameters.add :name => "id", :description => "FloatingIP id to destroy", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"  
     ##~ op.errorResponses.add :reason => "Success, Floating IP deleted", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     delete '/floating_ips/:id' do
         begin
             response = @network.floating_ips.destroy(params[:id])

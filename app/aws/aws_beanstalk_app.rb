@@ -41,6 +41,8 @@ class AwsBeanstalkApp < ResourceApiBase
     ##~ op.parameters.add :name => "filters", :description => "Filters for apps", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, list of Beanstalk Applications returned", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   	get '/applications' do
   		filters = params[:filters]
   		if(filters.nil?)
@@ -61,7 +63,9 @@ class AwsBeanstalkApp < ResourceApiBase
     ##~ op.nickname = "create_beanstalk_applications"
     ##~ op.parameters.add :name => "application", :description => "Application template to use", :dataType => "Application", :allowMultiple => false, :required => true, :paramType => "body"
     ##~ op.errorResponses.add :reason => "Success, new Beanstalk Application returned", :code => 200
-    ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400	
+    ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"	
   	post '/applications' do
   		json_body = body_to_json(request)
   		if(json_body.nil?)
@@ -86,7 +90,9 @@ class AwsBeanstalkApp < ResourceApiBase
     ##~ op.nickname = "delete_beanstalk_applications"
     ##~ op.parameters.add :name => "id", :description => "ID to delete", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
     ##~ op.errorResponses.add :reason => "Success, Beanstalk Application deleted", :code => 200
-    ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400	
+    ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"	
   	delete '/applications/:id' do
   		begin
   			response = @elasticbeanstalk.applications.get(params[:id]).destroy
@@ -111,6 +117,8 @@ class AwsBeanstalkApp < ResourceApiBase
     ##~ op.parameters.add :name => "vid", :description => "Version ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, Beanstalk Version returned", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   	get '/applications/:appid/versions/:vid' do
   		begin
   			response = @elasticbeanstalk.versions.get(params[:appid],params[:vid])
@@ -134,6 +142,8 @@ class AwsBeanstalkApp < ResourceApiBase
     ##~ op.parameters.add :name => "options", :description => "Environment Options", :dataType => "Environment", :allowMultiple => false, :required => true, :paramType => "body"
     ##~ op.errorResponses.add :reason => "Success, Beanstalk Environments returned", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   	post '/applications/environments' do
   		json_body = body_to_json(request)
   		if(json_body.nil?)
@@ -159,6 +169,8 @@ class AwsBeanstalkApp < ResourceApiBase
     ##~ op.parameters.add :name => "id", :description => "Environment ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
     ##~ op.errorResponses.add :reason => "Success, Beanstalk Environment deleted", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   	delete '/applications/environments/:id' do
   		begin
   			response = @elasticbeanstalk.environments.get(params[:id]).destroy
@@ -188,6 +200,8 @@ class AwsBeanstalkApp < ResourceApiBase
     ##~ op.parameters.add :name => "options", :description => "Environment Config Options", :dataType => "Config_Options", :allowMultiple => false, :required => true, :paramType => "body"
     ##~ op.errorResponses.add :reason => "Success, Beanstalk Environment Config Returned", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   	post '/applications/environments/config' do
   		json_body = body_to_json(request)
   		if(json_body.nil?)
@@ -216,6 +230,8 @@ class AwsBeanstalkApp < ResourceApiBase
     ##~ op.parameters.add :name => "options", :description => "Versions Options", :dataType => "Version", :allowMultiple => false, :required => true, :paramType => "body"
     ##~ op.errorResponses.add :reason => "Success, Beanstalk Versions returned", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   	post '/applications/versions' do
   		json_body = body_to_json(request)
   		if(json_body.nil?)
@@ -242,6 +258,8 @@ class AwsBeanstalkApp < ResourceApiBase
     ##~ op.parameters.add :name => "vid", :description => "Version ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, Beanstalk Versions returned", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   	delete '/applications/:appid/versions/:vid' do
   		begin
   			response = @elasticbeanstalk.versions.get(params[:appid],params[:vid]).destroy
@@ -265,6 +283,8 @@ class AwsBeanstalkApp < ResourceApiBase
     ##~ op.parameters.add :name => "version", :description => "Versions Options", :dataType => "Version", :allowMultiple => false, :required => true, :paramType => "body"
     ##~ op.errorResponses.add :reason => "Success, new Beanstalk Version returned", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   	post '/applications/versions/create' do
   		json_body = body_to_json(request)
   		if(json_body.nil?)
@@ -293,6 +313,8 @@ class AwsBeanstalkApp < ResourceApiBase
     ##~ op.parameters.add :name => "environment", :description => "Environment to Create", :dataType => "Environment", :allowMultiple => false, :required => true, :paramType => "body"
     ##~ op.errorResponses.add :reason => "Success, Beanstalk Environment created", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   	post '/applications/environments/create' do
   		json_body = body_to_json(request)
   		if(json_body.nil?)
@@ -318,6 +340,8 @@ class AwsBeanstalkApp < ResourceApiBase
     ##~ op.parameters.add :name => "environment", :description => "Environment to Update", :dataType => "Environment", :allowMultiple => false, :required => true, :paramType => "body"
     ##~ op.errorResponses.add :reason => "Success, Beanstalk Environment updated", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     #Application Environment Update
   	post '/applications/environments/update' do
   		json_body = body_to_json(request)
@@ -347,6 +371,8 @@ class AwsBeanstalkApp < ResourceApiBase
     ##~ op.parameters.add :name => "options", :description => "Event Options", :dataType => "Application", :allowMultiple => false, :required => true, :paramType => "body"
     ##~ op.errorResponses.add :reason => "Success, Beanstalk Events returned", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   	post '/applications/events' do
   		json_body = body_to_json(request)
   		if(json_body.nil?)

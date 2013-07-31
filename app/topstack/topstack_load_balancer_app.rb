@@ -44,6 +44,7 @@ class TopStackLoadBalancerApp < ResourceApiBase
     ##~ op.parameters.add :name => "filters", :description => "Filters for instances", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, list of load balancers returned", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     get '/load_balancers' do
         filters = params[:filters]
         if(filters.nil?)
@@ -66,6 +67,7 @@ class TopStackLoadBalancerApp < ResourceApiBase
     ##~ op.parameters.add :name => "load_balancer", :description => "Load Balancer to Create", :dataType => "CreateLoadBalancer", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, load balancers created", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/load_balancers' do
         json_body = body_to_json(request)
         if(json_body.nil?)
@@ -95,6 +97,7 @@ class TopStackLoadBalancerApp < ResourceApiBase
     ##~ op.parameters.add :name => "id", :description => "Load Balancer ID to delete", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
     ##~ op.errorResponses.add :reason => "Success, load balancer deleted", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     delete '/load_balancers/:id' do
         begin
             response = @elb.load_balancers.get(params[:id]).destroy
@@ -116,6 +119,7 @@ class TopStackLoadBalancerApp < ResourceApiBase
     ##~ op.parameters.add :name => "health_check", :description => "Health Check params", :dataType => "ConfigHealthCheck", :allowMultiple => false, :required => true, :paramType => "body"
     ##~ op.errorResponses.add :reason => "Success, load balancer health check configured", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/load_balancers/:id/configure_health_check' do
         json_body = body_to_json(request)
         if(json_body.nil?)
@@ -141,6 +145,7 @@ class TopStackLoadBalancerApp < ResourceApiBase
     ##~ op.parameters.add :name => "availability_zones", :description => "Availability zones", :dataType => "Array", :items => {:$ref => "string"}, :allowMultiple => false, :required => true, :paramType => "body"
     ##~ op.errorResponses.add :reason => "Success, load balancer zone enabled", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/load_balancers/:id/availability_zones/enable' do
         json_body = body_to_json(request)
         if(json_body.nil? || json_body["availability_zones"].nil?)
@@ -166,6 +171,7 @@ class TopStackLoadBalancerApp < ResourceApiBase
     ##~ op.parameters.add :name => "availability_zones", :description => "Availability zones", :dataType => "Array", :items => {:$ref => "string"}, :allowMultiple => false, :required => true, :paramType => "body"
     ##~ op.errorResponses.add :reason => "Success, load balancer zone disabled", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/load_balancers/:id/availability_zones/disable' do
         json_body = body_to_json(request)
         if(json_body.nil? || json_body["availability_zones"].nil?)
@@ -191,6 +197,7 @@ class TopStackLoadBalancerApp < ResourceApiBase
     ##~ op.parameters.add :name => "instance_ids", :description => "Instance ID's", :dataType => "Array", :items => {:$ref => "string"}, :allowMultiple => false, :required => true, :paramType => "body"
     ##~ op.errorResponses.add :reason => "Success, load balancer instances registered", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/load_balancers/:id/instances/register' do
         json_body = body_to_json(request)
         if(json_body.nil? || json_body["instance_ids"].nil?)
@@ -216,6 +223,7 @@ class TopStackLoadBalancerApp < ResourceApiBase
     ##~ op.parameters.add :name => "instance_ids", :description => "Instance ID's", :dataType => "Array", :items => {:$ref => "string"}, :allowMultiple => false, :required => true, :paramType => "body"
     ##~ op.errorResponses.add :reason => "Success, load balancer instances deregistered", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/load_balancers/:id/instances/deregister' do
         json_body = body_to_json(request)
         if(json_body.nil? || json_body["instance_ids"].nil?)
@@ -243,6 +251,7 @@ class TopStackLoadBalancerApp < ResourceApiBase
     ##~ op.parameters.add :name => ":availability_zones", :description => "availability zone's", :dataType => "Array", :items => {:$ref => "string"}, :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, load balancer health description returned", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     get '/load_balancers/:id/describe_health' do
         if(params[:availability_zones].nil?)
             [BAD_REQUEST]
@@ -295,6 +304,7 @@ class TopStackLoadBalancerApp < ResourceApiBase
     ##~ op.parameters.add :name => "id", :description => "Load Balancer ID to get listeners for", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
     ##~ op.errorResponses.add :reason => "Success, list of load balancer listeners returned", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     get '/load_balancers/:id/listeners' do
         begin
             response = @elb.load_balancers.get(params[:id]).listeners
@@ -315,6 +325,7 @@ class TopStackLoadBalancerApp < ResourceApiBase
     ##~ op.parameters.add :name => ":listeners", :description => "listeners", :dataType => "Array", :items => {:$ref => "Listener"}, :allowMultiple => false, :required => true, :paramType => "body"
     ##~ op.errorResponses.add :reason => "Success, load balancer listeners created", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/load_balancers/:id/listeners' do
         json_body = body_to_json(request)
         if(json_body.nil?)
@@ -340,6 +351,7 @@ class TopStackLoadBalancerApp < ResourceApiBase
     ##~ op.parameters.add :name => ":ports", :description => "ports", :dataType => "Array", :items => {:$ref => "string"}, :allowMultiple => false, :required => true, :paramType => "body"
     ##~ op.errorResponses.add :reason => "Success, load balancer listeners deleted", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     delete '/load_balancers/:id/listeners' do
         json_body = body_to_json(request)
         if(json_body.nil?)

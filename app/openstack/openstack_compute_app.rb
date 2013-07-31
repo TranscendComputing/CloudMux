@@ -32,6 +32,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.parameters.add :name => "filters", :description => "Filters for instances", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, list of instances returned", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     get '/instances' do
         filters = params[:filters]
         if(filters.nil?)
@@ -51,6 +52,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.nickname = "run_instance"
     ##~ op.errorResponses.add :reason => "Success, new instance returned", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/instances' do
         json_body = body_to_json(request)
         if(json_body.nil?)
@@ -75,6 +77,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.parameters.add :name => "id", :description => "Instance ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, address associated with instance", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/instances/:id/disassociate_address' do
         json_body = body_to_json(request)
         if(json_body["ip_address"].nil?)
@@ -99,6 +102,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.parameters.add :name => "id", :description => "Instance ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, instance unpaused", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/instances/:id/unpause' do
         begin
             reponse = @compute.unpause_server(params[:id])
@@ -118,6 +122,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.parameters.add :name => "id", :description => "Instance ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, instance paused", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/instances/:id/pause' do
         begin
             response = @compute.pause_server(params[:id])
@@ -137,6 +142,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.parameters.add :name => "id", :description => "Instance ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, instance rebooted", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/instances/:id/reboot' do
         begin
             response = @compute.reboot_server(params[:id])
@@ -156,6 +162,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.parameters.add :name => "id", :description => "Instance ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, instance deleted", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     delete '/instances/:id' do
         begin
             response = @compute.servers.get(params[:id]).destroy
@@ -178,6 +185,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.nickname = "describe_address_pools"
     ##~ op.errorResponses.add :reason => "Success, list of address pools returned", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     get '/address_pools' do
         response = @compute.list_address_pools.body["floating_ip_pools"]
         [OK, response.to_json]
@@ -196,6 +204,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.nickname = "describe_hosts"
     ##~ op.errorResponses.add :reason => "Success, list of hosts returned", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     get '/hosts/describe' do
         response = @compute.list_hosts.body["hosts"].find_all {|h| h["service"] == "@compute"}
         [OK, response.to_json]
@@ -214,6 +223,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.nickname = "describe_images"
     ##~ op.errorResponses.add :reason => "Success, list of images returned", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     get '/images' do
         filters = params[:filters]
         if(filters.nil?)
@@ -237,6 +247,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.nickname = "describe_flavors"
     ##~ op.errorResponses.add :reason => "Success, list of flavors returned", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     get '/flavors/describe' do
         response = @compute.flavors
         [OK, response.to_json]
@@ -256,6 +267,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.parameters.add :name => "filters", :description => "Filters for security groups", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, list of security groups returned", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     get '/security_groups' do
         filters = params[:filters]
         if(filters.nil?)
@@ -275,6 +287,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.nickname = "create_security_group"
     ##~ op.errorResponses.add :reason => "Success, new security group created", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     put '/security_groups' do
         json_body = body_to_json(request)
         if(json_body.nil?)
@@ -298,6 +311,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.nickname = "delete_security_group"
     ##~ op.errorResponses.add :reason => "Success, security group deleted", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     delete '/security_groups' do
         json_body = body_to_json(request)
         if(json_body.nil? || json_body["security_group"].nil?)
@@ -321,6 +335,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.nickname = "delete_rule_security_groups"
     ##~ op.errorResponses.add :reason => "Success, security groups rule deleted", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     delete '/security_groups/delete_rule' do
         json_body = body_to_json(request)
         if(json_body.nil? || json_body["rule_id"].nil?)
@@ -346,6 +361,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.parameters.add :name => "id", :description => "Instance ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, security groups rule added", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     put '/security_groups/:id/add_rule' do
         json_body = body_to_json(request)
         if(json_body.nil? || json_body["rule"].nil?)
@@ -376,6 +392,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.nickname = "describe_key_pairs"
     ##~ op.errorResponses.add :reason => "Success, list of key pairs returned", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     get '/key_pairs' do
         response = @compute.key_pairs
         [OK, response.to_json]
@@ -391,6 +408,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.parameters.add :name => "name", :description => "Name for key pair", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, key pair named", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/key_pairs' do
         if(params[:name].nil?)
             [BAD_REQUEST]
@@ -415,6 +433,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.parameters.add :name => "id", :description => "Key pair ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, list of security groups returned", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     delete '/key_pairs/:id' do
         begin
             response = @compute.key_pairs.get(params[:id]).destroy
@@ -438,6 +457,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.parameters.add :name => "filters", :description => "Filters for addresses", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, list of addresses returned", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     get '/addresses' do
         filters = params[:filters]
         if(filters.nil?)
@@ -457,6 +477,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.nickname = "create_address"
     ##~ op.errorResponses.add :reason => "Success, address created", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/addresses' do
         json_body = body_to_json(request)
         if(json_body.nil?)
@@ -486,6 +507,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.parameters.add :name => "id", :description => "Address ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, address deleted", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     delete '/addresses/:id' do
         begin
             response = @compute.addresses.get(params[:id]).destroy
@@ -506,6 +528,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.parameters.add :name => "server_id", :description => "Server ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, address and server associated", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/addresses/:id/associate/:server_id' do
         begin
             addr = @compute.addresses.get(params[:id])
@@ -526,6 +549,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.parameters.add :name => "id", :description => "Address ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, address deleted", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/addresses/:id/disassociate' do
         begin
             addr = @compute.addresses.get(params[:id])

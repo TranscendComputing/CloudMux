@@ -35,6 +35,8 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.parameters.add :name => "filters", :description => "Filters for topics", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
   ##~ op.errorResponses.add :reason => "Success, list of database servers returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   get '/databases' do
 		filters = params[:filters]
 		if(filters.nil?)
@@ -56,6 +58,8 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.parameters.add :name => "relational_database", :description => "RDS Database to Create", :dataType => "CreateRDS", :allowMultiple => false, :required => true, :paramType => "body"
   ##~ op.errorResponses.add :reason => "Success, database server created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/databases' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -80,6 +84,8 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.parameters.add :name => "id", :description => "Database to Delete", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.errorResponses.add :reason => "Success, rds databases deleted", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	delete '/databases/:id' do
 		begin
 			response = @rds.servers.get(params[:id]).destroy
@@ -98,6 +104,8 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.nickname = "describe_rds_engine_versions"  
   ##~ op.errorResponses.add :reason => "Success, list of database engine versions returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	get '/engine_versions' do
 		begin
 			engine_versions = @rds.describe_db_engine_versions.body['DescribeDBEngineVersionsResult']['DBEngineVersions'].as_json
@@ -122,6 +130,8 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.parameters.add :name => "filters", :description => "Filters for parameter groups", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"  
   ##~ op.errorResponses.add :reason => "Success, list of database parameter groups returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	get '/parameter_groups' do
 		filters = params[:filters]
 		if(filters.nil?)
@@ -142,6 +152,8 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.parameters.add :name => "filters", :description => "Filters for parameter groups", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"  
   ##~ op.errorResponses.add :reason => "Success, list of database security groups returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	get '/security_groups' do
 		filters = params[:filters]
 		if(filters.nil?)
@@ -166,6 +178,8 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.parameters.add :name => "security_group", :description => "RDS Security Group to Create", :dataType => "CreateRDSSecurity", :allowMultiple => false, :required => true, :paramType => "body"
   ##~ op.errorResponses.add :reason => "Success, database security groups created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/security_groups' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -191,6 +205,8 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.parameters.add :name => "parameter_group", :description => "RDS Parameter Group to Create", :dataType => "CreateRDSParameter", :allowMultiple => false, :required => true, :paramType => "body"
   ##~ op.errorResponses.add :reason => "Success, database parameter groups created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/parameter_groups' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -218,6 +234,8 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.parameters.add :name => "id", :description => "Security Group to Delete", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.errorResponses.add :reason => "Success, rds security group deleted", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	delete '/security_groups/:id' do
 		begin
 			response = @rds.security_groups.get(params[:id]).destroy
@@ -237,6 +255,8 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.parameters.add :name => "id", :description => "Parameter Group to Delete", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.errorResponses.add :reason => "Success, rds parameter group deleted", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	delete '/parameter_groups/:id' do
 		begin
 			response = @rds.parameter_groups.get(params[:id]).destroy
@@ -261,6 +281,8 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.parameters.add :name => "id", :description => "Parameter Group to describe Parameters for", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.errorResponses.add :reason => "Success, database parameters returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/parameter_groups/describe/:id' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)

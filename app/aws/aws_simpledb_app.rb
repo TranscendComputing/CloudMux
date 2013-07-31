@@ -35,6 +35,8 @@ class AwsSimpleDBApp < ResourceApiBase
   ##~ op.parameters.add :name => "filters", :description => "Filters for topics", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
   ##~ op.errorResponses.add :reason => "Success, list of databases returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   get '/databases' do
 		filters = params[:filters]
 		if(filters.nil?)
@@ -62,6 +64,8 @@ class AwsSimpleDBApp < ResourceApiBase
   ##~ op.parameters.add :name => "simple_db", :description => "Database to Create", :dataType => "CreateDatabase", :allowMultiple => false, :required => true, :paramType => "body"
   ##~ op.errorResponses.add :reason => "Success, databases created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/databases' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -86,6 +90,8 @@ class AwsSimpleDBApp < ResourceApiBase
   ##~ op.parameters.add :name => "id", :description => "Database to Delete", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.errorResponses.add :reason => "Success, databases deleted", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	delete '/databases/:id' do
 		begin
 			response = @sdb.delete_domain(params[:id])
@@ -105,6 +111,8 @@ class AwsSimpleDBApp < ResourceApiBase
   ##~ op.parameters.add :name => "select_expression", :description => "Select Expression", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "body"
   ##~ op.errorResponses.add :reason => "Success, databases item data selected", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/databases/select' do
 		json_body = body_to_json(request)
 		if(json_body.nil? || json_body["select_expression"])
@@ -145,6 +153,8 @@ class AwsSimpleDBApp < ResourceApiBase
   ##~ op.parameters.add :name => "item_name", :description => "Item name", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.errorResponses.add :reason => "Success, attributes put into SimpleDB domain", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/databases/:id/items/:item_name' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -170,6 +180,8 @@ class AwsSimpleDBApp < ResourceApiBase
   ##~ op.parameters.add :name => "item_name", :description => "Item name to delete", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.errorResponses.add :reason => "Success, attributes deleted from SimpleDB domain", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	delete '/databases/:id/items/:item_name' do
 		begin
 			response = @sdb.delete_attributes(params[:id], params[:item_name])

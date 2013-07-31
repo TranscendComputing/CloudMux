@@ -44,6 +44,7 @@ class TopStackQueueApp < ResourceApiBase
   ##~ op.parameters.add :name => "filters", :description => "Filters for topics", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
   ##~ op.errorResponses.add :reason => "Success, list of queues returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   get '/queues' do
 		filters = params[:filters]
 		if(filters.nil?)
@@ -85,6 +86,7 @@ class TopStackQueueApp < ResourceApiBase
   ##~ op.parameters.add :name => "queue", :description => "Queue to Create", :dataType => "CreateQueue", :allowMultiple => false, :required => false, :paramType => "body"
   ##~ op.errorResponses.add :reason => "Success, queue created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/queues' do
 		json_body = body_to_json(request)
 		if(json_body.nil? || json_body["queue"].nil?)
@@ -119,6 +121,7 @@ class TopStackQueueApp < ResourceApiBase
   ##~ op.parameters.add :name => "queue", :description => "Queue to Delete", :dataType => "DeleteQueue", :allowMultiple => false, :required => false, :paramType => "body"
   ##~ op.errorResponses.add :reason => "Success, queue deleted", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	delete '/queues' do
 		json_body = body_to_json(request)
 		if(json_body.nil? || json_body["queue"].nil?)
