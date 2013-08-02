@@ -37,13 +37,17 @@ class AwsComputeApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Success, list of instances returned", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/instances' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @compute.servers
-		else
-			response = @compute.servers.all(filters)
+    begin
+		  filters = params[:filters]
+  		if(filters.nil?)
+  			response = @compute.servers
+  		else
+  			response = @compute.servers.all(filters)
+  		end
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
 		end
-		[OK, response.to_json]
 	end
 	
     ##~ a = sapi.apis.add
