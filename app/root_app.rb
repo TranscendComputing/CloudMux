@@ -9,7 +9,7 @@ class RootApp < Sinatra::Base
   set :public_folder, File.join(File.dirname(__FILE__), '..', 'public')
 
   get '/' do 
-    "Home"
+    redirect '/docs'
   end
 
   get '/docs' do

@@ -1,3 +1,3 @@
 #!/bin/sh
-source2swagger -c "##~" -o docs -f config.ru
-source2swagger -c "##~" -o docs -i app -e "rb"
+bundle exec source2swagger -c "##~" -o docs -f config.ru || exit 1
+bundle exec source2swagger -c "##~" -o docs -i app -e "rb" || exit 2

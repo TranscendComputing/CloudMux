@@ -15,6 +15,26 @@ class ResourceApiBase < ApiBase
 	
 	def handle_error(error)
 		case error
+			when Fog::AWS::IAM::EntityAlreadyExists 
+				message = error.message
+				[NOT_ACCEPTABLE, message] 
+			when Fog::AWS::IAM::Error
+				error = error.message.split(" => ")
+				message = error[1]
+				[NOT_FOUND, message]   
+			when Fog::Compute::AWS::Error
+				error = error.message.split(" => ")
+				message = error[1]
+				[NOT_ACCEPTABLE, message]
+			when Fog::AWS::RDS::NotFound, Fog::AWS::Elasticache::NotFound
+				message = error.to_s
+				[NOT_FOUND, message]
+			when Fog::Compute::OpenStack::NotFound
+				message = "OpenStack resource not found."
+				[NOT_FOUND, message]
+			when Fog::Identity::OpenStack::NotFound
+				message = "You are not authorized for this action."
+				[NOT_AUTHORIZED, message]
 			when Excon::Errors::Conflict
 				response_body = Nokogiri::XML(error.response.body)
 				message = response_body.css('Message').text
@@ -64,33 +84,15 @@ class ResourceApiBase < ApiBase
 					message = error.response.body.to_s.gsub("\n", " ")
 				end
 				[FORBIDDEN, message]
-
 			when Excon::Errors::Timeout
 				message = "Read Timeout Reached"
 				[TIMEOUT, message]
 			when Net::HTTPServerException
 				message = JSON.parse(error.response.body)["error"][0]
 				[ERROR, message]
-			when Fog::AWS::IAM::EntityAlreadyExists 
-				message = error.message
-				[NOT_ACCEPTABLE, message] 
-			when Fog::AWS::IAM::Error
-				error = error.message.split(" => ")
-				message = error[1]
-				[NOT_FOUND, message]   
-			when Fog::Compute::AWS::Error
-				error = error.message.split(" => ")
-				message = error[1]
-				[NOT_ACCEPTABLE, message]
-			when Fog::AWS::RDS::NotFound, Fog::AWS::Elasticache::NotFound
-				message = error.to_s
-				[NOT_FOUND, message]
 			when ArgumentError
 				message = error.to_s
 				[BAD_REQUEST, message]
-			when Fog::Compute::OpenStack::NotFound
-				message = "OpenStack resource not found."
-				[NOT_FOUND, message]
 			when Fog::Errors::NotFound
 				[NOT_FOUND, error.to_s]
 			else

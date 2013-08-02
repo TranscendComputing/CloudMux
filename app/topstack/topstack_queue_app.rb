@@ -1,42 +1,50 @@
 require 'sinatra'
 require 'fog'
 
-class AwsQueueApp < ResourceApiBase
+class TopStackQueueApp < ResourceApiBase
 
 	before do
-		if ! params[:cred_id].nil?
-			cloud_cred = get_creds(params[:cred_id])
-			if ! cloud_cred.nil?
-				if params[:region].nil? || params[:region] == "undefined" || params[:region] == ""
-					@sqs = Fog::AWS::SQS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
-				else
-					@sqs = Fog::AWS::SQS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => params[:region]})
-				end
-			end
-		end
-		halt [BAD_REQUEST] if @sqs.nil?
+		if(params[:cred_id].nil?)
+            halt [BAD_REQUEST]
+        else
+            cloud_cred = get_creds(params[:cred_id])
+            if cloud_cred.nil?
+                halt [NOT_FOUND, "Credentials not found."]
+            else
+                begin
+                    # Find Monitor service endpoint
+                    endpoint = cloud_cred.cloud_account.cloud_services.where({"service_type"=>"SQS"}).first
+                    halt [BAD_REQUEST] if endpoint.nil?
+                    fog_options = {:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key}
+                    fog_options.merge!(:host => endpoint[:host], :port => endpoint[:port], :path => endpoint[:path], :scheme => endpoint[:protocol])
+                    @sqs = Fog::AWS::SQS.new(fog_options)
+                    halt [BAD_REQUEST] if @sqs.nil?
+                rescue Fog::Errors::NotFound => error
+                    halt [NOT_FOUND, error.to_s]
+                end
+            end
+        end
     end
 
 	#
 	# Queues
 	#
-  ##~ sapi = source2swagger.namespace("aws_queue")
+  ##~ sapi = source2swagger.namespace("topstack_queue")
   ##~ sapi.swaggerVersion = "1.1"
   ##~ sapi.apiVersion = "1.0"
   ##~ sapi.models["Queue"] = {:id => "Queue", :properties => {:id => {:type => "string"}, :availability_zones => {:type => "string"}, :launch_configuration_name => {:type => "string"}, :max_size => {:type => "string"}, :min_size => {:type => "string"}}}
   
   ##~ a = sapi.apis.add
-  ##~ a.set :path => "/api/v1/cloud_management/aws/queue/queues"
-  ##~ a.description = "Manage Queue resources on the cloud (AWS)"
+  ##~ a.set :path => "/api/v1/cloud_management/topstack/queue/queues"
+  ##~ a.description = "Manage Queue resources on the cloud (Topstack)"
   ##~ op = a.operations.add
   ##~ op.set :httpMethod => "GET"
-  ##~ op.summary = "Describe Queues (AWS cloud)"
+  ##~ op.summary = "Describe Queues (Topstack cloud)"
   ##~ op.nickname = "describe_queues"  
   ##~ op.parameters.add :name => "filters", :description => "Filters for topics", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
   ##~ op.errorResponses.add :reason => "Success, list of queues returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   get '/queues' do
 		filters = params[:filters]
 		if(filters.nil?)
@@ -68,19 +76,18 @@ class AwsQueueApp < ResourceApiBase
 	end
 
   ##~ a = sapi.apis.add
-  ##~ a.set :path => "/api/v1/cloud_management/aws/queue/queues"
-  ##~ a.description = "Manage Queue resources on the cloud (AWS)"
+  ##~ a.set :path => "/api/v1/cloud_management/topstack/queue/queues"
+  ##~ a.description = "Manage Queue resources on the cloud (Topstack)"
   ##~ op = a.operations.add
   ##~ op.set :httpMethod => "POST"
-  ##~ op.summary = "Create Queues (AWS cloud)"
+  ##~ op.summary = "Create Queues (Topstack cloud)"
   ##~ op.nickname = "create_queues"
   ##~ sapi.models["CreateQueue"] = {:id => "CreateQueue", :properties => {:QueueName => {:type => "string"},:VisibilityTimeout => {:type => "string"},:MessageRetentionPeriod => {:type => "string"},:MaximumMessageSize => {:type => "string"},:DelaySeconds => {:type => "string"},:ReceiveMessageWaitTimeSeconds => {:type => "string"}}}  
   ##~ op.parameters.add :name => "queue", :description => "Queue to Create", :dataType => "CreateQueue", :allowMultiple => false, :required => false, :paramType => "body"
   ##~ op.errorResponses.add :reason => "Success, queue created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/queues' do
+  post '/queues' do
 		json_body = body_to_json(request)
 		if(json_body.nil? || json_body["queue"].nil?)
 			[BAD_REQUEST]
@@ -104,18 +111,17 @@ class AwsQueueApp < ResourceApiBase
 	end
 
   ##~ a = sapi.apis.add
-  ##~ a.set :path => "/api/v1/cloud_management/aws/queue/queues"
-  ##~ a.description = "Manage Queue resources on the cloud (AWS)"
+  ##~ a.set :path => "/api/v1/cloud_management/topstack/queue/queues"
+  ##~ a.description = "Manage Queue resources on the cloud (Topstack)"
   ##~ op = a.operations.add
   ##~ op.set :httpMethod => "DELETE"
-  ##~ op.summary = "Delete Queues (AWS cloud)"
+  ##~ op.summary = "Delete Queues (Topstack cloud)"
   ##~ op.nickname = "delete_queues"
   ##~ sapi.models["DeleteQueue"] = {:id => "DeleteQueue", :properties => {:QueueUrl => {:type => "string"}}}  
   ##~ op.parameters.add :name => "queue", :description => "Queue to Delete", :dataType => "DeleteQueue", :allowMultiple => false, :required => false, :paramType => "body"
   ##~ op.errorResponses.add :reason => "Success, queue deleted", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	delete '/queues' do
 		json_body = body_to_json(request)
 		if(json_body.nil? || json_body["queue"].nil?)

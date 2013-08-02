@@ -40,15 +40,38 @@ class CloudAccountApiApp < ApiBase
     [OK, cloud_account_query.to_json]
   end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_accouunts/{id}.{format}"
+  ##~ a.description = "Manage cloud credentials"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Retrieve specific cloud credentials"
+  ##~ op.nickname = "get_cloud_account"
+  ##~ op.parameters.add :name => "id", :description => "Cloud account ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Query successful", :code => 200
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   get '/:id.json' do
     cloud_account = CloudAccount.find(params[:id])
     cloud_account.extend(CloudAccountRepresenter)
     cloud_account.to_json
   end
 
+  ##~ a = sapi.apis.add   
+  ##~ a.set :path => "/api/v1/cloud_accounts"
+  ##~ a.description = "Manage clouds credentials"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Creates new cloud account"  
+  ##~ op.nickname = "create_cloud_account"
+  ##~ op.errorResponses.add :reason => "Query successful", :code => 200
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   post '/' do
     new_cloud_account = CloudAccount.new.extend(UpdateCloudAccountRepresenter)
     new_cloud_account.from_json(request.body.read)
+    #Dev's Code
+    new_cloud_account.org = Org.find(params[:org_id])
+    new_cloud_account.cloud = Cloud.find(params[:cloud_id])
+    #Dev's Code
     if new_cloud_account.valid?
       new_cloud_account.save!
       # refresh without the Update representer, so that we don't serialize private data back
@@ -62,6 +85,16 @@ class CloudAccountApiApp < ApiBase
     end
   end
 
+  ##~ a = sapi.apis.add   
+  ##~ a.set :path => "/api/v1/cloud_accounts/{id}"
+  ##~ a.description = "Manage clouds credentials"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "PUT"
+  ##~ op.summary = "Update cloud account"  
+  ##~ op.nickname = "update_cloud_accounts"
+  ##~ op.parameters.add :name => "id", :description => "Cloud account ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Query successful", :code => 200
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   put '/:id' do
     update_cloud_account = CloudAccount.find(params[:id])
     update_cloud_account.extend(UpdateCloudAccountRepresenter)
@@ -79,6 +112,16 @@ class CloudAccountApiApp < ApiBase
     end
   end
 
+  ##~ a = sapi.apis.add   
+  ##~ a.set :path => "/api/v1/cloud_accounts/{id}"
+  ##~ a.description = "Manage clouds credentials"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Removes cloud account"  
+  ##~ op.nickname = "delete_cloud_accounts"
+  ##~ op.parameters.add :name => "id", :description => "Cloud account ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Query successful", :code => 200
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   delete '/:id' do
       cloud_account = CloudAccount.find(params[:id])
       cloud_account.delete
@@ -86,6 +129,16 @@ class CloudAccountApiApp < ApiBase
   end
 
   # Register a new service to an existing cloud_account
+  ##~ a = sapi.apis.add   
+  ##~ a.set :path => "/api/v1/cloud_accounts/{id}/services"
+  ##~ a.description = "Manage clouds credentials"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Register a new service to an existing cloud account"  
+  ##~ op.nickname = "new_service_cloud_accounts"
+  ##~ op.parameters.add :name => "id", :description => "Cloud account ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Query successful", :code => 200
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   post '/:id/services' do
     update_cloud_account = CloudAccount.find(params[:id])
     new_service = CloudService.new.extend(UpdateCloudServiceRepresenter)
@@ -98,6 +151,17 @@ class CloudAccountApiApp < ApiBase
   end
 
   # Update a service for an existing cloud_account
+  ##~ a = sapi.apis.add   
+  ##~ a.set :path => "/api/v1/cloud_accounts/{id}/services/{service_id}"
+  ##~ a.description = "Manage clouds credentials"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Update a service for an existing cloud account" 
+  ##~ op.nickname = "update_service_cloud_accounts"
+  ##~ op.parameters.add :name => "id", :description => "Cloud account ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "service_id", :description => "Service ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Query successful", :code => 200
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   put '/:id/services/:service_id' do
     update_cloud_account = CloudAccount.find(params[:id])
     update_service = update_cloud_account.find_service(params[:service_id])
@@ -120,6 +184,17 @@ class CloudAccountApiApp < ApiBase
   end
 
   # Remove a service from an existing cloud_account
+  ##~ a = sapi.apis.add   
+  ##~ a.set :path => "/api/v1/cloud_accounts/{id}/services/{service_id}"
+  ##~ a.description = "Manage clouds credentials"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Remove a service from an existing cloud account"  
+  ##~ op.nickname = "delete_service_cloud_accounts"
+  ##~ op.parameters.add :name => "id", :description => "Cloud account ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "service_id", :description => "Service ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Query successful", :code => 200
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   delete '/:id/services/:service_id' do
     update_cloud_account = CloudAccount.find(params[:id])
     update_cloud_account.remove_service!(params[:service_id])
@@ -129,6 +204,16 @@ class CloudAccountApiApp < ApiBase
   end
 
   # Register a new mapping to an existing cloud_account
+  ##~ a = sapi.apis.add   
+  ##~ a.set :path => "/api/v1/cloud_accounts/{id}/mappings"
+  ##~ a.description = "Manage clouds credentials"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Register a new mapping to an existing cloud account"  
+  ##~ op.nickname = "new_map_cloud_accounts"
+  ##~ op.parameters.add :name => "id", :description => "Cloud account ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Query successful", :code => 200
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   post '/:id/mappings' do
     update_cloud_account = CloudAccount.find(params[:id])
     new_mapping = CloudMapping.new.extend(UpdateCloudMappingRepresenter)
@@ -142,6 +227,17 @@ class CloudAccountApiApp < ApiBase
   end
 
   # Update a mapping for an existing cloud_account
+  ##~ a = sapi.apis.add   
+  ##~ a.set :path => "/api/v1/cloud_accounts/{id}/mappings/{mapping_id}"
+  ##~ a.description = "Manage clouds credentials"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "PUT"
+  ##~ op.summary = "Update a mapping for an existing cloud account"
+  ##~ op.nickname = "update_map_cloud_accounts"
+  ##~ op.parameters.add :name => "id", :description => "Cloud account ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "mapping_id", :description => "Mapping ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Query successful", :code => 200
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   put '/:id/mappings/:mapping_id' do
     update_cloud_account = CloudAccount.find(params[:id])
     update_mapping = update_cloud_account.find_mapping(params[:mapping_id])
@@ -164,6 +260,17 @@ class CloudAccountApiApp < ApiBase
   end  
 
   # Remove a mapping from an existing cloud_account
+  ##~ a = sapi.apis.add   
+  ##~ a.set :path => "/api/v1/cloud_accounts/{id}/mappings/{mapping_id}"
+  ##~ a.description = "Manage clouds credentials"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Remove a mapping from an existing cloud account"
+  ##~ op.nickname = "delete_map_cloud_accounts"
+  ##~ op.parameters.add :name => "id", :description => "Cloud account ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "mapping_id", :description => "Mapping ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Query successful", :code => 200
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   delete '/:id/mappings/:mapping_id' do
     update_cloud_account = CloudAccount.find(params[:id])
     update_cloud_account.remove_mapping!(params[:mapping_id])
@@ -172,6 +279,16 @@ class CloudAccountApiApp < ApiBase
   end
   
   # Register a new compute price to an existing cloud_account
+  ##~ a = sapi.apis.add   
+  ##~ a.set :path => "/api/v1/cloud_accounts/{id}/prices"
+  ##~ a.description = "Manage clouds credentials"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Register a new compute price to an existing cloud account"
+  ##~ op.nickname = "new_price_cloud_accounts"
+  ##~ op.parameters.add :name => "id", :description => "Cloud account ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Query successful", :code => 200
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   post '/:id/prices' do
     update_cloud_account = CloudAccount.find(params[:id])
     new_price = Price.new.extend(UpdatePriceRepresenter)
@@ -185,6 +302,17 @@ class CloudAccountApiApp < ApiBase
   end
   
   # Remove a price from an existing cloud_account
+  ##~ a = sapi.apis.add   
+  ##~ a.set :path => "/api/v1/cloud_accounts/{id}/prices/{price_id}"
+  ##~ a.description = "Manage clouds credentials"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Remove a price from an existing cloud account"
+  ##~ op.nickname = "delete_price_cloud_accounts"
+  ##~ op.parameters.add :name => "id", :description => "Cloud account ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "price_id", :description => "Price ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Query successful", :code => 200
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   delete '/:id/prices/:price_id' do
     update_cloud_account = CloudAccount.find(params[:id])
     update_cloud_account.remove_price!(params[:price_id])
@@ -194,6 +322,17 @@ class CloudAccountApiApp < ApiBase
   end
   
   # Update a price effective price and date, and add to entries
+  ##~ a = sapi.apis.add   
+  ##~ a.set :path => "/api/v1/cloud_accounts/{id}/prices/{price_id}"
+  ##~ a.description = "Manage clouds credentials"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "PUT"
+  ##~ op.summary = "Update a price effective price and date, and add to entries"
+  ##~ op.nickname = "update_price_cloud_accounts"
+  ##~ op.parameters.add :name => "id", :description => "Cloud account ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.parameters.add :name => "price_id", :description => "Price ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Query successful", :code => 200
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   put '/:id/prices/:price_id' do
     update_cloud_account = CloudAccount.find(params[:id])
     update_price = update_cloud_account.find_price(params[:price_id])

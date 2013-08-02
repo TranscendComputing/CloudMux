@@ -5,11 +5,11 @@ class OpenstackBlockStorageApp < ResourceApiBase
 
 	before do
         if(params[:cred_id].nil?)
-            return nil
+            halt [BAD_REQUEST]
         else
             cloud_cred = get_creds(params[:cred_id])
             if cloud_cred.nil?
-                return nil
+                halt [NOT_FOUND, "Credentials not found."]
             else
                 options = cloud_cred.cloud_attributes.merge(:provider => "openstack")
                 @block_storage = Fog::Compute.new(options)
@@ -21,7 +21,25 @@ class OpenstackBlockStorageApp < ResourceApiBase
 	#
 	# Volumes
 	#
-	get '/volumes' do
+  ##~ sapi = source2swagger.namespace("openstack_block_storage")
+  ##~ sapi.swaggerVersion = "1.1"
+  ##~ sapi.apiVersion = "1.0"
+  ##~ sapi.models["Volume"] = {:id => "Volume", :properties => {:availability_zone => {:type => "string"}, :size => {:type => "string"}, :snapshot_id => {:type => "string"}, :iops => {:type => "string"}, :key => {:type => "string"}, :resource_id => {:type => "string"}, :value => {:type => "string"}}}
+  ##~ sapi.models["Snapshot"] = {:id => "Snapshot", :properties => {:volume_id => {:type => "string"},:description => {:type => "string"}}}
+  
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/openstack/block_storage/volumes"
+  ##~ a.description = "Manage Block Storage resources on the cloud (Openstack)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Volume"
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Describe Block Storage Volumes (Openstack cloud)"
+  ##~ op.nickname = "describe_block_storage_volumes"  
+  ##~ op.parameters.add :name => "filters", :description => "Filters for volumes", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Success, list of volumes returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  get '/volumes' do
 		filters = params[:filters]
 		if(filters.nil?)
 			response = @block_storage.volumes
@@ -31,7 +49,20 @@ class OpenstackBlockStorageApp < ResourceApiBase
 		[OK, response.to_json]
 	end
 	
-	post '/volumes' do
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/openstack/block_storage/volumes"
+  ##~ a.description = "Manage Block Storage resources on the cloud (Openstack)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Volume"
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Create Block Storage Volumes (Openstack cloud)"
+  ##~ op.nickname = "create_block_storage_volumes"
+  ##~ sapi.models["CreateVolume"] = {:id => "CreateVolume", :properties => {:availability_zone => {:type => "string"}, :size => {:type => "int"}, :snapshot_id => {:type => "string"}, :type => {:type => "string"}, :iops => {:type => "int"}}}  
+  ##~ op.parameters.add :name => "volume", :description => "Volume to create", :dataType => "CreateVolume", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.errorResponses.add :reason => "Success, volume created", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  post '/volumes' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
 			[BAD_REQUEST]
@@ -45,7 +76,19 @@ class OpenstackBlockStorageApp < ResourceApiBase
 		end
 	end
 	
-	delete '/volumes/:id' do
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/openstack/block_storage/volumes/:id"
+  ##~ a.description = "Manage Block Storage resources on the cloud (Openstack)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Volume"
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Delete Block Storage Volumes (Openstack cloud)"
+  ##~ op.nickname = "delete_block_storage_volumes"  
+  ##~ op.parameters.add :name => "id", :description => "Volume id to destroy", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, volume deleted", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  delete '/volumes/:id' do
 		begin
 			response = @block_storage.volumes.get(params[:id]).destroy
 			[OK, response.to_json]
@@ -54,7 +97,21 @@ class OpenstackBlockStorageApp < ResourceApiBase
 		end
 	end
 	
-	post '/volumes/:id/attach' do
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/openstack/block_storage/volumes/:id/attach"
+  ##~ a.description = "Manage Block Storage resources on the cloud (Openstack)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Volume"
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Attach Block Storage Volumes (Openstack cloud)"
+  ##~ op.nickname = "attach_block_storage_volumes"
+  ##~ op.parameters.add :name => "id", :description => "Volume ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"  
+  ##~ op.parameters.add :name => "server_id", :description => "Server ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.parameters.add :name => "device", :description => "Device", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "body"
+  ##~ op.errorResponses.add :reason => "Success, volume attached", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  post '/volumes/:id/attach' do
 		json_body = body_to_json(request)
 		if(json_body.nil? || json_body["server_id"].nil? || json_body["device"].nil?)
 			response = "server_id and device are required request parameters."
@@ -69,7 +126,20 @@ class OpenstackBlockStorageApp < ResourceApiBase
 		end
 	end
 	
-	delete '/volumes/:id/detach/:server_id' do
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/openstack/block_storage/volumes/:id/detach/:server_id"
+  ##~ a.description = "Manage Block Storage resources on the cloud (Openstack)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Volume"
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Detach Block Storage Volumes (Openstack cloud)"
+  ##~ op.nickname = "detach_block_storage_volumes"  
+  ##~ op.parameters.add :name => "id", :description => "volume id", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.parameters.add :name => "server_id", :description => "server id", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, volume attached", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  delete '/volumes/:id/detach/:server_id' do
 		begin
 			response = @block_storage.detach_volume(params[:server_id], params[:id])
 			[OK, response.to_json]
@@ -81,6 +151,18 @@ class OpenstackBlockStorageApp < ResourceApiBase
 	#
 	# Snapshots
 	#
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/openstack/block_storage/snapshots"
+  ##~ a.description = "Manage Block Storage resources on the cloud (Openstack)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Snapshot"
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.summary = "Describe Block Storage Snapshots (Openstack cloud)"
+  ##~ op.nickname = "describe_block_storage_snapshots"  
+  ##~ op.parameters.add :name => "filters", :description => "Filters for snapshots", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+  ##~ op.errorResponses.add :reason => "Success, list of Snapshots returned", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	get '/snapshots' do
 		filters = params[:filters]
 		if(filters.nil?)
@@ -91,7 +173,20 @@ class OpenstackBlockStorageApp < ResourceApiBase
 		[OK, response.to_json]
 	end
 	
-	post '/snapshots' do
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/openstack/block_storage/snapshots"
+  ##~ a.description = "Manage Block Storage resources on the cloud (Openstack)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Snapshot"
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.summary = "Create Block Storage Snapshots (Openstack cloud)"
+  ##~ op.nickname = "create_block_storage_snapshots"
+  ##~ sapi.models["CreateSnapshot"] = {:id => "CreateSnapshot", :properties => {:volume_id => {:type => "string"}, :description => {:type => "string"}}}  
+  ##~ op.parameters.add :name => "snapshot", :description => "Snapshot to create", :dataType => "CreateSnapshot", :allowMultiple => false, :required => false, :paramType => "body"
+  ##~ op.errorResponses.add :reason => "Success, Snapshot created", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  post '/snapshots' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
 			[BAD_REQUEST]
@@ -105,7 +200,19 @@ class OpenstackBlockStorageApp < ResourceApiBase
 		end
 	end
 	
-	delete '/snapshots/:id' do
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/cloud_management/openstack/block_storage/snapshots/:id"
+  ##~ a.description = "Manage Block Storage resources on the cloud (Openstack)"
+  ##~ op = a.operations.add
+  ##~ op.responseClass = "Snapshot"
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.summary = "Delete Block Storage Snapshots (Openstack cloud)"
+  ##~ op.nickname = "delete_block_storage_snapshots"  
+  ##~ op.parameters.add :name => "id", :description => "Snapshot id to delete", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+  ##~ op.errorResponses.add :reason => "Success, Snapshot deleted", :code => 200
+  ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  delete '/snapshots/:id' do
 		begin
 			response = @block_storage.snapshots.get(params[:id]).destroy
 			[OK, response.to_json]
