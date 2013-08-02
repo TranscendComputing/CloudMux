@@ -107,7 +107,7 @@
         <exec command="ssh ${deploy.ip} sudo /etc/init.d/apache2 restart" failonerror="true"/>
 	</target>
 
-	<target name="deployprod" depends="bundle, package">
+	<target name="deployprod" depends="bundle, make-docs, package">
         <echo message="Deploying CloudMux to ${deploy.ip}"/>
 		<exec command="scp ${build}/${package.file} ${deploy.ip}:/${cloudmux.home}" failonerror="true"/>
         <exec command="ssh ${deploy.ip} rm -r ${cloudmux.home}/CloudMux" failonerror="true"/>
