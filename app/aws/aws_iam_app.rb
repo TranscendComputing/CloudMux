@@ -38,13 +38,17 @@ class AwsIamApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	get '/users' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @iam.users
-		else
-			response = @iam.users.all(filters)
+    begin
+  		filters = params[:filters]
+  		if(filters.nil?)
+  			response = @iam.users
+  		else
+  			response = @iam.users.all(filters)
+  		end
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
 		end
-		[OK, response.to_json]
 	end
 	
   ##~ a = sapi.apis.add
@@ -193,13 +197,17 @@ class AwsIamApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	get '/groups' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @iam.list_groups.body["Groups"]
-		else
-			response = @iam.list_groups(filters).body["Groups"]
+    begin
+  		filters = params[:filters]
+  		if(filters.nil?)
+  			response = @iam.list_groups.body["Groups"]
+  		else
+  			response = @iam.list_groups(filters).body["Groups"]
+  		end
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
 		end
-		[OK, response.to_json]
 	end
 
   ##~ a = sapi.apis.add

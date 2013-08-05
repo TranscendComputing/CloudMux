@@ -38,33 +38,37 @@ class AwsQueueApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   get '/queues' do
-		filters = params[:filters]
-		if(filters.nil?)
-			list_response = @sqs.list_queues.body["QueueUrls"]
-		else
-			list_response = @sqs.list_queues(filters).body["QueueUrls"]
+    begin
+  		filters = params[:filters]
+  		if(filters.nil?)
+  			list_response = @sqs.list_queues.body["QueueUrls"]
+  		else
+  			list_response = @sqs.list_queues(filters).body["QueueUrls"]
+  		end
+  		response = []
+  		list_response.each do |q|
+  			queue_url_split = q.split("/")
+  			if(queue_url_split.length > 0)
+  				#Queue name is last item in url path
+  				name = queue_url_split[queue_url_split.length - 1]
+  			else
+  				name = ""
+  			end
+  			queue = {"QueueUrl" => q, "QueueName" => name}
+  			#Even though a user can list all queues, they may not have access to get_queue_attributes
+  			begin
+  				attrs = @sqs.get_queue_attributes(q, "All").body["Attributes"]
+              	queue.merge!(attrs)
+              rescue
+              	#Do Nothing
+              	#This is incase they do not have permission, or deleted queue remains in list
+              end
+              response << queue
+  		end
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
 		end
-		response = []
-		list_response.each do |q|
-			queue_url_split = q.split("/")
-			if(queue_url_split.length > 0)
-				#Queue name is last item in url path
-				name = queue_url_split[queue_url_split.length - 1]
-			else
-				name = ""
-			end
-			queue = {"QueueUrl" => q, "QueueName" => name}
-			#Even though a user can list all queues, they may not have access to get_queue_attributes
-			begin
-				attrs = @sqs.get_queue_attributes(q, "All").body["Attributes"]
-            	queue.merge!(attrs)
-            rescue
-            	#Do Nothing
-            	#This is incase they do not have permission, or deleted queue remains in list
-            end
-            response << queue
-		end
-		[OK, response.to_json]
 	end
 
   ##~ a = sapi.apis.add
