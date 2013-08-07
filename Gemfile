@@ -48,3 +48,6 @@ group :development, :test do
   gem 'database_cleaner'
   gem 'factory_girl', '~> 3.0.0'
 end
+
+# Google
+gem 'google-api-client'

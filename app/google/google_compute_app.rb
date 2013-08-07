@@ -6,10 +6,17 @@ class GoogleComputeApp < ResourceApiBase
   before do
 		if ! params[:cred_id].nil?
 			cloud_cred = get_creds(params[:cred_id])
-      #require "debugger"
-      #debugger
 			if ! cloud_cred.nil?
-			  @compute = Fog::Compute::Google.new({:google_project => cloud_cred.cloud_attributes['google_project_id'], :google_client_email => cloud_cred.cloud_attributes['google_client_email'], :google_key_location => cloud_cred.cloud_attributes['google_private_key']})
+        #cloud_cred.cloud_attributes['google_private_key']
+			  #@compute = Fog::Compute::Google.new({:google_project => cloud_cred.cloud_attributes['google_project_id'], :google_client_email => cloud_cred.cloud_attributes['google_client_email'], :google_key_location => cloud_cred.cloud_attributes['google_private_key']})
+        @compute = Fog::Compute.new({
+          :provider => 'google',
+          :google_project => "momentumsi1",
+          :google_client_email => "33172512232@project.googleusercontent.com",
+          :google_key_location => "~/.ssh/google_compute_engine",
+        })
+        require "debugger"
+        debugger
 			end
 		end
 		halt [BAD_REQUEST] if @compute.nil?
