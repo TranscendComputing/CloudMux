@@ -9,14 +9,11 @@ class GoogleComputeApp < ResourceApiBase
 			if ! cloud_cred.nil?
         #cloud_cred.cloud_attributes['google_private_key']
 			  #@compute = Fog::Compute::Google.new({:google_project => cloud_cred.cloud_attributes['google_project_id'], :google_client_email => cloud_cred.cloud_attributes['google_client_email'], :google_key_location => cloud_cred.cloud_attributes['google_private_key']})
-        @compute = Fog::Compute.new({
-          :provider => 'google',
+        @compute = Fog::Compute::Google.new({
           :google_project => "momentumsi1",
-          :google_client_email => "33172512232@project.googleusercontent.com",
-          :google_key_location => "~/.ssh/google_compute_engine",
+          :google_client_email => "33172512232-vvejocpdgtvoi845n28di5tn1hholvkr@developer.gserviceaccount.com",
+          :google_key_location => "app/google/key/googlecompute.p12",
         })
-        require "debugger"
-        debugger
 			end
 		end
 		halt [BAD_REQUEST] if @compute.nil?
@@ -63,51 +60,11 @@ class GoogleComputeApp < ResourceApiBase
 	end
   
   #
-  #Disks
-  #
-	get '/images' do
-    begin
-		  filters = params[:filters]
-  		if(filters.nil?)
-  			response = @compute.images
-  		else
-  			response = @compute.images.all(filters)
-  		end
-  		[OK, response.to_json]
-    rescue => error
-				handle_error(error)
-		end
-	end
-  
-	post '/images' do
-		json_body = body_to_json(request)
-		if(json_body.nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @compute.images.create(json_body["image"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
-		end
-	end
-  
-	delete '/images/:id' do
-		begin
-			response = @compute.images.get(params[:id]).destroy
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-  
-  #
   #Images
   #
 	get '/images' do
     begin
-  		response = @compute.images
+  		response = @compute.list_images
   		[OK, response.to_json]
     rescue => error
 				handle_error(error)
@@ -142,8 +99,20 @@ class GoogleComputeApp < ResourceApiBase
   #
 	get '/availability_zones' do
     begin
-  		response = @compute.list_zones.body["availabilityZoneInfo"]
-  		[OK, response.to_json]
+  		response = @compute.list_zones
+  		[OK, response.body["items"].to_json]
+    rescue => error
+				handle_error(error)
+		end
+	end
+  
+  #
+  #Machine Types
+  #
+	get '/machine_types' do
+    begin
+  		response = @compute.list_machine_types
+  		[OK, response.body["items"].to_json]
     rescue => error
 				handle_error(error)
 		end
@@ -155,6 +124,18 @@ class GoogleComputeApp < ResourceApiBase
 	get '/flavors' do
     begin
   		response = @compute.flavors
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
+		end
+	end
+  
+  #
+  #Disks
+  #
+	get '/disks/:zone_name' do
+    begin
+  		response = @compute.list_disks(params[:zone_name])
   		[OK, response.to_json]
     rescue => error
 				handle_error(error)
