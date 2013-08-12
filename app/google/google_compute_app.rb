@@ -26,7 +26,7 @@ class GoogleComputeApp < ResourceApiBase
     begin
 		  filters = params[:filters]
   		if(filters.nil?)
-  			response = @compute.servers
+  			response = @compute.servers.all
   		else
   			response = @compute.servers.all(filters)
   		end
@@ -42,8 +42,17 @@ class GoogleComputeApp < ResourceApiBase
 			[BAD_REQUEST]
 		else
 			begin
-				response = @compute.servers.create(json_body["instance"])
-				[OK, response.to_json]
+        server = @compute.servers.create(defaults = {
+          :name => json_body["instance"]["name"],
+          :image_name => json_body["instance"]["image_name"],
+          :machine_type => "n1-standard-1",
+          :zone_name => json_body["instance"]["zone_name"],
+          :private_key_path => File.expand_path("app/google/key/id_rsa"),
+          :public_key_path => File.expand_path("app/google/key/id_rsa.pub"),
+          :user => ENV['USER'],
+        })
+        
+        [OK, server.to_json]
 			rescue => error
 				handle_error(error)
 			end
@@ -133,12 +142,32 @@ class GoogleComputeApp < ResourceApiBase
   #
   #Disks
   #
-	get '/disks/:zone_name' do
+	get '/disks' do
     begin
-  		response = @compute.list_disks(params[:zone_name])
-  		[OK, response.to_json]
+  		response = @compute.list_disks(params[:region])
+  		[OK, response.body["items"].to_json]
     rescue => error
 				handle_error(error)
+		end
+	end
+  
+	post '/disks' do
+		json_body = body_to_json(request)
+		if(json_body.nil?)
+			[BAD_REQUEST]
+		else
+			begin
+        disk = @compute.disks.create({
+          :name => json_body["disk"]["name"],
+          :image_name => json_body["disk"]["image_name"],
+          :zone_name => json_body["disk"]["zone_name"],
+          :size_gb => json_body["disk"]["size_gb"]
+        })
+        
+        [OK, disk.to_json]
+			rescue => error
+				handle_error(error)
+			end
 		end
 	end
 
