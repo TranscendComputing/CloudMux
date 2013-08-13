@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'fog'
+require "debugger"
 
 class GoogleComputeApp < ResourceApiBase
   
@@ -42,15 +43,33 @@ class GoogleComputeApp < ResourceApiBase
 			[BAD_REQUEST]
 		else
 			begin
-        server = @compute.servers.create(defaults = {
-          :name => json_body["instance"]["name"],
-          :image_name => json_body["instance"]["image_name"],
-          :machine_type => "n1-standard-1",
-          :zone_name => json_body["instance"]["zone_name"],
-          :private_key_path => File.expand_path("app/google/key/id_rsa"),
-          :public_key_path => File.expand_path("app/google/key/id_rsa.pub"),
-          :user => ENV['USER'],
-        })
+        
+        server = nil
+        if ! json_body["instance"]["disk"].nil?
+          disk = @compute.disks.get(json_body["instance"]["disk"],json_body["instance"]["zone_name"]).get_as_boot_disk(true)
+          #debugger
+          server = @compute.servers.create(defaults = {
+            :name => json_body["instance"]["name"],
+            #:image_name => json_body["instance"]["image_name"],
+            :kernel => 'gce-v20130603',
+            :machine_type => json_body["instance"]["machine_type"],
+            :zone_name => json_body["instance"]["zone_name"],
+            :disks => [ disk ],
+            :private_key_path => File.expand_path("app/google/key/id_rsa"),
+            :public_key_path => File.expand_path("app/google/key/id_rsa.pub"),
+            :user => ENV['USER'],
+          })
+        else
+          server = @compute.servers.create(defaults = {
+            :name => json_body["instance"]["name"],
+            :image_name => json_body["instance"]["image_name"],
+            :machine_type => json_body["instance"]["machine_type"],
+            :zone_name => json_body["instance"]["zone_name"],
+            :private_key_path => File.expand_path("app/google/key/id_rsa"),
+            :public_key_path => File.expand_path("app/google/key/id_rsa.pub"),
+            :user => ENV['USER'],
+          })
+        end
         
         [OK, server.to_json]
 			rescue => error
@@ -120,7 +139,7 @@ class GoogleComputeApp < ResourceApiBase
   #
 	get '/machine_types' do
     begin
-  		response = @compute.list_machine_types
+  		response = @compute.list_machine_types(params[:region])
   		[OK, response.body["items"].to_json]
     rescue => error
 				handle_error(error)
@@ -157,14 +176,41 @@ class GoogleComputeApp < ResourceApiBase
 			[BAD_REQUEST]
 		else
 			begin
+        #debugger
         disk = @compute.disks.create({
           :name => json_body["disk"]["name"],
-          :image_name => json_body["disk"]["image_name"],
+          :source_image => json_body["disk"]["image_name"],
           :zone_name => json_body["disk"]["zone_name"],
           :size_gb => json_body["disk"]["size_gb"]
         })
         
         [OK, disk.to_json]
+			rescue => error
+				handle_error(error)
+			end
+		end
+	end
+  
+  #
+  #Networks
+  #
+	get '/networks' do
+    begin
+  		response = @compute.list_networks
+  		[OK, response.body["items"].to_json]
+    rescue => error
+				handle_error(error)
+		end
+	end
+  
+	post '/networks' do
+		json_body = body_to_json(request)
+		if(json_body.nil?)
+			[BAD_REQUEST]
+		else
+			begin
+        network = @compute.insert_network(json_body["network"]["network_name"],json_body["network"]["ip_range"])
+        [OK, network.to_json]
 			rescue => error
 				handle_error(error)
 			end
