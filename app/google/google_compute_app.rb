@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'fog'
+require 'tempfile'
 require "debugger"
 
 class GoogleComputeApp < ResourceApiBase
@@ -8,13 +9,20 @@ class GoogleComputeApp < ResourceApiBase
 		if ! params[:cred_id].nil?
 			cloud_cred = get_creds(params[:cred_id])
 			if ! cloud_cred.nil?
-        #cloud_cred.cloud_attributes['google_private_key']
-			  #@compute = Fog::Compute::Google.new({:google_project => cloud_cred.cloud_attributes['google_project_id'], :google_client_email => cloud_cred.cloud_attributes['google_client_email'], :google_key_location => cloud_cred.cloud_attributes['google_private_key']})
+			 
+       debugger
+       
         @compute = Fog::Compute::Google.new({
-          :google_project => "momentumsi1",
-          :google_client_email => "33172512232-vvejocpdgtvoi845n28di5tn1hholvkr@developer.gserviceaccount.com",
-          :google_key_location => "app/google/key/googlecompute.p12",
+          :google_project => cloud_cred.cloud_attributes['google_project_id'],
+          :google_client_email => cloud_cred.cloud_attributes['google_client_email'],
+          :google_key_location => cloud_cred.cloud_attributes['google_private_key']
         })
+        
+        #@compute = Fog::Compute::Google.new({
+        #  :google_project => "momentumsi1",
+        #  :google_client_email => "33172512232-vvejocpdgtvoi845n28di5tn1hholvkr@developer.gserviceaccount.com",
+        #  :google_key_location => "app/google/key/googlecompute.p12",
+        #})
 			end
 		end
 		halt [BAD_REQUEST] if @compute.nil?
@@ -93,6 +101,7 @@ class GoogleComputeApp < ResourceApiBase
 	get '/images' do
     begin
   		response = @compute.list_images
+      debugger
   		[OK, response.to_json]
     rescue => error
 				handle_error(error)
@@ -176,7 +185,7 @@ class GoogleComputeApp < ResourceApiBase
 			[BAD_REQUEST]
 		else
 			begin
-        #debugger
+        
         disk = @compute.disks.create({
           :name => json_body["disk"]["name"],
           :source_image => json_body["disk"]["image_name"],

@@ -164,6 +164,22 @@ class IdentityApiApp < ApiBase
     update_account.extend(AccountRepresenter)
     [CREATED, update_account.to_json]
   end
+  
+  post '/:id/:cloud_credential_id/upload_key_pairs' do
+    require "debugger"
+    require "lib/service/model/key_pair"
+    
+    #debugger
+    
+    keypair = KeyPair.new(
+      cloud_credential: Account.find_cloud_credential(params[:cloud_credential_id]),
+      name: params['file'][:filename],
+      file: params['file'][:tempfile]
+    )
+    keypair.save!
+    
+    [OK, keypair.to_json]
+  end
 
   # Register a new key pair for a cloud credential
   # Note: no longer needed, as they query AWS for key pairs. Not sure how other cloud providers will need this handled, so will leave for now
