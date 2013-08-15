@@ -6,27 +6,27 @@ require "debugger"
 class GoogleComputeApp < ResourceApiBase
   
   before do
-		if ! params[:cred_id].nil?
-			cloud_cred = get_creds(params[:cred_id])
-			if ! cloud_cred.nil?
-			 
-       debugger
+    if ! params[:cred_id].nil?
+      cloud_cred = get_creds(params[:cred_id])
+      if ! cloud_cred.nil?
+       
+        p12_file = Base64.decode64(cloud_cred.cloud_attributes['google_p12_key'])
+        file = File.new('googlecompute.p12','w+')
+        file.puts(p12_file)
+        file.close
        
         @compute = Fog::Compute::Google.new({
           :google_project => cloud_cred.cloud_attributes['google_project_id'],
           :google_client_email => cloud_cred.cloud_attributes['google_client_email'],
-          :google_key_location => cloud_cred.cloud_attributes['google_private_key']
-        })
+          :google_key_location => file.path
+          })
         
-        #@compute = Fog::Compute::Google.new({
-        #  :google_project => "momentumsi1",
-        #  :google_client_email => "33172512232-vvejocpdgtvoi845n28di5tn1hholvkr@developer.gserviceaccount.com",
-        #  :google_key_location => "app/google/key/googlecompute.p12",
-        #})
-			end
-		end
-		halt [BAD_REQUEST] if @compute.nil?
-  end
+          File.delete('googlecompute.p12')
+  
+        end
+      end
+      halt [BAD_REQUEST] if @compute.nil?
+    end
   
   #
   #Instance
@@ -53,6 +53,16 @@ class GoogleComputeApp < ResourceApiBase
 			begin
         
         server = nil
+        
+        cloud_cred = get_creds(params[:cred_id])
+        
+        private_key_file = File.new('id_rsa','w+')
+        private_key_file.puts(cloud_cred.cloud_attributes['google_private_key'])
+        private_key_file.close
+        public_key_file = File.new('id_rsa.pub','w+')
+        public_key_file.puts(cloud_cred.cloud_attributes['google_public_key'])
+        public_key_file.close
+        
         if ! json_body["instance"]["disk"].nil?
           disk = @compute.disks.get(json_body["instance"]["disk"],json_body["instance"]["zone_name"]).get_as_boot_disk(true)
           #debugger
@@ -63,8 +73,8 @@ class GoogleComputeApp < ResourceApiBase
             :machine_type => json_body["instance"]["machine_type"],
             :zone_name => json_body["instance"]["zone_name"],
             :disks => [ disk ],
-            :private_key_path => File.expand_path("app/google/key/id_rsa"),
-            :public_key_path => File.expand_path("app/google/key/id_rsa.pub"),
+            :private_key_path => File.expand_path("id_rsa"),
+            :public_key_path => File.expand_path("id_rsa.pub"),
             :user => ENV['USER'],
           })
         else
@@ -73,11 +83,16 @@ class GoogleComputeApp < ResourceApiBase
             :image_name => json_body["instance"]["image_name"],
             :machine_type => json_body["instance"]["machine_type"],
             :zone_name => json_body["instance"]["zone_name"],
-            :private_key_path => File.expand_path("app/google/key/id_rsa"),
-            :public_key_path => File.expand_path("app/google/key/id_rsa.pub"),
+            #:private_key_path => File.expand_path("app/google/key/id_rsa"),
+            #:public_key_path => File.expand_path("app/google/key/id_rsa.pub"),
+            :private_key_path => File.expand_path("id_rsa"),
+            :public_key_path => File.expand_path("id_rsa.pub"),
             :user => ENV['USER'],
           })
         end
+        
+        File.delete('id_rsa')
+        File.delete('id_rsa.pub')
         
         [OK, server.to_json]
 			rescue => error
