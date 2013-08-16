@@ -20,6 +20,7 @@ require 'app/report_api_app'
 require 'app/news_event_api_app'
 require 'app/root_app'
 require 'app/resource_api_base'
+require 'app/orchestration_api_app'
 require 'app/aws/aws_compute_app'
 require 'app/aws/aws_autoscale_app'
 require 'app/aws/aws_block_storage_app'
@@ -34,6 +35,7 @@ require 'app/aws/aws_beanstalk_app'
 require 'app/aws/aws_iam_app'
 require 'app/aws/aws_queue_app'
 require 'app/aws/aws_simpledb_app'
+require 'app/google/google_compute_app'
 require 'app/openstack/openstack_compute_app'
 require 'app/openstack/openstack_block_storage_app'
 require 'app/openstack/openstack_object_storage_app'
@@ -487,4 +489,17 @@ end
 ##~ a.description = "TopStack DNS API"
 map "/stackstudio/v1/cloud_management/topstack/dns" do
   run TopStackDnsApp
+end
+
+#
+# Google Compute API
+#
+map "/stackstudio/v1/cloud_management/google/compute" do
+  run GoogleComputeApp
+end
+#
+#	Puppet/Chef API
+#
+map "/stackstudio/v1/orchestration" do
+  run OrchestrationApiApp
 end

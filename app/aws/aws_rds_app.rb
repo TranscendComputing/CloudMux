@@ -38,13 +38,17 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   get '/databases' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @rds.servers
-		else
-			response = @rds.servers.all(filters)
+    begin
+  		filters = params[:filters]
+  		if(filters.nil?)
+  			response = @rds.servers
+  		else
+  			response = @rds.servers.all(filters)
+  		end
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
 		end
-		[OK, response.to_json]
 	end
 	
   ##~ a = sapi.apis.add
@@ -133,13 +137,17 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	get '/parameter_groups' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @rds.parameter_groups
-		else
-			response = @rds.parameter_groups.all(filters)
+    begin
+  		filters = params[:filters]
+  		if(filters.nil?)
+  			response = @rds.parameter_groups
+  		else
+  			response = @rds.parameter_groups.all(filters)
+  		end
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
 		end
-		[OK, response.to_json]
 	end
 
   ##~ a = sapi.apis.add
@@ -155,13 +163,17 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	get '/security_groups' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @rds.security_groups
-		else
-			response = @rds.security_groups.all(filters)
+    begin
+  		filters = params[:filters]
+  		if(filters.nil?)
+  			response = @rds.security_groups
+  		else
+  			response = @rds.security_groups.all(filters)
+  		end
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
 		end
-		[OK, response.to_json]
 	end
   
   #

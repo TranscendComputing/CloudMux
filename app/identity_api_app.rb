@@ -164,6 +164,15 @@ class IdentityApiApp < ApiBase
     update_account.extend(AccountRepresenter)
     [CREATED, update_account.to_json]
   end
+  
+  #Used to upload P12 Files to Cloud Credential's Cloud Attributes
+  post '/:id/:cloud_credential_id/upload_key_pairs' do
+    cred = Account.find_cloud_credential(params[:cloud_credential_id])
+    cred.cloud_attributes.merge!(:google_p12_key => Base64.encode64(params['file'][:tempfile].open.read))
+    cred.update_attributes!(cloud_attributes: cred.cloud_attributes)
+    
+    [OK, cred.to_json]
+  end
 
   # Register a new key pair for a cloud credential
   # Note: no longer needed, as they query AWS for key pairs. Not sure how other cloud providers will need this handled, so will leave for now

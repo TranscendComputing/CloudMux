@@ -44,13 +44,17 @@ class AwsBeanstalkApp < ResourceApiBase
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   	get '/applications' do
-  		filters = params[:filters]
-  		if(filters.nil?)
-  			response = @elasticbeanstalk.applications
-  		else
-  			response = @elasticbeanstalk.applications.all(filters)
+      begin
+    		filters = params[:filters]
+    		if(filters.nil?)
+    			response = @elasticbeanstalk.applications
+    		else
+    			response = @elasticbeanstalk.applications.all(filters)
+    		end
+    		[OK, response.to_json]
+      rescue => error
+  				handle_error(error)
   		end
-  		[OK, response.to_json]
   	end
     
     ##~ a = sapi.apis.add

@@ -38,15 +38,19 @@ class AwsNotificationApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	get '/topics/list' do
-		filters = params[:filters]
-		if(filters.nil?)
-			raw_response = @notification.list_topics.body["Topics"]
-		else
-			raw_response = @notification.list_topics(filters).body["Topics"]
+    begin
+  		filters = params[:filters]
+  		if(filters.nil?)
+  			raw_response = @notification.list_topics.body["Topics"]
+  		else
+  			raw_response = @notification.list_topics(filters).body["Topics"]
+  		end
+  		response = []
+  		raw_response.each {|t| response.push({"id"=> t})}
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
 		end
-		response = []
-		raw_response.each {|t| response.push({"id"=> t})}
-		[OK, response.to_json]
 	end
 
   ##~ a = sapi.apis.add
@@ -62,25 +66,29 @@ class AwsNotificationApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	get '/topics' do
-		filters = params[:filters]
-		if(filters.nil?)
-			raw_response = @notification.list_topics.body["Topics"]
-		else
-			raw_response = @notification.list_topics(filters).body["Topics"]
+    begin
+  		filters = params[:filters]
+  		if(filters.nil?)
+  			raw_response = @notification.list_topics.body["Topics"]
+  		else
+  			raw_response = @notification.list_topics(filters).body["Topics"]
+  		end
+  		response = []
+  		raw_response.each do |t|
+  			topic = {}
+  			topic["id"] = t
+  			begin
+  				topic["Name"] = t.split(":").last
+  				attributes = @notification.get_topic_attributes(t).body["Attributes"]
+  				topic.merge!(attributes)
+  			rescue
+  			end
+  			response.push(topic)
+  		end
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
 		end
-		response = []
-		raw_response.each do |t|
-			topic = {}
-			topic["id"] = t
-			begin
-				topic["Name"] = t.split(":").last
-				attributes = @notification.get_topic_attributes(t).body["Attributes"]
-				topic.merge!(attributes)
-			rescue
-			end
-			response.push(topic)
-		end
-		[OK, response.to_json]
 	end
 
   ##~ a = sapi.apis.add

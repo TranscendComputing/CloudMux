@@ -37,13 +37,17 @@ class AwsComputeApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Success, list of instances returned", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/instances' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @compute.servers
-		else
-			response = @compute.servers.all(filters)
+    begin
+		  filters = params[:filters]
+  		if(filters.nil?)
+  			response = @compute.servers
+  		else
+  			response = @compute.servers.all(filters)
+  		end
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
 		end
-		[OK, response.to_json]
 	end
 	
     ##~ a = sapi.apis.add
@@ -172,13 +176,17 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, list of availability zones returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/availability_zones' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @compute.describe_availability_zones.body["availabilityZoneInfo"]
-		else
-			response = @compute.describe_availability_zones(filters).body["availabilityZoneInfo"]
+    begin
+  		filters = params[:filters]
+  		if(filters.nil?)
+  			response = @compute.describe_availability_zones.body["availabilityZoneInfo"]
+  		else
+  			response = @compute.describe_availability_zones(filters).body["availabilityZoneInfo"]
+  		end
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
 		end
-		[OK, response.to_json]
 	end
 	
 	#
@@ -197,8 +205,12 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, list of flavors returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/flavors' do
-		response = @compute.flavors
-		[OK, response.to_json]
+    begin
+  		response = @compute.flavors
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
+		end
 	end
 	
 	#
@@ -218,13 +230,17 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, list of security groups returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/security_groups' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @compute.security_groups
-		else
-			response = @compute.security_groups.all(filters)
+		begin
+      filters = params[:filters]
+  		if(filters.nil?)
+  			response = @compute.security_groups
+  		else
+  			response = @compute.security_groups.all(filters)
+  		end
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
 		end
-		[OK, response.to_json]
 	end
 	
 	##~ a = sapi.apis.add
@@ -296,13 +312,17 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, list of key pairs returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/key_pairs' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @compute.key_pairs
-		else
-			response = @compute.key_pairs.all(filters)
+    begin
+  		filters = params[:filters]
+  		if(filters.nil?)
+  			response = @compute.key_pairs
+  		else
+  			response = @compute.key_pairs.all(filters)
+  		end
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
 		end
-		[OK, response.to_json]
 	end
 	
 	##~ a = sapi.apis.add
@@ -369,13 +389,17 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, list of spot requests returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/spot_requests' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @compute.spot_requests
-		else
-			response = @compute.spot_requests.all(filters)
+    begin
+  		filters = params[:filters]
+  		if(filters.nil?)
+  			response = @compute.spot_requests
+  		else
+  			response = @compute.spot_requests.all(filters)
+  		end
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
 		end
-		[OK, response.to_json]
 	end
 	
 	##~ a = sapi.apis.add
@@ -437,13 +461,17 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, history of spot prices returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/spot_prices' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @compute.describe_spot_price_history.body["spotPriceHistorySet"]
-		else
-			response = @compute.describe_spot_price_history(filters).body["spotPriceHistorySet"]
+    begin
+  		filters = params[:filters]
+  		if(filters.nil?)
+  			response = @compute.describe_spot_price_history.body["spotPriceHistorySet"]
+  		else
+  			response = @compute.describe_spot_price_history(filters).body["spotPriceHistorySet"]
+  		end
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
 		end
-		[OK, response.to_json]
 	end
 	
 	##~ a = sapi.apis.add
@@ -485,13 +513,17 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, list of addresses returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/addresses' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @compute.addresses
-		else
-			response = @compute.addresses.all(filters)
+    begin
+  		filters = params[:filters]
+  		if(filters.nil?)
+  			response = @compute.addresses
+  		else
+  			response = @compute.addresses.all(filters)
+  		end
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
 		end
-		[OK, response.to_json]
 	end
 	
 	##~ a = sapi.apis.add
@@ -600,13 +632,17 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, list of reserved instances returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/reserved_instances' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @compute.describe_reserved_instances.body["reservedInstanceSet"]
-		else
-			response = @compute.describe_reserved_instances(filters).body["reservedInstanceSet"]
+    begin
+  		filters = params[:filters]
+  		if(filters.nil?)
+  			response = @compute.describe_reserved_instances.body["reservedInstanceSet"]
+  		else
+  			response = @compute.describe_reserved_instances(filters).body["reservedInstanceSet"]
+  		end
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
 		end
-		[OK, response.to_json]
 	end
 
 	##~ a = sapi.apis.add
@@ -622,13 +658,17 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, list of offerings returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/reserved_instances/describe_offerings' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @compute.describe_reserved_instances_offerings.body["reservedInstancesOfferingsSet"]
-		else
-			response = @compute.describe_reserved_instances_offerings(filters).body["reservedInstancesOfferingsSet"]
+		begin
+      filters = params[:filters]
+  		if(filters.nil?)
+  			response = @compute.describe_reserved_instances_offerings.body["reservedInstancesOfferingsSet"]
+  		else
+  			response = @compute.describe_reserved_instances_offerings(filters).body["reservedInstancesOfferingsSet"]
+  		end
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
 		end
-		[OK, response.to_json]
 	end
 	
 	##~ a = sapi.apis.add
@@ -673,13 +713,17 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, list of VPCs returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/vpcs' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @compute.vpcs
-		else
-			response = @compute.vpcs.all(filters)
+    begin
+  		filters = params[:filters]
+  		if(filters.nil?)
+  			response = @compute.vpcs
+  		else
+  			response = @compute.vpcs.all(filters)
+  		end
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
 		end
-		[OK, response.to_json]
 	end
 	
 	##~ a = sapi.apis.add
@@ -772,13 +816,17 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, list of DHCP options returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/dhcp_options' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @compute.dhcp_options
-		else
-			response = @compute.dhcp_options.all(filters)
+    begin
+  		filters = params[:filters]
+  		if(filters.nil?)
+  			response = @compute.dhcp_options
+  		else
+  			response = @compute.dhcp_options.all(filters)
+  		end
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
 		end
-		[OK, response.to_json]
 	end
 	
 	##~ a = sapi.apis.add
@@ -844,13 +892,17 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, list of internet gateways returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/internet_gateways' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @compute.internet_gateways
-		else
-			response = @compute.internet_gateways.all(filters)
+    begin
+  		filters = params[:filters]
+  		if(filters.nil?)
+  			response = @compute.internet_gateways
+  		else
+  			response = @compute.internet_gateways.all(filters)
+  		end
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
 		end
-		[OK, response.to_json]
 	end
 	
 	##~ a = sapi.apis.add
@@ -955,13 +1007,17 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, list of subnets returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/subnets' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @compute.subnets
-		else
-			response = @compute.subnets.all(filters)
+    begin
+  		filters = params[:filters]
+  		if(filters.nil?)
+  			response = @compute.subnets
+  		else
+  			response = @compute.subnets.all(filters)
+  		end
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
 		end
-		[OK, response.to_json]
 	end
 	
 	##~ a = sapi.apis.add

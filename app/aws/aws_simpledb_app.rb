@@ -38,19 +38,23 @@ class AwsSimpleDBApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   get '/databases' do
-		filters = params[:filters]
-		if(filters.nil?)
-			db_list = @sdb.list_domains.body["Domains"]
-		else
-			db_list = @sdb.list_domains.(filters).body["Domains"]
+    begin
+  		filters = params[:filters]
+  		if(filters.nil?)
+  			db_list = @sdb.list_domains.body["Domains"]
+  		else
+  			db_list = @sdb.list_domains.(filters).body["Domains"]
+  		end
+  		response = []
+  		db_list.each do |t|
+  			domain = @sdb.domain_metadata(t).body
+  			domain = domain.merge({"DomainName" => t})
+  			response << domain
+  		end
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
 		end
-		response = []
-		db_list.each do |t|
-			domain = @sdb.domain_metadata(t).body
-			domain = domain.merge({"DomainName" => t})
-			response << domain
-		end
-		[OK, response.to_json]
 	end
 	
   ##~ a = sapi.apis.add
