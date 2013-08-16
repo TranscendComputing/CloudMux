@@ -6,7 +6,7 @@ Encoding.default_internal = Encoding::UTF_8
 end
 
 gem 'nokogiri'
-gem 'json', '~> 1.6.6'
+gem 'json', '~> 1.7.7'
 gem 'roar', '~> 0.9.1'
 gem 'erubis', '~> 2.7.0'
 gem 'sinatra', '~> 1.3.1'
@@ -34,6 +34,11 @@ gem 'redcarpet', '~> 2.1.0'
 gem 'fog', '1.14.0', :require => 'fog'
 gem 'rb-readline'
 gem 'debugger'
+
+gem "spice"
+#Should use ridley instead of spice, but ridley and mongoid are currently incompatible until mongoid 4.0 release or fixes with Ridley for Boolean class definition.
+#gem "ridley", "~>1.5.0"
+
 
 # Flex support hack - allow _method to be passed as a URL parameter for PUT and DELETE
 gem 'rack-methodoverride-with-params', '~>1.0.0'

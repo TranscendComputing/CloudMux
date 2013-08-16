@@ -20,6 +20,7 @@ require 'app/report_api_app'
 require 'app/news_event_api_app'
 require 'app/root_app'
 require 'app/resource_api_base'
+require 'app/orchestration_api_app'
 require 'app/aws/aws_compute_app'
 require 'app/aws/aws_autoscale_app'
 require 'app/aws/aws_block_storage_app'
@@ -495,4 +496,10 @@ end
 #
 map "/stackstudio/v1/cloud_management/google/compute" do
   run GoogleComputeApp
+end
+#
+#	Puppet/Chef API
+#
+map "/stackstudio/v1/orchestration" do
+  run OrchestrationApiApp
 end

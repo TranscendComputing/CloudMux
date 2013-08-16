@@ -11,6 +11,7 @@ class CloudAccount
   embeds_many :cloud_services
   embeds_many :prices
   embeds_many :cloud_mappings, :as=>:mappable # CloudMapping
+  has_and_belongs_to_many :config_managers
 
   field :name, type:String
   field :url, type:String
