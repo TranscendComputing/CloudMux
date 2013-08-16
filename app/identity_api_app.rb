@@ -165,20 +165,13 @@ class IdentityApiApp < ApiBase
     [CREATED, update_account.to_json]
   end
   
+  #Used to upload P12 Files to Cloud Credential's Cloud Attributes
   post '/:id/:cloud_credential_id/upload_key_pairs' do
-    require "debugger"
-    require "lib/service/model/key_pair"
+    cred = Account.find_cloud_credential(params[:cloud_credential_id])
+    cred.cloud_attributes.merge!(:google_p12_key => Base64.encode64(params['file'][:tempfile].open.read))
+    cred.update_attributes!(cloud_attributes: cred.cloud_attributes)
     
-    #debugger
-    
-    keypair = KeyPair.new(
-      cloud_credential: Account.find_cloud_credential(params[:cloud_credential_id]),
-      name: params['file'][:filename],
-      file: params['file'][:tempfile]
-    )
-    keypair.save!
-    
-    [OK, keypair.to_json]
+    [OK, cred.to_json]
   end
 
   # Register a new key pair for a cloud credential
