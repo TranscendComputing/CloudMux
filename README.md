@@ -18,6 +18,7 @@ Getting Started
 1. Make sure you have ruby installed (greater than 1.9.2) and mongodb.
 
 2. Create a ruby environment file and source with the following contents (edit your mongo user and password):
+
 * STACK_PLACE_SERVICE_ENDPOINT=http://localhost:9292
 * MONGO_URI=mongodb://MONGOUSER:MONGOPASSWORD@localhost:27017
 * RACK_ENV=development
