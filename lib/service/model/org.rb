@@ -8,10 +8,12 @@ class Org
   has_many :accounts, dependent: :delete
   has_many :cloud_accounts, dependent: :delete
   has_many :groups, dependent: :delete
+  has_many :config_managers, dependent: :delete
   embeds_many :subscriptions
   embeds_many :cloud_mappings, :as=>:mappable # CloudMapping
 
   validates_presence_of :name
+
 
   index "subscriptions.subscribers.account_id" # see Account#subscriptions
 

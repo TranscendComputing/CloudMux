@@ -12,4 +12,37 @@ CloudMux currently supports the following clouds:
 
 ![CloudMux Architecture](/docs/CloudMuxArchitecture.png "CloudMux Architecture")
 
+Getting Started
+---------------
+
+1. Make sure you have ruby installed (greater than 1.9.2) and mongodb.
+
+2. Create a ruby environment file and source with the following contents (edit your mongo user and password):
+
+* STACK_PLACE_SERVICE_ENDPOINT=http://localhost:9292
+* MONGO_URI=mongodb://MONGOUSER:MONGOPASSWORD@localhost:27017
+* RACK_ENV=development
+* RAILS_ENV=development
+* export STACK_PLACE_SERVICE_ENDPOINT MONG_URI RACK_ENV RAILS_ENV
+
+	`source cloudmux.env`
+
+3. Install Gem dependencies, cd to the <tt>CloudMux</tt> directory and run (if bundler is not install run `gem install bundler`):
+
+	`bundle install`
+
+3. Seed mongodb, from the <tt>CloudMux</tt> directory run:
+
+	`rake db:seed`
+
+4. You are now ready to host CloudMux. This can simple be started from the <tt>CloudMux</tt> directory by running:
+
+	`sh script/start_cloudmux.sh`
+
+or you can setup through an HTTP server (e.g. Apache w/ Passenger)
+
+
+	
+
+
 
