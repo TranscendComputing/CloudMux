@@ -48,6 +48,7 @@ rackspace = Cloud.find(:first, :conditions=>{ :cloud_provider=>'Rackspace'})
 joyent = Cloud.find(:first, :conditions=>{ :cloud_provider=>'Joyent'})
 cloudstack = Cloud.find(:first, :conditions=>{ :cloud_provider=>'CloudStack'})
 transcend = Cloud.find(:first, :conditions=>{ :cloud_provider=>'Transcend'})
+google = Cloud.find(:first, :conditions=>{ :cloud_provider=>'Google'})
 
 if aws.nil?
 	"Installing Amazon Cloud"
@@ -214,6 +215,20 @@ puts "Updating CloudStack prices"
 cloudstack_account.prices = []
 importer = PricesImporter.new
 importer.import(cloudstack_account)
+
+## Setup google cloud
+if google.nil?
+  puts "Installing Google Cloud"
+	google = Cloud.create!(:name => "Google", :cloud_provider => "Google", :permalink => "google")
+end
+
+google_account = CloudAccount.find(:first, :conditions => { :cloud_id => google.id })
+if google_account.nil?
+  google_account = CloudAccount.create(:name => "Google")
+  google_account.org_id = admin.org_id
+  google_account.cloud_id = google.id
+  google_account.save
+end
 
 # Install the default categories for stacks
 if Category.count == 0
