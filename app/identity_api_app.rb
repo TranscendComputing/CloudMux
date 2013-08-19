@@ -46,7 +46,7 @@ class IdentityApiApp < ApiBase
     		Group.create!(:name => "Test", :description => "default test group", :org => org)
     		Group.create!(:name => "Stage", :description => "default stage group", :org => org)
     		Group.create!(:name => "Production", :description => "default production group", :org => org)
-        aws = Cloud.find(:first, :conditions=>{ :cloud_provider=>'AWS'})
+        aws = Cloud.where(cloud_provider:'AWS').first
         cloud_account = CloudAccount.new(:name => aws.name)
         cloud_account.org = org
         cloud_account.cloud = aws
