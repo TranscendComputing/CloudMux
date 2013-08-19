@@ -17,7 +17,6 @@ require 'app/cloud_api_app'
 require 'app/project_api_app'
 require 'app/provisioning_api_app'
 require 'app/report_api_app'
-require 'app/news_event_api_app'
 require 'app/root_app'
 require 'app/resource_api_base'
 require 'app/orchestration_api_app'
@@ -49,15 +48,12 @@ require 'app/topstack/topstack_queue_app'
 require 'app/topstack/topstack_cache_app'
 require 'app/topstack/topstack_dns_app'
 
-
-
 # By default, Ruby buffers its output to stdout. To take advantage of
 # Heroku's realtime logging, you will need to disable this buffering
 # to have log messages sent straight to Heroku's logging
 # infrastructure
 # http://devcenter.heroku.com/articles/ruby#logging
 $stdout.sync = true
-
 
 # Sinatra now has logging - disable for tests
 configure(:test) { disable :logging }
@@ -181,13 +177,6 @@ end
 #
 map "/stackstudio/v1/report" do
   run ReportApiApp
-end
-
-#
-# News Events API (internal)
-#
-map "/stackstudio/v1/news_events" do
-  run NewsEventApiApp
 end
 
 #
