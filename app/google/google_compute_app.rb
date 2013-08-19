@@ -260,6 +260,18 @@ class GoogleComputeApp < ResourceApiBase
 	end
   
   #
+  #Firewalls
+  #
+	get '/firewalls' do
+    begin
+      response = @compute.list_firewalls
+  		[OK, response.body["items"].to_json]
+    rescue => error
+				handle_error(error)
+		end
+	end
+  
+  #
   #Snapshots
   #
 	get '/snapshots' do
