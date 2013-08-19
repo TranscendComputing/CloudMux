@@ -79,17 +79,10 @@ GEM
       multi_json (~> 1.0)
       multi_xml
     i18n (0.6.5)
-<<<<<<< HEAD
-    json (1.6.8)
-    json (1.6.8-java)
-    jwt (0.1.8)
-      multi_json (>= 1.5)
-=======
     json (1.7.7)
     json (1.7.7-java)
     jwt (0.1.6)
       multi_json (>= 1.0)
->>>>>>> 32a0b8caf273b1c295d0836e894bc78bd4a0fae4
     launchy (2.3.0)
       addressable (~> 2.3)
     mime-types (1.24)

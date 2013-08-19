@@ -215,6 +215,15 @@ class GoogleComputeApp < ResourceApiBase
 		end
 	end
   
+	delete '/disks/:id' do
+    begin
+  		response = @compute.delete_disk(params[:id],params[:region])
+  		[OK, response.body["items"].to_json]
+    rescue => error
+				handle_error(error)
+		end
+	end
+  
   #
   #Networks
   #
