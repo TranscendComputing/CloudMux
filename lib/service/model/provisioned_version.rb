@@ -15,14 +15,14 @@ class ProvisionedVersion
   field :environment, type:String
   field :version, type:String
 
-  index([ [ :project_id, Mongo::ASCENDING ],  [ :version, Mongo::ASCENDING ],  [ :environment, Mongo::ASCENDING ] ])
+  index({project_id:1, version:1, environment:1})
 
   validates_presence_of :stack_name
   validates_presence_of :environment
   validates_presence_of :version
 
   def self.find_for_project(project_id, version, env)
-    self.find(:first, :conditions=>{ :project_id=>project_id, :version=>version, :environment=>env })
+    ProjectVersion.and({project_id:project_id}, {version:version},{environment:env}).first
   end
 
   def find_instance(instance_id)

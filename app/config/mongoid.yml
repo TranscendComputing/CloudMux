@@ -1,10 +1,17 @@
 development:
-    host: localhost
-    database: stack_place_development
+    sessions:
+        default:
+            database: stack_place_development
+            hosts:
+            - localhost:27017
 
 test:
-    host: localhost
-    database: stack_place_test
-
+    sessions:
+        default:
+            database: stack_place_test
+            hosts:
+            - localhost:27017
 production:
-    uri: <%= ENV['MONGO_URI'] || ENV['MONGOLAB_URI'] %>
+    sessions:
+        default:
+            uri: <%= ENV['MONGO_URI'] || ENV['MONGOLAB_URI'] %>

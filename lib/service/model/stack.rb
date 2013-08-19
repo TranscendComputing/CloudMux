@@ -11,7 +11,7 @@ class Stack
   field :support_details, type:String
   field :license_agreement, type:String
   field :image_name, type:String
-  field :image_data, type:Binary
+  field :image_data, type:Moped::BSON::Binary
   field :permalink, type:String
   field :public, type:Boolean, default: false
   field :downloads, type:Integer, default: 0
@@ -20,11 +20,11 @@ class Stack
   belongs_to :category
   has_many :templates
 
-  index :public
-  index :permalink, :unique=>true
-  index([ [ :permalink, Mongo::ASCENDING ], [ :public, Mongo::ASCENDING ] ])
-  index([[:created_at, Mongo::DESCENDING]])
-  index :category
+  index({public:1})
+  index({permalink:1}, {unique:true})
+  index({permalink:1, public:1})
+  index({created_at:-1})
+  index({category:1})
 
   # Validation Rules
   validates_presence_of :name
@@ -33,7 +33,7 @@ class Stack
 
   def self.find_by_permalink(perma)
     return nil if perma.nil? or perma.empty?
-    return self.find(:first, :conditions=>{ :permalink=>perma})
+    return self.find(permalink=>perma)
   end
 
   def set_permalink

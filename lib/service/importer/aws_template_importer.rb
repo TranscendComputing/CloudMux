@@ -12,13 +12,13 @@ class AwsTemplateImporter
       log "Processing heading: #{heading}"
       if heading == "Recently added samples" or heading == "Template Features" or heading == "Compute Cluster" or heading == "Getting Started" or heading == "Templates for Whitepapers"
         # sample code category
-        cat = Category.find(:first, :conditions=>{ :name=>"Sample Code"})
+        cat = Category.find_by(name:"Sample Code")
       elsif heading == "Open Source Applications"
         # application category
-        cat = Category.find(:first, :conditions=>{ :name=>"Application"})
+        cat = Category.find_by(name:"Application")
       elsif heading == "Application Framework Examples"
         # platform category
-        cat = Category.find(:first, :conditions=>{ :name=>"Platform"})
+        cat = Category.find_by(name:"Platform")
       else
         log " skipping - category not found"
         next

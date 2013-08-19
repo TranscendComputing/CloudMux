@@ -27,8 +27,8 @@ class ProjectVersion
   embeds_many :embedded_projects
 
   # Indexes
-  index :status
-  index([ [ :project_id, Mongo::ASCENDING ],  [ :version, Mongo::ASCENDING ] ])
+  index({status:1})
+  index({project_id:1, version:1})
   
   # Validation Rules
   validate :validate_version_active
@@ -56,7 +56,7 @@ class ProjectVersion
   end
 
   def self.find_for_project(project_id, version_id)
-    self.find(:first, :conditions=>{ :project_id=>project_id.to_s, :version=>version_id.to_s})
+    self.and({version:version_id.to_s},{project_id:project_id.to_s}).first
   end
 
   def find_element(element_id)

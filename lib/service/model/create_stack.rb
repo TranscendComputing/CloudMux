@@ -27,7 +27,7 @@ class CreateStack
       return true
     rescue Mongoid::Errors::DocumentNotFound
       errors.add(:account_id, "not found")
-    rescue BSON::InvalidObjectId
+    rescue Moped::BSON::InvalidObjectId
       errors.add(:account_id, "invalid")
     end
     return false
@@ -39,7 +39,7 @@ class CreateStack
       return true
     rescue Mongoid::Errors::DocumentNotFound
       errors.add(:template_id, "not found")
-    rescue BSON::InvalidObjectId
+    rescue Moped::BSON::InvalidObjectId
       errors.add(:template_id, "invalid")
     end
     return false
@@ -54,7 +54,7 @@ class CreateStack
       end
       return true
     rescue Mongoid::Errors::DocumentNotFound
-    rescue BSON::InvalidObjectId
+    rescue Moped::BSON::InvalidObjectId
     end
     return false
   end
@@ -65,7 +65,7 @@ class CreateStack
       return true
     rescue Mongoid::Errors::DocumentNotFound
       errors.add(:category_id, "not found")
-    rescue BSON::InvalidObjectId
+    rescue Moped::BSON::InvalidObjectId
       errors.add(:category_id, "invalid")
     end
     return false

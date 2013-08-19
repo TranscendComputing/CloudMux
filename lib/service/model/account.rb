@@ -33,8 +33,8 @@ class Account
   field :num_logins, type:Integer, default:0
 
   # indexes
-  index :login, unique: true
-  index "cloud_credentials._id"
+  index({login:1}, {unique:true})
+  index "cloud_credentials._id" => 1
 
   # Validation Rules
   validates_presence_of :login
@@ -46,13 +46,13 @@ class Account
 
   def self.find_by_login(login)
     return nil if login.nil? or login.empty?
-    return Account.find(:first, :conditions=>{ :login=>login}) || Account.find(:first, :conditions=>{ :email=>login})
+    return Account.find_by(login:login) || Account.find_by(email:login)
   end
 
   # finds the account that contains the cloud credentials and returns it
   def self.find_cloud_credential(cloud_credential_id)
     return nil if cloud_credential_id.nil?
-    account = Account.where({"cloud_credentials._id"=>BSON::ObjectId.from_string(cloud_credential_id.to_s)}).first
+    account = Account.where({"cloud_credentials._id"=>Moped::BSON::ObjectId.from_string(cloud_credential_id.to_s)}).first
     (account.nil? ? nil : account.cloud_credential(cloud_credential_id))
   end
 

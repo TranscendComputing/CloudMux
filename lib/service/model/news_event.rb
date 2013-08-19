@@ -11,7 +11,7 @@ class NewsEvent
   field :source, type:String
   field :posted, type:Date
 
-  index :url, :unique=>true
+  index({url:1}, {unique:true})
 
   # Validation Rules
   validates_presence_of :description

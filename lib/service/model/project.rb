@@ -51,11 +51,11 @@ class Project
   has_many :provisioned_versions, dependent: :delete
 
   # indexes
-  index :project_type
-  index :owner
-  index :status
-  index "members.account_id"
-  index "group_projects.group.group_memberships.account_id"
+  index({project_type:1})
+  index({owner:1})
+  index({status:1})
+  index "members.account_id" =>1
+  index "group_projects.group.group_memberships.account_id" => 1
 
   # Validation Rules
   validates_presence_of :name
@@ -214,7 +214,7 @@ class Project
   end
 
   def current_version
-    ProjectVersion.find(:first, :conditions=>{ :project_id=>self.id, :version=>ProjectVersion::CURRENT })
+    ProjectVersion.and({version:ProjectVersion::CURRENT},{project_id:self.id}).first
   end
 
   def freeze!(new_version, current_version_number)
@@ -222,7 +222,7 @@ class Project
     new_version.versionable = self
     new_version.save!
     # clone the current ProjectVersion and assign the new version number, leaving the ObjectIds the same for embedded documents
-    version_to_freeze = ProjectVersion.find(:first, :conditions=>{ :project_id=>self.id, :version=>current_version_number })
+    version_to_freeze = ProjectVersion.and({version:current_version_number},{project_id:self.id}).first
     cloned = version_to_freeze.dup
     cloned.version = new_version.number
     cloned.project = self

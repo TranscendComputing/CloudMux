@@ -15,7 +15,7 @@ class Org
   validates_presence_of :name
 
 
-  index "subscriptions.subscribers.account_id" # see Account#subscriptions
+  index "subscriptions.subscribers.account_id" => 1# see Account#subscriptions
 
   # -- Subscription support
 
