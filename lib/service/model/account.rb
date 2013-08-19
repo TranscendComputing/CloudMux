@@ -46,7 +46,7 @@ class Account
 
   def self.find_by_login(login)
     return nil if login.nil? or login.empty?
-    return Account.find_by(login:login) || Account.find_by(email:login)
+    return Account.where(login:login).first || Account.where(email:login).first
   end
 
   # finds the account that contains the cloud credentials and returns it
