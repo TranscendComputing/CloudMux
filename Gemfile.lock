@@ -40,7 +40,7 @@ GEM
       activesupport (>= 3.0.0)
     faraday (0.8.8)
       multipart-post (~> 1.2.0)
-    fog (1.14.0)
+    fog (1.15.0)
       builder
       excon (~> 0.25.0)
       formatador (~> 0.2.0)
@@ -173,7 +173,7 @@ DEPENDENCIES
   debugger
   erubis (~> 2.7.0)
   factory_girl (~> 3.0.0)
-  fog (= 1.14.0)
+  fog (= 1.15.0)
   foreman
   google-api-client
   heroku

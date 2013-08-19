@@ -103,7 +103,7 @@ class GoogleComputeApp < ResourceApiBase
   
 	delete '/instances/:id' do
 		begin
-			response = @compute.servers.get(params[:id]).destroy
+			response = @compute.delete_server(params[:id],params[:region])
 			[OK, response.to_json]
 		rescue => error
 			handle_error(error)
@@ -218,7 +218,7 @@ class GoogleComputeApp < ResourceApiBase
 	delete '/disks/:id' do
     begin
   		response = @compute.delete_disk(params[:id],params[:region])
-  		[OK, response.body["items"].to_json]
+  		[OK, response.to_json]
     rescue => error
 				handle_error(error)
 		end
@@ -247,6 +247,27 @@ class GoogleComputeApp < ResourceApiBase
 			rescue => error
 				handle_error(error)
 			end
+		end
+	end
+  
+	delete '/networks/:id' do
+    begin
+  		response = @compute.delete_network(params[:id])
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
+		end
+	end
+  
+  #
+  #Snapshots
+  #
+	get '/snapshots' do
+    begin
+      response = @compute.list_snapshots
+  		[OK, response.body["items"].to_json]
+    rescue => error
+				handle_error(error)
 		end
 	end
 
