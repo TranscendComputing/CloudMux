@@ -38,10 +38,41 @@ class OrchestrationApiApp < ApiBase
         [OK, cookbooks.to_json]
     end
 
-    get '/chef/recipes/:name/:version' do
+    get '/chef/cookbooks/:name/:version' do
         recipes = @chef.get_recipes(params[:name], params[:version])
         [OK, recipes.to_json]
     end
+
+    get '/chef/environments' do
+        environments = @chef.get_environments();
+        [OK, environments.to_json]
+    end
+
+    get '/chef/environments/:env_name' do
+        env = @chef.get_environment(params[:env_name])
+        [OK, env.to_json]
+    end
+
+    get '/chef/roles' do
+        roles = @chef.get_roles();
+        [OK, roles.to_json]
+    end
+
+    get '/chef/roles/:role_name' do
+        role = @chef.get_role(params[:role_name]);
+        [OK, role.to_json]
+    end
+
+    get '/chef/nodes' do
+        nodes = @chef.get_nodes()
+        [OK, nodes.to_json]
+    end
+
+    get '/chef/nodes/:node_name' do
+        node = @chef.get_node(params[:node_name])
+        [OK, node.to_json]
+    end
+
     # get '/' do
     #     all = {};
     #     all["puppet"] = @puppet.list_module_resources
