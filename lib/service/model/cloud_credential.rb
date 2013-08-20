@@ -33,11 +33,6 @@ class CloudCredential
   end
   def topstack_enabled=(name); end # no-op: for the representer only
   
-  #def cloud_attributes
-  #  if cloud_account.cloud = openstack
-  #  cloud_attributes.merge({auth_url:dfsgsdgh})
-  #end
-  
   def topstack_id
   	(cloud_account.nil? ? nil : cloud_account.topstack_id)
   end

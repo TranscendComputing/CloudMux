@@ -58,7 +58,12 @@ class Account
 
   # filters the embedded cloud accounts by ID
   def cloud_credential(cloud_credential_id)
-    self.cloud_credentials.select { |ca| ca.id.to_s == cloud_credential_id.to_s }.first
+    cred = self.cloud_credentials.select { |ca| ca.id.to_s == cloud_credential_id.to_s }.first
+    #If openstack, merge the cloud_account's url to cloud_attributes hash
+    if ! cred.cloud_account.url.nil?
+      cred.cloud_attributes.merge!({"openstack_auth_url" => cred.cloud_account.url})
+    end
+    return cred
   end
 
   # sets the country for the account based on the country code (Representer support)
