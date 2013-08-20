@@ -83,8 +83,6 @@ class GoogleComputeApp < ResourceApiBase
             :image_name => json_body["instance"]["image_name"],
             :machine_type => json_body["instance"]["machine_type"],
             :zone_name => json_body["instance"]["zone_name"],
-            #:private_key_path => File.expand_path("app/google/key/id_rsa"),
-            #:public_key_path => File.expand_path("app/google/key/id_rsa.pub"),
             :private_key_path => File.expand_path("id_rsa"),
             :public_key_path => File.expand_path("id_rsa.pub"),
             :user => ENV['USER'],
@@ -282,6 +280,15 @@ class GoogleComputeApp < ResourceApiBase
 			rescue => error
 				handle_error(error)
 			end
+		end
+	end
+  
+	delete '/firewalls/:id' do
+    begin
+  		response = @compute.delete_firewall(params[:id])
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
 		end
 	end
   
