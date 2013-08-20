@@ -271,6 +271,20 @@ class GoogleComputeApp < ResourceApiBase
 		end
 	end
   
+	post '/firewalls' do
+		json_body = body_to_json(request)
+		if(json_body.nil?)
+			[BAD_REQUEST]
+		else
+			begin
+        firewall = @compute.insert_firewall(json_body["firewall"]["firewall_name"],json_body["firewall"]["source_range"],json_body["firewall"]["allowed"],json_body["firewall"]["network"])
+        [OK, firewall.to_json]
+			rescue => error
+				handle_error(error)
+			end
+		end
+	end
+  
   #
   #Snapshots
   #
