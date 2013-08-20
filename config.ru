@@ -19,7 +19,6 @@ require 'app/provisioning_api_app'
 require 'app/report_api_app'
 require 'app/root_app'
 require 'app/resource_api_base'
-require 'app/orchestration_api_app'
 require 'app/aws/aws_compute_app'
 require 'app/aws/aws_autoscale_app'
 require 'app/aws/aws_block_storage_app'
@@ -47,6 +46,8 @@ require 'app/topstack/topstack_rds_app'
 require 'app/topstack/topstack_queue_app'
 require 'app/topstack/topstack_cache_app'
 require 'app/topstack/topstack_dns_app'
+require 'app/orchestration/config_managers_api_app'
+require 'app/orchestration/chef_api_app'
 
 # By default, Ruby buffers its output to stdout. To take advantage of
 # Heroku's realtime logging, you will need to disable this buffering
@@ -487,8 +488,16 @@ map "/stackstudio/v1/cloud_management/google/compute" do
   run GoogleComputeApp
 end
 #
-#	Puppet/Chef API
+#	Configuration Managers API
 #
-map "/stackstudio/v1/orchestration" do
-  run OrchestrationApiApp
+map "/stackstudio/v1/orchestration/managers" do
+  run ConfigManagerApiApp
 end
+
+#
+# Chef Management API
+#
+map "/stackstudio/v1/orchestration/chef" do
+  run ChefApiApp
+end
+
