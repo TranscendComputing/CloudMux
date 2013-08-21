@@ -34,6 +34,7 @@ require 'app/aws/aws_iam_app'
 require 'app/aws/aws_queue_app'
 require 'app/aws/aws_simpledb_app'
 require 'app/google/google_compute_app'
+require 'app/google/google_object_storage_app'
 require 'app/openstack/openstack_compute_app'
 require 'app/openstack/openstack_block_storage_app'
 require 'app/openstack/openstack_object_storage_app'
@@ -487,6 +488,14 @@ end
 map "/stackstudio/v1/cloud_management/google/compute" do
   run GoogleComputeApp
 end
+
+#
+# Google Cloud Storage API
+#
+map "/stackstudio/v1/cloud_management/google/object_storage" do
+  run GoogleObjectStorageApp
+end
+
 #
 #	Configuration Managers API
 #

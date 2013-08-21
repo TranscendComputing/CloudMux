@@ -1,7 +1,5 @@
 require 'sinatra'
 require 'fog'
-require 'tempfile'
-require "debugger"
 
 class GoogleComputeApp < ResourceApiBase
   
@@ -114,7 +112,7 @@ class GoogleComputeApp < ResourceApiBase
 	get '/images' do
     begin
   		response = @compute.list_images
-      debugger
+      #debugger
   		[OK, response.to_json]
     rescue => error
 				handle_error(error)
