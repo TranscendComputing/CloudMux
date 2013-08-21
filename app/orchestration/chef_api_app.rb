@@ -66,9 +66,17 @@ class ChefApiApp < ApiBase
     end
 
     put '/nodes/:node_name' do
-        node = @chef.get_node(params[:node_name])
-        body = request.body.read
-        updated_node = @chef.update_node(params[:node_name], body)
-        [OK, updated_node.to_json]
+        begin
+            updated_node = @chef.update_runlist(params[:node_name], request.body.read)
+            [OK, updated_node.to_json]
+        rescue MultiJson::DecodeError
+            message= Error.new.extend(ErrorRepresenter)
+            message.message = "Can only add role[] or recipe[] to run list."
+            [BAD_REQUEST, message.to_json]
+        rescue Spice::Error::NotFound => error
+            message = Error.new.extend(ErrorRepresenter)
+            message.message = error.message
+            [BAD_REQUEST, message.to_json]
+        end
     end
 end
