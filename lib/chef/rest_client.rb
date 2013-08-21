@@ -33,12 +33,14 @@ class Chef
         def get_recipes(cookbook_name, cookbook_version)
             cookbook = get_cookbook(cookbook_name, cookbook_version)
             recipes = []
+            recipes_metadata = cookbook["metadata"]["recipes"]
             cookbook["recipes"].each{|recipe|
                 recipe_name = recipe["name"].chomp(".rb")
                 if(recipe_name == "default")
-                    recipes.unshift(cookbook_name);
+                    recipes.unshift({:name=> cookbook_name, :description=>recipes_metadata[cookbook_name]});
                 else
-                    recipes << cookbook_name + "::" + recipe["name"].chomp(".rb")
+                    full_name = cookbook_name + "::" + recipe_name
+                    recipes << {:name=>full_name, :description=> recipes_metadata[full_name]} 
                 end
             }
             return recipes
