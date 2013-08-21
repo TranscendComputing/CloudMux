@@ -32,7 +32,16 @@ class Chef
 
         def get_recipes(cookbook_name, cookbook_version)
             cookbook = get_cookbook(cookbook_name, cookbook_version)
-            return cookbook.metadata["recipes"]
+            recipes = []
+            cookbook["recipes"].each{|recipe|
+                recipe_name = recipe["name"].chomp(".rb")
+                if(recipe_name == "default")
+                    recipes.unshift(cookbook_name);
+                else
+                    recipes << cookbook_name + "::" + recipe["name"].chomp(".rb")
+                end
+            }
+            return recipes
         end
 
         def get_environments()
