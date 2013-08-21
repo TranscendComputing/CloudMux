@@ -79,7 +79,7 @@ class GoogleObjectStorageApp < ResourceApiBase
 		else
 			begin
 				#response = @object_storage.get_object(directory, file, options).body
-                response = @object_storage.directories.get(directory).files.get(URI.escape(file))
+                response = @object_storage.directories.get(directory).files.get(file)
 				headers["Content-disposition"] = "attachment; filename=" + file
 				[OK, response]
 			rescue => error
