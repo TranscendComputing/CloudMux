@@ -112,9 +112,7 @@ class GoogleComputeApp < ResourceApiBase
   #
 	get '/images' do
     begin
-  		#response = @compute.list_images
       response = @compute.images.all
-      debugger
   		[OK, response.to_json]
     rescue => error
 				handle_error(error)
