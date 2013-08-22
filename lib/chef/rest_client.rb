@@ -64,7 +64,7 @@ class Chef
         end
 
         def get_nodes()
-            return @rest.nodes();
+            return @rest.get("/nodes/")
         end
 
         def get_node(node_name)
