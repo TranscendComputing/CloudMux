@@ -94,17 +94,12 @@
 	
 	<target name="deploy" depends="bundle, make-docs, package">
         <echo message="Deploying CloudMux to ${deploy.ip}"/>
-		<echo message="scp ${build}/${package.file} ${deploy.ip}:/${cloudmux.home}"/>
 		<exec command="scp ${build}/${package.file} ${deploy.ip}:/${cloudmux.home}" failonerror="true"/>
-        <exec command="ssh ${deploy.ip} sudo rm -r ${cloudmux.home}/CloudMux" failonerror="true"/>
-		<exec command="ssh ${deploy.ip} sudo tar xvzf ${cloudmux.home}/${package.file} -C ${cloudmux.home}" failonerror="true"/>
-		<exec command="ssh ${deploy.ip} sudo chmod 755 ${cloudmux.home}/CloudMux" failonerror="true"/>
-		<exec command="ssh ${deploy.ip} sudo find ${cloudmux.home}/CloudMux -type d -exec chmod 755 {} \;" failonerror="true"/>
-        <exec command="ssh ${deploy.ip} sudo find ${cloudmux.home}/CloudMux -type f -exec chmod 644 {} \;" failonerror="true"/>
-        <exec command="ssh ${deploy.ip} sudo chown -R cloudmux:cloudmux ${cloudmux.home}/CloudMux" failonerror="true"/>
-        <exec command="ssh ${deploy.ip} '. /etc/profile.d/rvm.sh; rvm use 1.9.3; . /usr/local/etc/stack.env; bundle install --gemfile=${cloudmux.home}/CloudMux/Gemfile --without development test --path ${cloudmux.home}/stack-core'" failonerror="true"/>
-		<exec command="ssh ${deploy.ip} '. /etc/profile.d/rvm.sh; rvm use 1.9.3; . /usr/local/etc/stack.env; cd ${cloudmux.home}/CloudMux; bundle exec rake db:seed'" failonerror="true"/>
-        <exec command="ssh ${deploy.ip} sudo /etc/init.d/apache2 restart" failonerror="true"/>
+        <exec command="ssh ${deploy.ip} rm -r ${cloudmux.home}/CloudMux" failonerror="true"/>
+		<exec command="ssh ${deploy.ip} tar xvzf ${cloudmux.home}/${package.file} -C ${cloudmux.home}" failonerror="true"/>
+        <exec command="ssh ${deploy.ip} '. /etc/profile.d/rvm.sh; . /usr/local/etc/stack.env; cd ${cloudmux.home}/CloudMux; bundle install'" failonerror="true"/>
+		<exec command="ssh ${deploy.ip} '. /etc/profile.d/rvm.sh; . /usr/local/etc/stack.env; cd ${cloudmux.home}/CloudMux; bundle exec rake db:seed'" failonerror="true"/>
+		<exec command="ssh ${deploy.ip} sudo service apache2 restart" failonerror="true"/>
 	</target>
 
 	<target name="deployprod" depends="bundle, make-docs, package">
