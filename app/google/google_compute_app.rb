@@ -125,8 +125,11 @@ class GoogleComputeApp < ResourceApiBase
 			[BAD_REQUEST]
 		else
 			begin
-        debugger
+        #json_body["image"].symbolize_keys!
+        #json_body["image"][:raw_disk].symbolize_keys!
 				response = @compute.images.create(json_body["image"])
+        response.reload
+        #debugger
 				[OK, response.to_json]
 			rescue => error
 				handle_error(error)
