@@ -94,12 +94,12 @@
 	
 	<target name="deploy" depends="bundle, make-docs, package">
         <echo message="Deploying CloudMux to ${deploy.ip}"/>
-		<exec command="scp ${build}/${package.file} ${deploy.ip}:/${cloudmux.home}" failonerror="true"/>
-        <exec command="ssh ${deploy.ip} rm -r ${cloudmux.home}/CloudMux" failonerror="true"/>
-		<exec command="ssh ${deploy.ip} tar xvzf ${cloudmux.home}/${package.file} -C ${cloudmux.home}" failonerror="true"/>
-        <exec command="ssh ${deploy.ip} '. /etc/profile.d/rvm.sh; . /usr/local/etc/stack.env; cd ${cloudmux.home}/CloudMux; bundle install'" failonerror="true"/>
-		<exec command="ssh ${deploy.ip} '. /etc/profile.d/rvm.sh; . /usr/local/etc/stack.env; cd ${cloudmux.home}/CloudMux; bundle exec rake db:seed'" failonerror="true"/>
-		<exec command="ssh ${deploy.ip} sudo service apache2 restart" failonerror="true"/>
+		<exec command="scp ${build}/${package.file} cloudmux@${deploy.ip}:/${cloudmux.home}" failonerror="true"/>
+        <exec command="ssh cloudmux@${deploy.ip} rm -r ${cloudmux.home}/CloudMux" failonerror="true"/>
+		<exec command="ssh cloudmux@${deploy.ip} tar xvzf ${cloudmux.home}/${package.file} -C ${cloudmux.home}" failonerror="true"/>
+        <exec command="ssh cloudmux@${deploy.ip} '. /etc/profile.d/rvm.sh; . /usr/local/etc/stack.env; cd ${cloudmux.home}/CloudMux; bundle install'" failonerror="true"/>
+		<exec command="ssh cloudmux@${deploy.ip} '. /etc/profile.d/rvm.sh; . /usr/local/etc/stack.env; cd ${cloudmux.home}/CloudMux; bundle exec rake db:seed'" failonerror="true"/>
+		<exec command="ssh cloudmux@${deploy.ip} sudo service apache2 restart" failonerror="true"/>
 	</target>
 
 	<target name="deployprod" depends="bundle, make-docs, package">
