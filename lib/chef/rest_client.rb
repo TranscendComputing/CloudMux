@@ -64,11 +64,25 @@ class Chef
         end
 
         def get_nodes()
-            return @rest.get("/nodes/")
+            nodes = @rest.get("/nodes/")
+            return nodes
         end
 
         def get_node(node_name)
             return @rest.node(node_name)
+        end
+
+        def find_node(name)
+            # node = @rest.nodes(:q => "name:"+ name + " OR " +
+            #     "hostname:"+ name + " OR " + 
+            #     "fqdn:"+ fqdn + " OR " +  
+            #     "ipaddress:"+ipaddress)
+            nodes = @rest.get("/nodes/");
+            if(nodes[name])
+                return get_node(name)
+            else
+                return nil;
+            end
         end
 
         def update_runlist(node_name, data)

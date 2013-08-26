@@ -59,7 +59,23 @@ class ChefApiApp < ApiBase
         nodes = @chef.get_nodes()
         [OK, nodes.to_json]
     end
-
+    get '/nodes/find' do
+        name = params[:name];
+        if(!name)
+            message = Error.new.extend(ErrorRepresenter)
+            message.message = "Must supply the name parameter"
+            [BAD_REQUEST, message.to_json]
+        else
+            node = @chef.find_node(name);
+            if(node)
+                [OK, node.to_json]
+            else
+                message = Error.new.extend(ErrorRepresenter)
+                message.message = "Could not find node."
+                [NOT_FOUND, message.to_json]
+            end
+        end
+    end
     get '/nodes/:node_name' do
         node = @chef.get_node(params[:node_name])
         [OK, node.to_json]
@@ -79,4 +95,5 @@ class ChefApiApp < ApiBase
             [BAD_REQUEST, message.to_json]
         end
     end
+    
 end
