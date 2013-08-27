@@ -8,5 +8,6 @@ module GroupRepresenter
   property :name
   property :description
   property :org_id
+  property :group_policy, :class=>GroupPolicy, :extend=>GroupPolicyRepresenter
   collection :group_memberships, :class=>GroupMembership, :extend=>GroupMembershipRepresenter
 end

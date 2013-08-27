@@ -11,6 +11,7 @@ require 'app/account_api_app'
 require 'app/stack_api_app'
 require 'app/identity_api_app'
 require 'app/org_api_app'
+require 'app/policy_api_app'
 require 'app/category_api_app'
 require 'app/cloud_account_api_app'
 require 'app/cloud_api_app'
@@ -121,6 +122,13 @@ end
 #
 map "/identity/v1/orgs" do
   run OrgApiApp
+end
+
+#
+# Identity Policies API (internal)
+#
+map "/identity/v1/policies" do
+  run PolicyApiApp
 end
 
 #
