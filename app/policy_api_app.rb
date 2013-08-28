@@ -5,8 +5,8 @@ class PolicyApiApp < ApiBase
     
     # Fetch Policies
     get '/' do
-        if ! params[:cred_id].nil?
-            policies = find_group_policies(params[:cred_id])
+        if ! params[:org_id].nil?
+            policies = find_group_policies(params[:org_id])
             [OK, policies.to_json]
         else
             [BAD_REQUEST]
@@ -76,9 +76,8 @@ class PolicyApiApp < ApiBase
         return rules
     end
     
-    def find_group_policies(cred_id)
-        o_id = find_account(cred_id).org_id
-        GroupPolicy.where(org_id: o_id).entries
+    def find_group_policies(org_id)
+        GroupPolicy.where(org_id: org_id).entries
     end
     
     def find_groups(cred_id)
