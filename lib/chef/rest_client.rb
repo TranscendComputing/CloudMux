@@ -10,6 +10,7 @@ class Chef
                 s.server_url  = url
                 s.client_name = client_name
                 s.client_key   = key
+                s.connection_options = {:ssl => {:verify => false}}
             end
             @rest = Spice::Connection.new
         end
