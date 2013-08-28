@@ -3,7 +3,7 @@ class PolicyRule
   include Mongoid::Document
   include Mongoid::Timestamps
 
-  has_many :group_policies
+  has_and_belongs_to_many :group_policies
   
   field :who, type:String
   field :what, type:String
