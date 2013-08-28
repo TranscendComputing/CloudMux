@@ -11,8 +11,11 @@ class ChefApiApp < ApiBase
             cloud_acc = CloudAccount.find(params[:account_id]);
             chef_config = cloud_acc.config_managers.select {|c| c["type"] == "chef"}[0]
             if(chef_config)
-                chef_url = chef_config.protocol + "://" + chef_config.host + ":" + chef_config.port;
-                @chef = Chef::RestClient.new(chef_url, chef_config.auth_properties["node_name"], chef_config.auth_properties["key"]);
+                chef_url = chef_config.protocol + "://" + chef_config.host
+                if(!(chef_config.port != "" && chef_config.port != nil && chef_config.protocol == "https"))
+                    chef_url.concat(":" + chef_config.port)
+                end
+                @chef = Chef::RestClient.new(chef_url, chef_config.auth_properties["client_name"], chef_config.auth_properties["key"]);
             else
                 message= Error.new.extend(ErrorRepresenter)
                 message.message = "Must configure a Chef server with the cloud account."
