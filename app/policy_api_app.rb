@@ -13,6 +13,16 @@ class PolicyApiApp < ApiBase
         end
     end
     
+    # Fetch Rules
+    get '/rules' do
+        if ! params[:group_policy_id].nil?
+            rules = GroupPolicy.find(params[:group_policy_id]).policy_rules
+            [OK, rules.to_json]
+        else
+            [BAD_REQUEST]
+        end
+    end
+    
     #Create Policy
     post '/' do
         policy_json = body_to_json(request)
@@ -30,7 +40,7 @@ class PolicyApiApp < ApiBase
     post '/rules' do
         rule_json = body_to_json(request)
         if ! rule_json.nil? && ! rule_json["name"].nil?
-            pr = PolicyRule.new(name: rule_json["name"])
+            pr = PolicyRule.new(name: rule_json["name"], who: rule_json["who"], what: rule_json["what"], action: rule_json["action"])
             pr.save!
             gp = GroupPolicy.find(rule_json["group_policy_id"])
             gp.policy_rules << pr
