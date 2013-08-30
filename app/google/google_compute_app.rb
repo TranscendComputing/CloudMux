@@ -11,7 +11,7 @@ class GoogleComputeApp < ResourceApiBase
        
         p12_file = Base64.decode64(cloud_cred.cloud_attributes['google_p12_key'])
         file = File.new('googlecompute.p12','w+')
-        file.puts(p12_file)
+        file.puts(p12_file.force_encoding("UTF-8"))
         file.close
        
         @compute = Fog::Compute::Google.new({
