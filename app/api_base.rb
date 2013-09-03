@@ -49,6 +49,19 @@ class ApiBase < Sinatra::Base
     response["Access-Control-Allow-Headers"] = "origin, x-requested-with, content-type, X-HTTP-Method-Override"
   end
 
+  def body_to_json(request)
+    if(!request.content_length.nil? && request.content_length != "0")
+      begin
+        json_body = MultiJson.decode(request.body.read)
+        return json_body
+      rescue
+        return nil
+      end
+    else
+      return nil
+    end
+  end
+
   # TODO: not sure if this is required for production
   # not_found do
   #   '{"error":{"message":"Not found","validation_errors":{}}}'

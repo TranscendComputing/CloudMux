@@ -1,76 +1,34 @@
-#
-# Represents an architectural stack, including templates and other
-# artifacts necessary to define and compose the stack
-#
 class Stack
-  # Mongoid Mappings
-  include Mongoid::Document
-  include Mongoid::Timestamps
-  field :name, type:String
-  field :description, type:String
-  field :support_details, type:String
-  field :license_agreement, type:String
-  field :image_name, type:String
-  field :image_data, type:Moped::BSON::Binary
-  field :permalink, type:String
-  field :public, type:Boolean, default: false
-  field :downloads, type:Integer, default: 0
-  field :resource_groups, type:Array, default: []
-  belongs_to :account
-  belongs_to :category
-  has_many :templates
+    # Mongoid Mappings
+    include Mongoid::Document
+    include Mongoid::Timestamps
+  
+    belongs_to :account, :foreign_key => 'account_id'
+    field :name, type:String
+    field :description, type:String
+    field :compatible_clouds, type:Array, default: []
+    field :template, type:String
 
-  index({public:1})
-  index({permalink:1}, {unique:true})
-  index({permalink:1, public:1})
-  index({created_at:-1})
-  index({category:1})
+    # Validation Rules
+    validates_presence_of :name
+    validate :must_be_valid_json
 
-  # Validation Rules
-  validates_presence_of :name
-
-  before_save :set_permalink
-
-  def self.find_by_permalink(perma)
-    return nil if perma.nil? or perma.empty?
-    return self.find(permalink=>perma)
-  end
-
-  def set_permalink
-    self.permalink = "#{account.login}/#{self.name.to_permalink}" if self.permalink.blank? and !self.account.nil?
-  end
-
-  def publish!
-    self.update_attribute(:public, true)
-  end
-
-  def public?
-    !!self.public
-  end
-
-  def downloaded!
-    self.inc(:downloads, 1)
-  end
-
-  def update_resource_groups!
-    groups = []
-    self.templates.each do |template|
-      parser = CFDoc::Parser::CFParser.new
-      stack_template = parser.scan(template.raw_json)
-      groups.concat(stack_template.resource_group_ids)
+    def must_be_valid_json
+        return false if template.nil? or template.empty?
+        begin
+            JSON.parse(template)
+            return true
+        rescue JSON::ParserError => e
+            errors.add(:template, "Invalid JSON format")
+            return false
+        end
     end
-    self.update_attribute(:resource_groups, groups.compact.uniq)
-  end
 
-  # load only specific fields for speed and to ignore the raw template
-  # JSON that is part of the model - should match the associated
-  # representer to ensure all fields required by the presenter are selected
-  def template_summaries
-    self.templates.only(:id, :name, :template_type)
-  end
+    def as_json
+        {"stack"=>self.attributes}
+    end
 
-  # simply for testing representers and API logic by using from_json
-  def template_summaries=(list)
-    self.templates = list.compact
-  end
+    def to_json
+        {"stack"=>self.attributes}.to_json
+    end
 end

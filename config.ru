@@ -6,13 +6,12 @@ require 'fog'
 # require the dependencies
 require File.join(File.dirname(__FILE__), 'app', 'init')
 require 'app/api_base'
-require 'app/template_api_app'
-require 'app/account_api_app'
 require 'app/stack_api_app'
+require 'app/offering_api_app'
+require 'app/portfolio_api_app'
 require 'app/identity_api_app'
 require 'app/org_api_app'
 require 'app/policy_api_app'
-require 'app/category_api_app'
 require 'app/cloud_account_api_app'
 require 'app/cloud_api_app'
 require 'app/project_api_app'
@@ -82,28 +81,10 @@ set :method_override, :true
 ##~ sapi.apiVersion = "1.0"
 
 #
-# Templates API
+# API Documentation and static files (stylesheets, etc)
 #
-map "/stackplace/v1/templates" do
-  run TemplateApiApp
-end
-
-#
-# Stacks API
-#
-map "/stackplace/v1/stacks" do
-  run StackApiApp
-end
-
-#
-# Accounts API (public)
-#
-##~ a = sapi.apis.add
-## 
-##~ a.set :path => "/accounts.{format}", :format => "json"
-##~ a.description = "Manage system accounts"
-map "/stackplace/v1/accounts" do
-  run AccountApiApp
+map "/" do
+  run RootApp
 end
 
 #
@@ -129,13 +110,6 @@ end
 #
 map "/identity/v1/policies" do
   run PolicyApiApp
-end
-
-#
-# Categories API (internal)
-#
-map "/stackplace/v1/categories" do
-  run CategoryApiApp
 end
 
 #
@@ -169,6 +143,27 @@ map "/api/v1/cloud_accounts" do
 end
 
 #
+# Stacks API (internal)
+#
+map "/stackstudio/v1/stacks" do
+  run StackApiApp
+end
+
+#
+# Offerings API (internal)
+#
+map "/stackstudio/v1/offerings" do
+  run OfferingApiApp
+end
+
+#
+# Portfolios API (internal)
+#
+map "/stackstudio/v1/portfolios" do
+  run PortfolioApiApp
+end
+
+#
 # Projects API (internal)
 #
 map "/stackstudio/v1/projects" do
@@ -187,13 +182,6 @@ end
 #
 map "/stackstudio/v1/report" do
   run ReportApiApp
-end
-
-#
-# API Documentation and static files (stylesheets, etc)
-#
-map "/" do
-  run RootApp
 end
 
 #
