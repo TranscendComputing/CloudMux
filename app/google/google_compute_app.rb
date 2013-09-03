@@ -1,6 +1,5 @@
 require 'sinatra'
 require 'fog'
-require 'debugger'
 
 class GoogleComputeApp < ResourceApiBase
   
@@ -10,8 +9,9 @@ class GoogleComputeApp < ResourceApiBase
       if ! cloud_cred.nil?
        
         p12_file = Base64.decode64(cloud_cred.cloud_attributes['google_p12_key'])
-        file = File.new('googlecompute.p12','w+')
-        file.puts(p12_file)
+        random_file_name = Random.new_seed.to_s + ".p12"
+        file = File.new(random_file_name,'w+')
+        file.puts(p12_file.force_encoding("UTF-8"))
         file.close
        
         @compute = Fog::Compute::Google.new({
@@ -20,7 +20,7 @@ class GoogleComputeApp < ResourceApiBase
           :google_key_location => file.path
           })
         
-          File.delete('googlecompute.p12')
+          File.delete(random_file_name)
   
         end
       end
