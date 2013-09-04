@@ -36,6 +36,22 @@ class PolicyApiApp < ApiBase
         end
     end
     
+    #Save Policy
+    post '/:id' do
+        policy_json = body_to_json(request)
+        if ! policy_json.nil? && ! policy_json["policy"].nil? && ! policy_json["policy"]["policy_name"].nil?
+            policy = policy_json["policy"]
+            updatePolicy = GroupPolicy.find(params[:id])
+            updatePolicy.update_attributes(
+              name: policy["policy_name"],
+              aws_governance: policy
+            )
+            [OK, updatePolicy.to_json]
+        else
+            [BAD_REQUEST]
+        end
+    end
+    
     #Create Rules for Policy
     post '/rules' do
         rule_json = body_to_json(request)
