@@ -19,6 +19,7 @@ require 'app/provisioning_api_app'
 require 'app/report_api_app'
 require 'app/root_app'
 require 'app/resource_api_base'
+require 'app/assembly_api_app'
 require 'app/aws/aws_compute_app'
 require 'app/aws/aws_autoscale_app'
 require 'app/aws/aws_block_storage_app'
@@ -182,6 +183,20 @@ end
 #
 map "/stackstudio/v1/report" do
   run ReportApiApp
+end
+
+#
+# Chef Management API
+#
+map "/stackstudio/v1/orchestration/chef" do
+  run ChefApiApp
+end
+
+#
+# Assemblies API (internal)
+#
+map "/stackstudio/v1/assemblies" do
+  run AssemblyApiApp
 end
 
 #
@@ -497,12 +512,5 @@ end
 #
 map "/stackstudio/v1/orchestration/managers" do
   run ConfigManagerApiApp
-end
-
-#
-# Chef Management API
-#
-map "/stackstudio/v1/orchestration/chef" do
-  run ChefApiApp
 end
 
