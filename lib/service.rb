@@ -156,5 +156,6 @@ require_relative 'service/representer/category_query_representer'
 require_relative 'service/model/stack'
 require_relative 'service/model/offering'
 require_relative 'service/model/portfolio'
+require_relative 'service/model/assembly'
 
 require_relative 'auth'

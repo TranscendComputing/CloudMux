@@ -9,4 +9,5 @@ class GroupPolicy
   has_many :groups
   
   field :name, type:String
+  field :aws_governance, type:Hash
 end

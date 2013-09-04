@@ -26,11 +26,32 @@ class PolicyApiApp < ApiBase
     #Create Policy
     post '/' do
         policy_json = body_to_json(request)
-        if ! policy_json.nil? && ! policy_json["name"].nil?
-            myOrg = find_account(params[:cred_id]).org
-            gp = GroupPolicy.new(name: policy_json["name"],org: myOrg)
+        if ! policy_json.nil? && ! policy_json["policy"].nil? && ! policy_json["policy"]["policy_name"].nil?
+            policy = policy_json["policy"]
+            myOrg = Org.find(params[:org_id])
+            gp = GroupPolicy.new(
+                name: policy["policy_name"],
+                aws_governance: policy,
+                org: myOrg
+            )
             gp.save!
             [OK, gp.to_json]
+        else
+            [BAD_REQUEST]
+        end
+    end
+    
+    #Save Policy
+    post '/:id' do
+        policy_json = body_to_json(request)
+        if ! policy_json.nil? && ! policy_json["policy"].nil? && ! policy_json["policy"]["policy_name"].nil?
+            policy = policy_json["policy"]
+            updatePolicy = GroupPolicy.find(params[:id])
+            updatePolicy.update_attributes(
+              name: policy["policy_name"],
+              aws_governance: policy
+            )
+            [OK, updatePolicy.to_json]
         else
             [BAD_REQUEST]
         end
