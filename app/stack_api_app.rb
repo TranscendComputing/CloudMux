@@ -28,7 +28,6 @@ class StackApiApp < ApiBase
         if json_body.nil?
             [BAD_REQUEST]
         else
-            json_body["template"] = json_body["template"].to_json
             new_stack = Stack.new(json_body)
             if new_stack.valid?
                 new_stack.save!
@@ -49,14 +48,10 @@ class StackApiApp < ApiBase
             if update_stack.nil?
                 [NOT_FOUND]
             else
-                update_stack.name = json_body["name"] unless json_body["name"].nil?
-                update_stack.description = json_body["description"] unless json_body["description"].nil?
-                update_stack.compatible_clouds = json_body["compatible_clouds"] unless json_body["compatible_clouds"].nil?
-                update_stack.template = json_body["template"].to_json unless json_body["template"].nil?
-                if update_stack.valid?
-                    update_stack.save!
+                begin
+                    update_stack.update_attributes!(json_body)
                     [OK, update_stack.to_json]
-                else
+                rescue => e
                     [BAD_REQUEST]
                 end
             end
@@ -70,7 +65,7 @@ class StackApiApp < ApiBase
             [NOT_FOUND]
         else
             stack.delete
-            [OK]
+            [OK, {"message"=> "Stack Deleted"}.to_json]
         end
     end
 end

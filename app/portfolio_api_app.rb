@@ -28,19 +28,8 @@ class PortfolioApiApp < ApiBase
         if json_body.nil?
             [BAD_REQUEST]
         else
-        	offerings = []
-        	if ! json_body["offering_ids"].nil?
-        		offering_ids = json_body.delete("offering_ids")
-            	offering_ids.each do |offering_id|
-            		offering = Offering.where(id:offering_id).first
-            		if ! offering.nil?
-            			offerings << offering
-            		end
-            	end
-            end
             new_portfolio = Portfolio.new(json_body)
             if new_portfolio.valid?
-            	new_portfolio.offerings = offerings
                 new_portfolio.save!
                 [CREATED, new_portfolio.to_json]
             else
@@ -59,22 +48,10 @@ class PortfolioApiApp < ApiBase
             if update_portfolio.nil?
                 [NOT_FOUND]
             else
-                update_portfolio.name = json_body["name"] unless json_body["name"].nil?
-                update_portfolio.description = json_body["description"] unless json_body["description"].nil?
-                update_portfolio.version = json_body["version"] unless json_body["version"].nil?
-                if ! json_body["offering_ids"].nil?
-                	update_portfolio.offerings = []
-                	json_body["offering_ids"].each do |offering_id|
-                		offering = Offering.where(id:offering_id).first
-                		if ! offering.nil?
-                			update_portfolio.offerings << offering
-                		end
-                	end
-                end
-                if update_portfolio.valid?
-                    update_portfolio.save!
+                begin
+                    update_portfolio.update_attributes!(json_body)
                     [OK, update_portfolio.to_json]
-                else
+                rescue => e
                     [BAD_REQUEST]
                 end
             end
@@ -88,7 +65,7 @@ class PortfolioApiApp < ApiBase
             [NOT_FOUND]
         else
             portfolio.delete
-            [OK]
+            [OK, {"message"=> "Portfolio Deleted"}.to_json]
         end
     end
 

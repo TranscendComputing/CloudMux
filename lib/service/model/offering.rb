@@ -17,7 +17,10 @@ class Offering
     field :support, type:String
     field :pricing, type:String
     field :category, type:String
-    has_many :stacks
+    has_and_belongs_to_many :stacks
+
+    attr_readonly :account_id
+    attr_accessible :account_id, :name, :version, :url, :sku, :icon, :illustration, :brief_description, :detailed_description, :eula, :eula_custom, :support, :pricing, :category, :stacks
 
     # Validation Rules
     validates_presence_of :name

@@ -7,7 +7,10 @@ class Portfolio
     field :name, type:String
     field :description, type:String
     field :version, type:String
-    has_many :offerings
+    has_and_belongs_to_many :offerings
+
+    attr_readonly :group_id
+    attr_accessible :group_id, :name, :description, :version, :offerings
 
     # Validation Rules
     validates_presence_of :name

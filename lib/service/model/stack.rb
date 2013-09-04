@@ -9,6 +9,9 @@ class Stack
     field :compatible_clouds, type:Array, default: []
     field :template, type:String
 
+    attr_readonly :account_id
+    attr_accessible :account_id, :name, :description, :compatible_clouds, :template
+
     # Validation Rules
     validates_presence_of :name
     validate :must_be_valid_json
