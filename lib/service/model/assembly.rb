@@ -13,7 +13,7 @@ class Assembly
   has_many :config_managers
   #has_one :image
 
-  def as_json
+  def as_json(options)
       return self.attributes
   end
 

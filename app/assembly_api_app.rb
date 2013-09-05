@@ -3,10 +3,13 @@ require 'debugger'
 
 class AssemblyApiApp < ApiBase
 
+    get '/' do
+        assemblies = Assembly.all.entries
+        [OK, assemblies.to_json]
+    end
     #Get assembly by ID
     get '/:id' do
         assembly = Assembly.where(id:params[:id]).first
-        debugger;
         if(assembly.nil?)
             [NOT_FOUND, {:message=>"Could not find assembly."}.to_json]
         else
