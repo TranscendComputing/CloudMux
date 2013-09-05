@@ -10,7 +10,6 @@ class Assembly
   attr_readonly :account_id
   attr_accessible :name, :cloud, :configurations, :account_id
 
-  has_many :config_managers
   #has_one :image
 
   def as_json(options)
