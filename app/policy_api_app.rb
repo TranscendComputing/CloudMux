@@ -86,6 +86,13 @@ class PolicyApiApp < ApiBase
         end
     end
     
+    #debug here
+    get '/debug' do
+        isValidated = Auth.validate(params[:cred_id],"IAM","action")
+        debugger
+        [OK]
+    end
+    
     def find_account(cloud_credential_id)
       return nil if cloud_credential_id.nil?
       account = Account.where({"cloud_credentials._id"=>Moped::BSON::ObjectId.from_string(cloud_credential_id.to_s)}).first
