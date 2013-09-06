@@ -1,8 +1,7 @@
 require 'sinatra'
 require 'debugger'
-
+require 'pry'
 class PolicyApiApp < ApiBase
-    
     # Fetch Policies
     get '/' do
         if ! params[:org_id].nil?
@@ -41,22 +40,6 @@ class PolicyApiApp < ApiBase
         end
     end
     
-    #Save Policy
-    post '/:id' do
-        policy_json = body_to_json(request)
-        if ! policy_json.nil? && ! policy_json["policy"].nil? && ! policy_json["policy"]["policy_name"].nil?
-            policy = policy_json["policy"]
-            updatePolicy = GroupPolicy.find(params[:id])
-            updatePolicy.update_attributes(
-              name: policy["policy_name"],
-              aws_governance: policy
-            )
-            [OK, updatePolicy.to_json]
-        else
-            [BAD_REQUEST]
-        end
-    end
-    
     #Create Rules for Policy
     post '/rules' do
         rule_json = body_to_json(request)
@@ -74,10 +57,17 @@ class PolicyApiApp < ApiBase
     
     #Set Policy to Group
     post '/groups' do
-        policy_to_group = body_to_json(request)
-        if ! policy_to_group.nil? && ! policy_to_group["group_id"].nil? && ! policy_to_group["group_policy_id"].nil?
+        pg = body_to_json(request)
+        policy_to_group = pg["policy"]
+        if ((!policy_to_group.nil?) && (!policy_to_group["group_id"].nil?) && (!policy_to_group["group_policy_id"].nil?))
             group = Group.find(policy_to_group["group_id"])
-            group_policy = GroupPolicy.find(policy_to_group["group_policy_id"])
+            
+            if policy_to_group["group_policy_id"] != "None"
+                group_policy = GroupPolicy.find(policy_to_group["group_policy_id"])
+            else
+                group_policy = nil
+            end
+            
             group.group_policy = group_policy
             group.save!
             [OK, group.to_json]
@@ -88,9 +78,35 @@ class PolicyApiApp < ApiBase
     
     #debug here
     get '/debug' do
-        isValidated = Auth.validate(params[:cred_id],"IAM","action")
         debugger
         [OK]
+    end
+    
+    #Save Policy
+    post '/:id' do
+        policy_json = body_to_json(request)
+        if ! policy_json.nil? && ! policy_json["policy"].nil? && ! policy_json["policy"]["policy_name"].nil?
+            policy = policy_json["policy"]
+            updatePolicy = GroupPolicy.find(params[:id])
+            updatePolicy.update_attributes(
+              name: policy["policy_name"],
+              aws_governance: policy
+            )
+            [OK, updatePolicy.to_json]
+        else
+            [BAD_REQUEST]
+        end
+    end
+    
+    #Delete Policy
+    delete '/:id' do
+        if ! params[:id].nil?
+            deletePolicy = GroupPolicy.find(params[:id])
+            deletePolicy.destroy
+            [OK, deletePolicy.to_json]
+        else
+            [BAD_REQUEST]
+        end
     end
     
     def find_account(cloud_credential_id)

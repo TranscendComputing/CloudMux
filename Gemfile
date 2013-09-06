@@ -53,6 +53,9 @@ group :development, :test do
   gem 'awesome_print'
   gem 'database_cleaner'
   gem 'factory_girl', '~> 3.0.0'
+  gem 'shotgun'
+  gem 'pry'
+  gem 'pry-debugger'
 end
 
 # Google

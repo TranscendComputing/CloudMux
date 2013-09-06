@@ -20,6 +20,7 @@ GEM
     bson_ext (1.8.3)
       bson (~> 1.8.3)
     builder (3.0.4)
+    coderay (1.0.9)
     columnize (0.3.6)
     daemons (1.1.9)
     database_cleaner (1.1.1)
@@ -40,6 +41,7 @@ GEM
       activesupport (>= 3.0.0)
     faraday (0.8.8)
       multipart-post (~> 1.2.0)
+    ffi (1.9.0-java)
     fog (1.15.0)
       builder
       excon (~> 0.25.0)
@@ -85,6 +87,7 @@ GEM
       multi_json (>= 1.0)
     launchy (2.3.0)
       addressable (~> 2.3)
+    method_source (0.8.2)
     mime-types (1.24)
     mini_portile (0.5.1)
     mixlib-authentication (1.1.4)
@@ -111,6 +114,18 @@ GEM
     nokogiri (1.6.0-java)
       mini_portile (~> 0.5.0)
     origin (1.1.0)
+    pry (0.9.12.2)
+      coderay (~> 1.0.5)
+      method_source (~> 0.8)
+      slop (~> 3.4)
+    pry (0.9.12.2-java)
+      coderay (~> 1.0.5)
+      method_source (~> 0.8)
+      slop (~> 3.4)
+      spoon (~> 0.0)
+    pry-debugger (0.2.2)
+      debugger (~> 1.3)
+      pry (~> 0.9.10)
     rack (1.5.2)
     rack-methodoverride-with-params (1.0.0)
       rack (~> 1)
@@ -138,6 +153,8 @@ GEM
     rspec-mocks (2.14.3)
     ruby-hmac (0.4.0)
     rubyzip (0.9.9)
+    shotgun (0.9)
+      rack (>= 1.0)
     signet (0.4.5)
       addressable (>= 2.2.3)
       faraday (~> 0.8.1)
@@ -147,12 +164,15 @@ GEM
       rack (~> 1.4)
       rack-protection (~> 1.3)
       tilt (~> 1.3, >= 1.3.3)
+    slop (3.4.6)
     source2swagger (0.0.2)
       json
     spice (1.0.6)
       faraday (~> 0.8.0)
       mixlib-authentication (~> 1.1.4)
       multi_json (~> 1.3.6)
+    spoon (0.0.4)
+      ffi
     thin (1.3.1)
       daemons (>= 1.0.9)
       eventmachine (>= 0.12.6)
@@ -186,6 +206,8 @@ DEPENDENCIES
   mongo_ext (~> 0.19)
   mongoid
   nokogiri
+  pry
+  pry-debugger
   rack-methodoverride-with-params (~> 1.0.0)
   rack-test
   rake
@@ -194,6 +216,7 @@ DEPENDENCIES
   rest-client (~> 1.6.7)
   roar (~> 0.9.1)
   rspec (~> 2.4)
+  shotgun
   sinatra (~> 1.3.1)
   source2swagger
   spice
