@@ -66,7 +66,7 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/databases' do
 		json_body = body_to_json(request)
-		if(json_body.nil?)
+		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Relational Database","create_rds",@rds.servers.length))
 			[BAD_REQUEST]
 		else
 			begin

@@ -63,7 +63,7 @@ class AwsComputeApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400	
 	post '/instances' do
 		json_body = body_to_json(request)
-		if(json_body.nil?)
+		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_instance",@compute.servers.length))
 			[BAD_REQUEST]
 		else
 			begin
@@ -415,7 +415,7 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/spot_requests' do
 		json_body = body_to_json(request)
-		if(json_body.nil?)
+		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_spot",@compute.spot_requests.length))
 			[BAD_REQUEST]
 		else
 			begin
@@ -683,8 +683,13 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, new reserved instance returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/reserved_instances' do
+        reserved_set = @compute.describe_reserved_instances_offerings.body["reservedInstancesOfferingsSet"]
+        if reserved_set.nil?
+            option = 0
+        else option = reserved_set.length
+        end
 		json_body = body_to_json(request)
-		if(json_body.nil?)
+		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_reserved", option))
 			[BAD_REQUEST]
 		else
 			begin
