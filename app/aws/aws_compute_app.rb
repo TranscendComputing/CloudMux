@@ -281,17 +281,12 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, security group deleted", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	delete '/security_groups/:id' do
-		json_body = body_to_json(request)
-		if(json_body.nil? || json_body["security_group"].nil?)
-			[BAD_REQUEST]
-		else
 			begin
-				response = @compute.security_groups.get(params[:id]).destroy
+				response = @compute.security_groups.get_by_id(params[:id]).destroy
 				[OK, response.to_json]
 			rescue => error
 				handle_error(error)
 			end
-		end
 	end
 	
 	
