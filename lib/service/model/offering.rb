@@ -38,7 +38,7 @@ class Offering
     def get_attributes
         attributes = self.attributes
         attributes["stacks"] = []
-        self.stacks.each{|s| attributes["stacks"] << stack.as_json}
+        self.stacks.each{|stack| attributes["stacks"] << stack.as_json}
         return attributes
     end
 end
