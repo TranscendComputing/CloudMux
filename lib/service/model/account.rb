@@ -122,6 +122,19 @@ class Account
   end
 
   def subscriptions=(args); end; # empty impl to satisfy the representer
+  
+  def group_policies
+      policies = []
+      Group.each do |group|
+          group.group_memberships.each do |membership|
+              if membership.account_id == _id
+                  policies.push(group.group_policy)
+              end
+          end
+      end
+      return policies
+  end
+  def group_policies=(args); end; # empty impl to satisfy the representer
 
   class AccountSubscription
     attr_accessor :org_id, :org_name, :product, :billing_level, :role

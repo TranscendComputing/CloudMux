@@ -89,6 +89,12 @@ class IdentityApiApp < ApiBase
     message.message = "Invalid login or password"
     return [NOT_AUTHORIZED, message.to_json]
   end
+  
+  get '/auth/:id' do
+      account = Account.find(params[:id])
+      account.extend(AccountRepresenter)
+      [OK, account.to_json]
+  end
 
   put '/:id' do
     update_account = Account.find(params[:id])
