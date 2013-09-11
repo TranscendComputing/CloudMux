@@ -10,7 +10,7 @@ class Portfolio
     has_and_belongs_to_many :offerings
 
     attr_readonly :group_id
-    attr_accessible :group_id, :name, :description, :version, :offerings
+    attr_accessible :group_id, :name, :description, :version, :offering_ids
 
     # Validation Rules
     validates_presence_of :name

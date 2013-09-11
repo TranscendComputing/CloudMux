@@ -20,7 +20,7 @@ class Offering
     has_and_belongs_to_many :stacks
 
     attr_readonly :account_id
-    attr_accessible :account_id, :name, :version, :url, :sku, :icon, :illustration, :brief_description, :detailed_description, :eula, :eula_custom, :support, :pricing, :category, :stacks
+    attr_accessible :account_id, :name, :version, :url, :sku, :icon, :illustration, :brief_description, :detailed_description, :eula, :eula_custom, :support, :pricing, :category, :stack_ids
 
     # Validation Rules
     validates_presence_of :name
