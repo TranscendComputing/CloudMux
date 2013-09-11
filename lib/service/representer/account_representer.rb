@@ -15,4 +15,5 @@ module AccountRepresenter
   collection :subscriptions, :class=>Account::AccountSubscription, :extend => AccountSubscriptionRepresenter
   collection :cloud_credentials, :class=>CloudCredential, :extend => CloudCredentialRepresenter
   collection :project_memberships, :class=>Account::ProjectMembership, :extend => ProjectMembershipRepresenter
+  collection :group_policies, :class=>GroupPolicy, :extend => GroupPolicyRepresenter
 end

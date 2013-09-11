@@ -1,6 +1,5 @@
 require 'sinatra'
-require 'debugger'
-require 'pry'
+
 class PolicyApiApp < ApiBase
     # Fetch Policies
     get '/' do
@@ -78,7 +77,7 @@ class PolicyApiApp < ApiBase
     
     #debug here
     get '/debug' do
-        debugger
+        #debugger
         [OK]
     end
     

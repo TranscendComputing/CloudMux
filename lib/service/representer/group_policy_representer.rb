@@ -6,4 +6,5 @@ module GroupPolicyRepresenter
 
   property :id
   property :name
+  property :aws_governance
 end
