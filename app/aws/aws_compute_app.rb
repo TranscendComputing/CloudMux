@@ -68,6 +68,8 @@ class AwsComputeApp < ResourceApiBase
 		else
 			begin
 				response = @compute.servers.create(json_body["instance"])
+                #create any default alarms set in policy
+                Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_instance_alarms",{:params => params, :instance_id => response.id})
 				[OK, response.to_json]
 			rescue => error
 				handle_error(error)

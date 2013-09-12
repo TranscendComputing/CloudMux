@@ -1,3 +1,5 @@
+require "pry"
+
 module Auth
   
     # Validate
@@ -49,6 +51,8 @@ module Auth
             return false
         elsif action == 'create_autoscale' && ! Auth.canCreateInstance(aws_governance['max_in_autoscale'],options)
             return false
+        elsif action == 'create_instance_alarms'
+            Auth.createInstanceAlarms(aws_governance,options)
         end
         return true
     end
@@ -79,5 +83,28 @@ module Auth
             return false
         else return true
         end
+    end
+    
+    #Default Compute Alarms
+    def Auth.createInstanceAlarms(aws_governance,options)
+        instance_id = options[:instance_id]
+        params = options[:params]
+        if(aws_governance["cpu_util_value"] && aws_governance["cpu_util_duration"]) != ""
+            cloud_cred = Account.find_cloud_credential(params["cred_id"])
+            @monitor = Fog::AWS::CloudWatch.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => params[:region]})
+            @monitor.alarms.create({"id"=>"SS_"+instance_id+"_CPUUtilization"+Time.now.to_i.to_s,
+                                    "dimensions"=>[{"Name"=>"InstanceId", "Value"=>instance_id}],
+                                    "metric_name"=>"CPUUtilization",
+                                    "threshold"=>aws_governance["cpu_util_value"].to_i,
+                                    "namespace"=>"AWS/EC2",
+                                    "comparison_operator"=>"GreaterThanOrEqualToThreshold",
+                                    "statistic"=>"Average",
+                                    "period"=> aws_governance["cpu_util_duration"].to_i * 60,
+                                    "evaluation_periods"=>1,
+                                    "alarm_actions"=>["arn:aws:sns:us-east-1:983391187112:Informational"],
+                                    "ok_actions"=>[],
+                                    "insufficient_data_actions"=>[]})
+        end
+        return true
     end
 end
