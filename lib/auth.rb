@@ -85,37 +85,6 @@ module Auth
         end
     end
     
-    #Default Compute Alarms
-    def Auth.createInstanceAlarms(aws_governance,options)
-        instance_id = options[:instance_id]
-        params = options[:params]
-        cloud_cred = Account.find_cloud_credential(params["cred_id"])
-        @monitor = Fog::AWS::CloudWatch.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => params[:region]})
-        alarm_list = [["cpu_util","CPUUtilization"],
-                        ["status_failed","StatusCheckFailed"]
-                        #["latency","Latency"],
-                        #["unhealthy_host","UnhealthyHostCount"],
-                        #["failed_healthcheck","FailedHealthChecks"]
-                     ]
-        alarm_list.each do |alarm|
-            if(aws_governance[alarm[0]+"_value"] && aws_governance[alarm[0]+"_duration"] && aws_governance[alarm[0]+"_topic"]) != ""
-                @monitor.alarms.create({"id"=>"SS_"+instance_id+"_"+alarm[1]+Time.now.to_i.to_s,
-                                        "dimensions"=>[{"Name"=>"InstanceId", "Value"=>instance_id}],
-                                        "metric_name"=> alarm[1],
-                                        "threshold"=>aws_governance[alarm[0]+"_value"].to_i,
-                                        "namespace"=>"AWS/EC2",
-                                        "comparison_operator"=>"GreaterThanOrEqualToThreshold",
-                                        "statistic"=>"Average",
-                                        "period"=> aws_governance[alarm[0]+"_duration"].to_i * 60,
-                                        "evaluation_periods"=>1,
-                                        "alarm_actions"=>[aws_governance[alarm[0]+"_topic"]],
-                                        "ok_actions"=>[],
-                                        "insufficient_data_actions"=>[]})
-            end
-        end
-        return true
-    end
-    
     #default Alarms
     def Auth.createAlarms(aws_governance,options)
         resource_id = options[:resource_id]
