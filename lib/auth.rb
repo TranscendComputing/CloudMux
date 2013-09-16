@@ -51,8 +51,8 @@ module Auth
             return false
         elsif action == 'create_autoscale' && ! Auth.canCreateInstance(aws_governance['max_in_autoscale'],options)
             return false
-        elsif action == 'create_instance_alarms'
-            Auth.createInstanceAlarms(aws_governance,options)
+        elsif action == 'create_default_alarms'
+            Auth.createAlarms(aws_governance,options)
         end
         return true
     end
@@ -91,7 +91,12 @@ module Auth
         params = options[:params]
         cloud_cred = Account.find_cloud_credential(params["cred_id"])
         @monitor = Fog::AWS::CloudWatch.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => params[:region]})
-        alarm_list = [["cpu_util","CPUUtilization"],["status_failed","StatusCheckFailed"],["latency","Latency"],["unhealthy_host","UnhealthyHostCount"],["failed_healthcheck","FailedHealthChecks"]]
+        alarm_list = [["cpu_util","CPUUtilization"],
+                        ["status_failed","StatusCheckFailed"]
+                        #["latency","Latency"],
+                        #["unhealthy_host","UnhealthyHostCount"],
+                        #["failed_healthcheck","FailedHealthChecks"]
+                     ]
         alarm_list.each do |alarm|
             if(aws_governance[alarm[0]+"_value"] && aws_governance[alarm[0]+"_duration"] && aws_governance[alarm[0]+"_topic"]) != ""
                 @monitor.alarms.create({"id"=>"SS_"+instance_id+"_"+alarm[1]+Time.now.to_i.to_s,
@@ -108,6 +113,34 @@ module Auth
                                         "insufficient_data_actions"=>[]})
             end
         end
+        return true
+    end
+    
+    #default Alarms
+    def Auth.createAlarms(aws_governance,options)
+        resource_id = options[:resource_id]
+        params = options[:params]
+        namespace = options[:namespace]
+        cloud_cred = Account.find_cloud_credential(params["cred_id"])
+        @monitor = Fog::AWS::CloudWatch.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => params[:region]})
+        
+        aws_governance['default_alarms'].each do |alarm|
+            if alarm["namespace"] == namespace
+                @monitor.alarms.create({"id"=>"SS_"+resource_id+"_"+alarm['id']+Time.now.to_i.to_s,
+                                        "dimensions"=> [{"Name" => alarm['dimensions'][0]['Name'],"Value" => resource_id}],
+                                        "metric_name"=> alarm['metric_name'],
+                                        "threshold"=> alarm['threshold'],
+                                        "namespace"=> alarm['namespace'],
+                                        "comparison_operator"=> alarm['comparison_operator'],
+                                        "statistic"=> "Average",
+                                        "period"=> alarm['period'],
+                                        "evaluation_periods"=> 1,
+                                        "alarm_actions"=> alarm['alarm_actions'],
+                                        "ok_actions"=> [],
+                                        "insufficient_data_actions"=> []})
+            end
+        end
+        
         return true
     end
 end

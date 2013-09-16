@@ -74,6 +74,7 @@ class AwsBlockStorageApp < ResourceApiBase
 		else
 			begin
 				response = @block_storage.volumes.create(json_body["volume"])
+                Auth.validate(params[:cred_id],"Elastic Block Storage","create_default_alarms",{:params => params, :resource_id => response.id, :namespace => "AWS/EBS"})
 				[OK, response.to_json]
 			rescue => error
 				handle_error(error)
