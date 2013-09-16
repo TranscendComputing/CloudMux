@@ -96,6 +96,7 @@ class AwsQueueApp < ResourceApiBase
 																"MaximumMessageSize"=> queue["MaximumMessageSize"],
 																"DelaySeconds"=> queue["DelaySeconds"],
 																"ReceiveMessageWaitTimeSeconds"=> queue["ReceiveMessageWaitTimeSeconds"]})
+                Auth.validate(params[:cred_id],"Simple Queue","create_default_alarms",{:params => params, :resource_id => queue["QueueName"], :namespace => "AWS/SQS"})
 				queue.delete("QueueName");
 				queue.keys.each do |key|
         			@sqs.set_queue_attributes(response.body["QueueUrl"], key, queue[key])
