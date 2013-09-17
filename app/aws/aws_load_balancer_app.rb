@@ -76,6 +76,7 @@ class AwsLoadBalancerApp < ResourceApiBase
 				else
 					response = @elb.create_load_balancer(lb["availability_zones"], lb["id"], lb["listeners"], lb["options"])
 				end
+                Auth.validate(params[:cred_id],"Elastic Load Balancer","create_default_alarms",{:params => params, :resource_id => lb["id"], :namespace => "AWS/ELB"})
 				[OK, response.to_json]
 			rescue => error
 				handle_error(error)

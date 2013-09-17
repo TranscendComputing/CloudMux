@@ -111,6 +111,7 @@ class AwsNotificationApp < ResourceApiBase
 		else
 			begin
 				response = @notification.create_topic(json_body["topic"]["name"])
+                Auth.validate(params[:cred_id],"Simple Notification","create_default_alarms",{:params => params, :resource_id => json_body["topic"]["name"], :namespace => "AWS/SNS"})
 				[OK, response.to_json]
 			rescue => error
 				handle_error(error)
