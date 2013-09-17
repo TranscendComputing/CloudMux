@@ -13,8 +13,8 @@ class PortfolioApiApp < ApiBase
     end
 
     # Get Portfolios for group
-    get '/group/:group_id' do
-        portfolios = Portfolio.where(group_id:params[:group_id])
+    get '/org/:org_id' do
+        portfolios = Portfolio.where(org_id:params[:org_id])
         response = []
         portfolios.each do |portfolio|
             response << portfolio.as_json
