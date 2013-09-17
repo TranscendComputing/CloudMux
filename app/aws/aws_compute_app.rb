@@ -1067,4 +1067,14 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
+    
+    #Images
+    get '/images' do
+        begin
+            response = @compute.describe_images({'Owner' => params[:owner],'architecture' => params[:architecture]})
+            [OK, response.body["imagesSet"].to_json]
+        rescue => error
+            handle_error(error)
+        end
+    end
 end
