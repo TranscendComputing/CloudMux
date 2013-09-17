@@ -82,8 +82,16 @@ class Chef
             if(nodes[name])
                 return get_node(name)
             else
-                return nil;
+                return {};
             end
+        end
+        def find_nodes(names)
+            nodes = [];
+            names.each_with_index{|name, index|
+                nodeInfo = find_node(name);
+                nodes << nodeInfo;
+            }
+            return nodes;
         end
 
         def update_runlist(node_name, data)

@@ -19,12 +19,12 @@ class ChefApiApp < ApiBase
             else
                 message= Error.new.extend(ErrorRepresenter)
                 message.message = "Must configure a Chef server with the cloud account."
-                [BAD_REQUEST, message.to_json]
+                halt [BAD_REQUEST, message.to_json]
             end
        else
           message = Error.new.extend(ErrorRepresenter)
           message.message = "Account ID must be passed in as a parameter"
-          [BAD_REQUEST, message.to_json]
+          halt [BAD_REQUEST, message.to_json]
         end
     end
     
@@ -73,10 +73,19 @@ class ChefApiApp < ApiBase
             if(node)
                 [OK, node.to_json]
             else
-                message = Error.new.extend(ErrorRepresenter)
-                message.message = "Could not find node."
-                [NOT_FOUND, message.to_json]
+                [OK, {}.to_json]
             end
+        end
+    end
+    post '/nodes/find' do
+        names = JSON.parse(request.body.read)
+        if(!names || names.length == 0)
+            message = Error.new.extend(ErrorRepresenter)
+            message.message = "Must supply names of instances to search for"
+            [BAD_REQUEST, message.to_json]
+        else
+            nodes = @chef.find_nodes(names);
+            [OK, nodes.to_json];
         end
     end
     get '/nodes/:node_name' do
