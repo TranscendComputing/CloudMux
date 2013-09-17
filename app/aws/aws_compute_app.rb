@@ -1071,7 +1071,8 @@ class AwsComputeApp < ResourceApiBase
     #Images
     get '/images' do
         begin
-            response = @compute.describe_images({'Owner' => params[:owner],'architecture' => params[:architecture]})
+            response = @compute.describe_images({'architecture' => params[:architecture],
+                                            'manifest-location' => '*'+params[:platform]+'*'})
             [OK, response.body["imagesSet"].to_json]
         rescue => error
             handle_error(error)
