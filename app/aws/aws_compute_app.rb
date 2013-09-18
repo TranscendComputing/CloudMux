@@ -1071,8 +1071,16 @@ class AwsComputeApp < ResourceApiBase
     #Images
     get '/images' do
         begin
-            response = @compute.describe_images({'architecture' => params[:architecture],
-                                            'manifest-location' => '*'+params[:platform]+'*'})
+            options = nil
+            if params[:platform] == 'amazon'
+                options = {'Owner' => 'amazon'}
+            elsif params[:platform] == 'internal'
+                options = {'Owner' => 'self'}
+            else
+                options = {'manifest-location' => '*'+params[:platform]+'*',
+                                       'Owner' => 'aws-marketplace'}
+            end
+            response = @compute.describe_images(options)
             [OK, response.body["imagesSet"].to_json]
         rescue => error
             handle_error(error)
