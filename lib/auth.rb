@@ -53,6 +53,8 @@ module Auth
             return false
         elsif action == 'create_default_alarms'
             Auth.createAlarms(aws_governance,options)
+        elsif action == 'create_auto_tags'
+            Auth.createTags(policy,aws_governance,options)
         end
         return true
     end
@@ -108,6 +110,29 @@ module Auth
                                         "ok_actions"=> [],
                                         "insufficient_data_actions"=> []})
             end
+        end
+        
+        return true
+    end
+    
+    def Auth.createTags(policy,aws_governance,options)
+        resource_id = options[:resource_id]
+        params = options[:params]
+        cloud_cred = Account.find_cloud_credential(params["cred_id"])
+        account = Auth.find_account(params["cred_id"])
+        @compute = Fog::Compute::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => params[:region]})
+        
+        if aws_governance['auto_tags'].include?("ProjectName")
+            @compute.tags.create(:resource_id => resource_id, :key => "ProjectName", :value => aws_governance['project_name'])
+        end
+        if aws_governance['auto_tags'].include?("UserName")
+            @compute.tags.create(:resource_id => resource_id, :key => "UserName", :value => account['login'])
+        end
+        if aws_governance['auto_tags'].include?("GroupName")
+            @compute.tags.create(:resource_id => resource_id, :key => "GroupName", :value => policy.name)
+        end
+        if aws_governance['auto_tags'].include?("Modifiable")
+            @compute.tags.create(:resource_id => resource_id, :key => "Modifiable", :value => 'Modifiable')
         end
         
         return true

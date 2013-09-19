@@ -70,6 +70,7 @@ class AwsComputeApp < ResourceApiBase
 				response = @compute.servers.create(json_body["instance"])
                 #create any default alarms set in policy
                 Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_default_alarms",{:params => params, :resource_id => response.id, :namespace => "AWS/EC2"})
+                Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_auto_tags",{:params => params, :resource_id => response.id})
 				[OK, response.to_json]
 			rescue => error
 				handle_error(error)
@@ -1078,7 +1079,8 @@ class AwsComputeApp < ResourceApiBase
                 options = {'Owner' => 'self'}
             else
                 options = {'manifest-location' => '*'+params[:platform]+'*',
-                                       'Owner' => 'aws-marketplace'}
+                                       'is-public' => true}
+                                       #'Owner' => 'aws-marketplace'}
             end
             response = @compute.describe_images(options)
             [OK, response.body["imagesSet"].to_json]
