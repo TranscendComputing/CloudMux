@@ -1088,4 +1088,18 @@ class AwsComputeApp < ResourceApiBase
             handle_error(error)
         end
     end
+    
+	get '/tags' do
+        begin
+    		filters = params[:filters]
+      		if(filters.nil?)
+      			response = @compute.tags
+      		else
+      			response = @compute.tags.all(filters)
+      		end
+      		[OK, response.to_json]
+        rescue => error
+				handle_error(error)
+		end
+	end
 end
