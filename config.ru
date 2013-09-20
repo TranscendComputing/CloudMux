@@ -50,6 +50,7 @@ require 'app/topstack/topstack_cache_app'
 require 'app/topstack/topstack_dns_app'
 require 'app/orchestration/config_managers_api_app'
 require 'app/orchestration/chef_api_app'
+require 'app/orchestration/puppet_api_app'
 
 # By default, Ruby buffers its output to stdout. To take advantage of
 # Heroku's realtime logging, you will need to disable this buffering
@@ -190,6 +191,13 @@ end
 #
 map "/stackstudio/v1/orchestration/chef" do
   run ChefApiApp
+end
+
+#
+# Puppet Management API
+#
+map "/stackstudio/v1/orchestration/puppet" do
+  run PuppetApiApp
 end
 
 #
