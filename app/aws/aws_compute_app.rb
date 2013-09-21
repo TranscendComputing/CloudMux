@@ -67,11 +67,16 @@ class AwsComputeApp < ResourceApiBase
 			[BAD_REQUEST]
 		else
 			begin
-				response = @compute.servers.create(json_body["instance"])
-                #create any default alarms set in policy
-                Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_default_alarms",{:params => params, :resource_id => response.id, :namespace => "AWS/EC2"})
-                Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_auto_tags",{:params => params, :resource_id => response.id})
-				[OK, response.to_json]
+                response = nil
+                
+                if Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_vpc_instance",{:params => params, :instance => json_body["instance"]})
+                    response = @compute.servers.create(json_body["instance"])
+                    #create any default alarms set in policy
+                    Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_default_alarms",{:params => params, :resource_id => response.id, :namespace => "AWS/EC2"})
+                    Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_auto_tags",{:params => params, :resource_id => response.id})
+                end
+				
+                [OK, response.to_json]
 			rescue => error
 				handle_error(error)
 			end

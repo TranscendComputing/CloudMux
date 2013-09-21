@@ -55,6 +55,8 @@ module Auth
             Auth.createAlarms(aws_governance,options)
         elsif action == 'create_auto_tags'
             Auth.createTags(policy,aws_governance,options)
+        elsif action == 'create_vpc_instance' && ! Auth.createVpcInstance(aws_governance,options)
+            return false
         end
         return true
     end
@@ -135,6 +137,22 @@ module Auth
             @compute.tags.create(:resource_id => resource_id, :key => "Modifiable", :value => 'Modifiable')
         end
         
+        return true
+    end
+    
+    def Auth.createVpcInstance(aws_governance,options)
+        instance = options[:instance]
+        params = options[:params]
+        cloud_cred = Account.find_cloud_credential(params["cred_id"])
+        account = Auth.find_account(params["cred_id"])
+        @compute = Fog::Compute::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => params[:region]})
+        if aws_governance['vpc_rules'].include?("require_vpc")
+            instance['subnet_id'] = aws_governance['default_subnet']
+            response = @compute.servers.create(instance)
+            Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_default_alarms",{:params => params, :resource_id => response.id, :namespace => "AWS/EC2"})
+            Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_auto_tags",{:params => params, :resource_id => response.id})
+            return false
+        end
         return true
     end
 end
