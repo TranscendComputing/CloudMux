@@ -73,25 +73,26 @@ class Chef
             return @rest.node(node_name)
         end
 
-        def find_node(name)
+        def find_node(name, nodes)
             # node = @rest.nodes(:q => "name:"+ name + " OR " +
             #     "hostname:"+ name + " OR " + 
             #     "fqdn:"+ fqdn + " OR " +  
             #     "ipaddress:"+ipaddress)
-            nodes = @rest.get("/nodes/");
             if(nodes[name])
                 return get_node(name)
             else
                 return {};
             end
         end
-        def find_nodes(names)
-            nodes = [];
-            names.each_with_index{|name, index|
-                nodeInfo = find_node(name);
-                nodes << nodeInfo;
+        def find_nodes(instancesInfo)
+            result = [];
+            nodes = get_nodes
+            instancesInfo.each_with_index{|info, index|
+                nodeInfo = find_node(info["name"], nodes);
+                result << nodeInfo;
+
             }
-            return nodes;
+            return result;
         end
 
         def update_runlist(node_name, data)

@@ -30,12 +30,47 @@ class PuppetApiApp < ApiBase
 
     get '/agents' do
         agents = @puppet.get_agents
-        [OK, agents.to_json]
+        if(agents)
+            [OK, agents.to_json]
+        else
+            [BAD_REQUEST, {:message=>"Could not fetch agents/node data"}.to_json]
+        end
+    end
+
+    post '/agents/find' do
+        instanceData = JSON.parse(request.body.read)
+        if(!instanceData || instanceData.length == 0)
+            message = Error.new.extend(ErrorRepresenter)
+            message.message = "Must supply ids of instances to search for"
+            [BAD_REQUEST, message.to_json]
+        else
+            agent_ids = @puppet.find_agents(instanceData);
+            [OK, agent_ids.to_json];
+        end
+    end
+
+    put '/agents/:agent_id' do
+        body = request.body.read
+        class_list = JSON.parse(body)["puppetclass_ids"]
+        begin
+        response = @puppet.update_classes(params[:agent_id], class_list)
+        rescue RestClient::InternalServerError
+            [BAD_REQUEST, {:message=>"Internal Server Error"}.to_json]
+        end
+        if(response)
+            [OK, response.to_json]
+        else
+            [BAD_REQUEST, {:message=>"Could not update agent's classes"}.to_json]
+        end
     end
 
     get '/classes' do
         classes = @puppet.get_classes
-        [OK, classes.to_json]
+        if(classes)
+            [OK, classes.to_json]
+        else
+            [BAD_REQUEST, {:message=>"Could not fetch classes data"}.to_json]
+        end
     end
 
 end
