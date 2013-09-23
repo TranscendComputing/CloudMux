@@ -6,7 +6,8 @@ The CloudMux project provides a RESTful service layer for the management of mult
 CloudMux currently supports the following clouds:
 
 * Amazon (AWS)
-* OpenStack (Essex & Folsom)
+* OpenStack (Essex & Grizzly)
+* Google Compute Engine (GCE)
 
 <!--- You can explore the REST API at the [API Doc browser](/docs/). -->
 
@@ -15,7 +16,7 @@ CloudMux currently supports the following clouds:
 Getting Started
 ---------------
 
-1. Make sure you have ruby installed (greater than 1.9.2) and mongodb.
+1. Make sure you have ruby 1.9.2 or 1.9.3 and mongodb installed.
 
 2. Create a ruby environment file and source with the following contents (edit your mongo user and password):
 
