@@ -57,6 +57,8 @@ module Auth
             Auth.createTags(policy,aws_governance,options)
         elsif action == 'create_vpc_instance' && ! Auth.createVpcInstance(aws_governance,options)
             return false
+        elsif action == 'modify_gateway' && ! Auth.canModifyGateway(aws_governance['vpc_rules'],options)
+            return false
         end
         return true
     end
@@ -87,6 +89,12 @@ module Auth
             return false
         else return true
         end
+    end
+    
+    #Modify Gateways
+    def Auth.canModifyGateway(vpc_rules,gw_type)
+        return false if !vpc_rules.include?(gw_type)
+        return true
     end
     
     #default Alarms
