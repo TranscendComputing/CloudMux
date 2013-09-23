@@ -6,6 +6,7 @@ class Group
   belongs_to :org
   
   embeds_many :group_memberships
+  belongs_to :group_policy
   
   field :name, type:String
   field :description, type:String

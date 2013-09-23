@@ -1,7 +1,5 @@
 require 'sinatra'
 require 'fog'
-require 'tempfile'
-require "debugger"
 
 class GoogleComputeApp < ResourceApiBase
   
@@ -11,8 +9,9 @@ class GoogleComputeApp < ResourceApiBase
       if ! cloud_cred.nil?
        
         p12_file = Base64.decode64(cloud_cred.cloud_attributes['google_p12_key'])
-        file = File.new('googlecompute.p12','w+')
-        file.puts(p12_file)
+        random_file_name = Random.new_seed.to_s + ".p12"
+        file = File.new(random_file_name,'w+')
+        file.puts(p12_file.force_encoding("UTF-8"))
         file.close
        
         @compute = Fog::Compute::Google.new({
@@ -21,7 +20,7 @@ class GoogleComputeApp < ResourceApiBase
           :google_key_location => file.path
           })
         
-          File.delete('googlecompute.p12')
+          File.delete(random_file_name)
   
         end
       end
@@ -83,8 +82,6 @@ class GoogleComputeApp < ResourceApiBase
             :image_name => json_body["instance"]["image_name"],
             :machine_type => json_body["instance"]["machine_type"],
             :zone_name => json_body["instance"]["zone_name"],
-            #:private_key_path => File.expand_path("app/google/key/id_rsa"),
-            #:public_key_path => File.expand_path("app/google/key/id_rsa.pub"),
             :private_key_path => File.expand_path("id_rsa"),
             :public_key_path => File.expand_path("id_rsa.pub"),
             :user => ENV['USER'],
@@ -103,7 +100,7 @@ class GoogleComputeApp < ResourceApiBase
   
 	delete '/instances/:id' do
 		begin
-			response = @compute.servers.get(params[:id]).destroy
+			response = @compute.delete_server(params[:id],params[:region])
 			[OK, response.to_json]
 		rescue => error
 			handle_error(error)
@@ -115,8 +112,7 @@ class GoogleComputeApp < ResourceApiBase
   #
 	get '/images' do
     begin
-  		response = @compute.list_images
-      debugger
+      response = @compute.images.all
   		[OK, response.to_json]
     rescue => error
 				handle_error(error)
@@ -129,7 +125,7 @@ class GoogleComputeApp < ResourceApiBase
 			[BAD_REQUEST]
 		else
 			begin
-				response = @compute.images.create(json_body["image"])
+        response = @compute.insert_image(json_body["image"]["image_name"],json_body["image"])
 				[OK, response.to_json]
 			rescue => error
 				handle_error(error)
@@ -215,6 +211,15 @@ class GoogleComputeApp < ResourceApiBase
 		end
 	end
   
+	delete '/disks/:id' do
+    begin
+  		response = @compute.delete_disk(params[:id],params[:region])
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
+		end
+	end
+  
   #
   #Networks
   #
@@ -238,6 +243,62 @@ class GoogleComputeApp < ResourceApiBase
 			rescue => error
 				handle_error(error)
 			end
+		end
+	end
+  
+	delete '/networks/:id' do
+    begin
+  		response = @compute.delete_network(params[:id])
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
+		end
+	end
+  
+  #
+  #Firewalls
+  #
+	get '/firewalls' do
+    begin
+      response = @compute.list_firewalls
+  		[OK, response.body["items"].to_json]
+    rescue => error
+				handle_error(error)
+		end
+	end
+  
+	post '/firewalls' do
+		json_body = body_to_json(request)
+		if(json_body.nil?)
+			[BAD_REQUEST]
+		else
+			begin
+        firewall = @compute.insert_firewall(json_body["firewall"]["firewall_name"],json_body["firewall"]["source_range"],json_body["firewall"]["allowed"],json_body["firewall"]["network"])
+        [OK, firewall.to_json]
+			rescue => error
+				handle_error(error)
+			end
+		end
+	end
+  
+	delete '/firewalls/:id' do
+    begin
+  		response = @compute.delete_firewall(params[:id])
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
+		end
+	end
+  
+  #
+  #Snapshots
+  #
+	get '/snapshots' do
+    begin
+      response = @compute.list_snapshots
+  		[OK, response.body["items"].to_json]
+    rescue => error
+				handle_error(error)
 		end
 	end
 

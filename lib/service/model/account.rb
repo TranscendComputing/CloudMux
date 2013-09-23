@@ -33,8 +33,8 @@ class Account
   field :num_logins, type:Integer, default:0
 
   # indexes
-  index :login, unique: true
-  index "cloud_credentials._id"
+  index({login:1}, {unique:true})
+  index "cloud_credentials._id" => 1
 
   # Validation Rules
   validates_presence_of :login
@@ -46,19 +46,24 @@ class Account
 
   def self.find_by_login(login)
     return nil if login.nil? or login.empty?
-    return Account.find(:first, :conditions=>{ :login=>login}) || Account.find(:first, :conditions=>{ :email=>login})
+    return Account.where(login:login).first || Account.where(email:login).first
   end
 
   # finds the account that contains the cloud credentials and returns it
   def self.find_cloud_credential(cloud_credential_id)
     return nil if cloud_credential_id.nil?
-    account = Account.where({"cloud_credentials._id"=>BSON::ObjectId.from_string(cloud_credential_id.to_s)}).first
+    account = Account.where({"cloud_credentials._id"=>Moped::BSON::ObjectId.from_string(cloud_credential_id.to_s)}).first
     (account.nil? ? nil : account.cloud_credential(cloud_credential_id))
   end
 
   # filters the embedded cloud accounts by ID
   def cloud_credential(cloud_credential_id)
-    self.cloud_credentials.select { |ca| ca.id.to_s == cloud_credential_id.to_s }.first
+    cred = self.cloud_credentials.select { |ca| ca.id.to_s == cloud_credential_id.to_s }.first
+    #If openstack, merge the cloud_account's url to cloud_attributes hash
+    if ! cred.cloud_account.url.nil?
+      cred.cloud_attributes.merge!({"openstack_auth_url" => cred.cloud_account.url})
+    end
+    return cred
   end
 
   # sets the country for the account based on the country code (Representer support)
@@ -117,6 +122,19 @@ class Account
   end
 
   def subscriptions=(args); end; # empty impl to satisfy the representer
+  
+  def group_policies
+      policies = []
+      Group.each do |group|
+          group.group_memberships.each do |membership|
+              if membership.account_id == _id
+                  policies.push(group.group_policy)
+              end
+          end
+      end
+      return policies
+  end
+  def group_policies=(args); end; # empty impl to satisfy the representer
 
   class AccountSubscription
     attr_accessor :org_id, :org_name, :product, :billing_level, :role

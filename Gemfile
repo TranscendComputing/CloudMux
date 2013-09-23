@@ -18,7 +18,7 @@ gem 'mongo', '1.8.3'
 gem 'mongo_ext', '~> 0.19', :platform => :ruby # native extensions for performance
 gem 'bson_ext', '1.8.3', :platform => :ruby  # native extensions for performance
 gem 'bson', '1.8.3'
-gem 'mongoid', '2.4.3'
+gem 'mongoid'
 
 # CLI and Offline documentation generator
 gem 'httparty', '~> 0.8.1'
@@ -31,7 +31,7 @@ gem 'bcrypt-ruby', '~> 3.0.1'
 gem 'redcarpet', '~> 2.1.0'
 
 # Cloud Management
-gem 'fog', '1.14.0', :require => 'fog'
+gem 'fog', '1.15.0', :require => 'fog'
 gem 'rb-readline'
 gem 'debugger'
 
@@ -53,6 +53,9 @@ group :development, :test do
   gem 'awesome_print'
   gem 'database_cleaner'
   gem 'factory_girl', '~> 3.0.0'
+  gem 'shotgun'
+  gem 'pry'
+  gem 'pry-debugger'
 end
 
 # Google

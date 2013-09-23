@@ -4,7 +4,7 @@ require 'fog'
 class AwsRdsApp < ResourceApiBase
 
 	before do
-		if ! params[:cred_id].nil?
+		if ! params[:cred_id].nil? && Auth.validate(params[:cred_id],"Relational Database","action")
 			cloud_cred = get_creds(params[:cred_id])
 			if ! cloud_cred.nil?
 				if params[:region].nil? || params[:region] == "undefined" || params[:region] == ""
@@ -66,11 +66,12 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/databases' do
 		json_body = body_to_json(request)
-		if(json_body.nil?)
+		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Relational Database","create_rds",@rds.servers.length))
 			[BAD_REQUEST]
 		else
 			begin
 				response = @rds.servers.create(json_body["relational_database"])
+                Auth.validate(params[:cred_id],"Relational Database","create_default_alarms",{:params => params, :resource_id => response.id, :namespace => "AWS/RDS"})
 				[OK, response.to_json]
 			rescue => error
 				handle_error(error)

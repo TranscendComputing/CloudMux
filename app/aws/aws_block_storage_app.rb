@@ -4,7 +4,7 @@ require 'fog'
 class AwsBlockStorageApp < ResourceApiBase
 
 	before do
-		if ! params[:cred_id].nil?
+		if ! params[:cred_id].nil? && Auth.validate(params[:cred_id],"Elastic Block Storage","action")
 			cloud_cred = get_creds(params[:cred_id])
 			if ! cloud_cred.nil?
 				if params[:region].nil? || params[:region] == "undefined" || params[:region] == ""
@@ -74,6 +74,7 @@ class AwsBlockStorageApp < ResourceApiBase
 		else
 			begin
 				response = @block_storage.volumes.create(json_body["volume"])
+                Auth.validate(params[:cred_id],"Elastic Block Storage","create_default_alarms",{:params => params, :resource_id => response.id, :namespace => "AWS/EBS"})
 				[OK, response.to_json]
 			rescue => error
 				handle_error(error)

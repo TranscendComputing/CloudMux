@@ -3,80 +3,100 @@ require 'json'
 require 'debugger'
 
 class Puppet
-    class RestClient
+    class Client
     
-        def initialize(master_url, key, cert, cacert, environment="production")
+        def initialize(url, foreman_user, foreman_password, environment="production")
             @rest = RestClient::Resource.new(
-                "#{master_url}/#{environment}",
-                :ssl_client_cert  =>  OpenSSL::X509::Certificate.new(cert),
-                :ssl_client_key   =>  OpenSSL::PKey::RSA.new(key),
-                :ssl_ca_file      =>  OpenSSL::X509::Certificate.new(cacert),
-                :verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
+                "#{url}/",
+                :user => foreman_user,
+                :password => foreman_password,
+                :headers => {:accept => 'version=2'}
                 )
         end
-        
-        def list_resources
-            response = @rest.get "#{@url}/resource_types/*", {:accept => :pson}
-            @resources = JSON.parse(response)
-            return @resources
+
+        def get_agents
+            agents = @rest['/api/hosts'].get
+            response = JSON.parse(agents);
+            result = {};
+            response.each { |host|
+                name = host["host"]["name"]
+                id = host["host"]["id"];
+                result[name] = id;
+            }
+            return result;
         end
-        
-        def list_class_resources
-            return get_types("class")
-        end 
-        
-        def list_module_resources
-            classes = list_class_resources
-            modules = []
-            classes.each do |c|
-                unless c["file"].match("/init.pp").nil?
-                    #moduleJson = { :"name" =>c["name"]}
-                    modules << c
+
+        def get_agent_classes(host_id)
+            class_ids = @rest['api/hosts/' + host_id + "/puppetclass_ids"].get
+            return JSON.parse(class_ids);
+        end
+
+        def update_classes(host_id, class_list)
+            class_ids = get_agent_classes(host_id).to_set.map!(&:to_s)
+
+            toAdd = (class_list.to_set - class_ids).to_a
+            added = [];
+            toAdd.each{|id|
+                @rest['/api/hosts/'+host_id+"/puppetclass_ids"].post :puppetclass_id=>id
+                added << id
+            }
+            #Body doesn't seem to be right format for some reason?  Have to iteratively update classes using /api/hosts/:host_id/puppetclass?puppetclass_id=## API
+            # class_ids = get_agent_classes(host_id).to_set
+            # class_ids.map!(&:to_s)
+            # class_ids.merge(class_list)
+            # putBody = {:puppetclass_ids => class_ids.to_a}
+            #response = @rest['api/hosts/'+host_id].put putBody, :content_type => 'application/json', :accept=>"version=2"
+
+            return {:message=>"Added classes to agent configuration"}
+        end
+
+        def get_facts
+            facts = @rest['/api/fact_values'].get :params=>{:per_page=>"100000"}
+            return JSON.parse(facts);
+        end
+
+        def flatten_facts(factsList)
+            flattened = {};
+            factsList.each{|host, facts|
+                flattened[facts["ipaddress"]] = host
+                flattened[facts["hostname"]] = host
+            }
+            return flattened;
+        end
+
+        def get_classes
+            classes = @rest['/api/puppetclasses'].get :params=>{:per_page=>"100000"}
+            return JSON.parse(classes);
+        end
+
+        def find_agents(instances)
+            result = []
+            agents = get_agents
+            facts = flatten_facts(get_facts)
+
+            instances.each_with_index{|instanceInfo, index|
+                name = instanceInfo["name"]
+                ip_addrs = instanceInfo["ip_addresses"]
+
+                agentId = agents[name];
+                if(!agentId && ip_addrs)
+                    agent = facts[name]
+                    if(!agent)
+                        ip_addrs.each{|addr|
+                            agent = facts[addr]
+                        }
+                    end
+                    agentId = agents[agent]
                 end
-            end
-            return modules
-        end
-        
-        def list_node_resources
-            get_types("node")
-        end
-        
-        def list_facts(node)
-            response = @rest.get "#{@url}/facts/#{node}", {:accept => :pson}
-            return JSON.parse(response)
-        end
-        
-        def list_all_agents
-            response = @rest.get "#{@url}/facts_search/search?facts.hostname.ne=", {:accept => :pson}
-            @agents = JSON.parse(response)
-            return @agents
-        end
-        
-        def search_by_facts(fact_name, fact_value)
-            response = @rest.get "#{@url}/facts_search/search?facts.#{fact_name}=#{fact_value}", {:accept => :pson}
-            return JSON.parse(response)
-        end
-        
-        def describe_all_agents
-            @agents ||= list_all_agents
-            query = []
-            @agents.each do |a|
-                query << list_facts(a)
-            end
-            return query
-        end
-        
-        private
-        
-        def get_types(type)
-            @resources ||= list_resources
-            types = []
-            @resources.each do |res|
-                if res["kind"] == type
-                    types << res
+                if(agentId)
+                    result << {:foreman_id => agentId}
+                else
+                    result << {}
                 end
-            end
-            return types
+            }
+            return result;
         end
+        
+        
     end
 end

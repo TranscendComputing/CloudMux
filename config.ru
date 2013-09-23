@@ -6,21 +6,20 @@ require 'fog'
 # require the dependencies
 require File.join(File.dirname(__FILE__), 'app', 'init')
 require 'app/api_base'
-require 'app/template_api_app'
-require 'app/account_api_app'
 require 'app/stack_api_app'
+require 'app/offering_api_app'
+require 'app/portfolio_api_app'
 require 'app/identity_api_app'
 require 'app/org_api_app'
-require 'app/category_api_app'
+require 'app/policy_api_app'
 require 'app/cloud_account_api_app'
 require 'app/cloud_api_app'
 require 'app/project_api_app'
 require 'app/provisioning_api_app'
 require 'app/report_api_app'
-require 'app/news_event_api_app'
 require 'app/root_app'
 require 'app/resource_api_base'
-require 'app/orchestration_api_app'
+require 'app/assembly_api_app'
 require 'app/aws/aws_compute_app'
 require 'app/aws/aws_autoscale_app'
 require 'app/aws/aws_block_storage_app'
@@ -36,6 +35,7 @@ require 'app/aws/aws_iam_app'
 require 'app/aws/aws_queue_app'
 require 'app/aws/aws_simpledb_app'
 require 'app/google/google_compute_app'
+require 'app/google/google_object_storage_app'
 require 'app/openstack/openstack_compute_app'
 require 'app/openstack/openstack_block_storage_app'
 require 'app/openstack/openstack_object_storage_app'
@@ -48,8 +48,9 @@ require 'app/topstack/topstack_rds_app'
 require 'app/topstack/topstack_queue_app'
 require 'app/topstack/topstack_cache_app'
 require 'app/topstack/topstack_dns_app'
-
-
+require 'app/orchestration/config_managers_api_app'
+require 'app/orchestration/chef_api_app'
+require 'app/orchestration/puppet_api_app'
 
 # By default, Ruby buffers its output to stdout. To take advantage of
 # Heroku's realtime logging, you will need to disable this buffering
@@ -57,7 +58,6 @@ require 'app/topstack/topstack_dns_app'
 # infrastructure
 # http://devcenter.heroku.com/articles/ruby#logging
 $stdout.sync = true
-
 
 # Sinatra now has logging - disable for tests
 configure(:test) { disable :logging }
@@ -83,28 +83,10 @@ set :method_override, :true
 ##~ sapi.apiVersion = "1.0"
 
 #
-# Templates API
+# API Documentation and static files (stylesheets, etc)
 #
-map "/stackplace/v1/templates" do
-  run TemplateApiApp
-end
-
-#
-# Stacks API
-#
-map "/stackplace/v1/stacks" do
-  run StackApiApp
-end
-
-#
-# Accounts API (public)
-#
-##~ a = sapi.apis.add
-## 
-##~ a.set :path => "/accounts.{format}", :format => "json"
-##~ a.description = "Manage system accounts"
-map "/stackplace/v1/accounts" do
-  run AccountApiApp
+map "/" do
+  run RootApp
 end
 
 #
@@ -126,10 +108,10 @@ map "/identity/v1/orgs" do
 end
 
 #
-# Categories API (internal)
+# Identity Policies API (internal)
 #
-map "/stackplace/v1/categories" do
-  run CategoryApiApp
+map "/identity/v1/policies" do
+  run PolicyApiApp
 end
 
 #
@@ -163,6 +145,27 @@ map "/api/v1/cloud_accounts" do
 end
 
 #
+# Stacks API (internal)
+#
+map "/stackstudio/v1/stacks" do
+  run StackApiApp
+end
+
+#
+# Offerings API (internal)
+#
+map "/stackstudio/v1/offerings" do
+  run OfferingApiApp
+end
+
+#
+# Portfolios API (internal)
+#
+map "/stackstudio/v1/portfolios" do
+  run PortfolioApiApp
+end
+
+#
 # Projects API (internal)
 #
 map "/stackstudio/v1/projects" do
@@ -184,17 +187,24 @@ map "/stackstudio/v1/report" do
 end
 
 #
-# News Events API (internal)
+# Chef Management API
 #
-map "/stackstudio/v1/news_events" do
-  run NewsEventApiApp
+map "/stackstudio/v1/orchestration/chef" do
+  run ChefApiApp
 end
 
 #
-# API Documentation and static files (stylesheets, etc)
+# Puppet Management API
 #
-map "/" do
-  run RootApp
+map "/stackstudio/v1/orchestration/puppet" do
+  run PuppetApiApp
+end
+
+#
+# Assemblies API (internal)
+#
+map "/stackstudio/v1/assemblies" do
+  run AssemblyApiApp
 end
 
 #
@@ -497,9 +507,18 @@ end
 map "/stackstudio/v1/cloud_management/google/compute" do
   run GoogleComputeApp
 end
+
 #
-#	Puppet/Chef API
+# Google Cloud Storage API
 #
-map "/stackstudio/v1/orchestration" do
-  run OrchestrationApiApp
+map "/stackstudio/v1/cloud_management/google/object_storage" do
+  run GoogleObjectStorageApp
 end
+
+#
+#	Configuration Managers API
+#
+map "/stackstudio/v1/orchestration/managers" do
+  run ConfigManagerApiApp
+end
+

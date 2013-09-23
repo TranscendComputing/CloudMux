@@ -4,7 +4,7 @@ require 'fog'
 class AwsAutoscaleApp < ResourceApiBase
 
 	before do
-		if ! params[:cred_id].nil?
+		if ! params[:cred_id].nil? && Auth.validate(params[:cred_id],"Auto Scale","action")
 			cloud_cred = get_creds(params[:cred_id])
 			if ! cloud_cred.nil?
 				if params[:region].nil? || params[:region] == "undefined" || params[:region] == ""
@@ -70,8 +70,17 @@ class AwsAutoscaleApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"	
 	post '/autoscale_groups' do
-		json_body = body_to_json(request)
-		if(json_body.nil? || json_body["launch_configuration"].nil? || json_body["autoscale_group"].nil?)
+        json_body = body_to_json(request)
+        
+        max_instances = 0
+        @autoscale.groups.each do |group|
+            max_instances += group.max_size
+        end
+        if ! json_body["autoscale_group"].nil?
+            max_instances += json_body["autoscale_group"]["MaxSize"]
+        end
+        
+		if(json_body.nil? || json_body["launch_configuration"].nil? || json_body["autoscale_group"].nil? || ! Auth.validate(params[:cred_id],"Auto Scale","create_autoscale",max_instances-1))
 			[BAD_REQUEST]
 		else
 			begin

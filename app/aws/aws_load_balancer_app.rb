@@ -4,7 +4,7 @@ require 'fog'
 class AwsLoadBalancerApp < ResourceApiBase
 
 	before do
-		if ! params[:cred_id].nil?
+		if ! params[:cred_id].nil? && Auth.validate(params[:cred_id],"Elastic Load Balancer","action")
 			cloud_cred = get_creds(params[:cred_id])
 			if ! cloud_cred.nil?
 				if params[:region].nil? || params[:region] == "undefined" || params[:region] == ""
@@ -76,6 +76,7 @@ class AwsLoadBalancerApp < ResourceApiBase
 				else
 					response = @elb.create_load_balancer(lb["availability_zones"], lb["id"], lb["listeners"], lb["options"])
 				end
+                Auth.validate(params[:cred_id],"Elastic Load Balancer","create_default_alarms",{:params => params, :resource_id => lb["id"], :namespace => "AWS/ELB"})
 				[OK, response.to_json]
 			rescue => error
 				handle_error(error)

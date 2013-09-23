@@ -4,7 +4,7 @@ require 'fog'
 class AwsNotificationApp < ResourceApiBase
 
 	before do
-		if ! params[:cred_id].nil?
+		if ! params[:cred_id].nil? && Auth.validate(params[:cred_id],"Simple Notification","action")
 			cloud_cred = get_creds(params[:cred_id])
 			if ! cloud_cred.nil?
 				if params[:region].nil? || params[:region] == "undefined" || params[:region] == ""
@@ -111,6 +111,7 @@ class AwsNotificationApp < ResourceApiBase
 		else
 			begin
 				response = @notification.create_topic(json_body["topic"]["name"])
+                Auth.validate(params[:cred_id],"Simple Notification","create_default_alarms",{:params => params, :resource_id => json_body["topic"]["name"], :namespace => "AWS/SNS"})
 				[OK, response.to_json]
 			rescue => error
 				handle_error(error)

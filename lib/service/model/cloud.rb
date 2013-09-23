@@ -11,8 +11,8 @@ class Cloud
   field :public, type:Boolean, default:true
   field :permalink, type:String
 
-  index :permalink, :unique=>true
-  index :public
+  index({permalink:1}, {unique:true})
+  index({public:1})
 
   # Validation Rules
   validates_presence_of :name
@@ -24,7 +24,7 @@ class Cloud
 
   def self.find_by_permalink(perma)
     return nil if perma.nil? or perma.empty?
-    return self.find(:first, :conditions=>{ :permalink=>perma})
+    return self.find_by(permalink:perma)
   end
 
   def set_permalink

@@ -4,7 +4,8 @@ require 'fog'
 class AwsIamApp < ResourceApiBase
 
 	before do
-		if ! params[:cred_id].nil?
+		if ! params[:cred_id].nil? && Auth.validate(params[:cred_id],"IAM","action")
+            #halt [BAD_REQUEST] if ! Auth.validate(params[:cred_id],"IAM","action")
 			cloud_cred = get_creds(params[:cred_id])
 			if ! cloud_cred.nil?
 				@iam = Fog::AWS::IAM.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
