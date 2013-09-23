@@ -60,6 +60,17 @@ class ConfigManagerApiApp < ApiBase
         end
     end
 
+    put '/:manager_id' do
+        attrs = JSON.parse(request.body.read)
+        manager = ConfigManager.find(params[:manager_id]);
+        result = manager.update_attributes!(attrs)
+        if(result)
+            [OK, {:message=>"Successfully updated configuration manager."}.to_json]
+        else
+            [BAD_REQUEST, {:message=>"Could not update configuration manager"}.to_json]
+        end
+    end
+
 
     get '/account/:account_id' do
         account = CloudAccount.find(params[:account_id]).extend(UpdateCloudAccountRepresenter)
