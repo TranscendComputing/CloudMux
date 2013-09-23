@@ -4,6 +4,7 @@ module Auth
   
     # Validate
     def Auth.validate(cred_id,service_name,action,options = nil)
+        return true if Auth.find_account(cred_id).permissions.length > 0
         policies = Auth.find_group_policies(cred_id)
         policies.each do |policy|
             if ! Auth.validatePolicy(policy,service_name,action,options)
