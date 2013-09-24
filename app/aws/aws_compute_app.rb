@@ -1083,6 +1083,10 @@ class AwsComputeApp < ResourceApiBase
                 options = {'Owner' => 'amazon'}
             elsif params[:platform] == 'internal'
                 options = {'Owner' => 'self'}
+            elsif params[:platform] == 'ubuntu'
+                options = {'manifest-location' => '*'+params[:platform]+'*',
+                                       'is-public' => true,
+                                       'Owner' => 'aws-marketplace'}
             else
                 options = {'manifest-location' => '*'+params[:platform]+'*',
                                        'is-public' => true}
