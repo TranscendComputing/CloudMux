@@ -6,26 +6,22 @@ class GoogleComputeApp < ResourceApiBase
   before do
     if ! params[:cred_id].nil?
       cloud_cred = get_creds(params[:cred_id])
-      if ! cloud_cred.nil?
-       
+      if ! cloud_cred.nil?       
         p12_file = Base64.decode64(cloud_cred.cloud_attributes['google_p12_key'])
         random_file_name = Random.new_seed.to_s + ".p12"
         file = File.new(random_file_name,'w+')
         file.puts(p12_file.force_encoding("UTF-8"))
         file.close
-       
         @compute = Fog::Compute::Google.new({
           :google_project => cloud_cred.cloud_attributes['google_project_id'],
           :google_client_email => cloud_cred.cloud_attributes['google_client_email'],
           :google_key_location => file.path
-          })
-        
-          File.delete(random_file_name)
-  
-        end
+          })        
+        File.delete(random_file_name)  
       end
-      halt [BAD_REQUEST] if @compute.nil?
     end
+    halt [BAD_REQUEST] if @compute.nil?
+  end
   
   #
   #Instance
