@@ -4,7 +4,6 @@ module Auth
   
     # Validate
     def Auth.validate(cred_id,service_name,action,options = nil)
-        return true if Auth.find_account(cred_id).permissions.length > 0
         policies = Auth.find_group_policies(cred_id)
         policies.each do |policy|
             if ! Auth.validatePolicy(policy,service_name,action,options)
@@ -66,6 +65,7 @@ module Auth
     
     #Enabled Services
     def Auth.canUseService(enabled_services,service_name)
+        return true if Auth.find_account(cred_id).permissions.length > 0
         if enabled_services.nil?
             return false
         elsif enabled_services.is_a? String
@@ -84,6 +84,7 @@ module Auth
     
     #Max Instances
     def Auth.canCreateInstance(max_instance,options)
+        return true if Auth.find_account(cred_id).permissions.length > 0
         if max_instance == ""
             return true
         elsif options >= max_instance.to_i
@@ -94,6 +95,7 @@ module Auth
     
     #Modify Gateways
     def Auth.canModifyGateway(vpc_rules,gw_type)
+        return true if Auth.find_account(cred_id).permissions.length > 0
         return false if !vpc_rules.include?(gw_type)
         return true
     end
