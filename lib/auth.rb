@@ -4,10 +4,9 @@ module Auth
   
     # Validate
     def Auth.validate(cred_id,service_name,action,options = nil)
-        return true if Auth.find_account(cred_id).permissions.length > 0
         policies = Auth.find_group_policies(cred_id)
         policies.each do |policy|
-            if ! Auth.validatePolicy(policy,service_name,action,options)
+            if ! Auth.validatePolicy(cred_id,policy,service_name,action,options)
                 return false
             end
         end
@@ -35,12 +34,12 @@ module Auth
     end
 
     #List of Actions
-    def Auth.validatePolicy(policy,service_name,action,options)
+    def Auth.validatePolicy(cred_id,policy,service_name,action,options)
         if policy.nil?
             return true
         end
         aws_governance = policy.aws_governance
-        if action == 'action' && ! Auth.canUseService(aws_governance['enabled_services'],service_name)
+        if action == 'action' && ! Auth.canUseService(cred_id,aws_governance['enabled_services'],service_name)
             return false
         elsif action == 'create_instance' && ! Auth.canCreateInstance(aws_governance['max_on_demand'],options)
             return false
@@ -65,7 +64,8 @@ module Auth
     end
     
     #Enabled Services
-    def Auth.canUseService(enabled_services,service_name)
+    def Auth.canUseService(cred_id,enabled_services,service_name)
+        return true if Auth.find_account(cred_id).permissions.length > 0
         if enabled_services.nil?
             return false
         elsif enabled_services.is_a? String
