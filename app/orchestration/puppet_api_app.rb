@@ -29,7 +29,11 @@ class PuppetApiApp < ApiBase
     end
 
     get '/agents' do
-        agents = @puppet.get_agents
+        begin
+            agents = @puppet.get_agents
+        rescue Excon::Errors::SocketError
+            [BAD_REQUEST, {:message=>"Could not connect to Puppet Foreman."}.to_json]
+        end
         if(agents)
             [OK, agents.to_json]
         else
@@ -44,7 +48,11 @@ class PuppetApiApp < ApiBase
             message.message = "Must supply ids of instances to search for"
             [BAD_REQUEST, message.to_json]
         else
-            agent_ids = @puppet.find_agents(instanceData);
+            begin
+                agent_ids = @puppet.find_agents(instanceData);
+            rescue Excon::Errors::SocketError
+                [BAD_REQUEST, {:message=>"Could not connect to Puppet Foreman."}.to_json]
+            end
             [OK, agent_ids.to_json];
         end
     end
@@ -53,9 +61,11 @@ class PuppetApiApp < ApiBase
         body = request.body.read
         class_list = JSON.parse(body)["puppetclass_ids"]
         begin
-        response = @puppet.update_classes(params[:agent_id], class_list)
+            response = @puppet.update_classes(params[:agent_id], class_list)
         rescue RestClient::InternalServerError
             [BAD_REQUEST, {:message=>"Internal Server Error"}.to_json]
+        rescue Excon::Errors::SocketError
+            [BAD_REQUEST, {:message=>"Could not connect to Puppet Foreman."}.to_json]
         end
         if(response)
             [OK, response.to_json]
@@ -65,7 +75,12 @@ class PuppetApiApp < ApiBase
     end
 
     get '/classes' do
-        classes = @puppet.get_classes
+        begin
+            classes = @puppet.get_classes
+        rescue Excon::Errors::SocketError
+            [BAD_REQUEST, {:message=>"Could not connect to Puppet Foreman."}.to_json]
+        end
+
         if(classes)
             [OK, classes.to_json]
         else

@@ -29,68 +29,108 @@ class ChefApiApp < ApiBase
     end
     
     get '/cookbooks' do
-        cookbooks = @chef.list_cookbooks
-        [OK, cookbooks.to_json]
+        begin
+            cookbooks = @chef.list_cookbooks
+            [OK, cookbooks.to_json]
+        rescue Spice::Error::ClientError
+            [BAD_REQUEST, {:message=>"Could not connect to chef server"}.to_json]
+        end
     end
 
     get '/cookbooks/:name/:version' do
-        recipes = @chef.get_recipes(params[:name], params[:version])
-        [OK, recipes.to_json]
+        begin
+            recipes = @chef.get_recipes(params[:name], params[:version])
+            [OK, recipes.to_json]
+        rescue Spice::Error::ClientError
+            [BAD_REQUEST, {:message=>"Could not connect to chef server"}.to_json]
+        end
     end
 
     get '/environments' do
-        environments = @chef.get_environments();
-        [OK, environments.to_json]
+        begin
+            environments = @chef.get_environments();
+            [OK, environments.to_json]
+        rescue Spice::Error::ClientError
+            [BAD_REQUEST, {:message=>"Could not connect to chef server"}.to_json]
+        end
     end
 
     get '/environments/:env_name' do
-        env = @chef.get_environment(params[:env_name])
-        [OK, env.to_json]
+        begin
+            env = @chef.get_environment(params[:env_name])
+            [OK, env.to_json]
+        rescue Spice::Error::ClientError
+            [BAD_REQUEST, {:message=>"Could not connect to chef server"}.to_json]
+        end
     end
 
     get '/roles' do
-        roles = @chef.get_roles();
-        [OK, roles.to_json]
+        begin
+            roles = @chef.get_roles();
+            [OK, roles.to_json]
+        rescue Spice::Error::ClientError
+            [BAD_REQUEST, {:message=>"Could not connect to chef server"}.to_json]
+        end
     end
 
     get '/roles/:role_name' do
-        role = @chef.get_role(params[:role_name]);
-        [OK, role.to_json]
+        begin
+            role = @chef.get_role(params[:role_name]);
+            [OK, role.to_json]
+        rescue Spice::Error::ClientError
+            [BAD_REQUEST, {:message=>"Could not connect to chef server"}.to_json]
+        end
     end
 
     get '/nodes' do
-        nodes = @chef.get_nodes()
-        [OK, nodes.to_json]
+        begin
+            nodes = @chef.get_nodes()
+            [OK, nodes.to_json]
+        rescue Spice::Error::ClientError
+            [BAD_REQUEST, {:message=>"Could not connect to chef server"}.to_json]
+        end
     end
     get '/nodes/find' do
-        name = params[:name];
-        if(!name)
-            message = Error.new.extend(ErrorRepresenter)
-            message.message = "Must supply the name parameter"
-            [BAD_REQUEST, message.to_json]
-        else
-            node = @chef.find_node(name);
-            if(node)
-                [OK, node.to_json]
+        begin
+            name = params[:name];
+            if(!name)
+                message = Error.new.extend(ErrorRepresenter)
+                message.message = "Must supply the name parameter"
+                [BAD_REQUEST, message.to_json]
             else
-                [OK, {}.to_json]
+                node = @chef.find_node(name);
+                if(node)
+                    [OK, node.to_json]
+                else
+                    [OK, {}.to_json]
+                end
             end
+        rescue Spice::Error::ClientError
+            [BAD_REQUEST, {:message=>"Could not connect to chef server"}.to_json]
         end
     end
     post '/nodes/find' do
-        names = JSON.parse(request.body.read)
-        if(!names || names.length == 0)
-            message = Error.new.extend(ErrorRepresenter)
-            message.message = "Must supply names of instances to search for"
-            [BAD_REQUEST, message.to_json]
-        else
-            nodes = @chef.find_nodes(names);
-            [OK, nodes.to_json];
+        begin
+            names = JSON.parse(request.body.read)
+            if(!names || names.length == 0)
+                message = Error.new.extend(ErrorRepresenter)
+                message.message = "Must supply names of instances to search for"
+                [BAD_REQUEST, message.to_json]
+            else
+                nodes = @chef.find_nodes(names);
+                [OK, nodes.to_json];
+            end
+        rescue Spice::Error::ClientError
+            [BAD_REQUEST, {:message=>"Could not connect to chef server"}.to_json]
         end
     end
     get '/nodes/:node_name' do
-        node = @chef.get_node(params[:node_name])
-        [OK, node.to_json]
+        begin
+            node = @chef.get_node(params[:node_name])
+            [OK, node.to_json]
+        rescue Spice::Error::ClientError
+            [BAD_REQUEST, {:message=>"Could not connect to chef server"}.to_json]
+        end
     end
 
     put '/nodes/:node_name' do
@@ -105,7 +145,8 @@ class ChefApiApp < ApiBase
             message = Error.new.extend(ErrorRepresenter)
             message.message = error.message
             [BAD_REQUEST, message.to_json]
+        rescue Spice::Error::ClientError
+            [BAD_REQUEST, {:message=>"Could not connect to chef server"}.to_json]
         end
     end
-    
 end

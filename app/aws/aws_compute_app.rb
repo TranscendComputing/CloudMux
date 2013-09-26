@@ -340,7 +340,7 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.parameters.add :name => "name", :description => "Name to give key pair", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	##~ op.errorResponses.add :reason => "Success, instance terminated", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
-	post '/key_pairs' do
+	post '/key_pairs/create' do
 		if(params[:name].nil?)
 			[BAD_REQUEST]
 		else
@@ -926,7 +926,8 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/internet_gateways' do
 		begin
-			response = @compute.internet_gateways.create
+            permissions = Auth.find_account(params[:cred_id]).permissions
+			response = @compute.internet_gateways.create if Auth.validate(params[:cred_id],"Elastic Compute Cloud","modify_gateway",{gw_type:"admin_internet_gateway",permissions: permissions})
 			[OK, response.to_json]
 		rescue => error
 			handle_error(error)
@@ -1082,6 +1083,10 @@ class AwsComputeApp < ResourceApiBase
                 options = {'Owner' => 'amazon'}
             elsif params[:platform] == 'internal'
                 options = {'Owner' => 'self'}
+            elsif params[:platform] == 'ubuntu'
+                options = {'manifest-location' => '*'+params[:platform]+'*',
+                                       'is-public' => true,
+                                       'Owner' => 'aws-marketplace'}
             else
                 options = {'manifest-location' => '*'+params[:platform]+'*',
                                        'is-public' => true}
