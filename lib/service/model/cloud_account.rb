@@ -15,6 +15,7 @@ class CloudAccount
 
   field :name, type:String
   field :url, type:String
+  field :default_region, type:String
   field :protocol, type:String
   field :host, type:String
   field :port, type:String

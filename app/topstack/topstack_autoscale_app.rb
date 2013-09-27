@@ -73,13 +73,15 @@ class TopStackAutoscaleApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/autoscale_groups' do
-		json_body = body_to_json(request)
-		if(json_body.nil? || json_body["launch_configuration"].nil? || json_body["autoscale_group"].nil?)
+        json_body = body_to_json(request)
+		if(json_body.nil? || json_body["launch_configuration"].nil? || json_body["autoscale_group"].nil? || params[:cred_id].nil?)
 			[BAD_REQUEST]
 		else
 			begin
+                region = get_creds(params[:cred_id]).cloud_account.default_region
 				launch_config = json_body["launch_configuration"]
 				autoscale_group = json_body["autoscale_group"]
+                autoscale_group['AvailabilityZones'] = [region]
 
 				@autoscale.configurations.create(launch_config)
 				response = @autoscale.groups.create(autoscale_group)
