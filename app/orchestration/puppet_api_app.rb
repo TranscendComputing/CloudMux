@@ -77,7 +77,7 @@ class PuppetApiApp < ApiBase
     get '/classes' do
         begin
             classes = @puppet.get_classes
-        rescue Excon::Errors::SocketError
+        rescue Excon::Errors::SocketError, Errno::EHOSTUNREACH
             [BAD_REQUEST, {:message=>"Could not connect to Puppet Foreman."}.to_json]
         end
 
