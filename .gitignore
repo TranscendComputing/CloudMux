@@ -6,3 +6,4 @@ vendor
 tags
 *.sublime*
 .DS_Store
+*.p12
