@@ -36,4 +36,22 @@ class PackedImagesApiApp < ApiBase
         response = http.request(Net::HTTP::Get.new(uri.request_uri))
         [OK, response.body]
     end
+    
+    post '/save' do
+        body = JSON.parse(request.body.read)
+        packed_image = body['packed_image']
+        docid = params[:docid]
+        response = nil
+        if docid.nil?
+            uri = URI.parse("http://localhost:8080/packer/"+params[:uid])
+            http = Net::HTTP.new(uri.host, uri.port)
+            response = http.request(Net::HTTP::Put.new(uri.request_uri,packed_image))
+        else
+            uri = URI.parse("http://localhost:8080/packer/"+params[:uid]+"/"+docid)
+            http = Net::HTTP.new(uri.host, uri.port)
+            response = http.request(Net::HTTP::Post.new(uri.request_uri,packed_image))
+        end
+        binding.pry
+        [OK, response.body]
+    end
 end
