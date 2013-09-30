@@ -3,35 +3,35 @@ require 'pry'
 
 class PackedImagesApiApp < ApiBase
     get '/' do
-        uri = URI.parse("http://localhost:8080/templates/builders")
+        uri = URI.parse("http://localhost:9090/templates/builders")
         http = Net::HTTP.new(uri.host, uri.port)
         response = http.request(Net::HTTP::Get.new(uri.request_uri))
         [OK, response.body]
     end
     
     get '/builders' do
-        uri = URI.parse("http://localhost:8080/templates/builders")
+        uri = URI.parse("http://localhost:9090/templates/builders")
         http = Net::HTTP.new(uri.host, uri.port)
         response = http.request(Net::HTTP::Get.new(uri.request_uri))
         [OK, response.body]
     end
     
     get '/builders/:id' do
-        uri = URI.parse("http://localhost:8080/templates/builders/"+params[:id])
+        uri = URI.parse("http://localhost:9090/templates/builders/"+params[:id])
         http = Net::HTTP.new(uri.host, uri.port)
         response = http.request(Net::HTTP::Get.new(uri.request_uri))
         [OK, response.body]
     end
     
     get '/provisioners' do
-        uri = URI.parse("http://localhost:8080/templates/provisioners")
+        uri = URI.parse("http://localhost:9090/templates/provisioners")
         http = Net::HTTP.new(uri.host, uri.port)
         response = http.request(Net::HTTP::Get.new(uri.request_uri))
         [OK, response.body]
     end
     
     get '/provisioners/:id' do
-        uri = URI.parse("http://localhost:8080/templates/provisioners/"+params[:id])
+        uri = URI.parse("http://localhost:9090/templates/provisioners/"+params[:id])
         http = Net::HTTP.new(uri.host, uri.port)
         response = http.request(Net::HTTP::Get.new(uri.request_uri))
         [OK, response.body]
@@ -43,13 +43,13 @@ class PackedImagesApiApp < ApiBase
         docid = params[:docid]
         response = nil
         if docid.nil?
-            #uri = URI.parse("http://localhost:8080/packer/"+params[:uid])
+            #uri = URI.parse("http://localhost:9090/packer/"+params[:uid])
             #http = Net::HTTP.new(uri.host, uri.port)
             #response = http.request(Net::HTTP::Put.new(uri.request_uri,packed_image))
-            http = Net::HTTP.new('localhost', 8080)
+            http = Net::HTTP.new('localhost', 9090)
             response = http.send_request('PUT', '/packer/'+params[:uid],packed_image.to_json)
         else
-            uri = URI.parse("http://localhost:8080/packer/"+params[:uid]+"/"+docid)
+            uri = URI.parse("http://localhost:9090/packer/"+params[:uid]+"/"+docid)
             http = Net::HTTP.new(uri.host, uri.port)
             response = http.request(Net::HTTP::Post.new(uri.request_uri,packed_image))
         end
