@@ -73,7 +73,9 @@ class TopStackRdsApp < ResourceApiBase
 			[BAD_REQUEST]
 		else
 			begin
-				response = @rds.servers.create(json_body["relational_database"])
+                region = get_creds(params[:cred_id]).cloud_account.default_region
+				json_body["relational_database"]['availability_zone'] = region
+                response = @rds.servers.create(json_body["relational_database"])
 				[OK, response.to_json]
 			rescue => error
 				handle_error(error)
