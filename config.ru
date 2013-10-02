@@ -51,6 +51,7 @@ require 'app/topstack/topstack_dns_app'
 require 'app/orchestration/config_managers_api_app'
 require 'app/orchestration/chef_api_app'
 require 'app/orchestration/puppet_api_app'
+require 'app/orchestration/salt_api_app'
 require 'app/packed_images/packed_images_app'
 
 # By default, Ruby buffers its output to stdout. To take advantage of
@@ -199,6 +200,13 @@ end
 #
 map "/stackstudio/v1/orchestration/puppet" do
   run PuppetApiApp
+end
+
+#
+# Salt Management API
+#
+map "/stackstudio/v1/orchestration/salt" do
+  run SaltApiApp
 end
 
 #
