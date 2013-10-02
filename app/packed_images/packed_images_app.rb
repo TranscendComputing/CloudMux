@@ -45,7 +45,7 @@ class PackedImagesApiApp < ApiBase
         if docid.nil?
             http = Net::HTTP.new('localhost', 9090)
             response = http.send_request('PUT', '/packer/'+params[:uid],packed_image.to_json)
-            PackedImage.create(name:"testImage",doc_id:JSON.parse(response.body)['Id'],org_id:params[:uid])
+            PackedImage.create(name:body['name'],doc_id:JSON.parse(response.body)['Id'],org_id:params[:uid])
         else
             #uri = URI.parse("http://localhost:9090/packer/"+params[:uid]+"/"+docid)
             #http = Net::HTTP.new(uri.host, uri.port)
