@@ -7,5 +7,5 @@ class PackedImage
   
   field :doc_id, type:String
   field :name, type:String
-  field :image, type:Hash
+  field :packed_image, type:Hash
 end
