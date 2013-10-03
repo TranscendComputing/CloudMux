@@ -60,12 +60,18 @@ class Salt
                 end
 
                 if(minionInfo)
-                    result << {name => minionInfo["id"]}
+                    result << {:name => minionInfo["id"]}
                 else
                     result << {}
                 end
             }
             return result;
+        end
+
+        def run_states(minion, states)
+            #tgt=salt-minion2&fun=state.sls&client=local_async&arg=edit.vim
+            stateList = states.join(",");
+            @rest['/'].post({:tgt=>minion,:fun=>"state.sls",:client=>"local_async",:arg=>stateList})
         end
     end
 end

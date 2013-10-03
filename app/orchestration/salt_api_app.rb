@@ -31,6 +31,8 @@ class SaltApiApp < ApiBase
             [OK, result.to_json]
         rescue RestClient::Unauthorized
             [UNAUTHORIZED, {:message => "Invalid Salt user/password combination."}];
+        rescue Errno::ECONNREFUSED
+            [BAD_REQUEST, {:message => "Connection was refused"}]
         end
     end
     post '/minions/find' do
@@ -46,6 +48,21 @@ class SaltApiApp < ApiBase
             end
         rescue RestClient::Unauthorized
             [UNAUTHORIZED, {:message => "Invalid Salt user/password combination."}];
+        rescue Errno::ECONNREFUSED
+            [BAD_REQUEST, {:message => "Connection was refused"}]
+        end
+    end
+
+    put '/minions/:minion_name' do
+        begin
+
+            body = request.body.read
+            state_list = JSON.parse(body)["states"]
+            @salt.run_states(params[:minion_name], state_list);
+        rescue RestClient::Unauthorized
+            [UNAUTHORIZED, {:message => "Invalid Salt user/password combination."}];
+        rescue Errno::ECONNREFUSED
+            [BAD_REQUEST, {:message => "Connection was refused"}]
         end
     end
 
@@ -55,6 +72,8 @@ class SaltApiApp < ApiBase
             [OK, result.to_json]
         rescue RestClient::Unauthorized
             [UNAUTHORIZED, {:message => "Invalid Salt user/password combination."}];
+        rescue Errno::ECONNREFUSED
+            [BAD_REQUEST, {:message => "Connection was refused"}]
         end
     end
     
