@@ -162,7 +162,7 @@ class TopStackMonitorApp < ResourceApiBase
 			begin
 				options = {}
 				options["Period"] = params[:period].to_i
-				options["Statistics"] = [params[:statistic]]
+				options["Statistics"] = params[:statistic]
 				options["Namespace"] = params[:namespace]
 				options["Dimensions"] = [{"Name"=>params[:dimension_name], "Value"=>params[:dimension_value]}]
 				options["MetricName"] = params[:metric_name]
@@ -170,9 +170,6 @@ class TopStackMonitorApp < ResourceApiBase
 				options["EndTime"] = DateTime.now
 				
 				response = @monitor.get_metric_statistics(options).body['GetMetricStatisticsResult']['Datapoints']
-                
-                # require 'pry'
-                # binding.pry
 				
                 first_datapoint = response.first
 				statistic = ""
