@@ -160,17 +160,18 @@ class TopStackMonitorApp < ResourceApiBase
 			[BAD_REQUEST]
 		else
 			begin
-				options = {
-					"Period"=>params[:period].to_i,
-					"Statistics"=>params[:statistic],
-					"Namespace"=>params[:namespace],
-					"Dimensions"=>[{"Name"=>params[:dimension_name], "Value"=>params[:dimension_value]}],
-					"MetricName"=>params[:metric_name],
-					"StartTime"=>DateTime.now - params[:time_range].to_i.seconds,
-					"EndTime"=>DateTime.now
-				}
+				options = {}
+				options["Period"] = params[:period].to_i
+				options["Statistics"] = params[:statistic]
+				options["Namespace"] = params[:namespace]
+				options["Dimensions"] = [{"Name"=>params[:dimension_name], "Value"=>params[:dimension_value]}]
+				options["MetricName"] = params[:metric_name]
+				options["StartTime"] = DateTime.now - params[:time_range].to_i.seconds
+				options["EndTime"] = DateTime.now
+				
 				response = @monitor.get_metric_statistics(options).body['GetMetricStatisticsResult']['Datapoints']
-				first_datapoint = response.first
+				
+                first_datapoint = response.first
 				statistic = ""
 				if(!first_datapoint.nil?)
 					if(first_datapoint.has_key?("Average"))

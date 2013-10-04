@@ -43,17 +43,29 @@ class PackedImagesApiApp < ApiBase
         docid = params[:docid]
         response = nil
         if docid.nil?
-            #uri = URI.parse("http://localhost:9090/packer/"+params[:uid])
-            #http = Net::HTTP.new(uri.host, uri.port)
-            #response = http.request(Net::HTTP::Put.new(uri.request_uri,packed_image))
             http = Net::HTTP.new('localhost', 9090)
             response = http.send_request('PUT', '/packer/'+params[:uid],packed_image.to_json)
+            PackedImage.create(name: body['name'],doc_id:JSON.parse(response.body)['Id'],org_id:params[:uid])
         else
-            uri = URI.parse("http://localhost:9090/packer/"+params[:uid]+"/"+docid)
-            http = Net::HTTP.new(uri.host, uri.port)
-            response = http.request(Net::HTTP::Post.new(uri.request_uri,packed_image))
+            #uri = URI.parse("http://localhost:9090/packer/"+params[:uid]+"/"+docid)
+            #http = Net::HTTP.new(uri.host, uri.port)
+            #response = http.request(Net::HTTP::Post.new(uri.request_uri,packed_image))
         end
         #binding.pry
         [OK, response.body]
+    end
+    
+    post '/deploy' do
+        body = JSON.parse(request.body.read)
+        packed_image = body['packed_image']
+        docid = params[:docid]
+        response = nil
+        http = Net::HTTP.new('localhost', 9090)
+        response = http.send_request('PUT', '/image/'+params[:uid]+'/'+params[:doc_id])
+        [OK, response.body]
+    end
+    
+    get '/templates/:id' do
+        [OK, PackedImage.where(org_id:params[:id]).to_a.to_json]
     end
 end

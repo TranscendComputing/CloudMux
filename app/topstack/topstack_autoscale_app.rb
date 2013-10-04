@@ -56,6 +56,11 @@ class TopStackAutoscaleApp < ResourceApiBase
 		end
 		[OK, response.to_json]
 	end
+    
+    get '/configurations/:id' do
+		response = @autoscale.configurations.get(params[:id])
+		[OK, response.to_json]
+    end
 
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/topstack/autoscale/autoscale_groups"
@@ -141,8 +146,11 @@ class TopStackAutoscaleApp < ResourceApiBase
   				launch_config = json_body["launch_configuration"]
   				autoscale_group = json_body["autoscale_group"]
                 autoscale_group['AvailabilityZones'] = [region]
-
-  				#@autoscale.configurations.create(launch_config)
+                
+                launch_config['id'] = launch_config['id'] + ' ' + Time.new.to_s
+                autoscale_group['LaunchConfigurationName'] = launch_config['id']
+                
+                @autoscale.configurations.create(launch_config)
   				response = @autoscale.update_auto_scaling_group(params[:id],autoscale_group)
 
   				if(json_body["trigger"])

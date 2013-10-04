@@ -296,6 +296,61 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 			end
 	end
+    
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/openstack/compute/security_groups/delete_rule"
+    ##~ a.description = "Manage compute resources on the cloud (OpenStack)"
+    ##~ op = a.operations.add
+    ##~ op.set :httpMethod => "DELETE"
+    ##~ op.summary = "Delete security groups rule (OpenStack cloud)"  
+    ##~ op.nickname = "delete_rule_security_groups"
+    ##~ op.errorResponses.add :reason => "Success, security groups rule deleted", :code => 200
+    ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    delete '/security_groups/delete_rule' do
+        json_body = body_to_json(request)
+        if(json_body.nil? || json_body["group_id"].nil?)
+            [BAD_REQUEST]
+        else
+            begin
+                group = @compute.security_groups.get_by_id(json_body["group_id"])
+                r = json_body["options"]
+                #require 'pry'
+                #binding.pry
+                group.revoke_port_range(json_body["range"],{})
+                [OK, @compute.security_groups.get(json_body["group_id"]).to_json]
+            rescue => error
+                handle_error(error)
+            end
+        end
+    end
+
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/openstack/compute/security_groups/:id/add_rule"
+    ##~ a.description = "Manage compute resources on the cloud (OpenStack)"
+    ##~ op = a.operations.add
+    ##~ op.set :httpMethod => "PUT"
+    ##~ op.summary = "Add security groups rule (OpenStack cloud)"  
+    ##~ op.nickname = "add_rule_security_groups"
+    ##~ op.parameters.add :name => "id", :description => "Instance ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    ##~ op.errorResponses.add :reason => "Success, security groups rule added", :code => 200
+    ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    put '/security_groups/:id/add_rule' do
+        json_body = body_to_json(request)
+        if(json_body.nil? || json_body["rule"].nil?)
+            [BAD_REQUEST]
+        else
+            begin
+                rule = json_body["rule"]
+                group = @compute.security_groups.get_by_id(params[:id])
+                group.authorize_port_range(rule["fromPort"].to_i..rule["toPort"].to_i, {:ip_protocol => rule["ipProtocol"], :cidr_ip => rule["cidr"],:group => rule["groupId"]})
+                [OK, @compute.security_groups.get(params[:id]).to_json]
+            rescue => error
+                handle_error(error)
+            end
+        end
+    end
 	
 	
 	#
