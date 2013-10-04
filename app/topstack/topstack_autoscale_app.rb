@@ -87,8 +87,8 @@ class TopStackAutoscaleApp < ResourceApiBase
 				launch_config = json_body["launch_configuration"]
 				autoscale_group = json_body["autoscale_group"]
                 autoscale_group['AvailabilityZones'] = [region]
-
-				@autoscale.configurations.create(launch_config)
+                
+                @autoscale.configurations.create(launch_config)
 				response = @autoscale.groups.create(autoscale_group)
 
 				if(json_body["trigger"])
