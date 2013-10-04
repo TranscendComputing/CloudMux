@@ -61,7 +61,6 @@ class PackedImagesApiApp < ApiBase
         docid = params[:docid]
         response = nil
         http = Net::HTTP.new('localhost', 9090)
-        #binding.pry
         response = http.send_request('PUT', '/image/'+params[:uid]+'/'+params[:doc_id])
         [OK, response.body]
     end
