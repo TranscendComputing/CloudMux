@@ -168,8 +168,11 @@ class TopStackMonitorApp < ResourceApiBase
 				options["MetricName"] = params[:metric_name]
 				options["StartTime"] = DateTime.now - params[:time_range].to_i.seconds
 				options["EndTime"] = DateTime.now
+                #options["Unit"] = "Percent"
 				
-				response = @monitor.get_metric_statistics(options).body['GetMetricStatisticsResult']['Datapoints']
+				#require 'pry'
+                #binding.pry
+                response = @monitor.get_metric_statistics(options).body['GetMetricStatisticsResult']['Datapoints']
 				
                 first_datapoint = response.first
 				statistic = ""
