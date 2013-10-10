@@ -34,6 +34,7 @@ require 'app/aws/aws_beanstalk_app'
 require 'app/aws/aws_iam_app'
 require 'app/aws/aws_queue_app'
 require 'app/aws/aws_simpledb_app'
+require 'app/aws/aws_cf_app'
 require 'app/google/google_compute_app'
 require 'app/google/google_object_storage_app'
 require 'app/openstack/openstack_compute_app'
@@ -372,6 +373,10 @@ end
 ##~ a.description = "AWS Simple DB API"
 map "/stackstudio/v1/cloud_management/aws/simple_db" do
   run AwsSimpleDBApp
+end
+
+map "/stackstudio/v1/cloud_management/aws/cloud_formation" do
+  run AwsCloudFormationApp
 end
 
 #
