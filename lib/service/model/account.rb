@@ -14,6 +14,7 @@ class Account
   field :email, type:String
   field :first_name, type:String
   field :last_name, type:String
+  field :rss_url, type:String
 
   # authentication support
   field :login, type:String

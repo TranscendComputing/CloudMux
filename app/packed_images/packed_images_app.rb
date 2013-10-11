@@ -50,7 +50,7 @@ class PackedImagesApiApp < ApiBase
         else
             if(!params["mciaas_files"].nil?)
                 old_doc = HTTParty.get("http://localhost:9090/packer/"+params[:uid]+"/"+docid)
-                builder = old_doc['builders'].select{|b| b['type']=="qemu"}.first
+                builder = old_doc['builders'][0]#.select{|b| b['type']=="qemu"}.first
                 m_files = {params["mciaas_files"][:filename] => {"type" => "string","content"=> params["mciaas_files"][:tempfile].read}}
                 builder.merge!({"mciaas_files" => m_files})
                 payload = {"builders"=>[builder]}
