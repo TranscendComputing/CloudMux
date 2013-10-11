@@ -26,6 +26,19 @@ class AwsCloudFormationApp < ResourceApiBase
                 handle_error(error)
         end
     end
+    post '/stacks' do
+        begin 
+            debugger;
+            puts('')
+            body = request.body.read
+            options = JSON.parse(body)
+            stack_name = options.delete("StackName")
+            @cf.create_stack(stack_name, options)
+        rescue => error
+            [BAD_REQUEST, {:message => error.to_s}.to_json]
+        end
+    end
+    
     get '/stacks/:stack_name/resources' do
         begin
             stack_name = params[:stack_name]
@@ -65,20 +78,21 @@ class AwsCloudFormationApp < ResourceApiBase
                 paramName = type=="url" ? "TemplateURL" : "TemplateBody";
                 data = type=="url" ? body[paramName] : body[paramName].to_json
                 if(body[paramName])
-                    response = @cf.validate_template({paramName=>data})
+                    result = @cf.validate_template({paramName=>data}).data[:body]
+                    response = {"ValidationResult" => result};
                 else
                     [BAD_REQUEST, {:message=>"Must supply either Template file, body, or URL"}]
                 end
             elsif(type=="file")
                 file = params[:template][:tempfile].read
-                response = @cf.validate_template({"TemplateBody"=> file})
+                result = @cf.validate_template({"TemplateBody"=> file}).data[:body]
+                response = {"TemplateBody"=> JSON.parse(file), "ValidationResult" => result}
                 puts('')
             else
                 [BAD_REQUEST, {:message=>"Must supply the type parameter"}.to_json]
             end
-
-            if(response)
-                [OK, response.data[:body].to_json]
+            if(response["ValidationResult"])
+                [OK, response.to_json]
             else
                 [BAD_REQUEST, {:message => "Server error. Could not validate template"}.to_json]
             end
