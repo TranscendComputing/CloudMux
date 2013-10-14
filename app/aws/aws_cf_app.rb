@@ -28,12 +28,10 @@ class AwsCloudFormationApp < ResourceApiBase
     end
     post '/stacks' do
         begin 
-            debugger;
-            puts('')
-            body = request.body.read
-            options = JSON.parse(body)
+            options = params["RequestParams"]
             stack_name = options.delete("StackName")
-            @cf.create_stack(stack_name, options)
+            result = @cf.create_stack(stack_name, options)
+            [OK, result.to_json]
         rescue => error
             [BAD_REQUEST, {:message => error.to_s}.to_json]
         end
