@@ -38,6 +38,20 @@ class PackedImagesApiApp < ApiBase
         [OK, response.body]
     end
     
+    get '/postprocessors' do
+        uri = URI.parse("http://localhost:9090/templates/postprocessors")
+        http = Net::HTTP.new(uri.host, uri.port)
+        response = http.request(Net::HTTP::Get.new(uri.request_uri))
+        [OK, response.body]
+    end
+    
+    get '/postprocessors/:id' do
+        uri = URI.parse("http://localhost:9090/templates/postprocessors/"+params[:id])
+        http = Net::HTTP.new(uri.host, uri.port)
+        response = http.request(Net::HTTP::Get.new(uri.request_uri))
+        [OK, response.body]
+    end
+    
     post '/save' do
         docid = params[:docid]
         response = nil
