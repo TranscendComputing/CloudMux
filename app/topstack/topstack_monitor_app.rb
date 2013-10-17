@@ -54,6 +54,11 @@ class TopStackMonitorApp < ResourceApiBase
 		end
 		[OK, response.to_json]
 	end
+    
+  get '/alarms/:id/alarm_history' do
+      response = @monitor.describe_alarm_history({"AlarmName"=>params[:id]}).body['DescribeAlarmHistoryResult']['AlarmHistoryItems']
+      [OK, response.to_json]
+  end
 	
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/topstack/monitor/alarms"
