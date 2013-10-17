@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 # gems
+require 'rubygems'
+require 'bundler/setup'
 require 'sinatra'
 require 'fog'
 
