@@ -27,6 +27,7 @@ class AwsCloudFormationApp < ResourceApiBase
                 handle_error(error)
         end
     end
+
     post '/stacks' do
         begin 
             options = params["RequestParams"]
@@ -37,7 +38,29 @@ class AwsCloudFormationApp < ResourceApiBase
             [BAD_REQUEST, {:message => error.to_s}.to_json]
         end
     end
+
+    delete '/stacks/:stack_name' do
+        begin 
+            stack_name = params[:stack_name]
+            result = @cf.delete_stack(stack_name)
+            [OK, result.to_json]
+        rescue => error
+            [BAD_REQUEST, {:message => error.to_s}.to_json]
+        end
+    end
     
+    put '/stacks/:stack_name' do
+        begin
+            stack_name = params[:stack_name]
+            options = params["RequestParams"]
+            debugger;
+            result = @cf.update_stack(stack_name, options)
+            [OK, result.to_json]
+        rescue => error
+            [BAD_REQUEST, {:message => error.to_s}.to_json]
+        end
+    end
+
     get '/stacks/:stack_name/resources' do
         begin
             stack_name = params[:stack_name]
