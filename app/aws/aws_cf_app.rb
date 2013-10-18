@@ -53,7 +53,6 @@ class AwsCloudFormationApp < ResourceApiBase
         begin
             stack_name = params[:stack_name]
             options = params["RequestParams"]
-            debugger;
             result = @cf.update_stack(stack_name, options)
             [OK, result.to_json]
         rescue => error
