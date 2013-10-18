@@ -20,7 +20,8 @@ class AwsCloudFormationApp < ResourceApiBase
 
     get '/stacks' do
         begin
-            response = @cf.describe_stacks.body["Stacks"]
+            result = @cf.list_stacks
+            response = result.body["StackSummaries"]
             [OK, response.to_json]
         rescue => error
                 handle_error(error)
