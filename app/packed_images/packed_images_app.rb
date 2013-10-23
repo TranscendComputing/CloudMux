@@ -60,7 +60,7 @@ class PackedImagesApiApp < ApiBase
             packed_image = body['packed_image']
             http = Net::HTTP.new('172.31.254.6', 8080)
             response = http.send_request('PUT', '/packer/'+params[:uid],packed_image.to_json)
-            PackedImage.create(name: body['name'],doc_id:JSON.parse(response.body)['Id'],org_id:params[:uid])
+            PackedImage.create(name: body['name'],doc_id:JSON.parse(response.body)['Id'],org_id:params[:uid], base_image: body['base_image'])
         else
             if(!params["mciaas_files"].nil?)
                 old_doc = HTTParty.get("http://172.31.254.6:8080/packer/"+params[:uid]+"/"+docid)
@@ -90,5 +90,10 @@ class PackedImagesApiApp < ApiBase
     
     get '/templates/:id' do
         [OK, PackedImage.where(org_id:params[:id]).to_a.to_json]
+    end
+    
+    get '/templates/:uid/:doc_id' do
+        old_doc = HTTParty.get("http://172.31.254.6:8080/packer/"+params[:uid]+"/"+params[:doc_id])
+        [OK, old_doc.to_json]
     end
 end
