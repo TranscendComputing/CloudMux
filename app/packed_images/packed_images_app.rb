@@ -96,4 +96,10 @@ class PackedImagesApiApp < ApiBase
         old_doc = HTTParty.get("http://172.31.254.6:8080/packer/"+params[:uid]+"/"+params[:doc_id])
         [OK, old_doc.to_json]
     end
+    
+    delete '/templates/:uid/:doc_id' do
+        PackedImage.where(doc_id:params[:doc_id]).first.destroy
+        old_doc = HTTParty.delete("http://172.31.254.6:8080/packer/"+params[:uid]+"/"+params[:doc_id])
+        [OK, old_doc.to_json]
+    end
 end
