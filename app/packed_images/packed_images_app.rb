@@ -68,11 +68,13 @@ class PackedImagesApiApp < ApiBase
                 m_files = {params["mciaas_files"][:filename] => {"type" => "string","content"=> params["mciaas_files"][:tempfile].read}}
                 builder.merge!({"mciaas_files" => m_files})
                 payload = {"builders"=>[builder]}
+                binding.pry
                 response = HTTParty.post("http://172.31.254.6:8080/packer/"+params[:uid]+"/"+docid, :body => payload.to_json)
             else
                 body = JSON.parse(request.body.read)
                 packed_image = body['packed_image']
                 response = HTTParty.post("http://172.31.254.6:8080/packer/"+params[:uid]+"/"+docid, :body => packed_image.to_json)
+                PackedImage.where(doc_id:docid).first.update_attributes!(name:body['name'],base_image: body['base_image'])
             end
         end
         [OK, response.body]
