@@ -28,18 +28,17 @@ class AnsibleApiApp < ApiBase
     end
   end
 
-  get '/inventory' do
+  get '/inventories' do 
     begin
-      result = @ansible.get_inventory
-      [OK, result.to_json]
+      hosts = @ansible.get_inventories 
+      [OK, hosts.to_json]
     rescue RestClient::Unauthorized
-        [UNAUTHORIZED, {:message => "Invalid Ansible user/password combination."}];
+        [BAD_REQUEST, {:message => "Invalid Ansible user/password combination."}];
     rescue Errno::ECONNREFUSED
         [BAD_REQUEST, {:message => "Connection was refused"}]
     end
   end
-
-  get '/playbooks' do
+  get '/job_templates' do
     begin
       ## Results
       #
@@ -65,7 +64,7 @@ class AnsibleApiApp < ApiBase
       #* `job_tags`:  (string)
       #* `host_config_key`:  (string)
       #
-      results = @ansible.list_job_templates
+      results = @ansible.get_job_templates
       [OK, results.to_json]
     rescue RestClient::Unauthorized
         [BAD_REQUEST, {:message => "Invalid Ansible user/password combination."}];

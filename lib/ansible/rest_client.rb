@@ -18,10 +18,16 @@ class Ansible
 			)
 		end	
 
-    def list_job_templates
+    def get_job_templates
       resp = @rest['/api/v1/job_templates'].get
       job_templates = JSON.parse(resp)["results"]
       return job_templates
+    end
+
+    def get_inventories
+      resp = @rest['/api/v1/inventories'].get
+      hosts = JSON.parse(resp)["results"]
+      return hosts
     end
 
   end
