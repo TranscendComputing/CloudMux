@@ -244,6 +244,91 @@ class AnsibleApiApp < ApiBase
     rescue Errno::ECONNREFUSED
         [BAD_REQUEST, {:message => "Connection was refused"}]
     end
+  end
 
+  get '/users/' do
+    begin
+      users = @ansible.get_users
+      [OK, users.to_json]
+    rescue RestClient::Unauthorized
+        [BAD_REQUEST, {:message => "Invalid Ansible user/password combination."}];
+    rescue Errno::ECONNREFUSED
+        [BAD_REQUEST, {:message => "Connection was refused"}]
+    end
+  end
+
+  post '/users/' do
+    begin
+      # `username`: Required. 30 characters or fewer. Letters, numbers and @/./+/-/_ characters (string, required)
+      # `first_name`:  (string)
+      # `last_name`:  (string)
+      # `email`:  (email)
+      # `is_superuser`: Designates that this user has all permissions without explicitly assigning them. (boolean)
+      # `password`: Write-only field used to change the password. (field)
+      response = @ansible.post_users(
+        :username => params[:username],
+        :first_name => params[:first_name],
+        :last_name => params[:last_name],
+        :email => params[:email],
+        :password => password[:password])
+      [OK, response.to_json]
+    rescue RestClient::Unauthorized
+        [BAD_REQUEST, {:message => "Invalid Ansible user/password combination."}];
+    rescue Errno::ECONNREFUSED
+        [BAD_REQUEST, {:message => "Connection was refused"}]
+    end
+  end
+  
+  get '/users/:user_id/credentials' do
+    begin
+      credentials = @ansible.get_users_credentials(params[:user_id])
+      [OK, credentials.to_json]
+    rescue RestClient::Unauthorized
+        [BAD_REQUEST, {:message => "Invalid Ansible user/password combination."}];
+    rescue Errno::ECONNREFUSED
+        [BAD_REQUEST, {:message => "Connection was refused"}]
+    end
+  end
+
+  post '/users/:user_id/credentials' do
+    begin
+      # `name`:  (string, required)
+      # `description`:  (string)
+      # `ssh_username`: SSH username for a job using this credential. (string)
+      # `ssh_password`:  (field)
+      # `ssh_key_data`:  (field)
+      # `ssh_key_unlock`:  (field)
+      # `sudo_username`: Sudo username for a job using this credential. (string)
+      # `sudo_password`:  (field)
+      # `user`:  (field)
+      # `team`:  (field)
+      response = @ansible.post_users_credentials(
+        :user_id => params[:user_id],
+        :name => params[:name],
+        :ssh_username => params[:ssh_username],
+        :ssh_password => params[:ssh_password],
+        :ssh_key_data => params[:ssh_key_data],
+        :ssh_key_unlock => params[:ssh_key_unlock],
+        :sudo_username => params[:sudo_username],
+        :sudo_password => params[:sudo_password])
+      [OK, response.to_json]
+    rescue RestClient::Unauthorized
+        [BAD_REQUEST, {:message => "Invalid Ansible user/password combination."}];
+    rescue Errno::ECONNREFUSED
+        [BAD_REQUEST, {:message => "Connection was refused"}]
+    end
+  end
+
+  post '/users/:user_id/credentials_remove/:credentials_id' do
+    begin
+      response = @ansible.post_users_credentials_remove(
+        :user_id => params[:user_id],
+        :credentials_id => params[:credentials_id])
+      [OK, response.to_json]
+    rescue RestClient::Unauthorized
+        [BAD_REQUEST, {:message => "Invalid Ansible user/password combination."}];
+    rescue Errno::ECONNREFUSED
+        [BAD_REQUEST, {:message => "Connection was refused"}]
+    end
   end
 end

@@ -85,5 +85,45 @@ class Ansible
       JSON.parse(resp)["results"]
     end
 
+    def get_users
+      resp = @rest['/api/v1/users/'].get
+      JSON.parse(resp)["results"]
+    end
+
+    def post_users(username, first_name, last_name, email, password)
+      resp = @rest['/api/v1/users/'].post(
+        :username => username,
+        :first_name => first_name,
+        :last_name => last_name,
+        :email => email,
+        :password => password)
+      JSON.parse(resp)["results"]
+    end
+
+    def get_users_credentials(user_id)
+      resp = @rest['/api/v1/users/'+user_id+'/credentials'].get
+      JSON.parse(resp)["results"]
+    end
+
+    def post_users_credentials(user_id, name, ssh_username, ssh_password, ssh_key_data,
+      ssh_key_unlock, sudo_username, sudo_password)
+      resp = @rest['/api/v1/users/'+user_id+'/credentials/'].post(
+        :name=> name,
+        :ssh_username => ssh_username,
+        :ssh_password => ssh_password,
+        :ssh_key_data => ssh_key_data,
+        :ssh_key_unlock => ssh_key_unlock,
+        :sudo_username => sudo_username,
+        :sudo_password => sudo_password)
+      JSON.parse(resp)["results"]
+    end
+
+    def post_users_credentials_remove(user_id, credentials_id)
+      resp = @rest['/api/v1/users/'+user_id+'/credentials/'].post(
+        :id => credentials_id,
+        :disassociate => true)
+      JSON.parse(resp)["results"]
+    end
+
   end
 end
