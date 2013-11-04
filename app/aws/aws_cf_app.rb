@@ -93,26 +93,29 @@ class AwsCloudFormationApp < ResourceApiBase
     post '/template/validate' do
         begin
             type = params[:type]
-
-            if(type== "url" || type=="body")
+            if type== "url" || type=="body"
                 body = JSON.parse(request.body.read);
                 paramName = type=="url" ? "TemplateURL" : "TemplateBody";
                 data = type=="url" ? body[paramName] : body[paramName].to_json
-                if(body[paramName])
+                if body[paramName]
                     result = @cf.validate_template({paramName=>data}).data[:body]
                     response = {"ValidationResult" => result};
                 else
-                    [BAD_REQUEST, {:message=>"Must supply either Template file, body, or URL"}]
+                    templateBody = body.to_json
+                    if templateBody.size < 20 # Require at least 20 chars to be a reasonable template
+                        [BAD_REQUEST, {:message=>"Must supply either Template file, body, or URL"}]
+                    end
+                    result = @cf.validate_template({paramName=>templateBody}).data[:body]
+                    response = {"ValidationResult" => result, "TemplateBody" => body };
                 end
-            elsif(type=="file")
+            elsif type=="file"
                 file = params[:template][:tempfile].read
                 result = @cf.validate_template({"TemplateBody"=> file}).data[:body]
                 response = {"TemplateBody"=> JSON.parse(file), "ValidationResult" => result}
-                puts('')
             else
                 [BAD_REQUEST, {:message=>"Must supply the type parameter"}.to_json]
             end
-            if(response["ValidationResult"])
+            if response["ValidationResult"]
                 [OK, response.to_json]
             else
                 [BAD_REQUEST, {:message => "Server error. Could not validate template"}.to_json]
