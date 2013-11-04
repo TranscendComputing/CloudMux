@@ -178,8 +178,8 @@ class AnsibleApiApp < ApiBase
   post '/hosts' do
     begin
       # [XXX] I need to figure out what the last_job* params are for
+      # The 'name' parameter holds the IP or hostname (fqdn) for the host
       #
-      # Expected params
       # `name`:  (string, required)
       # `description`:  (string)
       # `inventory`:  (field, required)
@@ -201,7 +201,18 @@ class AnsibleApiApp < ApiBase
     rescue Errno::ECONNREFUSED
         [BAD_REQUEST, {:message => "Connection was refused"}]
     end
+  end
 
+  post '/hosts/:host_id/delete' do
+    begin
+      response = @ansible.post_hosts_delete(:host_id=>params[:host_id])
+      [OK, response.to_json]
+    rescue RestClient::Unauthorized
+        [BAD_REQUEST, {:message => "Invalid Ansible user/password combination."}];
+
+    rescue Errno::ECONNREFUSED
+        [BAD_REQUEST, {:message => "Connection was refused"}]
+    end
   end
 
   get '/organizations' do 

@@ -52,9 +52,14 @@ class Ansible
       resp = @rest['/api/v1/hosts'].post({
         :name => name,
         :description => description,
-        :inventory => inventory,
+        :inventory => '1', # [XXX] Hardcoding to 1 for simplicity...
         :variables => variables
       })
+      JSON.parse(resp)["results"]
+    end
+
+    def post_hosts_delete(host_id)
+      resp = @rest['/api/v1/hosts/'+host_id].delete
       JSON.parse(resp)["results"]
     end
 
