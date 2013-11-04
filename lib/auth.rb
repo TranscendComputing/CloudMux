@@ -37,26 +37,27 @@ module Auth
             return true
         end
         aws_governance = policy.aws_governance
-        if action == 'action' && ! Auth.canUseService(cred_id,aws_governance['enabled_services'],service_name)
-            return false
-        elsif action == 'create_instance' && ! Auth.canCreateInstance(aws_governance['max_on_demand'],options)
-            return false
-        elsif action == 'create_rds' && ! Auth.canCreateInstance(aws_governance['max_rds'],options)
-            return false
-        elsif action == 'create_spot' && ! Auth.canCreateInstance(aws_governance['max_spot'],options)
-            return false
-        elsif action == 'create_reserved' && ! Auth.canCreateInstance(aws_governance['max_reserved'],options)
-            return false
-        elsif action == 'create_autoscale' && ! Auth.canCreateInstance(aws_governance['max_in_autoscale'],options)
-            return false
-        elsif action == 'create_default_alarms'
-            Auth.createAlarms(aws_governance,options)
-        elsif action == 'create_auto_tags'
-            Auth.createTags(policy,aws_governance,options)
-        elsif action == 'create_vpc_instance' && ! Auth.createVpcInstance(aws_governance,options)
-            return false
-        elsif action == 'modify_gateway' && ! Auth.canModifyGateway(aws_governance['vpc_rules'],options)
-            return false
+        case action
+        when "action"
+            return Auth.canUseService(cred_id,aws_governance['enabled_services'],service_name)
+        when "create_instance"
+            return Auth.canCreateInstance(aws_governance['max_on_demand'],options)
+        when "create_rds"
+            return Auth.canCreateInstance(aws_governance['max_rds'],options)
+        when "create_spot"
+            return Auth.canCreateInstance(aws_governance['max_spot'],options)
+        when "create_reserved"
+            return Auth.canCreateInstance(aws_governance['max_reserved'],options)
+        when "create_autoscale"
+            return Auth.canCreateInstance(aws_governance['max_in_autoscale'],options)
+        when "create_default_alarms"
+            return Auth.createAlarms(aws_governance,options)
+        when "create_auto_tags"
+            return Auth.createTags(policy,aws_governance,options)
+        when "create_vpc_instance"
+            return Auth.createVpcInstance(aws_governance,options)
+        when "modify_gateway"
+            return Auth.canModifyGateway(aws_governance['vpc_rules'],options)
         end
         return true
     end
