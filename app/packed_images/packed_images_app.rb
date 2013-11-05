@@ -80,10 +80,6 @@ class PackedImagesApiApp < ApiBase
     end
     
     post '/deploy' do
-        body = JSON.parse(request.body.read)
-        packed_image = body['packed_image']
-        docid = params[:docid]
-        response = nil
         http = Net::HTTP.new('172.31.254.6', 8080)
         response = http.send_request('PUT', '/image/'+params[:uid]+'/'+params[:doc_id])
         [OK, response.body]
