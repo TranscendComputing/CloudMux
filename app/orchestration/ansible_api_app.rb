@@ -203,7 +203,7 @@ class AnsibleApiApp < ApiBase
     end
   end
 
-  post '/hosts/:host_id/delete' do
+  delete '/hosts/:host_id' do
     begin
       response = @ansible.post_hosts_delete(:host_id=>params[:host_id])
       [OK, response.to_json]
