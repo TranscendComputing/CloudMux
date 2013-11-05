@@ -58,7 +58,7 @@ class Ansible
       JSON.parse(resp)["results"]
     end
 
-    def post_hosts_delete(host_id)
+    def delete_hosts(host_id)
       resp = @rest['/api/v1/hosts/'+host_id].delete
       JSON.parse(resp)["results"]
     end
