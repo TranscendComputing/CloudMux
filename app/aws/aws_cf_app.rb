@@ -1,6 +1,6 @@
 require 'sinatra'
 require 'fog'
-require 'httparty'
+require 'net/http'
 
 class AwsCloudFormationApp < ResourceApiBase
     

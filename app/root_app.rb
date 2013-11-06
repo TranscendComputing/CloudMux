@@ -1,6 +1,4 @@
 require 'sinatra'
-require 'redcarpet'
-
 #
 # Serves up API documentation for a specific category and service
 #

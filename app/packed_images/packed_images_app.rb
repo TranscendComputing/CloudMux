@@ -1,6 +1,5 @@
 require 'sinatra'
-require 'pry'
-require 'httparty'
+require 'net/http'
 
 class PackedImagesApiApp < ApiBase
     get '/' do
