@@ -1,3 +1,4 @@
+#\ -s puma
 # -*- coding: utf-8 -*-
 # gems
 require 'rubygems'
