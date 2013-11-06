@@ -18,6 +18,11 @@ class Ansible
 			)
 		end	
 
+    def get_me
+      resp = @rest['/api/v1/me'].get
+      JSON.parse(resp)["results"]
+    end
+
     # [XXX] All of these requests return paged results - no support
     # for that as of yet.
     def get_job_templates

@@ -17,10 +17,27 @@ class AnsibleApiApp < ApiBase
       config = cloud_acc.config_managers.select{
         |c| c['type'] == 'ansible'}[0]
       if config
-       url = config.protocol + "://" + config.host + ":" + config.port
-       @ansible = Ansible::Client.new(url, 
-        config.auth_properties['ansible_user'], 
-        config.auth_properties['ansible_pass'])
+        url = config.protocol + "://" + config.host + ":" + config.port
+        @ansible = Ansible::Client.new(url, 
+          config.auth_properties['ansible_user'], 
+          config.auth_properties['ansible_pass'])
+
+        # Now ensure that we have credentials 
+        me = @ansible.get_me
+        user_id = me[0]['id'].to_s
+        credentials = @ansible.get_users_credentials(user_id)
+        auth = config.auth_properties # shorten
+        if credentials.count{|c|c["name"]=="CloudMux"} == 0
+          result = @ansible.post_users_credentials(
+            user_id,
+            "CloudMux", # Something to set this one apart
+            auth["ansible_ssh_username"],
+            auth["ansible_ssh_password"],
+            auth["ansible_ssh_key_data"],
+            auth["ansible_ssh_key_unlock"],
+            auth["ansible_sudo_username"],
+            auth["ansible_sudo_password"])
+        end
       else
         message = Error.new.extend(ErrorRepresenter)
         message.message = "Must configure an Ansible server with the cloud account"
