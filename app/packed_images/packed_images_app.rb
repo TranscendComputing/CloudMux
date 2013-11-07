@@ -63,10 +63,19 @@ class PackedImagesApiApp < ApiBase
         else
             if(!params["mciaas_files"].nil?)
                 old_doc = HTTParty.get("http://172.31.254.6:8080/packer/"+params[:uid]+"/"+docid)
-                builder = old_doc['builders'][0]#.select{|b| b['type']=="qemu"}.first
+                
+                # builder = old_doc['builders'][0]#.select{|b| b['type']=="qemu"}.first
+#                 m_files = {params["mciaas_files"][:filename] => {"type" => "string","content"=> params["mciaas_files"][:tempfile].read}}
+#                 builder.merge!({"mciaas_files" => m_files})
+#                 payload = {"builders"=>[builder]}
+                builders = []
                 m_files = {params["mciaas_files"][:filename] => {"type" => "string","content"=> params["mciaas_files"][:tempfile].read}}
-                builder.merge!({"mciaas_files" => m_files})
-                payload = {"builders"=>[builder]}
+                old_doc['builders'].each do |builder|
+                  builder.merge!({"mciaas_files" => m_files})
+                  builders << builder
+                end
+                payload = {"builders"=>builders}
+                
                 response = HTTParty.post("http://172.31.254.6:8080/packer/"+params[:uid]+"/"+docid, :body => payload.to_json)
             else
                 body = JSON.parse(request.body.read)
