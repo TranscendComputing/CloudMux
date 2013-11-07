@@ -100,26 +100,6 @@ class AnsibleApiApp < ApiBase
     end
   end
 
-  post '/inventories' do
-    begin
-      # Params for inventories post
-      # * `name`:  (string, required)
-      # * `description`:  (string)
-      # * `organization`:  (field, required)
-      # * `variables`: Variables in JSON or YAML format. (string)
-      response = @ansible.post_inventories(
-        :name => params[:name],
-        :description => params[:description],
-        :organization => params[:organization],
-        :variables => params[:variables])
-      [OK, response.to_json]
-    rescue RestClient::Unauthorized
-        [BAD_REQUEST, {:message => "Invalid Ansible user/password combination."}];
-    rescue Errno::ECONNREFUSED
-        [BAD_REQUEST, {:message => "Connection was refused"}]
-    end
-  end
-
   get '/groups' do 
     begin
       # A groups result from ansible looks like:
@@ -153,10 +133,10 @@ class AnsibleApiApp < ApiBase
       # `variables`: Variables in JSON or YAML format. (string)
       #
       response = @ansible.post_groups(
-        :name => params[:name],
-        :description => params[:description],
-        :inventory => params[:inventory],
-        :variables => params[:variables])
+        params[:name],
+        params[:description],
+        params[:inventory],
+        params[:variables])
       [OK, response.to_json]
     rescue RestClient::Unauthorized
         [BAD_REQUEST, {:message => "Invalid Ansible user/password combination."}];
@@ -206,10 +186,10 @@ class AnsibleApiApp < ApiBase
       # `last_job_host_summary`:  (field)
       #
       response = @ansible.post_hosts(
-        :name => params[:name], 
-        :description => params[:description], 
-        :inventory => params[:inventory], 
-        :variables=> params[:variables])
+        params[:name], 
+        params[:description], 
+        params[:inventory], 
+        params[:variables])
       [OK, response.to_json]
 
     rescue RestClient::Unauthorized
@@ -219,6 +199,23 @@ class AnsibleApiApp < ApiBase
         [BAD_REQUEST, {:message => "Connection was refused"}]
     end
   end
+
+  post '/hosts/find' do
+    instancedata = JSON.parse(request.body.read)
+    if(!instancedata || instancedata.length == 0)
+      message = Error.new.extend(ErrorRepresenter)
+      message.message = "must supply ids of instances to search for"
+      [BAD_REQUEST, message.to_json]
+    else
+      begin
+        host_ids = @ansible.find_hosts(instancedata);
+      rescue Errno::ECONNREFUSED
+        [BAD_REQUEST, {:message=>"could not connect to Ansible."}.to_json]
+      end
+      [OK, host_ids.to_json];
+    end
+  end
+
 
   delete '/hosts/:host_id' do
     begin
@@ -262,8 +259,8 @@ class AnsibleApiApp < ApiBase
       # `name`:  (string, required)
       # `description`:  (string)
       response = @ansible.post_organizations(
-        :name => params[:name], 
-        :description => params[:description] )
+        params[:name], 
+        params[:description] )
       [OK, response.to_json]
 
     rescue RestClient::Unauthorized
@@ -294,11 +291,11 @@ class AnsibleApiApp < ApiBase
       # `is_superuser`: Designates that this user has all permissions without explicitly assigning them. (boolean)
       # `password`: Write-only field used to change the password. (field)
       response = @ansible.post_users(
-        :username => params[:username],
-        :first_name => params[:first_name],
-        :last_name => params[:last_name],
-        :email => params[:email],
-        :password => password[:password])
+        params[:username],
+        params[:first_name],
+        params[:last_name],
+        params[:email],
+        password[:password])
       [OK, response.to_json]
     rescue RestClient::Unauthorized
         [BAD_REQUEST, {:message => "Invalid Ansible user/password combination."}];
@@ -331,14 +328,14 @@ class AnsibleApiApp < ApiBase
       # `user`:  (field)
       # `team`:  (field)
       response = @ansible.post_users_credentials(
-        :user_id => params[:user_id],
-        :name => params[:name],
-        :ssh_username => params[:ssh_username],
-        :ssh_password => params[:ssh_password],
-        :ssh_key_data => params[:ssh_key_data],
-        :ssh_key_unlock => params[:ssh_key_unlock],
-        :sudo_username => params[:sudo_username],
-        :sudo_password => params[:sudo_password])
+        params[:user_id],
+        params[:name],
+        params[:ssh_username],
+        params[:ssh_password],
+        params[:ssh_key_data],
+        params[:ssh_key_unlock],
+        params[:sudo_username],
+        params[:sudo_password])
       [OK, response.to_json]
     rescue RestClient::Unauthorized
         [BAD_REQUEST, {:message => "Invalid Ansible user/password combination."}];
@@ -350,8 +347,8 @@ class AnsibleApiApp < ApiBase
   post '/users/:user_id/credentials_remove/:credentials_id' do
     begin
       response = @ansible.post_users_credentials_remove(
-        :user_id => params[:user_id],
-        :credentials_id => params[:credentials_id])
+        params[:user_id],
+        params[:credentials_id])
       [OK, response.to_json]
     rescue RestClient::Unauthorized
         [BAD_REQUEST, {:message => "Invalid Ansible user/password combination."}];

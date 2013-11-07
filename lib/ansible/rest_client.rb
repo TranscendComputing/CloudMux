@@ -118,13 +118,13 @@ class Ansible
     def post_users_credentials(user_id, name, ssh_username, ssh_password, ssh_key_data,
       ssh_key_unlock, sudo_username, sudo_password)
       resp = @rest['/api/v1/users/'+user_id+'/credentials/'].post(
-        :name=> name,
-        :ssh_username => ssh_username,
-        :ssh_password => ssh_password,
-        :ssh_key_data => ssh_key_data,
-        :ssh_key_unlock => ssh_key_unlock,
-        :sudo_username => sudo_username,
-        :sudo_password => sudo_password)
+        name,
+        ssh_username,
+        ssh_password,
+        ssh_key_data,
+        ssh_key_unlock,
+        sudo_username,
+        sudo_password)
       JSON.parse(resp)["results"]
     end
 
@@ -135,5 +135,20 @@ class Ansible
       JSON.parse(resp)["results"]
     end
 
+    def find_hosts (instances)
+      result = []
+      hosts = get_hosts
+      instances.each_with_index{|inst, i|
+        name = inst["name"]
+        ips = inst["ip_addresses"]
+        host =  hosts.select{ |h| ips.include? h['name']}
+        if host != nil
+          result << {:name => host['name']}
+        else
+          result << {}
+        end
+      }
+      return result
+    end
   end
 end
