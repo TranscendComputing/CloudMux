@@ -142,8 +142,8 @@ class Ansible
         name = inst["name"]
         ips = inst["ip_addresses"]
         host =  hosts.select{ |h| ips.include? h['name']}
-        if host != nil
-          result << {:name => host['name']}
+        if host.length > 0
+          result << {:name => host[:description]}
         else
           result << {}
         end
