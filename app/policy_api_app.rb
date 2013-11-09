@@ -26,9 +26,11 @@ class PolicyApiApp < ApiBase
         policy_json = body_to_json(request)
         if ! policy_json.nil? && ! policy_json["policy"].nil? && ! policy_json["policy"]["policy_name"].nil?
             policy = policy_json["policy"]
+            policy_os = policy_json["policy_os"]
             myOrg = Org.find(params[:org_id])
             gp = GroupPolicy.new(
                 name: policy["policy_name"],
+                os_governance: policy_os,
                 aws_governance: policy,
                 org: myOrg
             )
@@ -86,10 +88,12 @@ class PolicyApiApp < ApiBase
         policy_json = body_to_json(request)
         if ! policy_json.nil? && ! policy_json["policy"].nil? && ! policy_json["policy"]["policy_name"].nil?
             policy = policy_json["policy"]
+            policy_os = policy_json["policy_os"]
             updatePolicy = GroupPolicy.find(params[:id])
             updatePolicy.update_attributes(
               name: policy["policy_name"],
-              aws_governance: policy
+              aws_governance: policy,
+              os_governance: policy_os
             )
             [OK, updatePolicy.to_json]
         else
