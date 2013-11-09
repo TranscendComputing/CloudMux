@@ -11,6 +11,7 @@ module CloudAccountRepresenter
   property :cloud_name
   property :cloud_provider
   property :url
+  property :default_region
   property :protocol
   property :host
   property :port

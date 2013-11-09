@@ -6,3 +6,13 @@ vendor
 tags
 *.sublime*
 .DS_Store
+*.p12
+
+# Vim litter
+*.swp
+
+# sandbox
+cloudmux
+
+# logging
+rest_log

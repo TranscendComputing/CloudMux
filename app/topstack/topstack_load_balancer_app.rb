@@ -75,6 +75,8 @@ class TopStackLoadBalancerApp < ResourceApiBase
         else
             begin
                 lb = json_body["load_balancer"]
+                region = get_creds(params[:cred_id]).cloud_account.default_region
+                lb["availability_zones"] = [region]
                 if lb["options"].nil?
                     response = @elb.create_load_balancer(lb["availability_zones"], lb["id"], lb["listeners"])
                 else

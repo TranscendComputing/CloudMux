@@ -10,4 +10,5 @@ class GroupPolicy
   
   field :name, type:String
   field :aws_governance, type:Hash
+  field :os_governance, type:Hash
 end

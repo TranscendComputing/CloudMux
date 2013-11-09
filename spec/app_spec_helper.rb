@@ -6,6 +6,7 @@ require 'sinatra'
 
 # gems
 require 'mongoid'
+require 'fog'
 require 'database_cleaner'
 
 # require the dependencies

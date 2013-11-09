@@ -112,6 +112,14 @@ class IdentityApiApp < ApiBase
       [BAD_REQUEST, message.to_json]
     end
   end
+  
+  put '/:id/update' do
+      update_hash = JSON.parse(request.body.read)
+      update_account = Account.find(params[:id])
+      update_account.update_attributes(update_hash.symbolize_keys)
+      update_account.save
+      [OK, update_account.to_json]
+  end
 
   # Delete a user
   delete '/:id' do

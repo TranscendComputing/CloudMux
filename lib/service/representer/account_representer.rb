@@ -11,6 +11,7 @@ module AccountRepresenter
   property :first_name
   property :last_name
   property :company
+  property :rss_url
   collection :permissions, :class=>Permission, :extend => PermissionRepresenter
   collection :subscriptions, :class=>Account::AccountSubscription, :extend => AccountSubscriptionRepresenter
   collection :cloud_credentials, :class=>CloudCredential, :extend => CloudCredentialRepresenter

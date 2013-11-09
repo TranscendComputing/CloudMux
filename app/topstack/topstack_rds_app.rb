@@ -73,7 +73,9 @@ class TopStackRdsApp < ResourceApiBase
 			[BAD_REQUEST]
 		else
 			begin
-				response = @rds.servers.create(json_body["relational_database"])
+                region = get_creds(params[:cred_id]).cloud_account.default_region
+				json_body["relational_database"]['availability_zone'] = region
+                response = @rds.servers.create(json_body["relational_database"])
 				[OK, response.to_json]
 			rescue => error
 				handle_error(error)
@@ -189,6 +191,62 @@ class TopStackRdsApp < ResourceApiBase
 		else
 			begin
 				response = @rds.security_groups.create(json_body["security_group"])
+				[OK, response.to_json]
+			rescue => error
+				handle_error(error)
+			end
+		end
+	end
+    
+	post '/security_groups/:id/ipranges' do
+		json_body = body_to_json(request)
+		if(json_body.nil?)
+			[BAD_REQUEST]
+		else
+			begin
+				response = @rds.security_groups.get(params[:id]).authorize_cidrip(json_body["cidrip"])
+				[OK, response.to_json]
+			rescue => error
+				handle_error(error)
+			end
+		end
+	end
+    
+	post '/security_groups/:id/ec2_groups' do
+		json_body = body_to_json(request)
+		if(json_body.nil?)
+			[BAD_REQUEST]
+		else
+			begin
+				response = @rds.security_groups.get(params[:id]).authorize_ec2_security_group(json_body["ec2_group"])
+				[OK, response.to_json]
+			rescue => error
+				handle_error(error)
+			end
+		end
+	end
+    
+	post '/security_groups/:id/revoke_ipranges' do
+		json_body = body_to_json(request)
+		if(json_body.nil?)
+			[BAD_REQUEST]
+		else
+			begin
+				response = @rds.security_groups.get(params[:id]).revoke_cidrip(json_body["cidrip"])
+				[OK, response.to_json]
+			rescue => error
+				handle_error(error)
+			end
+		end
+	end
+    
+	post '/security_groups/:id/revoke_ec2_groups' do
+		json_body = body_to_json(request)
+		if(json_body.nil?)
+			[BAD_REQUEST]
+		else
+			begin
+				response = @rds.security_groups.get(params[:id]).revoke_ec2_security_group(json_body["ec2_group"])
 				[OK, response.to_json]
 			rescue => error
 				handle_error(error)
