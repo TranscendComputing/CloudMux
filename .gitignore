@@ -7,6 +7,7 @@ tags
 *.sublime*
 .DS_Store
 *.p12
+<<<<<<< HEAD
 
 # Vim litter
 *.swp
@@ -16,3 +17,5 @@ cloudmux
 
 # logging
 rest_log
+=======
+>>>>>>> 804145258895f711552663e737c01279741dd68b
