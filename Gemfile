@@ -20,6 +20,8 @@ gem 'bson_ext', '1.8.3', :platform => :ruby  # native extensions for performance
 gem 'bson', '1.8.3'
 gem 'mongoid'
 
+gem 'httparty', '~> 0.8.1'
+
 # Account/Auth support
 gem 'bcrypt-ruby', '~> 3.0.1'
 
