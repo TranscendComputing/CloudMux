@@ -1,17 +1,22 @@
 require 'rest-client'
 require 'json'
 require 'debugger'
+require 'logging'
 
 class Salt
+
     class Client
     
+        @@logger = Logging.logger[self]
+
         def initialize(url, user, password)
+            @@logger.debug("Logging in as: #{user} to #{url}")
             login_response = RestClient.post(url+"/login", {:username=>user, :password=>password, :eauth=>"pam"})
             auth_token = JSON.parse(login_response)["return"][0]["token"]
             @rest = RestClient::Resource.new(
                 "#{url}/",
                 :headers => {:accept => "application/json", "X-Auth-Token"=>auth_token}
-                )
+            )
         end
 
         def get_minions

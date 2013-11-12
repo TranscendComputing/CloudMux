@@ -1,11 +1,25 @@
 #
 # Placeholder for commonality between API apps
 #
+require 'logging'
+require 'awesome_print'
+
 class ApiBase < Sinatra::Base
   include HttpStatusCodes
-
   #register Sinatra::CrossOrigin
   
+  @@logger = nil
+
+  configure :production, :development do
+    enable :logging
+  end
+
+  configure :development do
+    base_logger = Logging.logger(STDOUT)
+    Logging.logger.root.add_appenders(Logging.appenders.stdout)
+    Logging.logger.root.level = :debug
+  end
+
   disable :protection
 
   # capture the incoming host and port for generating complete links in actions.
@@ -47,6 +61,23 @@ class ApiBase < Sinatra::Base
 
   options '/*' do
     response["Access-Control-Allow-Headers"] = "origin, x-requested-with, content-type, X-HTTP-Method-Override"
+  end
+
+  # initialize generic
+  def initialize(app=nil)
+    setup_log()
+    super(app)
+  end
+
+  def setup_log
+    # rack logger
+    #rack_logger = Log4r::Logger.new("rack")
+
+    # register rack logger
+    #use Rack::CommonLogger, base_logger
+
+    # app logger
+    @@logger = Logging.logger[self]
   end
 
   def body_to_json(request)

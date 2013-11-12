@@ -10,7 +10,8 @@ class SaltApiApp < ApiBase
         if(params[:account_id])
             cloud_acc = CloudAccount.find(params[:account_id]);
             salt_config = cloud_acc.config_managers.select {|c| c["type"] == "salt"}[0]
-            if(salt_config)
+            if salt_config
+                @@logger.debug("Connecting to salt at #{salt_config.protocol}://#{salt_config.host}:#{salt_config.port}")
                 salt_url = salt_config.protocol + "://" + salt_config.host + ":" + salt_config.port;
                 @salt = Salt::Client.new(salt_url, salt_config.auth_properties["salt_user"], salt_config.auth_properties["salt_pass"]);
             else
