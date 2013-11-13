@@ -18,16 +18,16 @@ FactoryGirl.define do
     # a.resource_groups ["group1", "group2", "group 3"]
   end
 
-  factory :create_stack, :class=> CreateStack do |a|
-    a.name "New Stack"
-    a.description "My new sStack"
-  end
+#  factory :create_stack, :class=> CreateStack do |a|
+#    a.name "New Stack"
+#    a.description "My new sStack"
+#  end
 
-  factory :template, :class => Template do |a|
-    a.name 'Test template'
-    a.import_source 'test'
-    a.raw_json '{"description":"This is a test template"}'
-  end
+#  factory :template, :class => Template do |a|
+#    a.name 'Test template'
+#    a.import_source 'test'
+#    a.raw_json '{"description":"This is a test template"}'
+#  end
 
   factory :query, :class => Query do |a|
     a.total 504
@@ -140,12 +140,12 @@ FactoryGirl.define do
   factory :embedded_project, :class => EmbeddedProject do |a|
   end
   
-  factory :news_event, :class => NewsEvent do |a|
-    a.description 'Transcend Launches'
-    a.url 'https://www.transcendcomputing.com'
-    a.source 'TranscendComputing'
-    a.posted Time.now
-  end
+  #factory :news_event, :class => NewsEvent do |a|
+  #  a.description 'Transcend Launches'
+  #  a.url 'https://www.transcendcomputing.com'
+  #  a.source 'TranscendComputing'
+  #  a.posted Time.now
+  #end
 
   factory :price, :class => Price do |a|
     a.name 'm1.small'
