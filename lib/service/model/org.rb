@@ -57,21 +57,21 @@ class Org
   end
   
   def remove_group!(group_id)
-	groups.select { |g| g.id.to_s == group_id.to_s }.each { |g| g.delete }
-	self.save!
+	  groups.select { |g| g.id.to_s == group_id.to_s }.each { |g| g.delete }
+	  self.save!
   end
   
   def add_account_to_group!(group_id, account_id)
-	groups.select { |g| g.id.to_s == group_id.to_s }.each do |group|
-		account = Account.find(account_id)
-		group.group_memberships << GroupMembership.new(:account=>account)
-	end
+	  groups.select { |g| g.id.to_s == group_id.to_s }.each do |group|
+		  account = Account.find(account_id)
+		  group.group_memberships << GroupMembership.new(:account=>account)
+	  end
   end
   
   def remove_account_from_group!(group_id, account_id)
-	groups.select { |g| g.id.to_s == group_id.to_s }.each do |group|
-		group.group_memberships.select { |m| m.account.id.to_s == account_id.to_s }.each { |m| m.delete }
-	end
+	  groups.select { |g| g.id.to_s == group_id.to_s }.each do |group|
+		  group.group_memberships.select { |m| m.account.id.to_s == account_id.to_s }.each { |m| m.delete }
+	  end
   end
   
   def find_mapping(mapping_id)

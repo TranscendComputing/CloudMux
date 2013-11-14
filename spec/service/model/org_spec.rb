@@ -16,7 +16,7 @@ describe Org do
     end
   end
 
-  describe "#add_subscriber!" do
+  pending "#add_subscriber!" do
     before :each do
       @subscription = FactoryGirl.build(:subscription)
       @org.subscriptions << @subscription
