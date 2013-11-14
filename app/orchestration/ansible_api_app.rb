@@ -85,6 +85,19 @@ class AnsibleApiApp < ApiBase
     end
   end
 
+  post '/job_templates/run' do
+    begin
+      resp = @ansible.post_job_template_run(
+        params[:job_template_id],
+        params[:host])
+      [OK, resp.to_json] 
+    rescue RestClient::Unauthorized
+        [BAD_REQUEST, {:message => "Invalid Ansible user/password combination."}];
+    rescue Errno::ECONNREFUSED
+        [BAD_REQUEST, {:message => "Connection was refused"}]
+    end
+  end
+
 # The hierarchy of Ansible goes like this:
 # Inventories -> Groups -> Hosts
 # nevar forget.
@@ -174,7 +187,6 @@ class AnsibleApiApp < ApiBase
 
   post '/hosts' do
     begin
-      # [XXX] I need to figure out what the last_job* params are for
       # The 'name' parameter holds the IP or hostname (fqdn) for the host
       #
       # `name`:  (string, required)

@@ -2,8 +2,8 @@ require 'rest-client'
 require 'json'
 require 'debugger'
 
-# [XXX] Logging...
-#RestClient.log = "/home/thethethe/Development/MomentumSI/CloudMux/rest_log"
+# [TODO] Use Logging module; ie lib/salt/rest_client
+RestClient.log = "/home/thethethe/Development/MomentumSI/CloudMux/rest_log"
 
 class Ansible
   class Client
@@ -31,12 +31,27 @@ class Ansible
       JSON.parse(resp)["results"]
     end
 
+    def post_job_template_run(job_template_id, host)
+      data = {
+        :name => "Ansible triggered job %d for host %s" % [job_template_id, host]  
+        :job_type => 'run',
+        :limit => host}
+      url = '/api/v1/job_templates/%d/jobs' % job_template_id
+      resp = @rest[url].post(data)
+      #[TODO] add error handling here
+      job_id = JSON.parse(resp)['results']['id']
+      url = '/api/v1/jobs/%d/start/' % job_id
+      resp = @rest[url].post
+      JSON.parse(resp)["results"]
+
+    end
+
     def get_inventories
       resp = @rest['/api/v1/inventories/'].get
       JSON.parse(resp)["results"]
     end
 
-    def post_inventories(name,description, organization,variables)
+    def post_inventories(name,description, organization=1,variables='')
       resp = @rest['/api/v1/hosts'].post({
         :name => name,
         :description => description,
@@ -53,11 +68,11 @@ class Ansible
       JSON.parse(resp)["results"]
     end
 
-    def post_hosts(name,description, inventory,variables)
+    def post_hosts(name,description, variables='')
       resp = @rest['/api/v1/hosts'].post({
         :name => name,
         :description => description,
-        :inventory => '1', # [XXX] Hardcoding to 1 for simplicity...
+        :inventory => '1',
         :variables => variables
       })
       JSON.parse(resp)["results"]
@@ -137,16 +152,26 @@ class Ansible
 
     def find_hosts (instances)
       result = []
+      add_instances = []
       hosts = get_hosts
-      instances.each_with_index{|inst, i|
+      instances.each_with_index{|inst|
         name = inst["name"]
         ips = inst["ip_addresses"]
         host =  hosts.select{ |h| ips.include? h['name']}
         if host.length > 0
           result << {:name => host[:description]}
         else
-          result << {}
+          # add hosts not already in results
+          add_instances << inst
         end
+      }
+      add_instances.each {|inst|
+        name = inst["name"]
+        ips = inst["ip_addresses"]
+        host = put_hosts(
+          ips[-1], # Using the last ip address for name
+          name) # SS name for Ansible description
+        result << {:name => host[:description]}
       }
       return result
     end
