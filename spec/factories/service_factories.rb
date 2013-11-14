@@ -62,6 +62,7 @@ FactoryGirl.define do
 
   factory :cloud, :class => Cloud do |a|
     a.name 'My Public Cloud'
+    a.cloud_provider 'AWS'
     a.public true
   end
 

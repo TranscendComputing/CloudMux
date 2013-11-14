@@ -22,7 +22,7 @@ end
 def create_project
   @cloud_account = FactoryGirl.build(:cloud_account)
   @owner = FactoryGirl.build(:account, :login=>"standard_subscriber_1", :email=>"standard_1@example.com")
-  @owner.cloud_accounts << @cloud_account
+  #@owner.cloud_accounts << @cloud_account
   @owner.save
   @project = FactoryGirl.create(:project, :cloud_account=>@cloud_account, :owner=>@owner)
   @project
