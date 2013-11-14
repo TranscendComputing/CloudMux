@@ -10,11 +10,4 @@ describe CloudAccount do
     DatabaseCleaner.clean
   end
 
-  describe "#valid" do
-    it "should require a name" do
-      @cloud_account.valid?.should eq(true)
-      @cloud_account.name = nil
-      @cloud_account.valid?.should eq(false)
-    end
-  end
 end

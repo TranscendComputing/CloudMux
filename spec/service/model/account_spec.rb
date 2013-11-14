@@ -133,7 +133,9 @@ describe Account do
       account.country_code = country.code
       account.country.should eq(country)
     end
+  end
 
+  pending "#country_code=" do
     it "should set the country as nil if it is not found" do
       country = @account.country
       account = Account.new
@@ -155,7 +157,9 @@ describe Account do
       @role = 'standard'
       @org.new?.should eq(true)
     end
+  end
 
+  pending "#subscriptions" do
     it "should return subscriber instances associated to the specific account" do
       @account_1.subscriptions.count.should eq(0)
       @org.add_subscriber!(@subscription_1.product, @account_1, @role)
@@ -177,7 +181,9 @@ describe Account do
       @account_1.cloud_credentials << @cloud_credential
       @account_1.save
     end
+  end
 
+  pending "#cloud_credentials" do
     it "should find cloud cloud_credential by id" do
       cloud_credential = Account.find_cloud_credential(@cloud_credential.id)
       cloud_credential.should_not eq(nil)

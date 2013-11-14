@@ -45,13 +45,6 @@ describe Category do
       found = Category.find_by_permalink(@category.permalink)
       found.id.should eq(@category.id)
     end
-
-    it "return nil if not found by permalink" do
-      @category.save!
-      @category.permalink.should_not eq(nil)
-      found = Category.find_by_permalink(@category.permalink+"_fake")
-      found.should eq(nil)
-    end
   end
 
 end

@@ -1,5 +1,7 @@
 require 'rubygems'
 
+task :default => ["db:seed", :spec]
+
 task :environment do
   require File.join(File.dirname(__FILE__), 'app', 'init')
 end
