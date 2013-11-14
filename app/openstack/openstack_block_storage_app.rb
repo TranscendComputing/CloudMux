@@ -4,19 +4,19 @@ require 'fog'
 class OpenstackBlockStorageApp < ResourceApiBase
 
 	before do
-        if(params[:cred_id].nil?)
-            halt [BAD_REQUEST]
-        else
-            cloud_cred = get_creds(params[:cred_id])
-            if cloud_cred.nil?
-                halt [NOT_FOUND, "Credentials not found."]
-            else
-                options = cloud_cred.cloud_attributes.merge(:provider => "openstack")
-                @block_storage = Fog::Compute.new(options)
-                halt [BAD_REQUEST] if @block_storage.nil?
-            end
-        end
+    if(params[:cred_id].nil? || ! Auth.validate(params[:cred_id],"Elastic Block Storage","action_os"))
+      halt [BAD_REQUEST]
+    else
+      cloud_cred = get_creds(params[:cred_id])
+      if cloud_cred.nil?
+        halt [NOT_FOUND, "Credentials not found."]
+      else
+        options = cloud_cred.cloud_attributes.merge(:provider => "openstack")
+        @block_storage = Fog::Compute.new(options)
+        halt [BAD_REQUEST] if @block_storage.nil?
+      end
     end
+  end
 	
 	#
 	# Volumes

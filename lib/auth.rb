@@ -3,7 +3,7 @@ module Auth
     # Validate
     def Auth.validate(cred_id,service_name,action,options = nil)
         policies = Auth.find_group_policies(cred_id)
-        policies.each do |policy|
+        policies.each    do |policy|
             if ! Auth.validatePolicy(cred_id,policy,service_name,action,options)
                 return false
             end
@@ -36,7 +36,10 @@ module Auth
         if policy.nil?
             return true
         end
+        #Check for AWS governance policy rules.
         aws_governance = policy.aws_governance
+        os_governance = policy.os_governance
+
         case action
         when "action"
             return Auth.canUseService(cred_id,aws_governance['enabled_services'],service_name)
@@ -58,6 +61,12 @@ module Auth
             return Auth.createVpcInstance(aws_governance,options)
         when "modify_gateway"
             return Auth.canModifyGateway(aws_governance['vpc_rules'],options)
+        when "action_os"
+            return Auth.canUseService(cred_id,os_governance['enabled_services_os'],service_name)
+        when "create_instace_os"
+            return Auth.canCreateInstance(os_governance['max_on_demand_os'],options)
+        when "create_autoscale_os"
+            return Auth.canCreateInstance(os_governance['max_in_autoscale_os'],options)
         end
         return true
     end
