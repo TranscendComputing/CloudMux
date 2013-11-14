@@ -14,7 +14,7 @@ FactoryGirl.define do
 
   factory :stack, :class => Stack do |a|
     a.name 'Test stack'
-    a.public true
+    #a.public true
     # a.resource_groups ["group1", "group2", "group 3"]
   end
 
