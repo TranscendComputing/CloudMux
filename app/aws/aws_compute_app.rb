@@ -315,8 +315,6 @@ class AwsComputeApp < ResourceApiBase
             begin
                 group = @compute.security_groups.get_by_id(json_body["group_id"])
                 r = json_body["options"]
-                #require 'pry'
-                #binding.pry
                 group.revoke_port_range(json_body["range"],{})
                 [OK, @compute.security_groups.get(json_body["group_id"]).to_json]
             rescue => error
@@ -330,7 +328,7 @@ class AwsComputeApp < ResourceApiBase
     ##~ a.description = "Manage compute resources on the cloud (OpenStack)"
     ##~ op = a.operations.add
     ##~ op.set :httpMethod => "PUT"
-    ##~ op.summary = "Add security groups rule (OpenStack cloud)"  
+    ##~ op.summary = "Add security groups rule (AWS cloud)"  
     ##~ op.nickname = "add_rule_security_groups"
     ##~ op.parameters.add :name => "id", :description => "Instance ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, security groups rule added", :code => 200
