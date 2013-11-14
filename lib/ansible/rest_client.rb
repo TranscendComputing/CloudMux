@@ -33,7 +33,7 @@ class Ansible
 
     def post_job_template_run(job_template_id, host)
       data = {
-        :name => "Ansible triggered job %d for host %s" % [job_template_id, host]  
+        :name => "Ansible triggered job %d for host %s" % [job_template_id, host],
         :job_type => 'run',
         :limit => host}
       url = '/api/v1/job_templates/%d/jobs' % job_template_id
@@ -69,13 +69,13 @@ class Ansible
     end
 
     def post_hosts(name,description, variables='')
-      resp = @rest['/api/v1/hosts'].post({
+      resp = @rest['/api/v1/hosts/'].post({
         :name => name,
         :description => description,
-        :inventory => '1',
+        :inventory => '1', # 'same inventory, we use 'limit' on other calls to choose hosts
         :variables => variables
       })
-      JSON.parse(resp)["results"]
+      JSON.parse(resp)
     end
 
     def delete_hosts(host_id)
@@ -150,16 +150,17 @@ class Ansible
       JSON.parse(resp)["results"]
     end
 
+    # [TODO] move the logic here to ansible_api_app
     def find_hosts (instances)
       result = []
       add_instances = []
-      hosts = get_hosts
+      hosts = get_hosts()
       instances.each_with_index{|inst|
         name = inst["name"]
         ips = inst["ip_addresses"]
         host =  hosts.select{ |h| ips.include? h['name']}
         if host.length > 0
-          result << {:name => host[:description]}
+          result << {:name => host[0]['description']}
         else
           # add hosts not already in results
           add_instances << inst
@@ -168,7 +169,7 @@ class Ansible
       add_instances.each {|inst|
         name = inst["name"]
         ips = inst["ip_addresses"]
-        host = put_hosts(
+        host = post_hosts(
           ips[-1], # Using the last ip address for name
           name) # SS name for Ansible description
         result << {:name => host[:description]}
