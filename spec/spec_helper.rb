@@ -20,10 +20,10 @@ def file(filename)
 end
 
 def create_project
-  @cloud_account = FactoryGirl.build(:cloud_account)
+  @cloud_credential = FactoryGirl.build(:cloud_credential)
   @owner = FactoryGirl.build(:account, :login=>"standard_subscriber_1", :email=>"standard_1@example.com")
   #@owner.cloud_accounts << @cloud_account
   @owner.save
-  @project = FactoryGirl.create(:project, :cloud_account=>@cloud_account, :owner=>@owner)
+  @project = FactoryGirl.create(:project, :cloud_credential=>@cloud_credential, :owner=>@owner)
   @project
 end
