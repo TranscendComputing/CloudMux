@@ -11,7 +11,7 @@ module ProjectRepresenter
   property :project_type
   property :region
   property :owner, :class=>Account, :extend=>AccountSummaryRepresenter
-  property :cloud_account, :class=>CloudAccount, :extend=>CloudAccountRepresenter
+  property :cloud_credential, :class=>CloudCredential, :extend=>CloudCredentialRepresenter
   collection :members, :class=>Member, :extend=>MemberRepresenter
   collection :group_projects, :class=>GroupProject, :extend=>GroupProjectRepresenter
   collection :versions, :class=>Version, :extend=>VersionRepresenter

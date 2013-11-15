@@ -8,6 +8,6 @@ module UpdateProjectRepresenter
   property :description
   property :project_type
   property :region
-  property :cloud_account_id
+  property :cloud_credential_id
   property :owner_id
 end
