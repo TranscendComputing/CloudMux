@@ -33,7 +33,7 @@ class Project
   # ObjectId of the embedded cloud account for a user (can't reference it
   # directly, as it is embedded). If the cloud account is deleted or
   # the ID changes, this will no longer be valid
-  field :cloud_account_id, type:String
+  field :cloud_credential_id, type:String
 
   # Membership support
   embeds_many :members
@@ -100,17 +100,17 @@ class Project
   end
 
   #
-  # -- Cloud Account Support
+  # -- Cloud Credential Support
   #
 
-  # retrieves the associated cloud account to be used by the project for provisioning
-  def cloud_account
-    (self.cloud_account_id.nil? ? nil : Account.find_cloud_account(self.cloud_account_id))
+  # retrieves the associated cloud credential to be used by the project for provisioning
+  def cloud_credential
+    (self.cloud_credential_id.nil? ? nil : Account.find_cloud_credential(self.cloud_credential_id))
   end
 
-  # stores the associated cloud account to be used by the project for provisioning
-  def cloud_account=(cloud_account)
-    self.cloud_account_id = (cloud_account.kind_of?(String) ? cloud_account : cloud_account.id.to_s)
+  # stores the associated cloud credential to be used by the project for provisioning
+  def cloud_credential=(cloud_credential)
+    self.cloud_credential_id = (cloud_credential.kind_of?(String) ? cloud_credential : cloud_credential.id.to_s)
   end
 
   #

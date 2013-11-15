@@ -100,6 +100,7 @@ FactoryGirl.define do
 
   factory :project_version, :class => ProjectVersion do |a|
     a.version '1.0.0'
+    project
   end
 
   factory :element, :class => Element do |a|
