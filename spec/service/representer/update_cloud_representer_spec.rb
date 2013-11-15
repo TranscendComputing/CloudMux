@@ -11,7 +11,7 @@ describe UpdateCloudRepresenter do
     it "should export to json" do
       @cloud.extend(UpdateCloudRepresenter)
       result = @cloud.to_json
-      result.should eq("{\"cloud\":{\"name\":\"#{@cloud.name}\",\"permalink\":\"#{@cloud.permalink}\",\"public\":true}}")
+      result.should eq("{\"cloud\":{\"name\":\"#{@cloud.name}\",\"cloud_provider\":\"#{@cloud.cloud_provider}\",\"permalink\":\"#{@cloud.permalink}\",\"public\":true}}")
     end
   end
 

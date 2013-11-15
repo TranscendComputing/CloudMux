@@ -11,7 +11,7 @@ describe MemberRepresenter do
     it "should export to json" do
       @member.extend(MemberRepresenter)
       result = @member.to_json
-      result.should eq("{\"member\":{\"id\":\"#{@member.id}\",\"account\":{\"id\":\"#{@account_1.id}\",\"login\":\"#{@account_1.login}\"},\"role\":\"#{@member.role}\"}}")
+      result.should eq("{\"member\":{\"id\":\"#{@member.id}\",\"account\":{\"id\":\"#{@account_1.id}\",\"login\":\"#{@account_1.login}\"},\"role\":\"#{@member.role}\",\"permissions\":[]}}")
     end
   end
 
