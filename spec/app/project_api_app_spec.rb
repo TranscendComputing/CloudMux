@@ -350,8 +350,6 @@ describe ProjectApiApp do
       @project = FactoryGirl.create(:project, :cloud_credential_id=>@cloud_credential.id.to_s, :owner=>@owner)
       @project_version = FactoryGirl.create(:project_version, :project=>@project, :version=>@version)
       @environment = FactoryGirl.build(:environment).extend(UpdateEnvironmentRepresenter)
-      puts "/#{@project.id.to_s}/versions/#{@version}/promote", @environment.to_json
-
       post "/#{@project.id.to_s}/versions/#{@version}/promote", @environment.to_json
     end
 
