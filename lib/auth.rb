@@ -36,37 +36,41 @@ module Auth
         if policy.nil?
             return true
         end
-        #Check for AWS governance policy rules.
-        aws_governance = policy.aws_governance
-        os_governance = policy.os_governance
 
+        #Check which cloud provider is being used.
+        cloud_info = Account.find_cloud_credential(cred_id)
+        if( cloud_info.cloud_provider === "OpenStack" )
+            governance = policy.os_governance
+            options = cloud_info.cloud_attributes.merge(:provider => "openstack")
+        elsif (cloud_info.cloud_provider === "AWS")
+            governance = policy.aws_governance
+            options = cloud_cred.cloud_attributes.merge(:provider => "AWS")
+        else
+            return true
+        end
+
+        #Determine which action is being taken.
         case action
         when "action"
-            return Auth.canUseService(cred_id,aws_governance['enabled_services'],service_name)
+            return Auth.canUseService(cred_id,governance['enabled_services'],service_name)
         when "create_instance"
-            return Auth.canCreateInstance(aws_governance['max_on_demand'],options)
+            return Auth.canCreateInstance(governance['max_on_demand'],options)
         when "create_rds"
-            return Auth.canCreateInstance(aws_governance['max_rds'],options)
+            return Auth.canCreateInstance(governance['max_rds'],options)
         when "create_spot"
-            return Auth.canCreateInstance(aws_governance['max_spot'],options)
+            return Auth.canCreateInstance(governance['max_spot'],options)
         when "create_reserved"
-            return Auth.canCreateInstance(aws_governance['max_reserved'],options)
+            return Auth.canCreateInstance(governance['max_reserved'],options)
         when "create_autoscale"
-            return Auth.canCreateInstance(aws_governance['max_in_autoscale'],options)
+            return Auth.canCreateInstance(governance['max_in_autoscale'],options)
         when "create_default_alarms"
-            return Auth.createAlarms(aws_governance,options)
+            return Auth.createAlarms(governance,options)
         when "create_auto_tags"
-            return Auth.createTags(policy,aws_governance,options)
+            return Auth.createTags(policy,governance,options)
         when "create_vpc_instance"
-            return Auth.createVpcInstance(aws_governance,options)
+            return Auth.createVpcInstance(governance,options)
         when "modify_gateway"
-            return Auth.canModifyGateway(aws_governance['vpc_rules'],options)
-        when "action_os"
-            return Auth.canUseService(cred_id,os_governance['enabled_services_os'],service_name)
-        when "create_instace_os"
-            return Auth.canCreateInstance(os_governance['max_on_demand_os'],options)
-        when "create_autoscale_os"
-            return Auth.canCreateInstance(os_governance['max_in_autoscale_os'],options)
+            return Auth.canModifyGateway(governance['vpc_rules'],options)
         end
         return true
     end
@@ -92,9 +96,10 @@ module Auth
     
     #Max Instances
     def Auth.canCreateInstance(max_instance,options)
+        @compute = Fog::Compute.new(options)
         if max_instance == ""
             return true
-        elsif options >= max_instance.to_i
+        elsif @compute.servers.count >= max_instance.to_i
             return false
         else return true
         end

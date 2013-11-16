@@ -4,7 +4,7 @@ require 'fog'
 class OpenstackObjectStorageApp < ResourceApiBase
 
 	before do
-    if(params[:cred_id].nil? || ! Auth.validate(params[:cred_id],"Object Storage","action_os"))
+    if(params[:cred_id].nil? || ! Auth.validate(params[:cred_id],"Object Storage","action"))
       return nil
     else
       cloud_cred = get_creds(params[:cred_id])

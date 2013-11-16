@@ -4,7 +4,7 @@ require 'fog'
 class OpenstackIdentityApp < ResourceApiBase
 
 	before do
-    if(params[:cred_id].nil? || ! Auth.validate(params[:cred_id],"Identity","action_os"))
+    if(params[:cred_id].nil? || ! Auth.validate(params[:cred_id],"Identity","action"))
         halt [BAD_REQUEST]
     else
       cloud_cred = get_creds(params[:cred_id])
