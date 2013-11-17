@@ -1,6 +1,8 @@
 # test env
 require 'rspec'
 require 'factory_girl'
+require 'coveralls'
+Coveralls.wear!
 
 # gems required only for tests
 # require 'open-uri'

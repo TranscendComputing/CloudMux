@@ -54,6 +54,7 @@ group :development, :test do
   gem 'pry-debugger'
   gem 'rb-readline'
   gem 'flog'
+  gem 'coveralls', require: false
 end
 
 # Google
