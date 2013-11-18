@@ -3,7 +3,7 @@ require 'json'
 require 'debugger'
 
 # [TODO] Use Logging module; ie lib/salt/rest_client
-RestClient.log = "/home/thethethe/Development/MomentumSI/CloudMux/rest_log"
+#RestClient.log = "/home/thethethe/Development/MomentumSI/CloudMux/rest_log"
 
 class Ansible
   class Client
@@ -31,19 +31,20 @@ class Ansible
       JSON.parse(resp)["results"]
     end
 
-    def post_job_template_run(job_template_id, host)
-      data = {
-        :name => "Ansible triggered job %d for host %s" % [job_template_id, host],
-        :job_type => 'run',
-        :limit => host}
-      url = '/api/v1/job_templates/%d/jobs' % job_template_id
-      resp = @rest[url].post(data)
-      #[TODO] add error handling here
-      job_id = JSON.parse(resp)['results']['id']
-      url = '/api/v1/jobs/%d/start/' % job_id
-      resp = @rest[url].post
-      JSON.parse(resp)["results"]
-
+    def post_job_templates_run(job_template_ids, host)
+     job_template_ids.each{ |job_template_id|
+        data = {
+          :name => "Ansible triggered job %d for host %s" % [job_template_id, host],
+          :job_type => 'run',
+          :limit => [host]}
+        url = '/api/v1/job_templates/%d/jobs/' % job_template_id
+        resp = @rest[url].post(data)
+        #[TODO] add error handling here
+        job_id = JSON.parse(resp)['id']
+        url = '/api/v1/jobs/%d/start/' % job_id
+        resp = @rest[url].post({})
+        JSON.parse(resp)["results"]
+      }
     end
 
     def get_inventories
@@ -151,7 +152,7 @@ class Ansible
     end
 
     # [TODO] move the logic here to ansible_api_app
-    def find_hosts (instances)
+    def post_find_hosts (instances)
       result = []
       add_instances = []
       hosts = get_hosts()
@@ -160,7 +161,7 @@ class Ansible
         ips = inst["ip_addresses"]
         host =  hosts.select{ |h| ips.include? h['name']}
         if host.length > 0
-          result << {:name => host[0]['description']}
+          result << host[0]
         else
           # add hosts not already in results
           add_instances << inst
@@ -172,7 +173,7 @@ class Ansible
         host = post_hosts(
           ips[-1], # Using the last ip address for name
           name) # SS name for Ansible description
-        result << {:name => host[:description]}
+        result << {:name => host}
       }
       return result
     end

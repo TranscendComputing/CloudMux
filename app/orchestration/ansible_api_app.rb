@@ -21,7 +21,6 @@ class AnsibleApiApp < ApiBase
         @ansible = Ansible::Client.new(url, 
           config.auth_properties['ansible_user'], 
           config.auth_properties['ansible_pass'])
-
         # Now ensure that we have credentials 
         me = @ansible.get_me
         user_id = me[0]['id'].to_s
@@ -220,11 +219,11 @@ class AnsibleApiApp < ApiBase
       [BAD_REQUEST, message.to_json]
     else
       begin
-        host_ids = @ansible.find_hosts(instancedata);
+        hosts = @ansible.post_find_hosts(instancedata);
       rescue Errno::ECONNREFUSED
         [BAD_REQUEST, {:message=>"could not connect to Ansible."}.to_json]
       end
-      [OK, host_ids.to_json];
+      [OK, hosts.to_json];
     end
   end
 
@@ -232,6 +231,20 @@ class AnsibleApiApp < ApiBase
   delete '/hosts/:host_id' do
     begin
       response = @ansible.delete_hosts(:host_id=>params[:host_id])
+      [OK, response.to_json]
+    rescue RestClient::Unauthorized
+        [BAD_REQUEST, {:message => "Invalid Ansible user/password combination."}];
+
+    rescue Errno::ECONNREFUSED
+        [BAD_REQUEST, {:message => "Connection was refused"}]
+    end
+  end
+
+  # [XXX] From the url it is not transparent what this method does
+  put '/hosts/:host_id' do
+    begin
+      jobs = JSON.parse(request.body.read)['jobtemplates']
+      response = @ansible.post_job_templates_run(jobs, params[:host_id])
       [OK, response.to_json]
     rescue RestClient::Unauthorized
         [BAD_REQUEST, {:message => "Invalid Ansible user/password combination."}];
