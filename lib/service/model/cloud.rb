@@ -24,7 +24,11 @@ class Cloud
 
   def self.find_by_permalink(perma)
     return nil if perma.nil? or perma.empty?
-    return self.find_by(permalink:perma)
+    begin
+      return self.find_by(permalink:perma)
+    rescue Mongoid::Errors::DocumentNotFound
+      nil
+    end
   end
 
   def set_permalink

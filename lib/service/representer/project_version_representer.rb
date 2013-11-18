@@ -10,5 +10,5 @@ module ProjectVersionRepresenter
   collection :nodes, :class=>Node, :extend=>NodeRepresenter
   collection :variants, :class=>Variant, :extend=>VariantRepresenter
   collection :embedded_projects, :class=>EmbeddedProject, :extend=>EmbeddedProjectRepresenter
-  collection :environments, :class=>Environment, :extend=>EnvironmentRepresenter
+  #collection :environments, :class=>Environment, :extend=>EnvironmentRepresenter
 end

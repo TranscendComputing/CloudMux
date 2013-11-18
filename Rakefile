@@ -1,5 +1,7 @@
 require 'rubygems'
 
+task :default => ["db:seed", :spec, "analyzer:all"]
+
 task :environment do
   require File.join(File.dirname(__FILE__), 'app', 'init')
 end
@@ -237,3 +239,28 @@ namespace :update do
 	end
 end
 
+begin
+  namespace :analyzer do
+    desc "run all code analyzing tools (flog)"
+
+    task :all => ["flog:total"]
+
+    namespace :flog do
+      require 'flog_cli'
+      desc "Analyze total code complexity with flog"
+      task :total do
+        threshold = 20
+        flog = FlogCLI.new
+        flog.flog %w(app lib)
+        average = flog.average.round(1)
+        total_score = flog.total_score
+        puts "Average complexity: #{flog.average.round(1)}" 
+        puts "Total complexity: #{flog.total_score.round(1)}" 
+        flog.report
+        fail "Average code complexity has exceeded max! (#{average} > #{threshold})" if average > threshold
+      end
+    end
+  end
+rescue LoadError
+    # not in dev/test env - skip installing these tasks
+end

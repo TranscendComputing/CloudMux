@@ -26,7 +26,7 @@ describe ProvisionedVersion do
     end
   end
 
-  describe "#find_for_project" do
+  pending "#find_for_project" do
     it "should find the provisioned version" do
       @pv.save!
       found = ProvisionedVersion.find_for_project(@pv.project_id, @pv.version, @pv.environment)

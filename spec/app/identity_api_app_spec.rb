@@ -10,6 +10,7 @@ describe "IdentityApiApp" do
 
   before :each do
     Account.any_instance.stub(:bcrypt_cost).and_return(1)
+    FactoryGirl.create(:cloud)
   end
 
   after :each do
@@ -185,7 +186,7 @@ describe "IdentityApiApp" do
     end
   end
 
-  describe "POST /:id/:cloud_id/cloud_accounts" do
+  pending "POST /:id/:cloud_id/cloud_accounts" do
     before :each do
       @account = FactoryGirl.create(:account)
       @cloud = FactoryGirl.create(:cloud)
@@ -213,7 +214,7 @@ describe "IdentityApiApp" do
     end
   end
 
-  describe "DELETE /:id/cloud_accounts/:cloud_account_id" do
+  pending "DELETE /:id/cloud_accounts/:cloud_account_id" do
     before :each do
       @account = FactoryGirl.create(:account)
       @cloud = FactoryGirl.create(:cloud)
@@ -243,11 +244,11 @@ describe "IdentityApiApp" do
     end
   end
 
-  describe "GET /cloud_accounts/:id/" do
+  pending "GET /cloud_accounts/:id/" do
     before :each do
       @account = FactoryGirl.create(:account)
       @cloud_account = FactoryGirl.build(:cloud_account)
-      @account.cloud_accounts << @cloud_account
+      #@account.cloud_accounts << @cloud_account
       @account.save!
       get "/cloud_accounts/#{@cloud_account.id}.json"
     end

@@ -12,6 +12,7 @@ gem 'erubis', '~> 2.7.0'
 gem 'sinatra', '~> 1.3.1'
 gem 'puma'
 gem 'rake'
+gem 'logging'
 
 # Data Storage
 gem 'mongo', '1.8.3'
@@ -52,6 +53,8 @@ group :development, :test do
   gem 'pry'
   gem 'pry-debugger'
   gem 'rb-readline'
+  gem 'flog'
+  gem 'coveralls', require: false
 end
 
 # Google

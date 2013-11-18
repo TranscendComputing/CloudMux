@@ -3,20 +3,20 @@ require 'service_spec_helper'
 describe UpdateProjectRepresenter do
 
   before :each do
-    @project = FactoryGirl.build(:project, :cloud_account_id=>"abcd")
+    @project = FactoryGirl.build(:project, :cloud_credential_id=>"abcd")
   end
 
   describe "#to_json" do
     it "should export to json" do
       @project.extend(UpdateProjectRepresenter)
       result = @project.to_json
-      result.should eq("{\"project\":{\"name\":\"#{@project.name}\",\"description\":\"#{@project.description}\",\"project_type\":\"#{@project.project_type}\",\"region\":\"#{@project.region}\",\"cloud_account_id\":\"#{@project.cloud_account_id}\"}}")
+      result.should eq("{\"project\":{\"name\":\"#{@project.name}\",\"description\":\"#{@project.description}\",\"project_type\":\"#{@project.project_type}\",\"region\":\"#{@project.region}\",\"cloud_credential_id\":\"#{@project.cloud_credential_id}\"}}")
     end
   end
 
   describe "#from_json" do
     it "should import from json payload" do
-      json = "{\"project\":{\"name\":\"#{@project.name}\",\"description\":\"#{@project.description}\",\"project_type\":\"#{@project.project_type}\",\"cloud_account_id\":\"#{@project.cloud_account_id}\"}}"
+      json = "{\"project\":{\"name\":\"#{@project.name}\",\"description\":\"#{@project.description}\",\"project_type\":\"#{@project.project_type}\",\"cloud_credential_id\":\"#{@project.cloud_credential_id}\"}}"
       new_project = Project.new
       new_project.extend(UpdateProjectRepresenter)
       new_project.from_json(json)

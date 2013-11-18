@@ -4,6 +4,7 @@ class Stack
     include Mongoid::Timestamps
   
     belongs_to :account, :foreign_key => 'account_id'
+    belongs_to :category
     field :name, type:String
     field :description, type:String
     field :compatible_clouds, type:Array, default: []

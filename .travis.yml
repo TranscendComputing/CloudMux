@@ -1,0 +1,13 @@
+language: ruby
+bundler_args: --without development
+rvm:
+  - "1.9.3"
+  - jruby-19mode # JRuby in 1.9 mode - getsource uses C extension.
+  - rbx-19mode
+matrix:
+  allow_failures:
+    - rvm: jruby-19mode
+    - rvm: rbx-19mode
+before_script:
+  - mongo cloudmux --eval 'db.addUser("cloudmux", "cloudmux");'
+services: mongodb

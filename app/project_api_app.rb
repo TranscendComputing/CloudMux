@@ -30,14 +30,14 @@ class ProjectApiApp < ApiBase
   end
 
   post '/' do
-#    create = Struct.new(:name, :description, :project_type, :cloud_account_id, :owner_id, :with_environments).new
+#    create = Struct.new(:name, :description, :project_type, :cloud_credential_id, :owner_id, :with_environments).new
 #    create.extend(CreateProjectRepresenter)
 #    create.from_json(request.body.read)
 #    new_project = Project.new
 #    new_project.name = create.name
 #    new_project.description = create.description
 #    new_project.project_type = create.project_type
-#    new_project.cloud_account_id = BSON::ObjectId.from_string(create.cloud_account_id)
+#    new_project.cloud_credential_id = BSON::ObjectId.from_string(create.cloud_credential_id)
 #    new_project.owner_id = BSON::ObjectId.from_string(create.owner_id)
 #    new_project.with_environments(create.with_environments)
     new_project = Project.new.extend(UpdateProjectRepresenter)

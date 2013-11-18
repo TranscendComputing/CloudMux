@@ -3,6 +3,16 @@ require 'sinatra'
 class StackApiApp < ApiBase
 
     # Get a Stack by ID
+    get '/:id.json' do
+        stack = Stack.where(id:params[:id]).first
+        if stack.nil?
+            [NOT_FOUND]
+        else
+            [OK, stack.to_json]
+        end
+    end
+
+    # Get a Stack by ID
     get '/:id' do
         stack = Stack.where(id:params[:id]).first
         if stack.nil?

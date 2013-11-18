@@ -1,6 +1,17 @@
 # test env
 require 'rspec'
 require 'factory_girl'
+require 'simplecov'
+require 'coveralls'
+
+SimpleCov.formatter = Coveralls::SimpleCov::Formatter
+SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
+  SimpleCov::Formatter::HTMLFormatter,
+  Coveralls::SimpleCov::Formatter
+]
+SimpleCov.start
+
+#Coveralls.wear!
 
 # gems required only for tests
 # require 'open-uri'
@@ -20,10 +31,10 @@ def file(filename)
 end
 
 def create_project
-  @cloud_account = FactoryGirl.build(:cloud_account)
+  @cloud_credential = FactoryGirl.build(:cloud_credential)
   @owner = FactoryGirl.build(:account, :login=>"standard_subscriber_1", :email=>"standard_1@example.com")
-  @owner.cloud_accounts << @cloud_account
+  #@owner.cloud_accounts << @cloud_account
   @owner.save
-  @project = FactoryGirl.create(:project, :cloud_account=>@cloud_account, :owner=>@owner)
+  @project = FactoryGirl.create(:project, :cloud_credential=>@cloud_credential, :owner=>@owner)
   @project
 end

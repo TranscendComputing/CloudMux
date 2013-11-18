@@ -4,7 +4,7 @@ require 'fog'
 class OpenstackComputeApp < ResourceApiBase
 
     before do
-        if(params[:cred_id].nil?)
+        if(params[:cred_id].nil? || ! Auth.validate(params[:cred_id],"Compute Service","action"))
             halt [BAD_REQUEST]
         else
             cloud_cred = get_creds(params[:cred_id])
@@ -55,7 +55,7 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/instances' do
         json_body = body_to_json(request)
-        if(json_body.nil?)
+        if(json_body.nil? || ! Auth.validate(params[:cred_id],"Compute Service","create_instance",@compute.servers.length))
             [BAD_REQUEST]
         else
             begin

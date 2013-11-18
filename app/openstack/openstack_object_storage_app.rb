@@ -4,19 +4,19 @@ require 'fog'
 class OpenstackObjectStorageApp < ResourceApiBase
 
 	before do
-        if(params[:cred_id].nil?)
-            return nil
-        else
-            cloud_cred = get_creds(params[:cred_id])
-            if cloud_cred.nil?
-                return nil
-            else
-                options = cloud_cred.cloud_attributes.merge(:provider => "openstack")
-                @object_storage = Fog::Storage.new(options)
-                halt [BAD_REQUEST] if @object_storage.nil?
-            end
-        end
+    if(params[:cred_id].nil? || ! Auth.validate(params[:cred_id],"Object Storage","action"))
+      return nil
+    else
+      cloud_cred = get_creds(params[:cred_id])
+      if cloud_cred.nil?
+        return nil
+      else
+        options = cloud_cred.cloud_attributes.merge(:provider => "openstack")
+        @object_storage = Fog::Storage.new(options)
+        halt [BAD_REQUEST] if @object_storage.nil?
+      end
     end
+  end
 
 	#
 	# Buckets
@@ -38,12 +38,17 @@ class OpenstackObjectStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   get '/directories' do
-        begin
-            response = @object_storage.directories
-    		[OK, response.to_json]
-        rescue => error
-            handle_error(error)
-        end
+    begin
+      filters = params[:filters]
+      if(filters.nil?)
+        response = @object_storage.directories
+      else
+        response = @object_storage.directories.all(filters)
+      end
+		  [OK, response.to_json]
+    rescue => error
+        handle_error(error)
+    end
 	end
 	
   ##~ a = sapi.apis.add
@@ -59,7 +64,7 @@ class OpenstackObjectStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/directories' do
-        json_body = body_to_json(request)
+    json_body = body_to_json(request)
 		if(json_body.nil?)
 			[BAD_REQUEST]
 		else
@@ -84,7 +89,7 @@ class OpenstackObjectStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   delete '/directories/:id' do
-        begin
+    begin
 			response = @object_storage.directories.get(params[:id]).destroy
 			[OK, response.to_json]
 		rescue => error
@@ -107,7 +112,7 @@ class OpenstackObjectStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	get '/directories/:id/files' do
-        begin
+    begin
 			response = @object_storage.directories.get(params[:id]).files
 			[OK, response.to_json]
 		rescue => error
@@ -128,15 +133,21 @@ class OpenstackObjectStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Success, object returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/directories/:id/files/:file_id' do
-        begin
-        	directory = @object_storage.directories.get(params[:id])
-			response = directory.files.get(params[:file_id]).body
-			headers["Content-disposition"] = "attachment; filename=" + params[:file_id]
-			[OK, response]
-		rescue => error
-			handle_error(error)
-		end
+  post '/directories/:id/files/:file_id' do
+    file = params[:file_id]
+    container = params[:id]
+    if(file.nil? || container.nil?)
+      [BAD_REQUEST]
+    else
+      begin
+        directory = @object_storage.directories.get(container)
+  			response = directory.files.get(file).body
+  			headers["Content-disposition"] = "attachment; filename=" + file
+  			[OK, response]
+  		rescue => error
+  			handle_error(error)
+		  end
+    end
 	end
 	
   ##~ a = sapi.apis.add
@@ -160,10 +171,7 @@ class OpenstackObjectStorageApp < ResourceApiBase
 		else
 			begin
 				directory = @object_storage.directories.get(params[:id])
-				response = directory.files.create(
-					:key => file[:filename],
-					:body => file[:tempfile]
-				)
+				response = directory.files.create(:key => file[:filename], :body => file[:tempfile])
 				[OK, response.to_json]
 			rescue => error
 				handle_error(error)
@@ -184,10 +192,10 @@ class OpenstackObjectStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   delete '/directories/:id/files/:file_id' do
-        begin
-        	directory = @object_storage.directories.get(params[:id])
-        	file = directory.files.get(params[:file_id])
-        	if(file.destroy)
+    begin
+      directory = @object_storage.directories.get(params[:id])
+      file = directory.files.get(params[:file_id])
+      if(file.destroy)
 				[OK, directory.reload.to_json]
 			else
 				message = "Unable to delete file."

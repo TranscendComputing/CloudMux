@@ -4,23 +4,23 @@ require 'fog'
 class OpenstackNetworkApp < ResourceApiBase
 
 	before do
-        if(params[:cred_id].nil?)
-            halt [BAD_REQUEST]
-        else
-            cloud_cred = get_creds(params[:cred_id])
-            if cloud_cred.nil?
-                halt [NOT_FOUND, "Credentials not found."]
-            else
-                options = cloud_cred.cloud_attributes
-                begin
-                    @network = Fog::Network::OpenStack.new(options)
-                    halt [BAD_REQUEST] if @network.nil?
-                rescue Fog::Errors::NotFound => error
-                    halt [NOT_FOUND, error.to_s]
-                end
-            end
+    if(params[:cred_id].nil? || ! Auth.validate(params[:cred_id],"Network","action"))
+      halt [BAD_REQUEST]
+    else
+      cloud_cred = get_creds(params[:cred_id])
+      if cloud_cred.nil?
+        halt [NOT_FOUND, "Credentials not found."]
+      else
+        options = cloud_cred.cloud_attributes
+        begin
+          @network = Fog::Network::OpenStack.new(options)
+          halt [BAD_REQUEST] if @network.nil?
+        rescue Fog::Errors::NotFound => error
+          halt [NOT_FOUND, error.to_s]
         end
+      end
     end
+  end
 
 	#
 	# Networks
@@ -45,12 +45,12 @@ class OpenstackNetworkApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   get '/networks' do
-        begin
-            response = @network.list_networks.body["networks"]
-    		[OK, response.to_json]
-        rescue => error
-            handle_error(error)
-        end
+    begin
+      response = @network.list_networks.body["networks"]
+		  [OK, response.to_json]
+    rescue => error
+      handle_error(error)
+    end
 	end
 	
   ##~ a = sapi.apis.add
@@ -67,8 +67,8 @@ class OpenstackNetworkApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/networks' do
-        json_body = body_to_json(request)
-		if(json_body.nil?)
+    json_body = body_to_json(request)
+		if(json_body.nil? || json_body["network"].nil?)
 			[BAD_REQUEST]
 		else
 			begin
@@ -93,7 +93,7 @@ class OpenstackNetworkApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   delete '/networks/:id' do
-        begin
+    begin
 			response = @network.networks.destroy(params[:id])
 			[OK, response.to_json]
 		rescue => error
@@ -116,12 +116,12 @@ class OpenstackNetworkApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	get '/subnets' do
-        begin
-            response = @network.list_subnets.body["subnets"]
-    		[OK, response.to_json]
-        rescue => error
-            handle_error(error)
-        end
+    begin
+      response = @network.list_subnets.body["subnets"]
+		  [OK, response.to_json]
+    rescue => error
+      handle_error(error)
+    end
 	end
 	
   ##~ a = sapi.apis.add
@@ -138,17 +138,17 @@ class OpenstackNetworkApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/subnets' do
-        json_body = body_to_json(request)
-        if(json_body.nil?)
-            [BAD_REQUEST]
-        else
-            begin
-                response = @network.subnets.create(json_body["subnet"])
-                [OK, response.to_json]
-            rescue => error
-                handle_error(error)
-            end
+      json_body = body_to_json(request)
+      if(json_body.nil? || json_body["subnet"].nil?)
+        [BAD_REQUEST]
+      else
+        begin
+          response = @network.subnets.create(json_body["subnet"])
+          [OK, response.to_json]
+        rescue => error
+          handle_error(error)
         end
+      end
     end
     
     ##~ a = sapi.apis.add
@@ -164,12 +164,12 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     delete '/subnets/:id' do
-        begin
-            response = @network.subnets.destroy(params[:id])
-            [OK, response.to_json]
-        rescue => error
-            handle_error(error)
-        end
+      begin
+        response = @network.subnets.destroy(params[:id])
+        [OK, response.to_json]
+      rescue => error
+        handle_error(error)
+      end
     end
 
     #
@@ -187,12 +187,12 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     get '/ports' do
-        begin
-            response = @network.list_ports.body["ports"]
-            [OK, response.to_json]
-        rescue => error
-            handle_error(error)
-        end
+      begin
+        response = @network.list_ports.body["ports"]
+        [OK, response.to_json]
+      rescue => error
+        handle_error(error)
+      end
     end
     
     ##~ a = sapi.apis.add
@@ -209,17 +209,17 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/ports' do
-        json_body = body_to_json(request)
-        if(json_body.nil?)
-            [BAD_REQUEST]
-        else
-            begin
-                response = @network.ports.create(json_body["port"])
-                [OK, response.to_json]
-            rescue => error
-                handle_error(error)
-            end
+      json_body = body_to_json(request)
+      if(json_body.nil? || json_body["port"].nil?)
+        [BAD_REQUEST]
+      else
+        begin
+          response = @network.ports.create(json_body["port"])
+          [OK, response.to_json]
+        rescue => error
+          handle_error(error)
         end
+      end
     end
     
     ##~ a = sapi.apis.add
@@ -235,12 +235,12 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     delete '/ports/:id' do
-        begin
-            response = @network.ports.destroy(params[:id])
-            [OK, response.to_json]
-        rescue => error
-            handle_error(error)
-        end
+      begin
+        response = @network.ports.destroy(params[:id])
+        [OK, response.to_json]
+      rescue => error
+        handle_error(error)
+      end
     end
 
     #
@@ -258,12 +258,12 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     get '/floating_ips' do
-        begin
-            response = @network.list_floating_ips.body["floating_ips"]
-            [OK, response.to_json]
-        rescue => error
-            handle_error(error)
-        end
+      begin
+        response = @network.list_floating_ips.body["floating_ips"]
+        [OK, response.to_json]
+      rescue => error
+        handle_error(error)
+      end
     end
     
     ##~ a = sapi.apis.add
@@ -280,17 +280,17 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/floating_ips' do
-        json_body = body_to_json(request)
-        if(json_body.nil?)
-            [BAD_REQUEST]
-        else
-            begin
-                response = @network.floating_ips.create(json_body["floating_ip"])
-                [OK, response.to_json]
-            rescue => error
-                handle_error(error)
-            end
+      json_body = body_to_json(request)
+      if(json_body.nil? || json_body["floating_ips"].nil?)
+        [BAD_REQUEST]
+      else
+        begin
+          response = @network.floating_ips.create(json_body["floating_ip"])
+          [OK, response.to_json]
+        rescue => error
+          handle_error(error)
         end
+      end
     end
     
     ##~ a = sapi.apis.add
@@ -306,11 +306,11 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     delete '/floating_ips/:id' do
-        begin
-            response = @network.floating_ips.destroy(params[:id])
-            [OK, response.to_json]
-        rescue => error
-            handle_error(error)
-        end
+      begin
+        response = @network.floating_ips.destroy(params[:id])
+        [OK, response.to_json]
+      rescue => error
+        handle_error(error)
+      end
     end
 end
