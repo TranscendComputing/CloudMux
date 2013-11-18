@@ -16,3 +16,6 @@ cloudmux
 
 # logging
 rest_log
+
+# generated
+/coverage

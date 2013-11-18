@@ -1,8 +1,17 @@
 # test env
 require 'rspec'
 require 'factory_girl'
+require 'simplecov'
 require 'coveralls'
-Coveralls.wear!
+
+SimpleCov.formatter = Coveralls::SimpleCov::Formatter
+SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
+  SimpleCov::Formatter::HTMLFormatter,
+  Coveralls::SimpleCov::Formatter
+]
+SimpleCov.start
+
+#Coveralls.wear!
 
 # gems required only for tests
 # require 'open-uri'
