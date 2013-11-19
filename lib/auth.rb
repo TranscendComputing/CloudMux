@@ -44,7 +44,7 @@ module Auth
             options = cloud_info.cloud_attributes.merge(:provider => "openstack")
         elsif (cloud_info.cloud_provider === "AWS")
             governance = policy.aws_governance
-            options = cloud_cred.cloud_attributes.merge(:provider => "AWS")
+            options = cloud_info.cloud_attributes.merge(:provider => "AWS")
         else
             return true
         end
