@@ -34,7 +34,7 @@ class Ansible
     def post_job_templates_run(job_template_ids, host)
      job_template_ids.each{ |job_template_id|
         data = {
-          :name => "Ansible triggered job %d for host %s" % [job_template_id, host],
+          :name => "CloudMux triggered job %d for host %s" % [job_template_id, host],
           :job_type => 'run',
           :limit => [host]}
         url = '/api/v1/job_templates/%d/jobs/' % job_template_id
@@ -42,6 +42,7 @@ class Ansible
         #[TODO] add error handling here
         job_id = JSON.parse(resp)['id']
         url = '/api/v1/jobs/%d/start/' % job_id
+        #[TODO] if resp is nil, then raise that as error to SS
         resp = @rest[url].post({})
         JSON.parse(resp)["results"]
       }
