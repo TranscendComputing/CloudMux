@@ -32,20 +32,28 @@ class Ansible
     end
 
     def post_job_templates_run(job_template_ids, host)
+     success = true
      job_template_ids.each{ |job_template_id|
         data = {
           :name => "CloudMux triggered job %d for host %s" % [job_template_id, host],
           :job_type => 'run',
-          :limit => [host]}
+          :limit => host}
         url = '/api/v1/job_templates/%d/jobs/' % job_template_id
         resp = @rest[url].post(data)
-        #[TODO] add error handling here
+        #[TODO] add error handling for all these calls
         job_id = JSON.parse(resp)['id']
         url = '/api/v1/jobs/%d/start/' % job_id
-        #[TODO] if resp is nil, then raise that as error to SS
         resp = @rest[url].post({})
-        JSON.parse(resp)["results"]
+        # check if failed
+        resp = @rest['/api/v1/jobs/%d/' %job_id].get
+        if JSON.parse(resp)['failed'] == true
+          success = false
+        end
       }
+      if success
+        return true
+      end
+      false
     end
 
     def get_inventories
@@ -65,8 +73,15 @@ class Ansible
       JSON.parse(resp)["results"]
     end
 
-    def get_hosts
-      resp = @rest['/api/v1/hosts'].get
+    def get_hosts(id=nil)
+      url = '/api/v1/hosts' 
+      if id
+        url = '/api/v1/hosts/%s/' %id
+      end
+      resp = @rest[url].get
+      if id
+        return JSON.parse(resp)
+      end
       JSON.parse(resp)["results"]
     end
 
@@ -77,7 +92,9 @@ class Ansible
         :inventory => '1', # 'same inventory, we use 'limit' on other calls to choose hosts
         :variables => variables
       })
-      JSON.parse(resp)
+      host = JSON.parse(resp)
+      resp = @rest['/api/v1/hosts/%d/groups/' % host['id']].post({:id=>'1'})
+      host
     end
 
     def delete_hosts(host_id)
@@ -86,7 +103,7 @@ class Ansible
     end
 
     def get_groups
-      resp = @rest['/api/v1/groups'].get
+      resp = @rest[url].get
       JSON.parse(resp)["results"]
     end
 
@@ -94,7 +111,7 @@ class Ansible
       resp = @rest['/api/v1/groups'].post({
         :name => name,
         :description => description,
-        :inventory => inventory,
+        :inventory => '1',
         :variables => variables
       })
       JSON.parse(resp)["results"]

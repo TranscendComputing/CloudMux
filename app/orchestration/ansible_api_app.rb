@@ -244,8 +244,13 @@ class AnsibleApiApp < ApiBase
   put '/hosts/:host_id' do
     begin
       jobs = JSON.parse(request.body.read)['jobtemplates']
-      response = @ansible.post_job_templates_run(jobs, params[:host_id])
-      [OK, response.to_json]
+      # we use the hostname for the limit option
+      host = @ansible.get_hosts(params[:host_id])
+      success = @ansible.post_job_templates_run(jobs, host['name'])
+      if success == false
+        return [BAD_REQUEST, {}]
+      end
+      [OK, {}]
     rescue RestClient::Unauthorized
         [BAD_REQUEST, {:message => "Invalid Ansible user/password combination."}];
 
