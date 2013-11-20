@@ -4,13 +4,15 @@ require 'fog'
 class AwsComputeApp < ResourceApiBase
 
 	before do
-		if ! params[:cred_id].nil? && Auth.validate(params[:cred_id],"Elastic Compute Cloud","action")
-			cloud_cred = get_creds(params[:cred_id])
+		cred_id = params[:cred_id]
+		if ! cred_id.nil? && Auth.validate(cred_id,"Elastic Compute Cloud","action")
+			cloud_cred = get_creds(cred_id)
+			region = params[:region]
 			if ! cloud_cred.nil?
-				if params[:region].nil? || params[:region] == "undefined" || params[:region] == ""
+				if region.nil? || region == "undefined" || region == ""
 					@compute = Fog::Compute::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
 				else
-					@compute = Fog::Compute::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => params[:region]})
+					@compute = Fog::Compute::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => region})
 				end
 			end
 		end
@@ -29,7 +31,7 @@ class AwsComputeApp < ResourceApiBase
     ##~ a.description = "Manage compute resources on the cloud (AWS)"
     ##~ op = a.operations.add
     ##~ op.set :httpMethod => "GET"
-    ##~ op.summary = "Describe current instances (AWS cloud)"  
+    ##~ op.summary = "Describe current instances (AWS cloud)"
     ##~ op.nickname = "describe_instances"
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
@@ -49,18 +51,18 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
     ##~ a = sapi.apis.add
     ##~ a.set :path => "/api/v1/cloud_management/aws/compute/instances"
     ##~ a.description = "Manage compute resources on the cloud (AWS)"
     ##~ op = a.operations.add
     ##~ op.set :httpMethod => "POST"
-    ##~ op.summary = "Run a new instance (AWS cloud)"  
+    ##~ op.summary = "Run a new instance (AWS cloud)"
     ##~ op.nickname = "run_instance"
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, new instance returned", :code => 200
-    ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400	
+    ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/instances' do
 		json_body = body_to_json(request)
 		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_instance",@compute.servers.length))
@@ -68,21 +70,21 @@ class AwsComputeApp < ResourceApiBase
 		else
 			begin
                 response = nil
-                
+
                 if Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_vpc_instance",{:params => params, :instance => json_body["instance"]})
                     response = @compute.servers.create(json_body["instance"])
                     #create any default alarms set in policy
                     Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_default_alarms",{:params => params, :resource_id => response.id, :namespace => "AWS/EC2"})
                     Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_auto_tags",{:params => params, :resource_id => response.id})
                 end
-				
+
                 [OK, response.to_json]
 			rescue => error
 				handle_error(error)
 			end
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/instances/:id/start"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -103,7 +105,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/instances/:id/stop"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -124,7 +126,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/instances/:id/reboot"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -145,7 +147,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/instances/:id"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -166,7 +168,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
 	#
 	# Compute Availability Zones
 	#
@@ -196,7 +198,7 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	#
 	# Compute Flavors
 	#
@@ -220,7 +222,7 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	#
 	# Compute Security Group
 	#
@@ -250,7 +252,7 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/security_groups"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -275,7 +277,7 @@ class AwsComputeApp < ResourceApiBase
 			end
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/security_groups/:id"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -296,13 +298,13 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 			end
 	end
-    
+
     ##~ a = sapi.apis.add
     ##~ a.set :path => "/api/v1/cloud_management/openstack/compute/security_groups/delete_rule"
     ##~ a.description = "Manage compute resources on the cloud (OpenStack)"
     ##~ op = a.operations.add
     ##~ op.set :httpMethod => "DELETE"
-    ##~ op.summary = "Delete security groups rule (OpenStack cloud)"  
+    ##~ op.summary = "Delete security groups rule (OpenStack cloud)"
     ##~ op.nickname = "delete_rule_security_groups"
     ##~ op.errorResponses.add :reason => "Success, security groups rule deleted", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
@@ -328,7 +330,7 @@ class AwsComputeApp < ResourceApiBase
     ##~ a.description = "Manage compute resources on the cloud (OpenStack)"
     ##~ op = a.operations.add
     ##~ op.set :httpMethod => "PUT"
-    ##~ op.summary = "Add security groups rule (AWS cloud)"  
+    ##~ op.summary = "Add security groups rule (AWS cloud)"
     ##~ op.nickname = "add_rule_security_groups"
     ##~ op.parameters.add :name => "id", :description => "Instance ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, security groups rule added", :code => 200
@@ -349,8 +351,8 @@ class AwsComputeApp < ResourceApiBase
             end
         end
     end
-	
-	
+
+
 	#
 	# Compute Key Pairs
 	#
@@ -380,7 +382,7 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/key_pairs"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -406,7 +408,7 @@ class AwsComputeApp < ResourceApiBase
 			end
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/key_pairs/:name"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -427,7 +429,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
 	#
 	# Compute Spot Requests
 	#
@@ -457,7 +459,7 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/spot_requests"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -482,7 +484,7 @@ class AwsComputeApp < ResourceApiBase
 			end
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/spot_requests"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -503,7 +505,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/spot_prices"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -529,7 +531,7 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/spot_prices/current"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -551,7 +553,7 @@ class AwsComputeApp < ResourceApiBase
 			[OK, response.to_json]
 		end
 	end
-	
+
 	#
 	# Compute Elastic Ips
 	#
@@ -581,7 +583,7 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/addresses"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -606,7 +608,7 @@ class AwsComputeApp < ResourceApiBase
 		end
 		[OK, response.to_json]
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/addresses/:address"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -627,7 +629,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/addresses/:address/associate/:server_id"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -649,7 +651,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/addresses/:address/dissassoicate"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -670,7 +672,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
 	#
 	# Compute Reserved Instances
 	#
@@ -726,7 +728,7 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/reserved_instances"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -756,7 +758,7 @@ class AwsComputeApp < ResourceApiBase
 			end
 		end
 	end
-	
+
 	#
 	# VPCs
 	#
@@ -786,7 +788,7 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/vpcs"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -859,7 +861,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
 	#
 	# DHCPs
 	#
@@ -889,7 +891,7 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/dhcp_options"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -935,7 +937,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
 	#
 	# Internet Gateways
 	#
@@ -965,7 +967,7 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/internet_gateways"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -1051,7 +1053,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
 	#
 	# Subnets
 	#
@@ -1081,7 +1083,7 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/subnets"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -1127,7 +1129,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-    
+
     #Images
     get '/images' do
         begin
@@ -1151,7 +1153,7 @@ class AwsComputeApp < ResourceApiBase
             handle_error(error)
         end
     end
-    
+
 	get '/tags' do
         begin
     		filters = params[:filters]
