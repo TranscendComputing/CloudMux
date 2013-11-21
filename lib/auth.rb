@@ -41,10 +41,10 @@ module Auth
         cloud_info = Account.find_cloud_credential(cred_id)
         if( cloud_info.cloud_provider === "OpenStack" )
             governance = policy.os_governance
-            options = cloud_info.cloud_attributes.merge(:provider => "openstack")
+            #options = cloud_info.cloud_attributes.merge(:provider => "openstack")
         elsif (cloud_info.cloud_provider === "AWS")
             governance = policy.aws_governance
-            options = cloud_info.cloud_attributes.merge(:provider => "AWS")
+            #options = cloud_info.cloud_attributes.merge(:provider => "AWS")
         else
             return true
         end
@@ -54,7 +54,7 @@ module Auth
         when "action"
             return Auth.canUseService(cred_id,governance['enabled_services'],service_name)
         when "create_instance"
-            return Auth.canCreateInstance(governance['max_on_demand'],options)
+            return Auth.canCreateInstance(governance['max_on_demand'],Auth.userIntanceCount(cloud_info,options))
         when "create_rds"
             return Auth.canCreateInstance(governance['max_rds'],options)
         when "create_spot"
@@ -75,6 +75,7 @@ module Auth
         return true
     end
     
+
     #Enabled Services
     def Auth.canUseService(cred_id,enabled_services,service_name)
         return true if Auth.find_account(cred_id).permissions.length > 0
@@ -94,12 +95,25 @@ module Auth
         return false
     end
     
+    #User instace count
+    def Auth.userIntanceCount(cloud_info,options)
+        resources = options[:resources]
+        id = options[:uid]
+        user_count = 0
+        resources.each do |resource|
+            if(id === resource.user_id)
+                user_count += 1 
+            end  
+        end
+        return user_count      
+    end
+
+
     #Max Instances
     def Auth.canCreateInstance(max_instance,options)
-        @compute = Fog::Compute.new(options)
         if max_instance == ""
             return true
-        elsif @compute.servers.count >= max_instance.to_i
+        elsif options >= max_instance.to_i
             return false
         else return true
         end
