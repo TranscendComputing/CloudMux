@@ -59,3 +59,4 @@ end
 
 # Google
 gem 'google-api-client'
+gem 'sinatra-contrib'

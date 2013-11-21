@@ -19,3 +19,5 @@ rest_log
 
 # generated
 /coverage
+
+app/config/settings.y*ml
