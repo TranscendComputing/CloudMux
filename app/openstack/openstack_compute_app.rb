@@ -55,6 +55,8 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/instances' do
         json_body = body_to_json(request)
+        # require 'pry'
+        # binding.pry
         if(json_body.nil? || ! Auth.validate(params[:cred_id],"Compute Service","create_instance",{:resources => @compute.servers,:uid => @compute.current_user['id']}))
             [BAD_REQUEST]
         else

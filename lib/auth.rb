@@ -48,17 +48,18 @@ module Auth
         else
             return true
         end
-
+        # require 'pry'
+        # binding.pry
         #Determine which action is being taken.
         case action
         when "action"
             return Auth.canUseService(cred_id,governance['enabled_services'],service_name)
         when "create_instance"
-            return Auth.canCreateInstance(governance['max_on_demand'],Auth.userIntanceCount(cloud_info,options))
+            return Auth.canCreateInstance(governance['max_on_demand'],Auth.userIntanceCount(options,cloud_info.cloud_provider))
         when "create_rds"
             return Auth.canCreateInstance(governance['max_rds'],options)
         when "create_spot"
-            return Auth.canCreateInstance(governance['max_spot'],options)
+            return Auth.canCreateInstance(governance['max_spot'],Auth.userIntanceCount(options,cloud_info.cloud_provider))
         when "create_reserved"
             return Auth.canCreateInstance(governance['max_reserved'],options)
         when "create_autoscale"
@@ -96,21 +97,33 @@ module Auth
     end
     
     #User instace count
-    def Auth.userIntanceCount(cloud_info,options)
+    def Auth.userIntanceCount(options,provider)
+        # require 'pry'
+        # binding.pry
         resources = options[:resources]
         id = options[:uid]
         user_count = 0
-        resources.each do |resource|
-            if(id === resource.user_id)
-                user_count += 1 
-            end  
+        if provider === "AWS"
+            if(options[:instance_count] > 0)
+                user_count = options[:instance_count]
+            end                    
+        elsif provider === "OpenStack" 
+            resources.each do |resource|
+                if(id === resource.user_id)
+                    user_count += 1 
+                end
+            end
         end
+        # require 'pry'
+        # binding.pry
         return user_count      
     end
 
 
     #Max Instances
     def Auth.canCreateInstance(max_instance,options)
+         # require 'pry'
+         # binding.pry
         if max_instance == ""
             return true
         elsif options >= max_instance.to_i
@@ -177,6 +190,11 @@ module Auth
     end
     
     def Auth.createVpcInstance(aws_governance,options)
+        # require 'pry'
+        # binding.pry
+        if aws_governance['vpc_rules'].nil?
+            return true
+        end
         instance = options[:instance]
         params = options[:params]
         cloud_cred = Account.find_cloud_credential(params["cred_id"])

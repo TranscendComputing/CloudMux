@@ -65,14 +65,19 @@ class AwsComputeApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/instances' do
 		json_body = body_to_json(request)
-		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_instance",@compute.servers.length))
+		# require 'pry'
+		# binding.pry
+		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_instance",{:instance_count => @compute.tags.all(:value=>Auth.find_account(params[:cred_id]).login, :key=>"UserName", "resource-type"=>"instance").length }))
 			[BAD_REQUEST]
 		else
 			begin
                 response = nil
+                # require 'pry'
+                # binding.pry
 
                 if Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_vpc_instance",{:params => params, :instance => json_body["instance"]})
                     response = @compute.servers.create(json_body["instance"])
+                    @compute.tags.create(:resource_id => response.id, :key => "UserName", :value => Auth.find_account(params[:cred_id]).login)
                     #create any default alarms set in policy
                     Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_default_alarms",{:params => params, :resource_id => response.id, :namespace => "AWS/EC2"})
                     Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_auto_tags",{:params => params, :resource_id => response.id})
@@ -473,11 +478,16 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/spot_requests' do
 		json_body = body_to_json(request)
-		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_spot",@compute.spot_requests.length))
+		# require 'pry'
+		# binding.pry
+		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_spot",{:instance_count => @compute.tags.all(:value=>Auth.find_account(params[:cred_id]).login, :key=>"UserName", "resource-type"=>"spot-instances-request").length }))
 			[BAD_REQUEST]
 		else
 			begin
 				response = @compute.spot_requests.create(json_body["spot_request"])
+				@compute.tags.create(:resource_id => response.id, :key => "UserName", :value => Auth.find_account(params[:cred_id]).login)
+				# require 'pry'
+				# binding.pry
 				[OK, response.to_json]
 			rescue => error
 				handle_error(error)
