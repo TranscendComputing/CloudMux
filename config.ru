@@ -561,3 +561,15 @@ map "/stackstudio/v1/packed_images" do
   run PackedImagesApiApp
 end
 
+# Scheduling for Ansible
+#require 'rufus-scheduler'
+#
+#scheduler = Rufus::Scheduler.new
+#
+#Thread.new do
+#  scheduler.every '10s' do
+#    puts "HELLO THERE"
+#  end
+#  scheduler.join
+#end
+

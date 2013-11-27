@@ -60,3 +60,6 @@ end
 # Google
 gem 'google-api-client'
 gem 'sinatra-contrib'
+
+# Periodic scheduling
+gem 'rufus-scheduler'
