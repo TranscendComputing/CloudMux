@@ -757,11 +757,12 @@ class AwsComputeApp < ResourceApiBase
         else option = reserved_set.length
         end
 		json_body = body_to_json(request)
-		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_reserved", option))
+		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_reserved", {:instance_count => @compute.tags.all(:value=>Auth.find_account(params[:cred_id]).login, :key=>"UserName", "resource-type"=>"reserved-instance").length }))
 			[BAD_REQUEST]
 		else
 			begin
 				response = @compute.purchase_reserved_instances_offering(json_body["reserved_instances_offering_id"], json_body["instance_count"])
+				@compute.tags.create(:resource_id => response.id, :key => "UserName", :value => Auth.find_account(params[:cred_id]).login)
 				[OK, response.to_json]
 			rescue => error
 				handle_error(error)

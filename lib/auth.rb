@@ -57,11 +57,11 @@ module Auth
         when "create_instance"
             return Auth.canCreateInstance(governance['max_on_demand'],Auth.userIntanceCount(options,cloud_info.cloud_provider))
         when "create_rds"
-            return Auth.canCreateInstance(governance['max_rds'],options)
+            return Auth.canCreateInstance(governance['max_rds'],Auth.userIntanceCount(options,cloud_info.cloud_provider))
         when "create_spot"
             return Auth.canCreateInstance(governance['max_spot'],Auth.userIntanceCount(options,cloud_info.cloud_provider))
         when "create_reserved"
-            return Auth.canCreateInstance(governance['max_reserved'],options)
+            return Auth.canCreateInstance(governance['max_reserved'],Auth.userIntanceCount(options,cloud_info.cloud_provider))
         when "create_autoscale"
             return Auth.canCreateInstance(governance['max_in_autoscale'],options)
         when "create_default_alarms"
@@ -102,21 +102,27 @@ module Auth
         # binding.pry
         resources = options[:resources]
         id = options[:uid]
-        user_count = 0
-        if provider === "AWS"
-            if(options[:instance_count] > 0)
-                user_count = options[:instance_count]
-            end                    
-        elsif provider === "OpenStack" 
+        user_instance_count = 0
+        user_info = ""
+        if(!options[:instance_count].nil?)
+                if(options[:instance_count] > 0)
+                    user_instance_count = options[:instance_count]
+                end                    
+        else       
             resources.each do |resource|
-                if(id === resource.user_id)
-                    user_count += 1 
+                if(provider === "OpenStack")
+                    user_info = resource.user_id
+                elsif (provider === "AWS")
+                    user_info = resource.tags["value"]
+                end 
+                if(id === user_info)
+                    user_instance_count += 1 
                 end
             end
         end
         # require 'pry'
-        # binding.pry
-        return user_count      
+        # binding.pry 
+        return user_instance_count      
     end
 
 

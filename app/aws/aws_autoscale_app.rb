@@ -73,14 +73,11 @@ class AwsAutoscaleApp < ResourceApiBase
         json_body = body_to_json(request)
         
         max_instances = 0
-        @autoscale.groups.each do |group|
-            max_instances += group.max_size
-        end
         if ! json_body["autoscale_group"].nil?
-            max_instances += json_body["autoscale_group"]["MaxSize"]
+            max_instances = json_body["autoscale_group"]["MaxSize"]
         end
         
-		if(json_body.nil? || json_body["launch_configuration"].nil? || json_body["autoscale_group"].nil? || ! Auth.validate(params[:cred_id],"Auto Scale","create_autoscale",max_instances-1))
+		if(json_body.nil? || json_body["launch_configuration"].nil? || json_body["autoscale_group"].nil? || ! Auth.validate(params[:cred_id],"Auto Scale","create_autoscale",max_instances))
 			[BAD_REQUEST]
 		else
 			begin
@@ -89,7 +86,6 @@ class AwsAutoscaleApp < ResourceApiBase
 
 				@autoscale.configurations.create(launch_config)
 				response = @autoscale.groups.create(autoscale_group)
-
 				if(json_body["trigger"])
 					set_monitor_interface(params[:cred_id], params[:region])
 					trigger = json_body["trigger"]
