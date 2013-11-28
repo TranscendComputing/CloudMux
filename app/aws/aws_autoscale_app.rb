@@ -77,7 +77,7 @@ class AwsAutoscaleApp < ResourceApiBase
             max_instances = json_body["autoscale_group"]["MaxSize"]
         end
         
-		if(json_body.nil? || json_body["launch_configuration"].nil? || json_body["autoscale_group"].nil? || ! Auth.validate(params[:cred_id],"Auto Scale","create_autoscale",max_instances))
+		if(json_body.nil? || json_body["launch_configuration"].nil? || json_body["autoscale_group"].nil? || ! Auth.validate(params[:cred_id],"Auto Scale","create_autoscale",{:instance_count=>max_instances.to_i}))
 			[BAD_REQUEST]
 		else
 			begin
