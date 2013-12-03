@@ -115,9 +115,7 @@ class PolicyApiApp < ApiBase
     end
     
     def find_account(cloud_credential_id)
-      return nil if cloud_credential_id.nil?
-      account = Account.where({"cloud_credentials._id"=>Moped::BSON::ObjectId.from_string(cloud_credential_id.to_s)}).first
-      (account.nil? ? nil : account)
+        Auth.find_account(cloud_credential_id)
     end
     
     def find_group_rules(cred_id)

@@ -9,6 +9,12 @@ module Auth
         return true
     end
 
+    def Auth.find_account(cloud_credential_id)
+        return nil if cloud_credential_id.nil?
+        account = Account.where({"cloud_credentials._id"=>Moped::BSON::ObjectId.from_string(cloud_credential_id.to_s)}).first
+        (account.nil? ? nil : account)
+    end
+
     class Validator
         
         include Auth
@@ -25,12 +31,6 @@ module Auth
             end
             return policies
         end
-          
-        def find_account(cloud_credential_id)
-            return nil if cloud_credential_id.nil?
-            account = Account.where({"cloud_credentials._id"=>Moped::BSON::ObjectId.from_string(cloud_credential_id.to_s)}).first
-            (account.nil? ? nil : account)
-        end
 
 
         def initialize(cred_id,service_name,action,options)
@@ -38,51 +38,56 @@ module Auth
             @service_name = service_name
             @action = action
             @options = options
-            @account = self.find_account(cred_id)
+            @account = Auth.find_account(cred_id)
             @ac_id = @account.id
             @policies = self.find_group_policies(cred_id)
             @provider = Account.find_cloud_credential(cred_id).cloud_provider
             @governance = nil
+            @monitor = nil
             if !options.nil?
                 @resource_id = options[:resource_id]
                 @params = options[:params]
-                @cloud_cred = Account.find_cloud_credential(@params["cred_id"])
-                @options_account = self.find_account(params["cred_id"])
-                @region = params[:region]
+                if !@params.nil?
+                    if !@params[:region].nil?
+                        @region = @params[:region]
+                    end
+                    if !@params["cred_id"].nil?
+                        @cloud_cred = Account.find_cloud_credential(@params["cred_id"])
+                        @options_account = Auth.find_account(@params["cred_id"])
+                    end
+                end
             end
         end
 
         #List of Actions
         def validatePolicy(policy)
-            if policy.nil?
-                return true
-            end
+            if !policy.nil?
+                #find which provider is being used.
+                self.findProvider(policy)
+                #Determine which action is being taken.
+                case @action
+                when "action"
+                    return self.canUseService()
+                when "create_instance"
+                    return self.canCreateInstance('max_on_demand')
+                when "create_rds"
+                    return self.canCreateInstance('max_rds')
+                when "create_spot"
+                    return self.canCreateInstance('max_spot')
+                when "create_reserved"
+                    return self.canCreateInstance('max_reserved')
+                when "create_autoscale"
+                    return self.canCreateInstance('max_in_autoscale')
+                when "create_default_alarms"
+                    return self.createAlarms()
+                when "create_auto_tags"
+                    return self.createTags(policy)
+                when "create_vpc_instance"
+                    return self.createVpcInstance()
+                when "modify_gateway"
+                    return self.canModifyGateway('vpc_rules')
+                end
 
-            #find which provider is being used.
-            self.findProvider(policy)
-            
-            #Determine which action is being taken.
-            case @action
-            when "action"
-                return self.canUseService(@governance['enabled_services'])
-            when "create_instance"
-                return self.canCreateInstance(@governance['max_on_demand'])
-            when "create_rds"
-                return self.canCreateInstance(@governance['max_rds'])
-            when "create_spot"
-                return self.canCreateInstance(@governance['max_spot'])
-            when "create_reserved"
-                return self.canCreateInstance(@governance['max_reserved'])
-            when "create_autoscale"
-                return self.canCreateInstance(@governance['max_in_autoscale'])
-            when "create_default_alarms"
-                return self.createAlarms()
-            when "create_auto_tags"
-                return self.createTags(policy)
-            when "create_vpc_instance"
-                return self.createVpcInstance()
-            when "modify_gateway"
-                return self.canModifyGateway(@governance['vpc_rules'])
             end
             return true
         end
@@ -97,7 +102,8 @@ module Auth
         end
 
         #Enabled Services
-        def canUseService(enabled_services)
+        def canUseService()
+            enabled_services = @governance['enabled_services']
             return true if @account.permissions.length > 0
             if enabled_services.nil?
                 return false
@@ -143,7 +149,8 @@ module Auth
 
 
         #Max Instances
-        def canCreateInstance(max_instance)
+        def canCreateInstance(max)
+            max_instance = @governance[max]
             user_instances = self.userIntanceCount()
             if max_instance == ""
                 return true
@@ -154,8 +161,8 @@ module Auth
         end
         
         #Modify Gateways
-        def canModifyGateway(vpc_rules)
-            return false if !vpc_rules.include?(@options)
+        def canModifyGateway(rules)
+            return false if !@governance[rules].include?(@options)
             return true
         end
         
@@ -164,27 +171,33 @@ module Auth
             namespace = @options[:namespace]
             alarms = @governance['default_alarms']
             @monitor = Fog::AWS::CloudWatch.new({:aws_access_key_id => @cloud_cred.access_key, :aws_secret_access_key => @cloud_cred.secret_key, :region => @region})
-            
             alarms.each do |alarm|
                 if alarm["namespace"] == namespace
-                    @monitor.alarms.create({"id"=>"SS_"+@resource_id+"_"+alarm['id']+Time.now.to_i.to_s,
-                                            "dimensions"=> [{"Name" => alarm['dimensions'][0]['Name'],"Value" => @resource_id}],
-                                            "metric_name"=> alarm['metric_name'],
-                                            "threshold"=> alarm['threshold'],
-                                            "namespace"=> alarm['namespace'],
-                                            "comparison_operator"=> alarm['comparison_operator'],
-                                            "statistic"=> "Average",
-                                            "period"=> alarm['period'],
-                                            "evaluation_periods"=> 1,
-                                            "alarm_actions"=> alarm['alarm_actions'],
-                                            "ok_actions"=> [],
-                                            "insufficient_data_actions"=> []})
+                    self.newAlarm(alarm)
                 end
             end
             
             return true
         end
-        
+
+        #createAlarms helper fuction
+        def newAlarm(alarm)
+            @monitor.alarms.create({"id"=>"SS_"+@resource_id+"_"+alarm['id']+Time.now.to_i.to_s,
+                                    "dimensions"=> [{"Name" => alarm['dimensions'][0]['Name'],"Value" => @resource_id}],
+                                    "metric_name"=> alarm['metric_name'],
+                                    "threshold"=> alarm['threshold'],
+                                    "namespace"=> alarm['namespace'],
+                                    "comparison_operator"=> alarm['comparison_operator'],
+                                    "statistic"=> "Average",
+                                    "period"=> alarm['period'],
+                                    "evaluation_periods"=> 1,
+                                    "alarm_actions"=> alarm['alarm_actions'],
+                                    "ok_actions"=> [],
+                                    "insufficient_data_actions"=> []})
+        end
+
+
+        #create tags
         def createTags(policy)
             tags = @governance['auto_tags']
             @compute = Fog::Compute::AWS.new({:aws_access_key_id => @cloud_cred.access_key, :aws_secret_access_key => @cloud_cred.secret_key, :region => @region})
@@ -206,18 +219,18 @@ module Auth
         end
         
         def createVpcInstance()
-            if @governance['vpc_rules'].nil?
-                return true
-            end
-            instance = @options[:instance]
-            cred_id = @params[:cred_id]
-            @compute = Fog::Compute::AWS.new({:aws_access_key_id => @cloud_cred.access_key, :aws_secret_access_key => @cloud_cred.secret_key, :region => region})
-            if @governance['vpc_rules'].include?("require_vpc")
-                instance['subnet_id'] = @governance['default_subnet']
-                response = @compute.servers.create(instance)
-                Auth.validate(cred_id,"Elastic Compute Cloud","create_default_alarms",{:params => @params, :resource_id => @response.id, :namespace => "AWS/EC2"})
-                Auth.validate(cred_id,"Elastic Compute Cloud","create_auto_tags",{:params => @params, :resource_id => response.id})
-                return false
+            vpc_rules = @governance['vpc_rules']
+            if !vpc_rules.nil?
+                instance = @options[:instance]
+                cred_id = @params[:cred_id]
+                @compute = Fog::Compute::AWS.new({:aws_access_key_id => @cloud_cred.access_key, :aws_secret_access_key => @cloud_cred.secret_key, :region => @region})
+                if vpc_rules.include?("require_vpc")
+                    instance['subnet_id'] = @governance['default_subnet']
+                    response = @compute.servers.create(instance)
+                    Auth.validate(cred_id,"Elastic Compute Cloud","create_default_alarms",{:params => @params, :resource_id => response.id, :namespace => "AWS/EC2"})
+                    Auth.validate(cred_id,"Elastic Compute Cloud","create_auto_tags",{:params => @params, :resource_id => response.id})
+                    return false
+                end
             end
             return true
         end
