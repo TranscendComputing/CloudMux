@@ -71,9 +71,7 @@ class AwsRdsApp < ResourceApiBase
 		else
 			begin
 				response = @rds.servers.create(json_body["relational_database"])
-        response.add_tags(:key => "UserName", :value => Auth.find_account(params[:cred_id]).login)
-        # require 'pry'
-        # binding.pry
+        response.add_tags(:key => "UserName", :value => Auth.find_account(params[:cred_id]).login)  
         Auth.validate(params[:cred_id],"Relational Database","create_default_alarms",{:params => params, :resource_id => response.id, :namespace => "AWS/RDS"})
 				[OK, response.to_json]
 			rescue => error
