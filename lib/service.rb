@@ -160,4 +160,7 @@ require_relative 'service/model/portfolio'
 require_relative 'service/model/assembly'
 require_relative 'service/model/packed_image'
 
+require_relative 'service/model/queue_item'
+require_relative 'service/representer/queue_item_representer'
+
 require_relative 'auth'
