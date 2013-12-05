@@ -4,9 +4,9 @@ require 'fog'
 class TopStackAutoscaleApp < ResourceApiBase
 
 	before do
-		if(params[:cred_id].nil?)
+		  if(params[:cred_id].nil? || ! Auth.validate(params[:cred_id],"Auto Scale","action"))
             halt [BAD_REQUEST]
-        else
+      else
             cloud_cred = get_creds(params[:cred_id])
             if cloud_cred.nil?
                 halt [NOT_FOUND, "Credentials not found."]
@@ -23,8 +23,8 @@ class TopStackAutoscaleApp < ResourceApiBase
                     halt [NOT_FOUND, error.to_s]
                 end
             end
-        end
-    end
+      end
+  end
 
 	#
 	# Autoscale Groups
@@ -79,7 +79,11 @@ class TopStackAutoscaleApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/autoscale_groups' do
         json_body = body_to_json(request)
-		if(json_body.nil? || json_body["launch_configuration"].nil? || json_body["autoscale_group"].nil? || params[:cred_id].nil?)
+        max_instances = 0
+        if ! json_body["autoscale_group"].nil?
+            max_instances = json_body["autoscale_group"]["MaxSize"]
+        end
+		if(json_body.nil? || json_body["launch_configuration"].nil? || json_body["autoscale_group"].nil? || ! Auth.validate(params[:cred_id],"Auto Scale","create_autoscale",{:instance_count=>max_instances.to_i}))
 			[BAD_REQUEST]
 		else
 			begin
