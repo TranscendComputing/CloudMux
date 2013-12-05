@@ -4,11 +4,10 @@
 class QueueItem
   # Mongoid Mappings
   include Mongoid::Document
-
   field :action, type:String
-  field :parameters, type:Hash
+  field :caller, type: String
+  field :data, type:Hash
   field :errors, type:Hash
-  field :result, type:Hash
-  field :run, type:DateTime, default: Time.now
-  field :completed, type:DateTime
+  field :create, type:DateTime, default: Time.now
+  field :complete, type:DateTime
 end

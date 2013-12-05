@@ -2,7 +2,11 @@
 require 'rufus-scheduler'
 scheduler = Rufus::Scheduler.new
 
-def queueStack(result)
+def queueAnsibleStack(name, value)
+  qitem = QueueItem.new.extend(QueueItemRepresenter)
+  # qitem.caller = # get caller's id
+  qitem.action = name # name of stack
+  qitem.data = value # list of ansible jobs
   # add item
 end
 
