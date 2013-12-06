@@ -21,7 +21,7 @@ class QueueItemsApiApp < ApiBase
       error.message = "Must give attributes for new QueueItem"
       [BAD_REQUEST, error.to_json]
     else
-      qitem = QueueItem.new(data)
+      qitem = QueueItem.new()
       qitem.save!
       [OK, qitem.to_json]
     end
@@ -34,8 +34,11 @@ class QueueItemsApiApp < ApiBase
       error.message = "Must give attributes for new QueueItem"
       [BAD_REQUEST, error.to_json]
     else
-      qitem = QueueItem.new(data)
-      qitem.save!
+      print data
+      qitem = QueueItem.new()
+      # [XXX] needs to support other types of queue actions
+      qitem.update_attributes! data
+      # qitem.caller =  
       [OK, qitem.to_json]
     end
   end

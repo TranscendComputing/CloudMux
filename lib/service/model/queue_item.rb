@@ -10,4 +10,12 @@ class QueueItem
   field :errors, type:Hash
   field :create, type:DateTime, default: Time.now
   field :complete, type:DateTime
+
+  def as_json(options)
+    return self.attributes
+  end
+
+  def to_json
+    return self.attributes.to_json
+  end
 end
