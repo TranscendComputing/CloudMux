@@ -15,6 +15,14 @@ module Auth
         (account.nil? ? nil : account)
     end
 
+    def Auth.password_validate(pw)
+        pass_ok = false
+        if pw.count("0-9") > 0 && pw.count("a-z") > 0 && pw.length > 5
+            pass_ok = true
+        end
+        return pass_ok
+    end
+
     class Validator
         
         include Auth

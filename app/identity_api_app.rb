@@ -31,43 +31,51 @@ class IdentityApiApp < ApiBase
   ##~ op.parameters.add :name => "password", :description => "User password", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "body"
   ##~ op.parameters.add :name => "country_code", :description => "Country code", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "body"
   post '/' do
-    new_account = Account.new.extend(UpdateAccountRepresenter)
-    new_account.from_json(request.body.read)
-    if new_account.valid?
-  	  # Create organization if account does not belong to one
-  	  if new_account.org_id.nil?
-    		if new_account.company.nil?
-    			new_account.company = "MyOrganization"
-    		end
-    		org = Org.new.extend(UpdateOrgRepresenter)
-    		org.name = new_account.company
-    		org.save!
-    		Group.create!(:name => "Development", :description => "default development group", :org => org)
-    		Group.create!(:name => "Test", :description => "default test group", :org => org)
-    		Group.create!(:name => "Stage", :description => "default stage group", :org => org)
-    		Group.create!(:name => "Production", :description => "default production group", :org => org)
-        aws = Cloud.where(cloud_provider:'AWS').first
-        cloud_account = CloudAccount.new(:name => aws.name)
-        cloud_account.org = org
-        cloud_account.cloud = aws
-        cloud_account.save!
-  	  else
-    		org_id = new_account.org_id
-    		new_account.org_id = nil
-    		org = Org.find(org_id)
-    		if new_account.company.nil?
-    			new_account.company = org.name
-    		end
-	    end
-	    new_account.save!
-	    org.accounts << new_account
-      # refresh without the Update representer, so that we don't serialize private data back
-      account = Account.find(new_account.id).extend(AccountRepresenter)
-      [CREATED, account.to_json]
+    json_body = request.body.read
+    json = JSON.parse(json_body)     
+    if Auth.password_validate(json["account"]["password"])
+      new_account = Account.new.extend(UpdateAccountRepresenter)
+      new_account.from_json(json_body)
+      if new_account.valid?
+    	  # Create organization if account does not belong to one
+    	  if new_account.org_id.nil?
+      		if new_account.company.nil?
+      			new_account.company = "MyOrganization"
+      		end
+      		org = Org.new.extend(UpdateOrgRepresenter)
+      		org.name = new_account.company
+      		org.save!
+      		Group.create!(:name => "Development", :description => "default development group", :org => org)
+      		Group.create!(:name => "Test", :description => "default test group", :org => org)
+      		Group.create!(:name => "Stage", :description => "default stage group", :org => org)
+      		Group.create!(:name => "Production", :description => "default production group", :org => org)
+          aws = Cloud.where(cloud_provider:'AWS').first
+          cloud_account = CloudAccount.new(:name => aws.name)
+          cloud_account.org = org
+          cloud_account.cloud = aws
+          cloud_account.save!
+    	  else
+      		org_id = new_account.org_id
+      		new_account.org_id = nil
+      		org = Org.find(org_id)
+      		if new_account.company.nil?
+      			new_account.company = org.name
+      		end
+  	    end
+  	    new_account.save!
+  	    org.accounts << new_account
+        # refresh without the Update representer, so that we don't serialize private data back
+        account = Account.find(new_account.id).extend(AccountRepresenter)
+        [CREATED, account.to_json]
+      else
+        message = Error.new.extend(ErrorRepresenter)
+        message.message = "#{new_account.errors.full_messages.join(";")}"
+        message.validation_errors = new_account.errors.to_hash
+        [BAD_REQUEST, message.to_json]
+      end
     else
       message = Error.new.extend(ErrorRepresenter)
-      message.message = "#{new_account.errors.full_messages.join(";")}"
-      message.validation_errors = new_account.errors.to_hash
+      message.message = "Invalid password: must be at least 6 characters in length containing a minimum of one number and one letter."
       [BAD_REQUEST, message.to_json]
     end
   end
