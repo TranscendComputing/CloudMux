@@ -1,5 +1,6 @@
 require 'sinatra'
 class QueueItemsApiApp < ApiBase
+
   get '/' do
     queue = QueueItem.all.entries
     [OK, queue.to_json]
@@ -21,7 +22,12 @@ class QueueItemsApiApp < ApiBase
       error.message = "Must give attributes for new QueueItem"
       [BAD_REQUEST, error.to_json]
     else
-      qitem = QueueItem.new(data)
+      print data
+      qitem = QueueItem.new()
+      qitem.account_id = params[:account_id]
+      qitem.cred_id = data['credential_id']
+      qitem.data = data['stack_name']
+      qitem.action = "%s:%s" % [data['host_name'] , data['jobs']]
       qitem.save!
       [OK, qitem.to_json]
     end
@@ -34,8 +40,10 @@ class QueueItemsApiApp < ApiBase
       error.message = "Must give attributes for new QueueItem"
       [BAD_REQUEST, error.to_json]
     else
-      qitem = QueueItem.new(data)
-      qitem.save!
+      qitem = QueueItem.new()
+      # [XXX] needs to support other types of queue actions
+      qitem.update_attributes! data
+      # qitem.caller =  
       [OK, qitem.to_json]
     end
   end

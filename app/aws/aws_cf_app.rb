@@ -9,7 +9,6 @@ class AwsCloudFormationApp < ResourceApiBase
     before do
         if ! params[:cred_id].nil? #&& Auth.validate(params[:cred_id],"CloudFormation","action")
             cloud_cred = get_creds(params[:cred_id])
-            print cloud_cred.attributes
             if ! cloud_cred.nil?
                 if params[:region].nil? || params[:region] == "undefined" || params[:region] == ""
                     @cf = Fog::AWS::CloudFormation.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
@@ -38,7 +37,6 @@ class AwsCloudFormationApp < ResourceApiBase
             stack_name = options.delete("StackName")
             t =  JSON.parse(options['TemplateBody'])
             result = @cf.create_stack(stack_name, options)
-            queueAnsibleStack(stack_name, optionsresult)
             #t.Resources.each_pair do |name,r|
             #  if name.slice(0,15) == "AnsibleInstance"
             #    # Queue Ansible
