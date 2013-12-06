@@ -63,3 +63,6 @@ gem 'sinatra-contrib'
 
 # Periodic scheduling
 gem 'rufus-scheduler'
+
+# Console
+gem 'tux'
