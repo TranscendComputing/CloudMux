@@ -31,11 +31,11 @@ class IdentityApiApp < ApiBase
   ##~ op.parameters.add :name => "password", :description => "User password", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "body"
   ##~ op.parameters.add :name => "country_code", :description => "Country code", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "body"
   post '/' do
-    json_body = request.body.read
-    json = JSON.parse(json_body)     
-    if Auth.password_validate(json["account"]["password"])
+    # json_body = request.body.read
+    # json = JSON.parse(json_body)     
+    # if Auth.password_validate(json["account"]["password"])
       new_account = Account.new.extend(UpdateAccountRepresenter)
-      new_account.from_json(json_body)
+      new_account.from_json(request.body.read)
       if new_account.valid?
     	  # Create organization if account does not belong to one
     	  if new_account.org_id.nil?
@@ -73,11 +73,11 @@ class IdentityApiApp < ApiBase
         message.validation_errors = new_account.errors.to_hash
         [BAD_REQUEST, message.to_json]
       end
-    else
-      message = Error.new.extend(ErrorRepresenter)
-      message.message = "Invalid password: must be at least 6 characters in length containing a minimum of one number and one letter."
-      [BAD_REQUEST, message.to_json]
-    end
+    # else
+    #   message = Error.new.extend(ErrorRepresenter)
+    #   message.message = "Invalid password: "+json["account"]["password"]+". The password must be at least 6 characters in length and contain a minimum of one number and one letter."
+    #   [BAD_REQUEST, message.to_json]
+    # end
   end
 
   post '/auth' do
