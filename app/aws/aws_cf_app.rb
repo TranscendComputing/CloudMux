@@ -37,7 +37,6 @@ class AwsCloudFormationApp < ResourceApiBase
             stack_name = options.delete("StackName")
             t =  JSON.parse(options['TemplateBody'])
             result = @cf.create_stack(stack_name, options)
-            queueAnsibleStack(stack_name, options)
             #t.Resources.each_pair do |name,r|
             #  if name.slice(0,15) == "AnsibleInstance"
             #    # Queue Ansible
