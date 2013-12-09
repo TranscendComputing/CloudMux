@@ -3,7 +3,7 @@ require 'json'
 require 'debugger'
 
 # [TODO] Use Logging module; ie lib/salt/rest_client
-RestClient.log = "/home/thethethe/Development/MomentumSI/CloudMux/rest_log"
+#RestClient.log = "/home/thethethe/Development/MomentumSI/CloudMux/rest_log"
 
 class Ansible
   class Client
@@ -73,9 +73,11 @@ class Ansible
       JSON.parse(resp)["results"]
     end
 
-    def get_hosts(id=nil)
+    def get_hosts(id=nil,name=nil)
       url = '/api/v1/hosts' 
-      if id
+      if name
+        url = url+'?name=%s' % URI.encode(name)  
+      elsif id
         url = '/api/v1/hosts/%s/' %id
       end
       resp = @rest[url].get
@@ -86,10 +88,15 @@ class Ansible
     end
 
     def post_hosts(name,description, variables='')
+      resp = get_hosts(name=name)
+      hosts = JSON.parse(resp)['results']
+      if hosts
+        hosts[0]
+      end
       resp = @rest['/api/v1/hosts/'].post({
         :name => name,
         :description => description,
-        :inventory => '1', # 'same inventory, we use 'limit' on other calls to choose hosts
+        :inventory => '1', # [XXX] same inventory
         :variables => variables
       })
       host = JSON.parse(resp)
