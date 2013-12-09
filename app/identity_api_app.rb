@@ -31,17 +31,20 @@ class IdentityApiApp < ApiBase
   ##~ op.parameters.add :name => "password", :description => "User password", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "body"
   ##~ op.parameters.add :name => "country_code", :description => "Country code", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "body"
   post '/' do
-    # json_body = request.body.read
-    # json = JSON.parse(json_body)     
-    # if Auth.password_validate(json["account"]["password"])
+    json_body = request.body.read
+    json = JSON.parse(json_body)
+    # Check that password meets criteria     
+    if Auth.password_validate(json["account"]["password"])
       new_account = Account.new.extend(UpdateAccountRepresenter)
-      new_account.from_json(request.body.read)
+      new_account.from_json(json_body)
       if new_account.valid?
     	  # Create organization if account does not belong to one
     	  if new_account.org_id.nil?
       		if new_account.company.nil?
       			new_account.company = "MyOrganization"
       		end
+          # require 'pry'
+          # binding.pry
       		org = Org.new.extend(UpdateOrgRepresenter)
       		org.name = new_account.company
       		org.save!
@@ -68,16 +71,18 @@ class IdentityApiApp < ApiBase
         account = Account.find(new_account.id).extend(AccountRepresenter)
         [CREATED, account.to_json]
       else
+        # require 'pry'
+        # binding.pry
         message = Error.new.extend(ErrorRepresenter)
         message.message = "#{new_account.errors.full_messages.join(";")}"
         message.validation_errors = new_account.errors.to_hash
         [BAD_REQUEST, message.to_json]
       end
-    # else
-    #   message = Error.new.extend(ErrorRepresenter)
-    #   message.message = "Invalid password: "+json["account"]["password"]+". The password must be at least 6 characters in length and contain a minimum of one number and one letter."
-    #   [BAD_REQUEST, message.to_json]
-    # end
+    else
+      message = Error.new.extend(ErrorRepresenter)
+      message.message = "Invalid password: "+json["account"]["password"]+". The password must be at least 6 characters in length and contain a minimum of one number and one letter."
+      [BAD_REQUEST, message.to_json]
+    end
   end
 
   post '/auth' do
