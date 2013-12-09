@@ -81,7 +81,7 @@ class TopStackAutoscaleApp < ResourceApiBase
         json_body = body_to_json(request)
         max_instances = 0
         if ! json_body["autoscale_group"].nil?
-            max_instances = json_body["autoscale_group"]["MaxSize"]
+            max_instances = json_body["autoscale_group"]["MaxSize"].to_i - 1
         end
 		if(json_body.nil? || json_body["launch_configuration"].nil? || json_body["autoscale_group"].nil? || ! Auth.validate(params[:cred_id],"Auto Scale","create_autoscale",{:instance_count=>max_instances.to_i}))
 			[BAD_REQUEST]
@@ -238,13 +238,16 @@ class TopStackAutoscaleApp < ResourceApiBase
   delete '/autoscale_groups/:id' do
 		begin
 			policies = @autoscale.describe_policies({"AutoScalingGroupName" => params[:id]}).body["DescribePoliciesResult"]["ScalingPolicies"]
-			policies.each do |t|
+			# require 'pry'
+   #    binding.pry
+      policies.each do |t|
 				@autoscale.delete_policy(params[:id], t["PolicyName"]) unless t["PolicyName"].nil?
 			end
 			response = @autoscale.groups.get(params[:id]).destroy
 			launch_config = @autoscale.configurations.get(params[:id]+"-lc")
 			if ! launch_config.nil?
-				launch_config.destroy
+  # Feature not implemented
+		# 		launch_config.destroy
 			end
 			[OK, response.to_json]
 		rescue => error
