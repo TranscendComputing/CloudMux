@@ -27,7 +27,7 @@ class QueueItemsApiApp < ApiBase
       qitem.account_id = params[:account_id]
       qitem.cred_id = data['credential_id']
       qitem.data = data['stack_name']
-      qitem.action = "%s:%s" % [data['host_name'] , data['jobs']]
+      qitem.action = "%s:%s" % [data['host_name'] , data['jobs'].join(' ')]
       qitem.save!
       [OK, qitem.to_json]
     end
