@@ -40,7 +40,7 @@ class IdentityApiApp < ApiBase
       if new_account.valid?
     	  # Create organization if account does not belong to one
     	  if new_account.org_id.nil?
-      		if new_account.company.nil?
+      		if new_account.company.nil? || new_account.company === ""
       			new_account.company = "MyOrganization"
       		end
           # require 'pry'
