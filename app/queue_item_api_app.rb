@@ -1,10 +1,5 @@
 require 'sinatra'
-class QueueItemsApiApp < ApiBase
-
-  get '/' do
-    queue = QueueItem.all.entries
-    [OK, queue.to_json]
-  end
+class QueueItemApiApp < ApiBase
 
   get '/:id' do
     qitem = QueueItem.where(id:params[:id]).first

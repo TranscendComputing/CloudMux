@@ -156,5 +156,10 @@ FactoryGirl.define do
     a.effective_date Time.now
   end
 
+  factory :qitem, :class =>QueueItem do |a|
+    a.action "MockInstance"
+    a.data "MockStack"
+  end
+
 end
 

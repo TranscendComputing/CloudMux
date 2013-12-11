@@ -42,3 +42,5 @@ DatabaseCleaner.clean
 
 # Tell Factory Girl to load the factory definitions, now that we've required everything (unless they have already been loaded)
 FactoryGirl.factory_by_name('account') rescue FactoryGirl.find_definitions
+
+APP_DIR = File.join File.dirname(__FILE__), '..','app'
