@@ -22,7 +22,6 @@ class QueueItemsApiApp < ApiBase
       error.message = "Must give attributes for new QueueItem"
       [BAD_REQUEST, error.to_json]
     else
-      print data
       qitem = QueueItem.new()
       qitem.account_id = params[:account_id]
       qitem.cred_id = data['credential_id']

@@ -82,7 +82,7 @@ class Ansible
       end
       resp = @rest[url].get
       if id
-        return JSON.parse(resp)
+        JSON.parse(resp)
       end
       JSON.parse(resp)["results"]
     end
