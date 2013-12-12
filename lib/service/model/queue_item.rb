@@ -13,6 +13,8 @@ class QueueItem
   field :create, type:DateTime, default: Time.now
   field :complete, type:DateTime
 
+  validates_presence_of :data
+
   def as_json(options)
     return self.attributes
   end

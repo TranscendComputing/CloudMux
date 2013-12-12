@@ -1,6 +1,15 @@
 require 'sinatra'
 class QueueItemApiApp < ApiBase
 
+  get '/:id.json' do
+    qitem = QueueItem.where(id:params[:id]).first
+    if qitem.nil?
+      [NOT_FOUND, {:message=>"Could not find QueueItem"}.to_json]
+    else
+      [OK, qitem.to_json]
+    end
+  end
+
   get '/:id' do
     qitem = QueueItem.where(id:params[:id]).first
     if qitem.nil?
