@@ -27,12 +27,14 @@ class PolicyApiApp < ApiBase
         if ! policy_json.nil? && ! policy_json["name"].nil?
             policy = policy_json["policy"]
             policy_os = policy_json["policy_os"]
+            policy_pw = policy_json["policy_pw"]
             name = policy_json["name"]
             myOrg = Org.find(params[:org_id])
             gp = GroupPolicy.new(
                 name: name,
                 os_governance: policy_os,
                 aws_governance: policy,
+                org_governance: policy_pw,
                 org: myOrg
             )
             gp.save!
