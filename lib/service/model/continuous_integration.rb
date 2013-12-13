@@ -6,6 +6,7 @@ class ContinuousIntegration
 
     field :type
     field :host
+    field :protocol
     field :port
     field :username
     field :password

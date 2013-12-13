@@ -3,6 +3,7 @@ module ContinuousIntegrationRepresenter
 
   property :type
   property :host
+  property :protocol
   property :port
   property :username
   property :password
