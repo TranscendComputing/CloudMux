@@ -10,11 +10,10 @@ describe QueueItemApiApp do
     QueueItemApiApp
   end
 
-  before :each do 
-    @cc = FactoryGirl.build(:cloud_credential)
-    @a1 = FactoryGirl.build(:account, :login=>'standard_subscriber_1', :email=>'standard_1@example.com')
-    @a1.save
-  end
+  #before :each do 
+  #  @a1 = FactoryGirl.build(:account, :login=>'standard_subscriber_1', :email=>'standard_1@example.com')
+  #  @a1.save
+  #end
 
   after :each do
     DatabaseCleaner.clean
@@ -63,6 +62,7 @@ describe QueueItemApiApp do
     it "should return a valid QueueItem paylod" do
       qitem = QueueItem.new.extend(QueueItem)
       qitem.from_json last_response.body
+      print qitem
       qitem.id.should_not eq nil
       qitem.name should eq @qitem.name
     end
@@ -72,6 +72,11 @@ describe QueueItemApiApp do
       post "/", @qitem.to_json
       expected_json = "{\"error\":{\"message\":\"Name can't be blank\",\"validation_errors\":{\"name\":[\"can't be blank\"]}}}"
       last_response.body.should eq expected_json
+    end
+    
+    it "should save the queue item properly" do
+      @qitem.reload
+      
     end
   end
 end
