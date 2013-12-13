@@ -15,12 +15,42 @@ module Auth
         (account.nil? ? nil : account)
     end
 
-    def Auth.password_validate(pw)
-        pass_ok = false
-        if pw.count("0-9") > 0 && pw.count("a-z") > 0 && pw.length > 5
-            pass_ok = true
+    def Auth.password_validate(pw,account)
+        pass_ok = true
+        req = account["usable_characters"]
+        min_length = account["min_password_length"].to_i
+        message = ""
+        # require 'pry'
+        # binding.pry
+        if !req.nil?
+            if req[0]==="Digit" && pw.count("0-9") === 0
+                pass_ok = false
+                message = "Password must contain at least one number."
+            end
+            if req[1]==="Special" && pw.match(/\W/).nil?
+                pass_ok = false
+                message = "Password must contain at least one special character."
+            end
         end
-        return pass_ok
+        if pw.length < min_length
+            pass_ok = false
+            message = "Password must be a minimum length of "+min_length.to_s+"."
+        end
+        # require 'pry'
+        # binding.pry
+        i = {"pass" => pass_ok,"message" => message}
+        return i
+    end
+
+    def Auth.validate_integer_input(length,min)
+        pass = false
+        if min.nil?
+            min = -1
+        end
+        if !!(length =~ /^[-+]?[0-9]+$/) && length.to_i > min
+            pass = true 
+        end
+        return pass
     end
 
     class Validator

@@ -31,10 +31,9 @@ class IdentityApiApp < ApiBase
   ##~ op.parameters.add :name => "password", :description => "User password", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "body"
   ##~ op.parameters.add :name => "country_code", :description => "Country code", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "body"
   post '/' do
-    json_body = request.body.read
-    json = JSON.parse(json_body)
-    # Check that password meets criteria     
-    if Auth.password_validate(json["account"]["password"])
+      json_body = request.body.read
+      json = JSON.parse(json_body)
+      # Check that password meets criteria     
       new_account = Account.new.extend(UpdateAccountRepresenter)
       new_account.from_json(json_body)
       if new_account.valid?
@@ -78,11 +77,6 @@ class IdentityApiApp < ApiBase
         message.validation_errors = new_account.errors.to_hash
         [BAD_REQUEST, message.to_json]
       end
-    else
-      message = Error.new.extend(ErrorRepresenter)
-      message.message = "Invalid password: "+json["account"]["password"]+". The password must be at least 6 characters in length and contain a minimum of one number and one letter."
-      [BAD_REQUEST, message.to_json]
-    end
   end
 
   post '/auth' do
@@ -129,9 +123,25 @@ class IdentityApiApp < ApiBase
   put '/:id/update' do
       update_hash = JSON.parse(request.body.read)
       update_account = Account.find(params[:id])
-      update_account.update_attributes(update_hash.symbolize_keys)
-      update_account.save
-      [OK, update_account.to_json]
+      gov = update_account.group_policies[0]["org_governance"]
+      # require 'pry'
+      # binding.pry
+      if !gov.empty? 
+        validation = Auth.password_validate(update_hash["password"],gov)
+      else  
+        update_account.update_attributes(update_hash.symbolize_keys)
+        update_account.save
+        [OK, update_account.to_json]
+      end
+      if validation["pass"] === true
+        update_account.update_attributes(update_hash.symbolize_keys)
+        update_account.save
+        [OK, update_account.to_json]
+      else
+        message = Error.new.extend(ErrorRepresenter)
+        message.message = validation["message"]
+        [BAD_REQUEST,message.to_json]
+      end
   end
 
   # Delete a user

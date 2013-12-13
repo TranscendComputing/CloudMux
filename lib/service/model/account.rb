@@ -79,7 +79,6 @@ class Account
 
   def password=(pass)
     @password = pass
-
     # only set the encrypted password if we haven't set anything before, or if we are resetting the password
     if self.encrypted_password.nil? or (!self.encrypted_password.nil? and !pass.nil?)
       self.encrypted_password =  pass.nil? ? nil : ::BCrypt::Password.create(pass, { :cost => bcrypt_cost })
