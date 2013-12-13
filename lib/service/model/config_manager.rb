@@ -1,5 +1,8 @@
 class ConfigManager
 	include Mongoid::Document
+    
+    belongs_to :org
+
     field :protocol, type:String
     field :host, type:String
     field :port, type:String
@@ -7,11 +10,11 @@ class ConfigManager
 	field :enabled, type:Boolean
     field :type, type:String
     field :name, type:String
-
-    field :org
-
     field :auth_properties, type:Hash
+    field :source_control_uri, type:String
+    field :branch, type:String
+    field :source_control_paths, type:Array
 
-    belongs_to :org
     has_and_belongs_to_many :cloud_accounts
+    has_one :source_control_credential
 end

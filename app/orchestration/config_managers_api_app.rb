@@ -21,12 +21,31 @@ class ConfigManagerApiApp < ApiBase
             message.message = "Must provide org_id with request for configuration managers."
             [BAD_REQUEST, message.to_json]
         else
-            body = request.body.read
-            new_manager = ConfigManager.new.extend(UpdateConfigManagerRepresenter)
-            new_manager.from_json(body)
-            new_manager.org = Org.find(params[:org_id]).extend(OrgRepresenter)
-            new_manager.save!
-            [OK, new_manager.to_json]
+            json_body = body_to_json(request)
+            if json_body.nil?
+                message = Error.new.extend(ErrorRepresenter)
+                message.message = "Must provide valid properties with request for configuration managers."
+                [BAD_REQUEST, message.to_json]
+            else
+                case json_body["type"]
+                when "chef"
+                    new_manager = Chef.new(json_body)
+                when "puppet"
+                    # TODO new Puppet that inherits ConfigManager
+                    new_manager = ConfigManager.new(json_body)
+                when "salt"
+                    # TODO new Salt that inherits ConfigManager
+                    new_manager = ConfigManager.new(json_body)
+                when "ansible"
+                    # TODO new Ansible that inherits ConfigManager
+                    new_manager = ConfigManager.new(json_body)
+                else
+                    new_manager = ConfigManager.new(json_body)
+                end
+                new_manager.org = Org.find(params[:org_id]).extend(OrgRepresenter)
+                new_manager.save!
+                [OK, new_manager.to_json]
+            end
         end
     end
 
