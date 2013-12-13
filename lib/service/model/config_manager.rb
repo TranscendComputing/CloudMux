@@ -16,5 +16,6 @@ class ConfigManager
     field :source_control_paths, type:Array
 
     has_and_belongs_to_many :cloud_accounts
+    has_and_belongs_to_many :continuous_integrations
     has_one :source_control_credential
 end
