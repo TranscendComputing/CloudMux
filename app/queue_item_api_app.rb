@@ -35,33 +35,4 @@ class QueueItemApiApp < ApiBase
       [OK, qitem.to_json]
     end
   end
-
-  put '/' do
-    data = body_to_json(request)
-    if (data.nil?)
-      error = Error.new.extend(ErrorRepresenter)
-      error.message = "Must give attributes for new QueueItem"
-      [BAD_REQUEST, error.to_json]
-    else
-      qitem = QueueItem.new()
-      # [XXX] needs to support other types of queue actions
-      qitem.update_attributes! data
-      # qitem.caller =  
-      [OK, qitem.to_json]
-    end
-  end
-
-  put '/:id' do 
-    data = body_to_json(request)
-    if (data.nil?)
-      error = Error.new.extend(ErrorRepresenter)
-      error.message = "Must give attributes to update QueueItem"
-      [BAD_REQUEST, error.to_json]
-    else
-      qitem = QueueItem.find(params[:id])
-      qitem.update_attributes! data
-      [OK, qitem.to_json]
-    end
-  end
-
 end
