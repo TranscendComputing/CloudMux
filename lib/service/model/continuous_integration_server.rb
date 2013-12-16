@@ -3,7 +3,7 @@ class ContinuousIntegrationServer
     include Mongoid::Timestamps
 
     belongs_to :org, :foreign_key => 'org_id'
-    has_and_belongs_to_many :config_manager
+    has_and_belongs_to_many :config_managers
 
     attr_readonly :org_id
     attr_accessible :org_id, :name, :type, :host, :protocol, :port, :username, :password, :config_manager_ids
