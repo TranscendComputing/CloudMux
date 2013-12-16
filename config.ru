@@ -27,6 +27,7 @@ require 'app/cloud_api_app'
 require 'app/project_api_app'
 require 'app/provisioning_api_app'
 require 'app/report_api_app'
+require 'app/continuous_integration_api_app'
 require 'app/root_app'
 require 'app/resource_api_base'
 require 'app/assembly_api_app'
@@ -199,6 +200,13 @@ end
 #
 map "/stackstudio/v1/report" do
   run ReportApiApp
+end
+
+#
+# Continuous Integration API (internal)
+#
+map "/stackstudio/v1/contiunous_integration" do
+  run ContinuousIntegrationApiApp
 end
 
 #
