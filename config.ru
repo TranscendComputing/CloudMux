@@ -205,7 +205,7 @@ end
 #
 # Continuous Integration API (internal)
 #
-map "/stackstudio/v1/continuous_integration" do
+map "/stackstudio/v1/continuous_integration_servers" do
   run ContinuousIntegrationApiApp
 end
 
