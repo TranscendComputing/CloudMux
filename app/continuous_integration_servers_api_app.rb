@@ -1,6 +1,6 @@
 require 'sinatra'
 
-class ContinuousIntegrationApiApp < ApiBase
+class ContinuousIntegrationServersApiApp < ApiBase
     
     # Get a CI Server by ID
     get '/:id' do

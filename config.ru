@@ -203,10 +203,10 @@ map "/stackstudio/v1/report" do
 end
 
 #
-# Continuous Integration API (internal)
+# Continuous Integration Servers API (internal)
 #
 map "/stackstudio/v1/continuous_integration_servers" do
-  run ContinuousIntegrationApiApp
+  run ContinuousIntegrationServersApiApp
 end
 
 #
