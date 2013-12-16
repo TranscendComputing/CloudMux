@@ -4,7 +4,9 @@ require 'fog'
 class OpenstackBlockStorageApp < ResourceApiBase
 
 	before do
-    if(params[:cred_id].nil? || ! Auth.validate(params[:cred_id],"Elastic Block Storage","action"))
+    if(params[:cred_id].nil? || ! Auth.validate(params[:cred_id],"Block Storage","action"))
+      # require 'pry'
+      # binding.pry
       halt [BAD_REQUEST]
     else
       cloud_cred = get_creds(params[:cred_id])

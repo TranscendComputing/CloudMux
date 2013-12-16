@@ -142,6 +142,8 @@ module Auth
         #Enabled Services
         def canUseService()
             enabled_services = @governance['enabled_services']
+            # require 'pry'
+            # binding.pry
             return true if @account.permissions.length > 0
             if enabled_services.nil?
                 return false
