@@ -62,6 +62,7 @@ group :development, :test do
   gem 'flay'
   gem 'turbulence'
   gem 'coveralls', require: false
+  gem 'webmock'
 end
 
 # Google

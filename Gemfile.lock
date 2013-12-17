@@ -31,6 +31,8 @@ GEM
       simplecov (>= 0.7)
       term-ansicolor
       thor
+    crack (0.4.1)
+      safe_yaml (~> 0.9.0)
     database_cleaner (1.2.0)
     debugger (1.6.2)
       columnize (>= 0.3.1)
@@ -178,6 +180,7 @@ GEM
       sexp_processor (~> 4.1)
     rufus-scheduler (3.0.2)
       tzinfo
+    safe_yaml (0.9.7)
     sexp_processor (4.4.0)
     shotgun (0.9)
       rack (>= 1.0)
@@ -217,17 +220,20 @@ GEM
     thor (0.18.1)
     tilt (1.4.1)
     tins (0.13.1)
+    turbulence (1.2.0)
+      flog (~> 4.1)
+      json (>= 1.4.6)
+      launchy (>= 2.0.0)
     tux (0.3.0)
       ripl (>= 0.3.5)
       ripl-multi_line (>= 0.2.4)
       ripl-rack (>= 0.2.0)
       sinatra (>= 1.2.1)
-    turbulence (1.2.0)
-      flog (~> 4.1)
-      json (>= 1.4.6)
-      launchy (>= 2.0.0)
     tzinfo (0.3.38)
     uuidtools (2.1.4)
+    webmock (1.16.1)
+      addressable (>= 2.2.7)
+      crack (>= 0.3.2)
 
 PLATFORMS
   java
@@ -270,5 +276,6 @@ DEPENDENCIES
   sinatra-contrib
   source2swagger
   spice
-  tux
   turbulence
+  tux
+  webmock
