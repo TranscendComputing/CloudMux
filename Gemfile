@@ -19,7 +19,7 @@ gem 'mongo', '1.8.3'
 gem 'mongo_ext', '~> 0.19', :platform => :ruby # native extensions for performance
 gem 'bson_ext', '1.8.3', :platform => :ruby  # native extensions for performance
 gem 'bson', '1.8.3'
-gem 'mongoid'
+gem 'mongoid', '~> 3.1.6'
 
 gem 'httparty', '~> 0.8.1'
 
