@@ -2,7 +2,7 @@ require 'sinatra/base'
 
 class FakeAnsible < Sinatra::Base
   post '/api/v1/authtoken' do
-    json_response (200, 'ansible/authtoken_ok.json' )
+    json_response 200, 'ansible/authtoken_ok.json'
   end
 
   private
