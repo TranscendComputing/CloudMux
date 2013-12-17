@@ -53,7 +53,10 @@ group :development, :test do
   gem 'pry'
   gem 'pry-debugger'
   gem 'rb-readline'
+  # Complexity, turbulence, test coverage.
   gem 'flog'
+  gem 'flay'
+  gem 'turbulence'
   gem 'coveralls', require: false
 end
 
