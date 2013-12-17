@@ -59,10 +59,11 @@ class Ansible
     end
 
     def get_inventories
-      resp = @rest['/api/v1/inventories/'].get
+      resp = @rest['/api/v1/inventories'].get
       JSON.parse(resp)["results"]
     end
 
+    # [TODO] change  to 'post_hosts'
     def post_inventories(name,description, organization=1,variables='')
       resp = @rest['/api/v1/hosts'].post({
         :name => name,
@@ -110,12 +111,7 @@ class Ansible
       JSON.parse(resp)["results"]
     end
 
-    def get_groups
-      resp = @rest[url].get
-      JSON.parse(resp)["results"]
-    end
-
-    def post_groups(name,description, inventory,variables)
+    def post_groups(name,description, inventory,variables='')
       resp = @rest['/api/v1/groups'].post({
         :name => name,
         :description => description,
@@ -159,7 +155,7 @@ class Ansible
 
     def post_users_credentials(user_id, name, ssh_username, ssh_password, ssh_key_data,
       ssh_key_unlock, sudo_username, sudo_password)
-      resp = @rest['/api/v1/users/'+user_id+'/credentials/'].post(
+      resp = @rest['/api/v1/users/'+user_id+'/credentials'].post(
         name,
         ssh_username,
         ssh_password,
@@ -171,38 +167,12 @@ class Ansible
     end
 
     def post_users_credentials_remove(user_id, credentials_id)
-      resp = @rest['/api/v1/users/'+user_id+'/credentials/'].post(
+      resp = @rest['/api/v1/users/'+user_id+'/credentials'].post(
         :id => credentials_id,
         :disassociate => true)
       JSON.parse(resp)["results"]
     end
 
-    # [TODO] move the logic here to ansible_api_app
-    def post_find_hosts (instances)
-      result = []
-      add_instances = []
-      hosts = get_hosts()
-      instances.each_with_index{|inst|
-        name = inst["name"]
-        ips = inst["ip_addresses"]
-        host =  hosts.select{ |h| ips.include? h['name']}
-        if host.length > 0
-          result << host[0]
-        else
-          # add hosts not already in results
-          add_instances << inst
-        end
-      }
-      add_instances.each {|inst|
-        name = inst["name"]
-        ips = inst["ip_addresses"]
-        host = post_hosts(
-          ips[-1], # Using the last ip address for name
-          name) # SS name for Ansible description
-        result << {:name => host}
-      }
-      return result
-    end
   end
 end
 

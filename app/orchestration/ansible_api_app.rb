@@ -219,11 +219,33 @@ class AnsibleApiApp < ApiBase
       [BAD_REQUEST, message.to_json]
     else
       begin
-        hosts = @ansible.post_find_hosts(instancedata);
+        result = []
+        add_instances = []
+        hosts = get_hosts()
+        instances.each_with_index{|inst|
+          name = inst["name"]
+          ips = inst["ip_addresses"]
+          host =  hosts.select{ |h| ips.include? h['name']}
+          if host.length > 0
+            result << host[0]
+          else
+            # add hosts not already in results
+            add_instances << inst
+          end
+        }
+        add_instances.each {|inst|
+          name = inst["name"]
+          ips = inst["ip_addresses"]
+          host = post_hosts(
+            ips[-1], # Using the last ip address for name
+            name) # SS name for Ansible description
+          result << {:name => host}
+        }
+      end
       rescue Errno::ECONNREFUSED
         [BAD_REQUEST, {:message=>"could not connect to Ansible."}.to_json]
       end
-      [OK, hosts.to_json];
+      [OK, result.to_json];
     end
   end
 
