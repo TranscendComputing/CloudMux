@@ -270,8 +270,5 @@ DEPENDENCIES
   sinatra-contrib
   source2swagger
   spice
-<<<<<<< HEAD
   tux
-=======
   turbulence
->>>>>>> 5e64ccb... Add duplicate code output.
