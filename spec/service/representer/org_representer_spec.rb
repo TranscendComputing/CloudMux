@@ -10,7 +10,7 @@ describe OrgRepresenter do
     it "should export to json" do
       @org.extend(OrgRepresenter)
       result = @org.to_json
-      result.should eq("{\"org\":{\"id\":\"#{@org.id}\",\"name\":\"#{@org.name}\",\"accounts\":[],\"cloud_accounts\":[],\"groups\":[],\"subscriptions\":[],\"cloud_mappings\":[]}}")
+      result.should eq("{\"org\":{\"id\":\"#{@org.id}\",\"name\":\"#{@org.name}\",\"accounts\":[],\"cloud_accounts\":[],\"config_managers\":[],\"groups\":[],\"subscriptions\":[],\"cloud_mappings\":[]}}")
     end
   end
 
