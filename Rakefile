@@ -266,7 +266,7 @@ begin
       #desc "Analyze code duplication with flay"
       FlayTask.new() do |t|
         t.verbose = true
-        t.threshold = 21050
+        t.threshold = 22000
       end
     end
   end

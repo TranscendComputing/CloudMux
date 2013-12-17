@@ -1,5 +1,4 @@
 require 'app_spec_helper'
-require 'ruby-debug'
 
 require  File.join(APP_DIR, 'queue_item_api_app')
 

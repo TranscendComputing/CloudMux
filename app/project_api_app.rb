@@ -50,7 +50,6 @@ class ProjectApiApp < ApiBase
 
   # Generally load project, except before nodes, elements, embedded projects, variants
   before %r{^/([\w.]+)} do |id|
-    puts "loading single project."
     @project = load_project(id)
   end
 

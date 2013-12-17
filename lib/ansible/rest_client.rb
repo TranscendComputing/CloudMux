@@ -1,6 +1,5 @@
 require 'rest-client'
 require 'json'
-require 'debugger'
 
 # [TODO] Use Logging module; ie lib/salt/rest_client
 #RestClient.log = "/home/thethethe/Development/MomentumSI/CloudMux/rest_log"
