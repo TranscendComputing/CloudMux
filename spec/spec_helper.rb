@@ -26,7 +26,6 @@ ENV['RACK_ENV'] = 'test'
 
 # require the dependencies
 require File.join(File.dirname(__FILE__), '..', 'lib', 'core')
-
 require File.join(File.dirname(__FILE__), 'support', 'fake_ansible')
 
 WebMock.disable_net_connect! allow_localhost:true
