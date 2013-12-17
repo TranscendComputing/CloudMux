@@ -14,9 +14,27 @@
 # limitations under the License.
 # 
 
+module CloudMux
+  module CI
 
-module Cloudmux
-  module Chef
-    #extend Cloudmux::ConfigurationManager
+    def self.new(attributes)
+      platform = attributes.delete(:platform).to_s.downcase.to_sym
+
+      case platform
+      when :jenkins
+        require 'cloudmux/ci/jenkins'
+        CloudMux::CI::Jenkins.new(attributes)
+      else
+        if self.platforms.include?(platform)
+          require "cloudmux/ci/#{platform}"
+        end
+        raise ArgumentError.new("#{platform} is not a recognized CI platform")
+      end
+    end
+
+    def self.platforms
+      %w{ jenkins }
+    end
+
   end
 end

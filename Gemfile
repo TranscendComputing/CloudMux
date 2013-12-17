@@ -35,7 +35,13 @@ gem 'fog', '1.15.0', :require => 'fog'
 gem "rest-client", "~> 1.6.7"
 gem "spice"
 #Should use ridley instead of spice, but ridley and mongoid are currently incompatible until mongoid 4.0 release or fixes with Ridley for Boolean class definition.
-#gem "ridley", "~>1.5.0"
+gem 'ridley', '~> 2.3.0'
+
+# SCM
+gem 'git'
+
+# CI
+gem 'jenkins_api_client', '~> 0.14.1'
 
 
 # REST support hack - allow _method to be passed as a URL parameter for PUT and DELETE

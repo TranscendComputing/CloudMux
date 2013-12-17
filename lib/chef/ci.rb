@@ -1,4 +1,4 @@
-# 
+#
 # (c) Copyright 2012-2013 Transcend Computing, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the License);
@@ -12,11 +12,26 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# 
+#
 
+require File.join(File.dirname(__FILE__), '..', 'ci.rb')
+require File.join(File.dirname(__FILE__), 'client.rb')
+require File.join(File.dirname(__FILE__), '..', 'cloudmux', 'scm', 'git.rb')
+require File.join(File.dirname(__FILE__), '..', 'cloudmux', 'ci', 'jenkins.rb')
 
-module Cloudmux
+module CloudMux
   module Chef
-    #extend Cloudmux::ConfigurationManager
+    class CI
+
+      def initialize(attributes)
+        @git = CloudMux::SCM::Git.new(attributes)
+        @ci  = CloudMux::CI::Jenkins.new(attributes[:jenkins_server])
+        super(attributes)
+      end
+
+      
+
+
+    end
   end
 end
