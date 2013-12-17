@@ -2,7 +2,6 @@
 # Placeholder for commonality between API apps
 #
 require 'logging'
-require 'awesome_print'
 
 class ApiBase < Sinatra::Base
   include HttpStatusCodes
@@ -15,6 +14,7 @@ class ApiBase < Sinatra::Base
   end
 
   configure :development do
+    require 'awesome_print'
     base_logger = Logging.logger(STDOUT)
     Logging.logger.root.add_appenders(Logging.appenders.stdout)
     Logging.logger.root.level = :debug
