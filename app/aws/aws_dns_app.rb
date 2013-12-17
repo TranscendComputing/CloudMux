@@ -8,10 +8,16 @@ class AwsDnsApp < ResourceApiBase
 			cloud_cred = get_creds(params[:cred_id])
 			if ! cloud_cred.nil?
 				@dns = Fog::DNS::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
-			end
+			  halt [BAD_REQUEST] if @dns.nil?
+      else
+        halt [NOT_FOUND, "Credentials not found."]
+      end
+    else
+      message = Error.new.extend(ErrorRepresenter)
+      message.message = "Cannot access this service under current policy."
+      halt [NOT_AUTHORIZED, message.to_json]
 		end
-		halt [BAD_REQUEST] if @dns.nil?
-    end
+  end
 
 	#
 	# Hosted Zones
