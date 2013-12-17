@@ -8,7 +8,6 @@ module OrgRepresenter
   property :name
   collection :accounts, :class=>Account, :extend => AccountRepresenter
   collection :cloud_accounts, :class=>CloudAccount, :extend => CloudAccountRepresenter
-  collection :config_managers
   collection :groups, :class=>Group, :extend => GroupRepresenter
   collection :subscriptions, :class=>Subscription, :extend => SubscriptionRepresenter
   collection :cloud_mappings, :class=>CloudMapping, :extend => CloudMappingRepresenter
