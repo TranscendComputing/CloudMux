@@ -35,7 +35,8 @@ gem 'fog', '1.15.0', :require => 'fog'
 gem "rest-client", "~> 1.6.7"
 gem "spice"
 #Should use ridley instead of spice, but ridley and mongoid are currently incompatible until mongoid 4.0 release or fixes with Ridley for Boolean class definition.
-gem 'ridley', '~> 2.3.0'
+gem 'ridley-connectors'
+gem 'ridley', '~> 2.0.0'
 
 # SCM
 gem 'git'

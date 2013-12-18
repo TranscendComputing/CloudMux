@@ -14,24 +14,6 @@
 # limitations under the License.
 #
 
-require File.join(File.dirname(__FILE__), '..', 'ci.rb')
-require File.join(File.dirname(__FILE__), 'client.rb')
-require File.join(File.dirname(__FILE__), '..', 'cloudmux', 'scm', 'git.rb')
-require File.join(File.dirname(__FILE__), '..', 'cloudmux', 'ci', 'jenkins.rb')
-
-module CloudMux
-  module Chef
-    class CI
-
-      def initialize(attributes)
-        @git = CloudMux::SCM::Git.new(attributes)
-        @ci  = CloudMux::CI::Jenkins.new(attributes[:jenkins_server])
-        super(attributes)
-      end
-
-      
-
-
-    end
-  end
+Dir.glob('google/*.rb').each do |fname|
+  require fname.chomp(File.extname(fname))
 end
