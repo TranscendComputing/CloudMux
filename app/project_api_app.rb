@@ -171,8 +171,8 @@ end
 
   # Bulk imports permissions into a user
   post '/:id/members/:member_id/permissions/import' do
-    update_project = Project.find(params[:id]) ; puts "loading project"
-	results = ImportResults.new.extend(ImportResultsRepresenter)
+    update_project = Project.find(params[:id])
+    results = ImportResults.new.extend(ImportResultsRepresenter)
     all = Struct.new(:permissions).new.extend(PermissionsRepresenter)
     all.from_json(request.body.read)
 	failures = false
@@ -195,7 +195,7 @@ end
 
   # Remove all permissions for an environment from an existing member
   delete '/:id/members/:member_id/env_permissions/:environment' do
-	update_project = Project.find(params[:id]) ; puts "loading project"
+	update_project = Project.find(params[:id])
 	update_project.remove_member_environment_permissions!(params[:member_id], params[:environment])
 	update_project.extend(ProjectRepresenter)
 	[OK, update_project.to_json]
@@ -203,7 +203,7 @@ end
 
    # Register an existing group to an existing project
   post '/:id/groups/:group_id' do
-    update_project = Project.find(params[:id]) ; puts "loading project"
+    update_project = Project.find(params[:id])
     group = Group.find(params[:group_id])
 	new_group_project = GroupProject.new(:group=>group)
     if new_group_project.valid?
@@ -220,7 +220,7 @@ end
 
   # Remove a group from an existing project
   delete '/:id/groups/:group_id' do
-    update_project = Project.find(params[:id]) ; puts "loading project"
+    update_project = Project.find(params[:id])
     update_project.remove_group!(params[:group_id])
     update_project.extend(ProjectRepresenter)
     [OK, update_project.to_json]
@@ -228,7 +228,7 @@ end
 
   # Register a permission to an existing group
   post '/:id/groups/:group_id/permissions' do
-	update_project = Project.find(params[:id]) ; puts "loading project"
+	update_project = Project.find(params[:id])
 	new_permission = Permission.new.extend(UpdatePermissionRepresenter)
 	new_permission.from_json(request.body.read)
 	if new_permission.valid?
@@ -245,7 +245,7 @@ end
 
   # Remove an existing permission to an existing group
   delete '/:id/groups/:group_id/permissions/:permission_id' do
-	update_project = Project.find(params[:id]) ; puts "loading project"
+	update_project = Project.find(params[:id])
 	update_project.remove_group_permission!(params[:group_id], params[:permission_id])
 	update_project.extend(ProjectRepresenter)
 	[OK, update_project.to_json]
@@ -253,7 +253,7 @@ end
 
   # Bulk imports permissions into a group
   post '/:id/groups/:group_id/permissions/import' do
-    update_project = Project.find(params[:id]) ; puts "loading project"
+    update_project = Project.find(params[:id])
 	results = ImportResults.new.extend(ImportResultsRepresenter)
     all = Struct.new(:permissions).new.extend(PermissionsRepresenter)
     all.from_json(request.body.read)
@@ -277,7 +277,7 @@ end
 
   # Remove all permissions for an environment from an existing group
   delete '/:id/groups/:group_id/env_permissions/:environment' do
-	update_project = Project.find(params[:id]) ; puts "loading project"
+	update_project = Project.find(params[:id])
 	update_project.remove_group_environment_permissions!(params[:group_id], params[:environment])
 	update_project.extend(ProjectRepresenter)
 	[OK, update_project.to_json]
@@ -285,7 +285,7 @@ end
 
   # freeze the project as a new version
   post '/:id/:version/freeze_version' do
-    project = Project.find(params[:id]) ; puts "loading project"
+    project = Project.find(params[:id])
     new_version = Version.new.extend(VersionRepresenter)
     new_version.from_json(request.body.read)
     if new_version.valid? and new_version.validate_version_number(project.versions)
