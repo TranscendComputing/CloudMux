@@ -6,16 +6,14 @@ class ContinuousIntegrationServer
     has_and_belongs_to_many :config_managers
 
     attr_readonly :org_id
-    attr_accessible :org_id, :name, :type, :host, :protocol, :port, :username, :password, :config_manager_ids
+    attr_accessible :org_id, :name, :type, :url, :username, :password, :config_manager_ids
 
     # Validation Rules
-    validates_presence_of :name, :type, :host, :protocol, :port
+    validates_presence_of :name, :type, :url
 
     field :name
     field :type
-    field :host
-    field :protocol
-    field :port
+    field :url
     field :username
     field :password
 
