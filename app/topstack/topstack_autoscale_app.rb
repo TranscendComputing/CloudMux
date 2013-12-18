@@ -80,11 +80,16 @@ class TopStackAutoscaleApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/autoscale_groups' do
-        json_body = body_to_json(request)
-        max_instances = 0
-        if ! json_body["autoscale_group"].nil?
-            max_instances = json_body["autoscale_group"]["MaxSize"].to_i - 1
-        end
+    json_body = body_to_json(request)
+    max_instances = 0
+    if(json_body.nil? || !Auth.validate(params[:cred_id],"Auto Scale","use_image",{:image_id => json_body["instance"]["image_ref"]}))
+      message = Error.new.extend(ErrorRepresenter)
+      message.message = "The image you selected isn't available under current policy."
+      halt [NOT_FOUND, message.to_json]
+    end
+    if ! json_body["autoscale_group"].nil?
+      max_instances = json_body["autoscale_group"]["MaxSize"].to_i - 1
+    end
 		if(json_body.nil? || json_body["launch_configuration"].nil? || json_body["autoscale_group"].nil? || ! Auth.validate(params[:cred_id],"Auto Scale","create_autoscale",{:instance_count=>max_instances.to_i}))
 			[BAD_REQUEST]
 		else
