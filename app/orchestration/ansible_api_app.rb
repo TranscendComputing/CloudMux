@@ -241,7 +241,6 @@ class AnsibleApiApp < ApiBase
             name) # SS name for Ansible description
           result << {:name => host}
         }
-      end
       rescue Errno::ECONNREFUSED
         [BAD_REQUEST, {:message=>"could not connect to Ansible."}.to_json]
       end
