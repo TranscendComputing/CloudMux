@@ -12,10 +12,16 @@ class AwsRdsApp < ResourceApiBase
 				else
 					@rds = Fog::AWS::RDS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => params[:region]})
 				end
+        halt [BAD_REQUEST] if @rds.nil?
+      else
+        halt [NOT_FOUND, "Credentials not found."]
 			end
+    else
+      message = Error.new.extend(ErrorRepresenter)
+      message.message = "Cannot access this service under current policy."
+      halt [NOT_AUTHORIZED, message.to_json]
 		end
-		halt [BAD_REQUEST] if @rds.nil?
-    end
+  end
 
 	#
 	# Databases

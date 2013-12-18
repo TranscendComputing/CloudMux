@@ -5,7 +5,9 @@ class OpenstackComputeApp < ResourceApiBase
 
     before do
         if(params[:cred_id].nil? || ! Auth.validate(params[:cred_id],"Compute Service","action"))
-            halt [BAD_REQUEST]
+            message = Error.new.extend(ErrorRepresenter)
+            message.message = "Cannot access this service under current policy."
+            halt [NOT_AUTHORIZED, message.to_json]
         else
             cloud_cred = get_creds(params[:cred_id])
             if cloud_cred.nil?

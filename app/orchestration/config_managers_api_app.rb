@@ -29,7 +29,7 @@ class ConfigManagerApiApp < ApiBase
             else
                 case json_body["type"]
                 when "chef"
-                    new_manager = Chef.new(json_body)
+                    new_manager = ChefConfigurationManager.new(json_body)
                 when "puppet"
                     # TODO new Puppet that inherits ConfigManager
                     new_manager = ConfigManager.new(json_body)

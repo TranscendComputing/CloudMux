@@ -1,12 +1,12 @@
 require 'sinatra'
 require 'fog'
-require 'debugger'
 
 class GoogleObjectStorageApp < ResourceApiBase
-  
+
     before do
-        if ! params[:cred_id].nil?
-            cloud_cred = get_creds(params[:cred_id])
+        cred_id = params[:cred_id]
+        if ! cred_id.nil?
+            cloud_cred = get_creds(cred_id)
             if ! cloud_cred.nil?
                 @object_storage = Fog::Storage::Google.new({
                   :google_storage_access_key_id     => cloud_cred.cloud_attributes['google_storage_access_key_id'],
@@ -16,11 +16,11 @@ class GoogleObjectStorageApp < ResourceApiBase
         end
         halt [BAD_REQUEST] if @object_storage.nil?
     end
-    
+
 	#
 	# Buckets
 	#
-      
+
 	get '/directories' do
     begin
   		filters = params[:filters]
@@ -34,7 +34,7 @@ class GoogleObjectStorageApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	post '/directories' do
 		json_body = body_to_json(request)
 		if(json_body.nil?)
@@ -48,28 +48,35 @@ class GoogleObjectStorageApp < ResourceApiBase
 			end
 		end
 	end
-	
+
+    before %r{/directories/([\w]+).*} do |id|
+        @dir = @object_storage.directories.get(id)
+        if(@dir.nil?)
+            halt NOT_FOUND
+        end
+    end
+
 	delete '/directories/:id' do
 		begin
-			response = @object_storage.directories.get(params[:id]).destroy
+			response = @dir.destroy
 			[OK, response.to_json]
 		rescue => error
 			handle_error(error)
 		end
 	end
-	
+
 	#
 	# Files
 	#
 	get '/directories/:id/files' do
 		begin
-			response = @object_storage.directories.get(params[:id]).files
+			response = @dir.files
 			[OK, response.to_json]
 		rescue => error
 			handle_error(error)
 		end
 	end
-	
+
 	post '/directory/file/download' do
 		file = params[:file]
 		directory = params[:directory]
@@ -87,7 +94,7 @@ class GoogleObjectStorageApp < ResourceApiBase
 			end
 		end
 	end
-	
+
 	post '/directory/file/upload' do
 		file = params[:file_upload]
 		directory = params[:directory]
@@ -102,7 +109,7 @@ class GoogleObjectStorageApp < ResourceApiBase
 			end
 		end
 	end
-	
+
 	delete '/directories/:id/files/:file_id' do
 		begin
 			response = @object_storage.delete_object(params[:id], params[:file_id]).body
@@ -110,5 +117,5 @@ class GoogleObjectStorageApp < ResourceApiBase
 		rescue => error
 			handle_error(error)
 		end
-	end  
+	end
 end

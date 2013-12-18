@@ -19,7 +19,8 @@ gem 'mongo', '1.8.3'
 gem 'mongo_ext', '~> 0.19', :platform => :ruby # native extensions for performance
 gem 'bson_ext', '1.8.3', :platform => :ruby  # native extensions for performance
 gem 'bson', '1.8.3'
-gem 'mongoid', '~> 3.1.6'
+gem 'mongoid', '3.1.5'
+gem 'representable' , '1.7.1'
 
 gem 'httparty', '~> 0.8.1'
 
@@ -35,7 +36,8 @@ gem 'fog', '1.15.0', :require => 'fog'
 gem "rest-client", "~> 1.6.7"
 gem "spice"
 #Should use ridley instead of spice, but ridley and mongoid are currently incompatible until mongoid 4.0 release or fixes with Ridley for Boolean class definition.
-gem 'ridley', '~> 2.3.0'
+gem 'ridley-connectors'
+gem 'ridley', '~> 2.0.0'
 
 # SCM
 gem 'git'
@@ -47,20 +49,28 @@ gem 'jenkins_api_client', '~> 0.14.1'
 # REST support hack - allow _method to be passed as a URL parameter for PUT and DELETE
 gem 'rack-methodoverride-with-params', '~>1.0.0'
 
+# Development-only
+group :development do
+  gem 'awesome_print'
+  gem 'shotgun'
+  gem 'pry'
+  gem 'pry-debugger'
+  gem 'rb-readline'
+end
+
 # Test-only
 group :development, :test do
   gem 'rspec', '~> 2.4'
   gem 'foreman'
   gem 'rack-test'
-  gem 'awesome_print'
   gem 'database_cleaner'
   gem 'factory_girl', '~> 3.0.0'
-  gem 'shotgun'
-  gem 'pry'
-  gem 'pry-debugger'
-  gem 'rb-readline'
+  # Complexity, turbulence, test coverage.
   gem 'flog'
+  gem 'flay'
+  gem 'turbulence'
   gem 'coveralls', require: false
+  gem 'webmock'
 end
 
 # Google
