@@ -1,6 +1,5 @@
 require 'sinatra'
 require 'fog'
-require 'debugger'
 
 class GoogleObjectStorageApp < ResourceApiBase
 
