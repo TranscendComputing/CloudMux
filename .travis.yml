@@ -4,6 +4,7 @@ rvm:
   - "1.9.3"
   - jruby-19mode # JRuby in 1.9 mode - getsource uses C extension.
   - rbx-19mode
+  - "2.0.0"
 matrix:
   allow_failures:
     - rvm: jruby-19mode
