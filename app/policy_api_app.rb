@@ -27,16 +27,24 @@ class PolicyApiApp < ApiBase
         if ! policy_json.nil? && ! policy_json["name"].nil?
             policy = policy_json["policy"]
             policy_os = policy_json["policy_os"]
-            name = policy_json["name"]
-            myOrg = Org.find(params[:org_id])
-            gp = GroupPolicy.new(
-                name: name,
-                os_governance: policy_os,
-                aws_governance: policy,
-                org: myOrg
-            )
-            gp.save!
-            [OK, gp.to_json]
+            policy_pw = policy_json["policy_pw"]
+            if Auth.validate_integer_input(policy_pw["min_password_length"],0)
+                name = policy_json["name"]
+                myOrg = Org.find(params[:org_id])
+                gp = GroupPolicy.new(
+                    name: name,
+                    os_governance: policy_os,
+                    aws_governance: policy,
+                    org_governance: policy_pw,
+                    org: myOrg
+                )
+                gp.save!
+                [OK, gp.to_json]
+            else
+                message = Error.new.extend(ErrorRepresenter)
+                message.message = "The password length field must contain numbers and cannot be empty or zero"
+                [BAD_REQUEST, message.to_json]
+            end
         else
             [BAD_REQUEST]
         end
@@ -91,13 +99,21 @@ class PolicyApiApp < ApiBase
             policy = policy_json["policy"]
             name = policy_json["name"]
             policy_os = policy_json["policy_os"]
-            updatePolicy = GroupPolicy.find(params[:id])
-            updatePolicy.update_attributes(
-              name: name,
-              aws_governance: policy,
-              os_governance: policy_os
-            )
-            [OK, updatePolicy.to_json]
+            policy_pw = policy_json["policy_pw"]
+            if Auth.validate_integer_input(policy_pw["min_password_length"],0)
+                updatePolicy = GroupPolicy.find(params[:id])
+                updatePolicy.update_attributes(
+                  name: name,
+                  aws_governance: policy,
+                  os_governance: policy_os,
+                  org_governance: policy_pw
+                )
+                [OK, updatePolicy.to_json]
+            else
+                message = Error.new.extend(ErrorRepresenter)
+                message.message = "The password length field must contain numbers and cannot be empty or zero"
+                [BAD_REQUEST, message.to_json]
+            end
         else
             [BAD_REQUEST]
         end

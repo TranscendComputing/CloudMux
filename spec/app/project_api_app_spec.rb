@@ -1,5 +1,4 @@
 require 'app_spec_helper'
-require 'ruby-debug'
 
 require File.join(File.dirname(__FILE__), '..', '..', 'app', 'project_api_app')
 

@@ -1,5 +1,35 @@
 class ResourceApiBase < ApiBase
 
+	# Long name for service representing this resource (e.g. Auto Scale, etc.)
+	@service_long_name = "undefined"
+
+	# Cloud implementation class (typically Fog::??)
+	@service_class = Object
+
+	def can_access_service(params)
+		service = nil
+		cred_id = params[:cred_id]
+		region = params[:region]
+		if ! cred_id.nil? && Auth.validate(cred_id,@service_long_name,"action")
+			cloud_cred = get_creds(cred_id)
+			args = {:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key}
+			if ! cloud_cred.nil?
+				if region != "undefined" && region != ""
+					args[:region] = region
+				end
+				service = @service_class.new(args)
+				halt [BAD_REQUEST] if service.nil?
+			else
+				halt [NOT_FOUND, "Credentials not found."]
+			end
+		else
+			message = Error.new.extend(ErrorRepresenter)
+			message.message = "Cannot access this service under current policy."
+			halt [NOT_AUTHORIZED, message.to_json]
+		end
+		service
+	end
+
 	def body_to_json(request)
 		if(!request.content_length.nil? && request.content_length != "0")
 			return MultiJson.decode(request.body.read)
@@ -8,20 +38,28 @@ class ResourceApiBase < ApiBase
 		end
 	end
 
+	def body_to_json_or_die(request)
+  		json_body = body_to_json(request)
+  		if(json_body.nil?)
+  			halt [BAD_REQUEST]
+  		end
+  		json_body
+	end
+
 	def get_creds(cred_id)
 		Account.find_cloud_credential(cred_id)
 	end
 
-	
+
 	def handle_error(error)
 		case error
-			when Fog::AWS::IAM::EntityAlreadyExists 
+			when Fog::AWS::IAM::EntityAlreadyExists
 				message = error.message
-				[NOT_ACCEPTABLE, message] 
+				[NOT_ACCEPTABLE, message]
 			when Fog::AWS::IAM::Error
 				error = error.message.split(" => ")
 				message = error[1]
-				[NOT_FOUND, message]   
+				[NOT_FOUND, message]
 			when Fog::Compute::AWS::Error
 				error = error.message.split(" => ")
 				message = error[1]
@@ -51,7 +89,7 @@ class ResourceApiBase < ApiBase
 					message = response_body["badRequest"]["message"]
 				end
 				[BAD_REQUEST, message]
-			when Excon::Errors::InternalServerError        
+			when Excon::Errors::InternalServerError
 				response_body = Nokogiri::XML(error.response.body)
 				if response_body.css('Message').empty?
 					message = error.response.body
