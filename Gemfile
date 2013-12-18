@@ -48,20 +48,28 @@ gem 'jenkins_api_client', '~> 0.14.1'
 # REST support hack - allow _method to be passed as a URL parameter for PUT and DELETE
 gem 'rack-methodoverride-with-params', '~>1.0.0'
 
+# Development-only
+group :development do
+  gem 'awesome_print'
+  gem 'shotgun'
+  gem 'pry'
+  gem 'pry-debugger'
+  gem 'rb-readline'
+end
+
 # Test-only
 group :development, :test do
   gem 'rspec', '~> 2.4'
   gem 'foreman'
   gem 'rack-test'
-  gem 'awesome_print'
   gem 'database_cleaner'
   gem 'factory_girl', '~> 3.0.0'
-  gem 'shotgun'
-  gem 'pry'
-  gem 'pry-debugger'
-  gem 'rb-readline'
+  # Complexity, turbulence, test coverage.
   gem 'flog'
+  gem 'flay'
+  gem 'turbulence'
   gem 'coveralls', require: false
+  gem 'webmock'
 end
 
 # Google

@@ -70,6 +70,11 @@ FactoryGirl.define do
     a.name 'My Cloud Account'
     a.topstack_enabled true
     a.topstack_id 'cloud_zone'
+
+    factory :full_cloud_account do |a|
+      a.cloud  { FactoryGirl.build(:cloud) }
+      a.org  { FactoryGirl.build(:org) }
+    end
   end
 
   factory :cloud_mapping, :class => CloudMapping do |a|
@@ -78,6 +83,18 @@ FactoryGirl.define do
 
   factory :cloud_credential, :class => CloudCredential do |a|
     a.name 'My Cloud Account'
+  end
+
+  factory :full_cloud_credential, :class => CloudCredential do
+    name 'My Cloud Account'
+    access_key 'not_secret'
+    secret_key 'secret'
+    cloud_account { FactoryGirl.create(:full_cloud_account) }
+    account { FactoryGirl.create(:account) }
+
+    factory :full_google_credential, :class => CloudCredential do
+      cloud_attributes { {google_storage_access_key_id: "xyz", google_storage_secret_access_key: "pdq"} }
+    end
   end
 
   factory :project, :class => Project do |a|
@@ -141,7 +158,7 @@ FactoryGirl.define do
 
   factory :embedded_project, :class => EmbeddedProject do |a|
   end
-  
+
   #factory :news_event, :class => NewsEvent do |a|
   #  a.description 'Transcend Launches'
   #  a.url 'https://www.transcendcomputing.com'

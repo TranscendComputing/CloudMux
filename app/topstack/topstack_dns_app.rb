@@ -4,26 +4,28 @@ require 'fog'
 class TopStackDnsApp < ResourceApiBase
 
 	before do
-		if(params[:cred_id].nil?)
-            halt [BAD_REQUEST]
+		if(params[:cred_id].nil? || ! Auth.validate(params[:cred_id],"DNS 53","action"))
+        message = Error.new.extend(ErrorRepresenter)
+        message.message = "Cannot access this service under current policy."
+        halt [NOT_AUTHORIZED, message.to_json]
+    else
+        cloud_cred = get_creds(params[:cred_id])
+        if cloud_cred.nil?
+            halt [NOT_FOUND, "Credentials not found."]
         else
-            cloud_cred = get_creds(params[:cred_id])
-            if cloud_cred.nil?
-                halt [NOT_FOUND, "Credentials not found."]
-            else
-                begin
-                    # Find DNS service endpoint
-                    endpoint = cloud_cred.cloud_account.cloud_services.where({"service_type"=>"DNS"}).first
-                    halt [BAD_REQUEST] if endpoint.nil?
-                    fog_options = {:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key}
-                    fog_options.merge!(:host => endpoint[:host], :port => endpoint[:port], :path => endpoint[:path], :scheme => endpoint[:protocol])
-                    @dns = Fog::DNS::AWS.new(fog_options)
-                    halt [BAD_REQUEST] if @dns.nil?
-                rescue Fog::Errors::NotFound => error
-                    halt [NOT_FOUND, error.to_s]
-                end
+            begin
+                # Find DNS service endpoint
+                endpoint = cloud_cred.cloud_account.cloud_services.where({"service_type"=>"DNS"}).first
+                halt [BAD_REQUEST] if endpoint.nil?
+                fog_options = {:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key}
+                fog_options.merge!(:host => endpoint[:host], :port => endpoint[:port], :path => endpoint[:path], :scheme => endpoint[:protocol])
+                @dns = Fog::DNS::AWS.new(fog_options)
+                halt [BAD_REQUEST] if @dns.nil?
+            rescue Fog::Errors::NotFound => error
+                halt [NOT_FOUND, error.to_s]
             end
         end
+    end
     end
 
 	#

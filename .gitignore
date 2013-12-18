@@ -19,5 +19,6 @@ rest_log
 
 # generated
 /coverage
+/turbulence
 
 app/config/settings.y*ml

@@ -3,23 +3,15 @@ require 'fog'
 
 class AwsAutoscaleApp < ResourceApiBase
 
-	before do
-		if ! params[:cred_id].nil? && Auth.validate(params[:cred_id],"Auto Scale","action")
-			cloud_cred = get_creds(params[:cred_id])
-			if ! cloud_cred.nil?
-				if params[:region].nil? || params[:region] == "undefined" || params[:region] == ""
-					@autoscale = Fog::AWS::AutoScaling.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
-				else
-					@autoscale = Fog::AWS::AutoScaling.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => params[:region]})
-				end
-			end
-		end
-		halt [BAD_REQUEST] if @autoscale.nil?
-    end
+  before do
+    @service_long_name = "Auto Scale"
+    @service_class = Fog::AWS::AutoScaling
+    @autoscale = can_access_service(params)
+  end
 
-	#
-	# Autoscale Groups
-	#
+  #
+  # Autoscale Groups
+  #
   ##~ sapi = source2swagger.namespace("aws_autoscale")
   ##~ sapi.swaggerVersion = "1.1"
   ##~ sapi.apiVersion = "1.0"
@@ -33,7 +25,7 @@ class AwsAutoscaleApp < ResourceApiBase
   ##~ op.responseClass = "Autoscale_Group"
   ##~ op.set :httpMethod => "GET"
   ##~ op.summary = "Describe Autoscale Groups (AWS cloud)"
-  ##~ op.nickname = "describe_autoscale_groups"  
+  ##~ op.nickname = "describe_autoscale_groups"
   ##~ op.parameters.add :name => "filters", :description => "Filters for instances", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
   ##~ op.errorResponses.add :reason => "Success, list of autoscale groups returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
@@ -59,7 +51,7 @@ class AwsAutoscaleApp < ResourceApiBase
   ##~ op = a.operations.add
   ##~ op.responseClass = "Autoscale_Group"
   ##~ op.set :httpMethod => "POST"
-  ##~ op.summary = "Create a new Autoscale Group (AWS cloud)"  
+  ##~ op.summary = "Create a new Autoscale Group (AWS cloud)"
   ##~ op.nickname = "create_autoscale_groups"
   ##~ sapi.models["CreateLaunchConfig"] = {:id => "CreateLaunchConfig", :properties => {:id => {:type => "string"}, :image_id => {:type => "string"}, :instance_type => {:type => "string"}}}
   ##~ op.parameters.add :name => "launch_configuration", :description => "Launch Configuration to use", :dataType => "CreateLaunchConfig", :allowMultiple => false, :required => true, :paramType => "body"
@@ -68,10 +60,10 @@ class AwsAutoscaleApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Success, new Autoscale Group created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"	
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/autoscale_groups' do
         json_body = body_to_json(request)
-        
+
         max_instances = 0
         if ! json_body["autoscale_group"].nil?
             max_instances = json_body["autoscale_group"]["MaxSize"].to_i - 1
@@ -129,20 +121,20 @@ class AwsAutoscaleApp < ResourceApiBase
 			end
 		end
 	end
-	
+
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/autoscale/autoscale_groups/:id/spin_down"
   ##~ a.description = "Update Autoscale Group on the cloud (AWS)"
   ##~ op = a.operations.add
   ##~ op.responseClass = "Autoscale_Group"
   ##~ op.set :httpMethod => "POST"
-  ##~ op.summary = "Update Autoscale Group on the cloud (AWS)"  
+  ##~ op.summary = "Update Autoscale Group on the cloud (AWS)"
   ##~ op.nickname = "spin_down"
   ##~ op.parameters.add :name => "id", :description => "ID to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.errorResponses.add :reason => "Success, Autoscale Group returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"	
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/autoscale_groups/:id/spin_down' do
 		begin
 			response = @autoscale.update_auto_scaling_group(params[:id], {"MinSize" => 0, "MaxSize" => 0, "DesiredCapacity" => 0})
@@ -151,20 +143,20 @@ class AwsAutoscaleApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/autoscale/autoscale_groups/:id"
   ##~ a.description = "Delete Autoscale Group on the cloud (AWS)"
   ##~ op = a.operations.add
   ##~ op.responseClass = "Autoscale_Group"
   ##~ op.set :httpMethod => "DELETE"
-  ##~ op.summary = "Delete Autoscale Group on the cloud (AWS)"  
+  ##~ op.summary = "Delete Autoscale Group on the cloud (AWS)"
   ##~ op.nickname = "spin_down"
   ##~ op.parameters.add :name => "id", :description => "ID to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
   ##~ op.errorResponses.add :reason => "Success, Autoscale Group Deleted", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"	
+  ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	delete '/autoscale_groups/:id' do
 		begin
 			policies = @autoscale.describe_policies({"AutoScalingGroupName" => params[:id]}).body["DescribePoliciesResult"]["ScalingPolicies"]
