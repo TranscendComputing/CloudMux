@@ -14,6 +14,7 @@ require File.join(File.dirname(__FILE__), '..', 'lib', 'core')
 require File.join(File.dirname(__FILE__), '..', 'lib', 'cfdoc')
 require File.join(File.dirname(__FILE__), '..', 'lib', 'service')
 require File.join(File.dirname(__FILE__), '..', 'app', 'api_base')
+require File.join(File.dirname(__FILE__), '..', 'app', 'resource_api_base')
 
 # load mongo config
 Mongoid.load!('app/config/mongoid.yml')
@@ -24,6 +25,9 @@ Mongoid.logger.level = Mongoid.logger.class::ERROR
 RSpec.configure do |conf|
   conf.include Rack::Test::Methods
 end
+
+# In general, mock fog operations during testing.
+Fog.mock!
 
 # Sinatra test setup
 set :environment, :test
