@@ -187,6 +187,7 @@ module Auth
         def hasImageAvailable()
             image_found = false
             image_id = @options[:image_id]
+            return true if @account.permissions.length > 0
             default_images = @governance["default_images"]
             default_images.each do |i|
                 if(image_id === i["id"] && image_found === false)
