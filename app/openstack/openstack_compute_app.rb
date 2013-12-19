@@ -57,8 +57,12 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/instances' do
         json_body = body_to_json(request)
-        # require 'pry'
-        # binding.pry
+        #Check the user has access to the image being requested.
+        if(json_body.nil? || !Auth.validate(params[:cred_id],"Compute Service","use_image",{:image_id => json_body["instance"]["image_ref"]}))
+            message = Error.new.extend(ErrorRepresenter)
+            message.message = "The image you selected isn't available under current policy."
+            halt [NOT_FOUND, message.to_json]
+        end
         if(json_body.nil? || ! Auth.validate(params[:cred_id],"Compute Service","create_instance",{:resources => @compute.servers,:uid => @compute.current_user['id']}))
             [BAD_REQUEST]
         else
