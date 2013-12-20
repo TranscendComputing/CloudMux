@@ -49,6 +49,12 @@ module Auth
         return pass
     end
 
+    def Auth.validate_admin(login)
+        account = Account.find_by_login(login)
+        validation = account.permissions.length > 0
+        return validation
+    end
+
     class Validator
         
         include Auth

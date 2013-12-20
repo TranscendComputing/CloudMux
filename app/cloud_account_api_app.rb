@@ -66,22 +66,28 @@ class CloudAccountApiApp < ApiBase
   ##~ op.errorResponses.add :reason => "Query successful", :code => 200
   ##~ op.errorResponses.add :reason => "API down", :code => 500
   post '/' do
-    new_cloud_account = CloudAccount.new.extend(UpdateCloudAccountRepresenter)
-    new_cloud_account.from_json(request.body.read)
-    #Dev's Code
-    new_cloud_account.org = Org.find(params[:org_id])
-    new_cloud_account.cloud = Cloud.find(params[:cloud_id])
-    #Dev's Code
-    if new_cloud_account.valid?
-      new_cloud_account.save!
-      # refresh without the Update representer, so that we don't serialize private data back
-      cloud_account = CloudAccount.find(new_cloud_account.id).extend(CloudAccountRepresenter)
-      [CREATED, cloud_account.to_json]
+    if Auth.validate_admin(params[:login])
+      new_cloud_account = CloudAccount.new.extend(UpdateCloudAccountRepresenter)
+      new_cloud_account.from_json(request.body.read)
+      #Dev's Code
+      new_cloud_account.org = Org.find(params[:org_id])
+      new_cloud_account.cloud = Cloud.find(params[:cloud_id])
+      #Dev's Code
+      if new_cloud_account.valid?
+        new_cloud_account.save!
+        # refresh without the Update representer, so that we don't serialize private data back
+        cloud_account = CloudAccount.find(new_cloud_account.id).extend(CloudAccountRepresenter)
+        [CREATED, cloud_account.to_json]
+      else
+        message = Error.new.extend(ErrorRepresenter)
+        message.message = "#{new_cloud_account.errors.full_messages.join(";")}"
+        message.validation_errors = new_cloud_account.errors.to_hash
+        [BAD_REQUEST, message.to_json]
+      end
     else
       message = Error.new.extend(ErrorRepresenter)
-      message.message = "#{new_cloud_account.errors.full_messages.join(";")}"
-      message.validation_errors = new_cloud_account.errors.to_hash
-      [BAD_REQUEST, message.to_json]
+      message.message = "Cannot create a new cloud account without admin permissions."
+      [NOT_AUTHORIZED, message.to_json]
     end
   end
 
@@ -123,9 +129,15 @@ class CloudAccountApiApp < ApiBase
   ##~ op.errorResponses.add :reason => "Query successful", :code => 200
   ##~ op.errorResponses.add :reason => "API down", :code => 500
   delete '/:id' do
+    if Auth.validate_admin(params[:login])
       cloud_account = CloudAccount.find(params[:id])
       cloud_account.delete
       [OK]
+    else
+      message = Error.new.extend(ErrorRepresenter)
+      message.message = "Cannot delete a cloud account without admin permissions."
+      [NOT_AUTHORIZED, message.to_json]
+    end
   end
 
   # Register a new service to an existing cloud_account
