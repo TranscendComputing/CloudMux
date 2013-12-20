@@ -557,9 +557,16 @@ map "/stackstudio/v1/cloud_management/google/object_storage" do
 end
 
 #
-#	Configuration Managers API
+# Configuration Managers API
 #
 map "/stackstudio/v1/orchestration/managers" do
+  run ConfigManagerApiApp
+end
+
+#
+#	Configuration Managers API
+#
+map "/api/v1/orchestration/managers" do
   run ConfigManagerApiApp
 end
 
