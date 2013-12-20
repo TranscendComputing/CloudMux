@@ -12,5 +12,4 @@ module ConfigManagerRepresenter
   property :path
   property :enabled
   property :auth_properties
-  property :source_control_credential, :class=>SourceControlCredential, :extend => SourceControlCredentialRepresenter
 end

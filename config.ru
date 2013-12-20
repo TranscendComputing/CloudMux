@@ -27,6 +27,7 @@ require 'app/cloud_api_app'
 require 'app/project_api_app'
 require 'app/provisioning_api_app'
 require 'app/report_api_app'
+require 'app/source_control_repository_api_app'
 require 'app/continuous_integration_server_api_app'
 require 'app/root_app'
 require 'app/resource_api_base'
@@ -200,6 +201,13 @@ end
 #
 map "/stackstudio/v1/report" do
   run ReportApiApp
+end
+
+#
+# Source Control Repositories API (internal)
+#
+map "/api/v1/source_control_repositories" do
+  run SourceControlRepositoryApiApp
 end
 
 #
