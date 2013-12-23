@@ -4,6 +4,7 @@
 class QueueItem
   # Mongoid Mappings
   include Mongoid::Document
+  include Mongoid::Timestamps
   field :action, type:String
   field :data, type:String
   field :cred_id, type: String
