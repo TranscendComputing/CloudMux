@@ -75,3 +75,7 @@ gem 'rufus-scheduler'
 
 # Console
 gem 'tux'
+
+# LDAP support
+gem 'activeldap'
+gem 'net-ldap'
