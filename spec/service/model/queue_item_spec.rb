@@ -11,7 +11,7 @@ describe QueueItem do
 
   describe "#initialize" do
     it "should initialize properly" do
-      pending "Still needs to be implemented"
+      #pending "Still needs to be implemented"
       @qitem.create.should_not eq nil
     end
   end
