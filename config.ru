@@ -75,6 +75,9 @@ require 'app/orchestration/ansible_api_app'
 require 'app/packed_images/packed_images_app'
 require 'app/queue_item_api_app'
 
+# make sure there is seed data
+require 'seed/seed'
+
 # By default, Ruby buffers its output to stdout. To take advantage of
 # Heroku's realtime logging, you will need to disable this buffering
 # to have log messages sent straight to Heroku's logging
