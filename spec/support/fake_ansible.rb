@@ -1,7 +1,7 @@
 require 'sinatra/base'
 
 class FakeAnsible < Sinatra::Base
-  post '/api/v1/authtoken' do
+  post '/api/v1/authtoken/' do
     json_response 200, 'ansible/authtoken_ok.json'
   end
 
@@ -9,7 +9,7 @@ class FakeAnsible < Sinatra::Base
     json_response 200, 'ansible/me_ok.json'
   end
 
-  get 'api/v1/job_templates' do
+  get '/api/v1/job_templates' do
     json_response 200, 'ansible/job_templates_ok.json'
   end
 
@@ -70,6 +70,6 @@ class FakeAnsible < Sinatra::Base
   def json_response(response_code, filename)
     content_type :json
     status response_code
-    File.open(File.dirname(__FILE__),'/fixtures/'+filename,'rb').read
+    File.open(File.dirname(__FILE__)+'/fixtures/'+filename,'rb').read
   end
 end
