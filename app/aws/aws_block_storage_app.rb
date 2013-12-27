@@ -60,7 +60,7 @@ class AwsBlockStorageApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/volumes' do
-		json_body = body_to_json_or_die(request)
+		json_body = body_to_json_or_die("body" => request)
 		begin
 			response = @block_storage.volumes.create(json_body["volume"])
       Auth.validate(params[:cred_id],"Elastic Block Storage","create_default_alarms",{:params => params, :resource_id => response.id, :namespace => "AWS/EBS"})
@@ -108,16 +108,12 @@ class AwsBlockStorageApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/volumes/:id/attach' do
-		json_body = body_to_json(request)
-		if(json_body.nil? || json_body["server_id"].nil? || json_body["device"].nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @block_storage.attach_volume(json_body["server_id"], params[:id], json_body["device"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request, "args" => ["server_id","device"])
+		begin
+			response = @block_storage.attach_volume(json_body["server_id"], params[:id], json_body["device"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 	
@@ -210,16 +206,12 @@ class AwsBlockStorageApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/snapshots' do
-		json_body = body_to_json(request)
-		if(json_body.nil? || json_body["snapshot"].nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @block_storage.snapshots.create(json_body["snapshot"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request, "args" => ["snapshot"])
+		begin
+			response = @block_storage.snapshots.create(json_body["snapshot"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 	

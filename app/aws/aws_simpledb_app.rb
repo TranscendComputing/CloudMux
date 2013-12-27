@@ -4,23 +4,9 @@ require 'fog'
 class AwsSimpleDBApp < ResourceApiBase
 
 	before do
-		if ! params[:cred_id].nil? && Auth.validate(params[:cred_id],"Simple DB","action")
-			cloud_cred = get_creds(params[:cred_id])
-			if ! cloud_cred.nil?
-				if params[:region].nil? || params[:region] == "undefined" || params[:region] == ""
-					@sdb = Fog::AWS::SimpleDB.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
-				else
-					@sdb = Fog::AWS::SimpleDB.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => params[:region]})
-				end
-        halt [BAD_REQUEST] if @sdb.nil?
-      else
-        halt [NOT_FOUND, "Credentials not found."]
-			end
-    else
-      message = Error.new.extend(ErrorRepresenter)
-      message.message = "Cannot access this service under current policy."
-      halt [NOT_AUTHORIZED, message.to_json]
-		end
+    @service_long_name = "Simple DB"
+    @service_class = Fog::AWS::SimpleDB
+    @sdb = can_access_service(params)
   end
 
 	#
@@ -77,17 +63,13 @@ class AwsSimpleDBApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/databases' do
-		json_body = body_to_json(request)
-		if(json_body.nil?)
-			[BAD_REQUEST]
-		else
+		json_body = body_to_json_or_die("body" => request)
 			begin
 				response = @sdb.create_domain(json_body["simple_db"]["DomainName"])
 				[OK, response.to_json]
 			rescue => error
 				handle_error(error)
 			end
-		end
 	end
 	
   ##~ a = sapi.apis.add
@@ -124,29 +106,25 @@ class AwsSimpleDBApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/databases/select' do
-		json_body = body_to_json(request)
-		if(json_body.nil? || json_body["select_expression"])
-			[BAD_REQUEST]
-		else
-			begin
-				contents = @sdb.select(json_body["select_expression"]).body["Items"]
-				response = []
-				contents.each do |t|
-					item = {}
-					item["Name"] = t[0]
-					item["Attributes"] = []
-					t[1].each do |s|
-						att = {}
-						att["Name"] = s[0]
-						att["Value"] = s[1]
-						item["Attributes"] << att
-					end
-					response << item
+		json_body = body_to_json_or_die("body" => request, "args" => ["select_expression"])
+		begin
+			contents = @sdb.select(json_body["select_expression"]).body["Items"]
+			response = []
+			contents.each do |t|
+				item = {}
+				item["Name"] = t[0]
+				item["Attributes"] = []
+				t[1].each do |s|
+					att = {}
+					att["Name"] = s[0]
+					att["Value"] = s[1]
+					item["Attributes"] << att
 				end
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
+				response << item
 			end
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 
@@ -166,16 +144,12 @@ class AwsSimpleDBApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/databases/:id/items/:item_name' do
-		json_body = body_to_json(request)
-		if(json_body.nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @sdb.put_attributes(params[:id], params[:item_name], json_body["attributes"])
-				[OK, response.to_json]
-			rescue
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request)
+		begin
+			response = @sdb.put_attributes(params[:id], params[:item_name], json_body["attributes"])
+			[OK, response.to_json]
+		rescue
+			handle_error(error)
 		end
 	end
 

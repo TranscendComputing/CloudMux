@@ -61,7 +61,7 @@ class AwsCacheApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/clusters' do
-	  json_body = body_to_json_or_die(request)
+	  json_body = body_to_json_or_die("body" => request)
 		begin
 			response = @elasticache.clusters.create(json_body["cluster"])
 			[OK, response.to_json]
@@ -167,7 +167,7 @@ class AwsCacheApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/security_groups' do
-		json_body = body_to_json_or_die(request)
+		json_body = body_to_json_or_die("body" => request)
 		begin
 			response = @elasticache.security_groups.create(json_body["security_group"])
 			[OK, response.to_json]
@@ -191,7 +191,7 @@ class AwsCacheApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/parameter_groups' do
-		json_body = body_to_json_or_die(request)
+		json_body = body_to_json_or_die("body" => request)
 		begin
 			response = @elasticache.parameter_groups.create(json_body["parameter_group"])
 			[OK, response.to_json]
@@ -266,7 +266,7 @@ class AwsCacheApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/clusters/modify/:id' do
-		json_body = body_to_json_or_die(request)
+		json_body = body_to_json_or_die("body" => request)
 		begin
 			response = @elasticache.modify_cache_cluster(params[:id],json_body["options"].symbolize_keys!)
 			[OK, response.to_json]
@@ -294,7 +294,7 @@ class AwsCacheApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/parameter_groups/describe/:id' do
-		json_body = body_to_json_or_die(request)
+		json_body = body_to_json_or_die("body" => request)
 		begin
       #require "debugger"
       #debugger
