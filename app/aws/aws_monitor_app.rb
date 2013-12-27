@@ -4,23 +4,9 @@ require 'fog'
 class AwsMonitorApp < ResourceApiBase
 
 	before do
-		if ! params[:cred_id].nil? && Auth.validate(params[:cred_id],"CloudWatch","action")
-			cloud_cred = get_creds(params[:cred_id])
-			if ! cloud_cred.nil?
-				if params[:region].nil? || params[:region] == "undefined" || params[:region] == ""
-					@monitor = Fog::AWS::CloudWatch.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
-				else
-					@monitor = Fog::AWS::CloudWatch.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => params[:region]})
-				end
-				halt [BAD_REQUEST] if @monitor.nil?
-			else
-				halt [NOT_FOUND, "Credentials not found."]
-			end
-		else
-			message = Error.new.extend(ErrorRepresenter)
-		    message.message = "Cannot access this service under current policy."
-		    halt [NOT_AUTHORIZED, message.to_json]
-		end
+		@service_long_name = "CloudWatch"
+    	@service_class = Fog::AWS::CloudWatch
+    	@monitor = can_access_service(params)
     end
 
 	#
@@ -76,16 +62,12 @@ class AwsMonitorApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/alarms' do
-		json_body = body_to_json(request)
-		if(json_body.nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @monitor.alarms.create(json_body["alarm"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request)
+		begin
+			response = @monitor.alarms.create(json_body["alarm"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 	

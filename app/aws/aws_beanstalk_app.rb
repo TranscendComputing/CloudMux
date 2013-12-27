@@ -63,7 +63,7 @@ class AwsBeanstalkApp < ResourceApiBase
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   	post '/applications' do
-      json_body = body_to_json_or_die(request)
+      json_body = body_to_json_or_die("body" => request)
 			begin
 				response = @elasticbeanstalk.applications.create(json_body["application"])
 				[OK, response.to_json]
@@ -137,7 +137,7 @@ class AwsBeanstalkApp < ResourceApiBase
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   	post '/applications/environments' do
-      json_body = body_to_json_or_die(request)
+      json_body = body_to_json_or_die("body" => request)
 			begin
 				response = @elasticbeanstalk.describe_environments(json_body["options"])
 				[OK, response.to_json]
@@ -199,7 +199,7 @@ class AwsBeanstalkApp < ResourceApiBase
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   	post '/applications/environments/config' do
-      json_body = body_to_json_or_die(request)
+      json_body = body_to_json_or_die("body" => request)
 			begin
 				response = @elasticbeanstalk.describe_configuration_settings(json_body["options"])
 				[OK, response.to_json]
@@ -225,7 +225,7 @@ class AwsBeanstalkApp < ResourceApiBase
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   	post '/applications/versions' do
-  		json_body = body_to_json_or_die(request)
+  		json_body = body_to_json_or_die("body" => request)
 			begin
 				response = @elasticbeanstalk.describe_application_versions(json_body["options"])
 				[OK, response.to_json]
@@ -274,7 +274,7 @@ class AwsBeanstalkApp < ResourceApiBase
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   	post '/applications/versions/create' do
-  		json_body = body_to_json_or_die(request)
+  		json_body = body_to_json_or_die("body" => request)
 			begin
 				response = @elasticbeanstalk.create_application_version(json_body["version"])
 				[OK, response.to_json]
@@ -300,7 +300,7 @@ class AwsBeanstalkApp < ResourceApiBase
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   	post '/applications/environments/create' do
-  		json_body = body_to_json_or_die(request)
+  		json_body = body_to_json_or_die("body" => request)
 			begin
 				response = @elasticbeanstalk.create_environment(json_body["environment"])
 				[OK, response.to_json]
@@ -324,7 +324,7 @@ class AwsBeanstalkApp < ResourceApiBase
     ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     #Application Environment Update
   	post '/applications/environments/update' do
-  		json_body = body_to_json_or_die(request)
+  		json_body = body_to_json_or_die("body" => request)
 			begin
 				response = @elasticbeanstalk.update_environment(json_body["environment"])
 				[OK, response.to_json]
@@ -350,7 +350,7 @@ class AwsBeanstalkApp < ResourceApiBase
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   	post '/applications/events' do
-  		json_body = body_to_json_or_die(request)
+  		json_body = body_to_json_or_die("body" => request)
 			begin
 				response = @elasticbeanstalk.describe_events(json_body["options"])
 				[OK, response.to_json]
