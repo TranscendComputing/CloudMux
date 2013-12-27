@@ -2,31 +2,46 @@ require 'rest-client'
 require 'json'
 
 # [TODO] Use Logging module; ie lib/salt/rest_client
-#RestClient.log = "/home/thethethe/Development/MomentumSI/CloudMux/rest_log"
+ANSIBLE_DEBUG=false
+
+if ANSIBLE_DEBUG
+  RestClient.log = "/home/thethethe/Development/MomentumSI/CloudMux/rest_log"
+end
+# quicker than setting up vcr
+def dprint(str)
+  if ANSIBLE_DEBUG
+    print str
+  end
+end
 
 class Ansible
   class Client
-		def initialize(url, user, password)
-			resp = RestClient.post(url+"/api/v1/authtoken/", {:username=>user,
-				:password=>password})
-			auth_token = JSON.parse(resp)["token"]
-			@rest = RestClient::Resource.new(
-				"#{url}/",
-				:headers => {:accept=>"application/json",
-					"Authorization"=>"Token " +auth_token}
-			)
-		end	
+    def initialize(url, user, password)
+      dprint "post /api/v1/authtoken"
+      resp = RestClient.post(url+"/api/v1/authtoken/", {:username=>user,
+       :password=>password})
+      dprint resp
+      auth_token = JSON.parse(resp)["token"]
+      @rest = RestClient::Resource.new(
+        "#{url}/",
+        :headers => {:accept=>"application/json",
+        "Authorization"=>"Token " +auth_token})
+    end
 
 
     def get_me
+      dprint "get /api/v1/me"
       resp = @rest['/api/v1/me'].get
+      dprint resp
       JSON.parse(resp)["results"]
     end
 
     # [XXX] All of these requests return paged results - no support
     # for that as of yet.
     def get_job_templates
-      resp = @rest['/api/v1/job_templates/'].get
+      dprint "get /api/v1/job_templates"
+      resp = @rest['/api/v1/job_templates'].get
+      dprint resp
       # ruby's implicit return
       JSON.parse(resp)["results"]
     end
@@ -39,14 +54,17 @@ class Ansible
           :job_type => 'run',
           :limit => host}
         url = '/api/v1/job_templates/%d/jobs' % job_template_id
-        print url, job_template_id, data
+        dprint "post %s" % url
         resp = @rest[url].post(data)
         #[TODO] add error handling for all these calls
         job_id = JSON.parse(resp)['id']
         url = '/api/v1/jobs/%d/start/' % job_id
         resp = @rest[url].post({})
+        dprint resp
         # check if failed
+        dprint 'get /api/v1/jobs/%d'
         resp = @rest['/api/v1/jobs/%d/' %job_id].get
+        dprint resp
         if JSON.parse(resp)['failed'] == true
           success = false
         end
@@ -58,18 +76,23 @@ class Ansible
     end
 
     def get_inventories
+      dprint "/api/v1/inventories"
       resp = @rest['/api/v1/inventories'].get
+      dprint resp
       JSON.parse(resp)["results"]
     end
 
     # [TODO] change  to 'post_hosts'
     def post_inventories(name,description, organization=1,variables='')
+      dprint "/api/v1/hosts"
       resp = @rest['/api/v1/hosts'].post({
         :name => name,
         :description => description,
         :organization => organization,
         :variables => variables
       })
+      dprint resp
+
       #[XXX] Theoretical what this is at this point - need to see 
       # actual response
       JSON.parse(resp)["results"]
@@ -82,7 +105,9 @@ class Ansible
       #elsif id
       #  url = '/api/v1/hosts/%s' %id
       end
+      dprint url
       resp = @rest[url].get
+      dprint resp
       #if id
       #  JSON.parse(resp)
       #end
@@ -99,24 +124,32 @@ class Ansible
           :inventory => '1', # [XXX] same inventory
           :variables => variables
         })
+        dprint "post /api/v1/hosts"
+        dprint resp
       	host = JSON.parse(resp)
-      	resp = @rest['/api/v1/hosts/%d/groups/' % host['id']].post({:id=>'1'})
+        dprint "post /api/v1/%d/groups"
+        resp = @rest['/api/v1/hosts/%d/groups' % host['id']].post({:id=>'1'})
+        dprint resp
       end
       host
     end
 
     def delete_hosts(host_id)
+      dprint "delete /api/v1/hosts/%d"
       resp = @rest['/api/v1/hosts/'+host_id].delete
+      dprint resp
       JSON.parse(resp)["results"]
     end
 
     def post_groups(name,description, inventory,variables='')
+      dprint "post /api/v1/groups"
       resp = @rest['/api/v1/groups'].post({
         :name => name,
         :description => description,
         :inventory => '1',
         :variables => variables
       })
+      dprint resp
       JSON.parse(resp)["results"]
     end
 
@@ -133,27 +166,34 @@ class Ansible
     end
 
     def get_users
-      resp = @rest['/api/v1/users/'].get
+      dprint "get /api/v1/users"
+      resp = @rest['/api/v1/users'].get
+      dprint resp
       JSON.parse(resp)["results"]
     end
 
     def post_users(username, first_name, last_name, email, password)
-      resp = @rest['/api/v1/users/'].post(
+      dprint "post /api/v1/users"
+      resp = @rest['/api/v1/users'].post(
         :username => username,
         :first_name => first_name,
         :last_name => last_name,
         :email => email,
         :password => password)
+      dprint resp
       JSON.parse(resp)["results"]
     end
 
     def get_users_credentials(user_id)
+      dprint "get /api/v1/users/%d/credentials"
       resp = @rest['/api/v1/users/'+user_id+'/credentials'].get
+      dprint resp
       JSON.parse(resp)["results"]
     end
 
     def post_users_credentials(user_id, name, ssh_username, ssh_password, ssh_key_data,
       ssh_key_unlock, sudo_username, sudo_password)
+      dprint "post /api/v1/users/%d/credentials"
       resp = @rest['/api/v1/users/'+user_id+'/credentials'].post(
         name,
         ssh_username,
@@ -162,13 +202,16 @@ class Ansible
         ssh_key_unlock,
         sudo_username,
         sudo_password)
+      dprint resp
       JSON.parse(resp)["results"]
     end
 
     def post_users_credentials_remove(user_id, credentials_id)
+      dprint "post /api/v1/users/%d/credentials"
       resp = @rest['/api/v1/users/'+user_id+'/credentials'].post(
         :id => credentials_id,
         :disassociate => true)
+      dprint resp
       JSON.parse(resp)["results"]
     end
 
