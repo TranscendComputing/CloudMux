@@ -67,22 +67,28 @@ class PolicyApiApp < ApiBase
     
     #Set Policy to Group
     post '/groups' do
-        pg = body_to_json(request)
-        policy_to_group = pg["policy"]
-        if ((!policy_to_group.nil?) && (!policy_to_group["group_id"].nil?) && (!policy_to_group["group_policy_id"].nil?))
-            group = Group.find(policy_to_group["group_id"])
-            
-            if policy_to_group["group_policy_id"] != "None"
-                group_policy = GroupPolicy.find(policy_to_group["group_policy_id"])
+        if Auth.validate_admin(params[:login])
+            pg = body_to_json(request)
+            policy_to_group = pg["policy"]
+            if ((!policy_to_group.nil?) && (!policy_to_group["group_id"].nil?) && (!policy_to_group["group_policy_id"].nil?))
+                group = Group.find(policy_to_group["group_id"])
+                
+                if policy_to_group["group_policy_id"] != "None"
+                    group_policy = GroupPolicy.find(policy_to_group["group_policy_id"])
+                else
+                    group_policy = nil
+                end
+                
+                group.group_policy = group_policy
+                group.save!
+                [OK, group.to_json]
             else
-                group_policy = nil
+                [BAD_REQUEST]
             end
-            
-            group.group_policy = group_policy
-            group.save!
-            [OK, group.to_json]
         else
-            [BAD_REQUEST]
+            message = Error.new.extend(ErrorRepresenter)
+            message.message = "Cannot set a policy to a group without admin permissions."
+            [NOT_AUTHORIZED, message.to_json]
         end
     end
     
