@@ -5,7 +5,7 @@ class FakeAnsible < Sinatra::Base
     json_response 200, 'ansible/authtoken_ok.json'
   end
 
-  post '/api/v1/me' do
+  get '/api/v1/me' do
     json_response 200, 'ansible/me_ok.json'
   end
 
