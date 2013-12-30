@@ -109,45 +109,69 @@ class OrgApiApp < ApiBase
   
   # Register a new group to an existing org
   post '/:id/groups' do
-    update_org = Org.find(params[:id])
-    new_group = Group.new.extend(UpdateGroupRepresenter)
-    new_group.from_json(request.body.read)
-	new_group.org = update_org
-    new_group.save!
-    update_org.extend(OrgRepresenter)
-    [OK, update_org.to_json]
+    if Auth.validate_admin(params[:login])
+      update_org = Org.find(params[:id])
+      new_group = Group.new.extend(UpdateGroupRepresenter)
+      new_group.from_json(request.body.read)
+      new_group.org = update_org
+      new_group.save!
+      update_org.extend(OrgRepresenter)
+      [OK, update_org.to_json]
+    else
+      message = Error.new.extend(ErrorRepresenter)
+      message.message = "Cannot create a new group without admin permissions."
+      [NOT_AUTHORIZED, message.to_json]
+    end
   end
   
   # Remove a group from an existing org
   delete '/:id/groups/:group_id' do
-    update_org = Org.find(params[:id])
-    update_org.remove_group!(params[:group_id])
-    update_org.extend(OrgRepresenter)
-    [OK, update_org.to_json]
+    if Auth.validate_admin(params[:login])
+      update_org = Org.find(params[:id])
+      update_org.remove_group!(params[:group_id])
+      update_org.extend(OrgRepresenter)
+      [OK, update_org.to_json]
+    else
+      message = Error.new.extend(ErrorRepresenter)
+      message.message = "Cannot delete a group without admin permissions."
+      [NOT_AUTHORIZED, message.to_json]
+    end
   end
   
   # Register an account to an existing group
   post '/:id/groups/:group_id/accounts/:account_id' do
-	update_org = Org.find(params[:id])
-	account = Account.find(params[:account_id])
-	if update_org.id.to_s == account.org_id.to_s
-		update_org.add_account_to_group!(params[:group_id], params[:account_id])
-		update_org.extend(OrgRepresenter)
-		[OK, update_org.to_json]
-	else
-		message = Error.new.extend(ErrorRepresenter)
-		message.message = "Account not found in org."
-		message.validation_errors = update_org.error.to_hash
-		return [BAD_REQUEST, message.to_json]
-	end
+    if Auth.validate_admin(params[:login])
+    	update_org = Org.find(params[:id])
+    	account = Account.find(params[:account_id])
+    	if update_org.id.to_s == account.org_id.to_s
+    		update_org.add_account_to_group!(params[:group_id], params[:account_id])
+    		update_org.extend(OrgRepresenter)
+    		[OK, update_org.to_json]
+    	else
+    		message = Error.new.extend(ErrorRepresenter)
+    		message.message = "Account not found in org."
+    		message.validation_errors = update_org.error.to_hash
+    		return [BAD_REQUEST, message.to_json]
+    	end
+    else
+      message = Error.new.extend(ErrorRepresenter)
+      message.message = "Cannot add users to a group without admin permissions."
+      [NOT_AUTHORIZED, message.to_json]
+    end
   end
   
   # Remove an account from an existing group
   delete '/:id/groups/:group_id/accounts/:account_id' do
-	update_org = Org.find(params[:id])
-	update_org.remove_account_from_group!(params[:group_id], params[:account_id])
-	update_org.extend(OrgRepresenter)
-	[OK, update_org.to_json]
+    if Auth.validate_admin(params[:login])
+    	update_org = Org.find(params[:id])
+    	update_org.remove_account_from_group!(params[:group_id], params[:account_id])
+    	update_org.extend(OrgRepresenter)
+    	[OK, update_org.to_json]
+    else
+      message = Error.new.extend(ErrorRepresenter)
+      message.message = "Cannot delete users from a group without admin permissions."
+      [NOT_AUTHORIZED, message.to_json]
+    end
   end
 
   # Register a new mapping to an existing org

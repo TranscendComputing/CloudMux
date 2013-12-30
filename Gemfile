@@ -37,8 +37,8 @@ gem "rest-client", "~> 1.6.7"
 gem "spice"
 #Should use ridley instead of spice, but ridley and mongoid are currently incompatible until mongoid 4.0 release or fixes with Ridley for Boolean class definition.
 gem 'ridley-connectors'
-gem 'ridley', :path => '/Users/curtstewart/Git/GitHub/Personal/ridley'
-gem 'buff-extensions', :path => '/Users/curtstewart/Git/GitHub/Personal/buff-extensions'
+gem 'ridley', :github => 'cstewart87/ridley', :branch => 'boolean_updates'
+gem 'buff-extensions', :github => 'cstewart87/buff-extensions'
 
 # SCM
 gem 'git'
@@ -83,3 +83,7 @@ gem 'rufus-scheduler'
 
 # Console
 gem 'tux'
+
+# LDAP support
+gem 'activeldap'
+gem 'net-ldap'

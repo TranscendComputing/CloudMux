@@ -7,10 +7,8 @@ module QueueItemRepresenter
   property :id
   property :account_id
   property :action
-  property :caller
   property :data
   property :cred_id
-  property :account_id
   hash :errors
   property :create
   property :complete

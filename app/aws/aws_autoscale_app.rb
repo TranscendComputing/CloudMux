@@ -63,7 +63,6 @@ class AwsAutoscaleApp < ResourceApiBase
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/autoscale_groups' do
         json_body = body_to_json(request)
-
         max_instances = 0
         if ! json_body["autoscale_group"].nil?
             max_instances = json_body["autoscale_group"]["MaxSize"].to_i - 1

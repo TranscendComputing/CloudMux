@@ -33,7 +33,7 @@ WebMock.disable_net_connect! allow_localhost:true
 # from http://robots.thoughtbot.com/how-to-stub-external-services-in-tests/
 RSpec.configure do |config|
   config.before :each do
-    stub_request(:any, /the.ansibleserver.com/).to_rack FakeAnsible
+    stub_request(:any, /.*the.ansibleserver.com.*/).to_rack FakeAnsible
   end
 end
 

@@ -13,6 +13,9 @@ else
   use Rack::ShowExceptions
 end
 
+# our ldap settings
+require File.join(File.dirname(__FILE__), 'config_ldap')
+
 # require the dependencies
 require File.join(File.dirname(__FILE__), 'app', 'init')
 require 'app/api_base'

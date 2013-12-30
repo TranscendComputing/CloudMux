@@ -7,17 +7,9 @@ require File.join(File.dirname(__FILE__),'..','..','lib','scheduler.rb')
 class AwsCloudFormationApp < ResourceApiBase
     
     before do
-        if ! params[:cred_id].nil? #&& Auth.validate(params[:cred_id],"CloudFormation","action")
-            cloud_cred = get_creds(params[:cred_id])
-            if ! cloud_cred.nil?
-                if params[:region].nil? || params[:region] == "undefined" || params[:region] == ""
-                    @cf = Fog::AWS::CloudFormation.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
-                else
-                    @cf = Fog::AWS::CloudFormation.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => params[:region]})
-                end
-            end
-        end
-        halt [BAD_REQUEST, {:message=>"cred_id parameter must be specified"}.to_json] if @cf.nil?
+        @service_long_name = "CloudFormation"
+        @service_class = Fog::AWS::CloudFormation
+        @cf = can_access_service(params)    
     end
 
     get '/stacks' do

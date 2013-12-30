@@ -1,6 +1,6 @@
 # test env
 require 'rspec'
-require 'spec_helper'
+require File.join(File.dirname(__FILE__), 'spec_helper')
 require 'rack/test'
 require 'sinatra'
 

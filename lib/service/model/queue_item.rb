@@ -4,14 +4,14 @@
 class QueueItem
   # Mongoid Mappings
   include Mongoid::Document
+  include Mongoid::Timestamps
   field :action, type:String
-  field :caller, type: String
   field :data, type:String
   field :cred_id, type: String
-  field :account_id, type: String
   field :errors, type:Hash
   field :create, type:DateTime, default: Time.now
   field :complete, type:DateTime
+  belongs_to :account, :foreign_key => 'account_id'
 
   validates_presence_of :data
 
