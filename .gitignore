@@ -11,9 +11,6 @@ tags
 # Vim litter
 *.swp
 
-# sandbox
-cloudmux
-
 # logging
 rest_log
 

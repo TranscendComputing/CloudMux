@@ -1,3 +1,29 @@
+PATH
+  remote: /Users/curtstewart/Git/GitHub/Personal/buff-extensions
+  specs:
+    buff-extensions (0.5.0)
+
+PATH
+  remote: /Users/curtstewart/Git/GitHub/Personal/ridley
+  specs:
+    ridley (2.1.0)
+      addressable
+      buff-config (~> 0.2)
+      buff-extensions (~> 0.3)
+      buff-ignore (~> 1.1)
+      buff-shell_out (~> 0.1)
+      celluloid (~> 0.15)
+      celluloid-io (~> 0.15)
+      erubis
+      faraday (>= 0.8.4)
+      hashie (>= 2.0.2)
+      json (>= 1.7.7)
+      mixlib-authentication (>= 1.3.0)
+      net-http-persistent (>= 2.8)
+      retryable
+      solve (>= 0.4.4)
+      varia_model (~> 0.1)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -28,7 +54,6 @@ GEM
     buff-config (0.4.0)
       buff-extensions (~> 0.3)
       varia_model (~> 0.1)
-    buff-extensions (0.5.0)
     buff-ignore (1.1.1)
     buff-ruby_engine (0.1.0)
     buff-shell_out (0.1.1)
@@ -141,7 +166,7 @@ GEM
     mongo (1.8.3)
       bson (~> 1.8.3)
     mongo_ext (0.19.3)
-    mongoid (3.1.5)
+    mongoid (3.1.6)
       activemodel (~> 3.2)
       moped (~> 1.4)
       origin (~> 1.0)
@@ -191,28 +216,11 @@ GEM
     rest-client (1.6.7)
       mime-types (>= 1.16)
     retryable (1.3.3)
-    ridley (2.0.0)
-      addressable
-      buff-config (~> 0.2)
-      buff-extensions (~> 0.3)
-      buff-ignore (~> 1.1)
-      buff-shell_out (~> 0.1)
-      celluloid (~> 0.15)
-      celluloid-io (~> 0.15)
-      erubis
-      faraday (>= 0.8.4)
-      hashie (>= 2.0.2)
-      json (>= 1.7.7)
-      mixlib-authentication (>= 1.3.0)
-      net-http-persistent (>= 2.8)
-      retryable
-      solve (>= 0.4.4)
-      varia_model (~> 0.1)
-    ridley-connectors (1.0.1)
+    ridley-connectors (1.1.0)
       celluloid (~> 0.15)
       celluloid-io (~> 0.15)
       net-ssh
-      ridley (~> 2.0.0)
+      ridley (~> 2.1.0)
       winrm (~> 1.1.0)
     ripl (0.7.0)
       bond (~> 0.4.2)
@@ -233,7 +241,7 @@ GEM
       diff-lcs (>= 1.1.3, < 2.0)
     rspec-mocks (2.14.4)
     ruby-hmac (0.4.0)
-    ruby_parser (3.2.2)
+    ruby_parser (3.2.1)
       sexp_processor (~> 4.1)
     rubyntlm (0.1.1)
     rufus-scheduler (3.0.3)
@@ -325,6 +333,7 @@ DEPENDENCIES
   bcrypt-ruby (~> 3.0.1)
   bson (= 1.8.3)
   bson_ext (= 1.8.3)
+  buff-extensions!
   coveralls
   database_cleaner
   erubis (~> 2.7.0)
@@ -341,7 +350,7 @@ DEPENDENCIES
   logging
   mongo (= 1.8.3)
   mongo_ext (~> 0.19)
-  mongoid (= 3.1.5)
+  mongoid (= 3.1.6)
   nokogiri
   pry
   pry-debugger
@@ -352,7 +361,7 @@ DEPENDENCIES
   rb-readline
   representable (= 1.7.1)
   rest-client (~> 1.6.7)
-  ridley (~> 2.0.0)
+  ridley!
   ridley-connectors
   roar (~> 0.9.1)
   rspec (~> 2.4)

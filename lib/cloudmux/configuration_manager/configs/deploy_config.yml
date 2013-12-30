@@ -1,0 +1,10 @@
+---
+
+driver_plugins:
+  vagrant:
+    'ubuntu-12.04':
+      box: canonical-ubuntu-12.04
+      box_url: https://opscode-vm.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_chef-11.4.4.box
+    'centos-6.4':
+      box: opscode-centos-6.4
+      box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_centos-6.4_provisionerless.box

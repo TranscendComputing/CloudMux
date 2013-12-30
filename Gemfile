@@ -19,7 +19,7 @@ gem 'mongo', '1.8.3'
 gem 'mongo_ext', '~> 0.19', :platform => :ruby # native extensions for performance
 gem 'bson_ext', '1.8.3', :platform => :ruby  # native extensions for performance
 gem 'bson', '1.8.3'
-gem 'mongoid', '3.1.5'
+gem 'mongoid', '3.1.6'
 gem 'representable' , '1.7.1'
 
 gem 'httparty', '~> 0.8.1'
@@ -37,7 +37,8 @@ gem "rest-client", "~> 1.6.7"
 gem "spice"
 #Should use ridley instead of spice, but ridley and mongoid are currently incompatible until mongoid 4.0 release or fixes with Ridley for Boolean class definition.
 gem 'ridley-connectors'
-gem 'ridley', '~> 2.0.0'
+gem 'ridley', :path => '/Users/curtstewart/Git/GitHub/Personal/ridley'
+gem 'buff-extensions', :path => '/Users/curtstewart/Git/GitHub/Personal/buff-extensions'
 
 # SCM
 gem 'git'
