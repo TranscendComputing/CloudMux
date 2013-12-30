@@ -16,7 +16,6 @@
 
 require 'jenkins_api_client'
 require 'erubis'
-require 'pry'
 
 module CloudMux
   module CI

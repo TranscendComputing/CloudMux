@@ -17,7 +17,6 @@
 require 'ridley'
 require File.join(File.dirname(__FILE__), '..', 'scm', 'git')
 require File.join(File.dirname(__FILE__), '..', 'ci', 'jenkins')
-require 'pry'
 
 module CloudMux
   module ConfigurationManager

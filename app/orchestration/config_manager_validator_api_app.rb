@@ -1,19 +1,23 @@
 require 'sinatra'
 require 'json'
 
+require File.join(File.dirname(__FILE__), '..', '..', 'lib', 'cloudmux', 'configuration_manager', 'chef.rb')
+
 class ConfigManagerValidatorApiApp < ApiBase
   before do
     if params[:manager_id]
-      @manager = ConfigManager.find(params[:manager_id])
+      @manager   = ConfigManager.find(params[:manager_id])
+      ci_server = @manager.continuous_integration_servers.first
+      scm_repo  = @manager.source_control_repositories.first 
       @client = CloudMux::ConfigurationManager::Chef.new(
         @manager.url,
-        @manager.auth_properties.name,
-        @manager.auth_properties.key,
-        jenkins_server: @manager.continuous_integration_server.url,
-        scm_url: @manager.source_control_uri,
-        scm_branch: @manager.branch,
+        @manager.auth_properties['client_name'],
+        @manager.auth_properties['key'],
+        jenkins_server: ci_server.url,
+        scm_url: scm_repo.url,
+        scm_branch: scm_repo.scm_branch,
         scm_paths: @manager.source_control_paths,
-        repo_name: @manager.repo_name
+        repo_name: scm_repo.name
       )
     else
       message = Error.new.extend(ErrorRepresenter)

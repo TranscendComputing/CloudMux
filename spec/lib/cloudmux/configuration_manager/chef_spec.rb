@@ -1,6 +1,5 @@
 require 'rspec'
 require 'cloudmux/configuration_manager/chef'
-require 'pry'
 
 describe CloudMux::ConfigurationManager::Chef do
   let(:cookbook_name) { 'sample_component' }
