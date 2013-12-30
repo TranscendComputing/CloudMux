@@ -4,6 +4,7 @@ require 'fog'
 class AwsAutoscaleApp < ResourceApiBase
 
   before do
+  	params["provider"] = "aws"
     @service_long_name = "Auto Scale"
     @service_class = Fog::AWS::AutoScaling
     @autoscale = can_access_service(params)

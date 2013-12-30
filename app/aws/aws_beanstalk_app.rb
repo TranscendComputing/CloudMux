@@ -4,6 +4,7 @@ require 'fog'
 class AwsBeanstalkApp < ResourceApiBase
 
   before do
+    params["provider"] = "aws"
     @service_long_name = "Elastic Beanstalk"
     @service_class = Fog::AWS::ElasticBeanstalk
     @elasticbeanstalk = can_access_service(params)

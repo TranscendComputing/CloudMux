@@ -10,13 +10,35 @@ class ResourceApiBase < ApiBase
 		service = nil
 		cred_id = params[:cred_id]
 		region = params[:region]
+		provider = params[:provider]
+		service_type = params[:service_type]
 		if ! cred_id.nil? && Auth.validate(cred_id,@service_long_name,"action")
 			cloud_cred = get_creds(cred_id)
-			args = {:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key}
 			if ! cloud_cred.nil?
-				if region != "undefined" && region != ""
-					args[:region] = region
-				end
+				if provider === "aws"
+					# require 'pry'
+					# binding.pry
+					args = {:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key}
+					if region != "undefined" && region != ""
+						args[:region] = region
+					end
+				elsif provider === "openstack"
+					# require 'pry'
+					# binding.pry
+					args = cloud_cred.cloud_attributes.merge(:provider => "openstack")
+				elsif provider === "topstack"
+					# require 'pry'
+					# binding.pry
+					begin
+	                    # Find service endpoint
+	                    endpoint = cloud_cred.cloud_account.cloud_services.where({"service_type"=>service_type}).first
+	                    halt [BAD_REQUEST] if endpoint.nil?
+	                    args = {:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key}
+	                    args.merge!(:host => endpoint[:host], :port => endpoint[:port], :path => endpoint[:path], :scheme => endpoint[:protocol])
+	                rescue Fog::Errors::NotFound => error
+                		halt [NOT_FOUND, error.to_s]
+            		end
+			    end
 				service = @service_class.new(args)
 				halt [BAD_REQUEST] if service.nil?
 			else
@@ -40,14 +62,10 @@ class ResourceApiBase < ApiBase
 
 	def body_to_json_or_die(request)
   		json_body = body_to_json(request["body"])
-  		# require 'pry'
-  		# binding.pry
   		if(json_body.nil?)
   			halt [BAD_REQUEST]
   		elsif(request.length > 1)
   			request["args"].each do |condition|
-  				# require 'pry'
-  				# binding.pry
   				if(json_body[condition].nil?)
   					halt [BAD_REQUEST]
   				end
