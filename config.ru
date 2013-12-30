@@ -27,6 +27,7 @@ require 'app/cloud_api_app'
 require 'app/project_api_app'
 require 'app/provisioning_api_app'
 require 'app/report_api_app'
+require 'app/source_control_repository_api_app'
 require 'app/continuous_integration_server_api_app'
 require 'app/root_app'
 require 'app/resource_api_base'
@@ -204,9 +205,16 @@ map "/stackstudio/v1/report" do
 end
 
 #
+# Source Control Repositories API (internal)
+#
+map "/api/v1/source_control_repositories" do
+  run SourceControlRepositoryApiApp
+end
+
+#
 # Continuous Integration Servers API (internal)
 #
-map "/stackstudio/v1/continuous_integration_servers" do
+map "/api/v1/continuous_integration_servers" do
   run ContinuousIntegrationServerApiApp
 end
 
@@ -565,9 +573,16 @@ map "/stackstudio/v1/cloud_management/google/object_storage" do
 end
 
 #
-#	Configuration Managers API
+# Configuration Managers API
 #
 map "/stackstudio/v1/orchestration/managers" do
+  run ConfigManagerApiApp
+end
+
+#
+#	Configuration Managers API
+#
+map "/api/v1/orchestration/managers" do
   run ConfigManagerApiApp
 end
 

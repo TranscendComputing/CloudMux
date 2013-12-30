@@ -1,8 +1,27 @@
 require 'sinatra'
-require 'debugger'
 require 'json'
 
 class ConfigManagerApiApp < ApiBase
+
+    # Get a Config Manager by ID
+    get '/:id' do
+       cm = ConfigManager.where(id:params[:id]).first
+        if cm.nil?
+            [NOT_FOUND]
+        else
+            [OK, cm.to_json]
+        end
+    end
+
+    # Get Config Managers for org
+    get '/org/:org_id' do
+        cms = ConfigManager.where(org_id:params[:org_id])
+        response = []
+        cms.each do |cm|
+            response << cm.as_json
+        end
+        [OK, response.to_json]
+    end
   
     get '/' do
         if params[:org_id].nil?
@@ -14,20 +33,14 @@ class ConfigManagerApiApp < ApiBase
             [OK, org.config_managers.to_json]
         end
     end
-    
+
+    # Create a Config Manager
     post '/' do
-        if params[:org_id].nil?
-            message = Error.new.extend(ErrorRepresenter)
-            message.message = "Must provide org_id with request for configuration managers."
-            [BAD_REQUEST, message.to_json]
+        json_body = body_to_json(request)
+        if json_body.nil?
+            [BAD_REQUEST]
         else
-            json_body = body_to_json(request)
-            if json_body.nil?
-                message = Error.new.extend(ErrorRepresenter)
-                message.message = "Must provide valid properties with request for configuration managers."
-                [BAD_REQUEST, message.to_json]
-            else
-                case json_body["type"]
+            case json_body["type"]
                 when "chef"
                     new_manager = ChefConfigurationManager.new(json_body)
                 when "puppet"
@@ -41,20 +54,44 @@ class ConfigManagerApiApp < ApiBase
                     new_manager = ConfigManager.new(json_body)
                 else
                     new_manager = ConfigManager.new(json_body)
-                end
-                new_manager.org = Org.find(params[:org_id]).extend(OrgRepresenter)
+            end
+            if new_manager.valid?
                 new_manager.save!
-                [OK, new_manager.to_json]
+                [CREATED, new_manager.to_json]
+            else
+                [BAD_REQUEST]
+            end
+        end
+    end
+    
+    # Update a Config Manager
+    put '/:id' do
+        json_body = body_to_json(request)
+        if json_body.nil?
+            [BAD_REQUEST]
+        else 
+            update_cm = ConfigManager.where(id:params[:id]).first
+            if update_cm.nil?
+                [NOT_FOUND]
+            else
+                begin
+                    update_cm.update_attributes!(json_body)
+                    [OK, update_cm.to_json]
+                rescue => e
+                    [BAD_REQUEST]
+                end
             end
         end
     end
 
-    delete '/:manager_id' do
-        begin
-            ConfigManager.find(params[:manager_id]).delete
-            [OK, {:message=>"Configuration manager deleted."}.to_json]
-        rescue Mongoid::Errors::DocumentNotFound => error
-            [NOT_FOUND, "Configuration manager does not exist in database."]
+    # Delete a Config Manager
+    delete '/:id' do
+        cm = ConfigManager.where(id:params[:id]).first
+        if cm.nil?
+            [NOT_FOUND]
+        else
+            cm.delete
+            [OK, {"message"=> "Config Manager Deleted"}.to_json]
         end
     end
 
@@ -78,18 +115,6 @@ class ConfigManagerApiApp < ApiBase
             [OK, account.config_managers.to_json]
         end
     end
-
-    put '/:manager_id' do
-        attrs = JSON.parse(request.body.read)
-        manager = ConfigManager.find(params[:manager_id]);
-        result = manager.update_attributes!(attrs)
-        if(result)
-            [OK, {:message=>"Successfully updated configuration manager."}.to_json]
-        else
-            [BAD_REQUEST, {:message=>"Could not update configuration manager"}.to_json]
-        end
-    end
-
 
     get '/account/:account_id' do
         account = CloudAccount.find(params[:account_id]).extend(UpdateCloudAccountRepresenter)

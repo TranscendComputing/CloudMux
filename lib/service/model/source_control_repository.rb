@@ -1,4 +1,4 @@
-class ContinuousIntegrationServer
+class SourceControlRepository
     include Mongoid::Document
     include Mongoid::Timestamps
 
@@ -6,7 +6,7 @@ class ContinuousIntegrationServer
     has_and_belongs_to_many :config_managers
 
     attr_readonly :org_id
-    attr_accessible :org_id, :name, :type, :url, :username, :password, :config_manager_ids
+    attr_accessible :org_id, :name, :type, :url, :username, :password, :key, :config_manager_ids
 
     # Validation Rules
     validates_presence_of :name, :type, :url
@@ -16,15 +16,16 @@ class ContinuousIntegrationServer
     field :url
     field :username
     field :password
+    field :key
 
     def as_json
         attributes = get_attributes
-        {"continuous_integration_server"=>attributes}
+        {"source_control_repository"=>attributes}
     end
 
     def to_json
         attributes = get_attributes
-        {"continuous_integration_server"=>attributes}.to_json
+        {"source_control_repository"=>attributes}.to_json
     end
 
     def get_attributes

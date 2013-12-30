@@ -8,7 +8,6 @@ class Org
   has_many :accounts, dependent: :delete
   has_many :cloud_accounts, dependent: :delete
   has_many :groups, dependent: :delete
-  has_many :config_managers, dependent: :delete
   has_many :group_policies, dependent: :delete
   
   embeds_many :subscriptions
