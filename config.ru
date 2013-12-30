@@ -6,20 +6,15 @@ require 'bundler/setup'
 require 'sinatra'
 require 'fog'
 
-# LDAP Configuration for this Cloudmux service
-LDAP_HOST = "ad.for.the.net"
-LDAP_PORT = 636
-LDAP_BASE = "dc=example,dc=com"
-LDAP_USERNAME = "ldap_user"
-LDAP_PASSWORD = "ldap_password"
-LDAP_USER_QUERY = "..."
-
 if ENV['RACK_ENV'] == 'production'
   # production config / requires
 else
   # development or testing only
   use Rack::ShowExceptions
 end
+
+# our ldap settings
+require File.join(File.dirname(__FILE__), 'config_ldap')
 
 # require the dependencies
 require File.join(File.dirname(__FILE__), 'app', 'init')
