@@ -4,23 +4,9 @@ require 'fog'
 class AwsObjectStorageApp < ResourceApiBase
 
 	before do
-		if ! params[:cred_id].nil? && Auth.validate(params[:cred_id],"Simple Storage","action")
-			cloud_cred = get_creds(params[:cred_id])
-			if ! cloud_cred.nil?
-				if params[:region].nil? || params[:region] == "undefined" || params[:region] == ""
-					@object_storage = Fog::Storage::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
-				else
-					@object_storage = Fog::Storage::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => params[:region]})
-				end
-        halt [BAD_REQUEST] if @object_storage.nil?
-      else
-        halt [NOT_FOUND, "Credentials not found."]
-			end
-    else
-      message = Error.new.extend(ErrorRepresenter)
-      message.message = "Cannot access this service under current policy."
-      halt [NOT_AUTHORIZED, message.to_json]
-		end
+    @service_long_name = "Simple Storage"
+    @service_class = Fog::Storage::AWS
+    @object_storage = can_access_service(params)
   end
 
 	#
@@ -71,16 +57,12 @@ class AwsObjectStorageApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/directories' do
-		json_body = body_to_json(request)
-		if(json_body.nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @object_storage.directories.create(json_body["directory"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request)
+		begin
+			response = @object_storage.directories.create(json_body["directory"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 	

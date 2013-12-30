@@ -20,8 +20,6 @@ module Auth
         req = account["usable_characters"]
         min_length = account["min_password_length"].to_i
         message = ""
-        # require 'pry'
-        # binding.pry
         if !req.nil?
             if req[0]==="Digit" && pw.count("0-9") === 0
                 pass_ok = false
@@ -36,8 +34,6 @@ module Auth
             pass_ok = false
             message = "Password must be a minimum length of "+min_length.to_s+"."
         end
-        # require 'pry'
-        # binding.pry
         i = {"pass" => pass_ok,"message" => message}
         return i
     end
@@ -51,6 +47,12 @@ module Auth
             pass = true 
         end
         return pass
+    end
+
+    def Auth.validate_admin(login)
+        account = Account.find_by_login(login)
+        validation = account.permissions.length > 0
+        return validation
     end
 
     class Validator
@@ -106,6 +108,8 @@ module Auth
                 case @action
                 when "action"
                     return self.canUseService()
+                when "use_image"
+                    return self.hasImageAvailable()
                 when "create_instance"
                     return self.canCreateInstance('max_on_demand')
                 when "create_rds"
@@ -142,8 +146,6 @@ module Auth
         #Enabled Services
         def canUseService()
             enabled_services = @governance['enabled_services']
-            # require 'pry'
-            # binding.pry
             return true if @account.permissions.length > 0
             if enabled_services.nil?
                 return false
@@ -187,6 +189,19 @@ module Auth
             return user_instance_count      
         end
 
+        #Check if image is in default images.
+        def hasImageAvailable()
+            image_found = false
+            image_id = @options[:image_id]
+            return true if @account.permissions.length > 0
+            default_images = @governance["default_images"]
+            default_images.each do |i|
+                if(image_id === i["id"] && image_found === false)
+                    image_found = true
+                end
+            end
+            return image_found
+        end
 
         #Max Instances
         def canCreateInstance(max)

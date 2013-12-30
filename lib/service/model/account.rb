@@ -249,8 +249,8 @@ class Account
     def initialize(project_id=nil, project_name=nil, member_id=nil, member_permissions=nil, role=nil, project_status=nil, last_opened_at=nil)
       @project_id = project_id
       @project_name = project_name
-	  @member_id = member_id
-	  @member_permissions = member_permissions
+      @member_id = member_id
+      @member_permissions = member_permissions
       @role = role
       @project_status = project_status
       @last_opened_at = last_opened_at

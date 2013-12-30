@@ -1,0 +1,45 @@
+require 'sinatra'
+require 'json'
+
+require File.join(File.dirname(__FILE__), '..', '..', 'lib', 'cloudmux', 'configuration_manager', 'chef.rb')
+
+class ConfigManagerValidatorApiApp < ApiBase
+  before do
+    if params[:manager_id]
+      @manager   = ConfigManager.find(params[:manager_id])
+      ci_server = @manager.continuous_integration_servers.first
+      scm_repo  = @manager.source_control_repositories.first 
+      @client = CloudMux::ConfigurationManager::Chef.new(
+        @manager.url,
+        @manager.auth_properties['client_name'],
+        @manager.auth_properties['key'],
+        jenkins_server: ci_server.url,
+        scm_url: scm_repo.url,
+        scm_branch: scm_repo.scm_branch,
+        scm_paths: @manager.source_control_paths,
+        repo_name: scm_repo.name
+      )
+    else
+      message = Error.new.extend(ErrorRepresenter)
+      message.message = 'Account ID must be passed in as a parameter'
+      halt [BAD_REQUEST, message.to_json]
+    end
+  end
+
+  post '/:manager_id' do
+    begin
+      @client.generate_all_build_jobs
+      @client.generate_all_deploy_jobs
+    rescue Mongoid::Errors::DocumentNotFound
+      [NOT_FOUND, 'Configuration manager does not exist in database.']
+    end
+  end
+
+  get '/:manager_id' do
+    begin
+      response = @client.get_build_status
+    rescue Mongoid::Errors::DocumentNotFound
+      [NOT_FOUND, 'Configuration manager does not exist in database.']
+    end
+  end  
+end

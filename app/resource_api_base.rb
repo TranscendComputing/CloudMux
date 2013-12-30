@@ -39,9 +39,19 @@ class ResourceApiBase < ApiBase
 	end
 
 	def body_to_json_or_die(request)
-  		json_body = body_to_json(request)
+  		json_body = body_to_json(request["body"])
+  		# require 'pry'
+  		# binding.pry
   		if(json_body.nil?)
   			halt [BAD_REQUEST]
+  		elsif(request.length > 1)
+  			request["args"].each do |condition|
+  				# require 'pry'
+  				# binding.pry
+  				if(json_body[condition].nil?)
+  					halt [BAD_REQUEST]
+  				end
+  			end
   		end
   		json_body
 	end

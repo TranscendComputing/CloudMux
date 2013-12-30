@@ -1,6 +1,40 @@
+GIT
+  remote: git://github.com/cstewart87/buff-extensions.git
+  revision: 892a096dbb653c92fd8c94bf9a64b1f4dc246cdc
+  specs:
+    buff-extensions (0.5.0)
+
+GIT
+  remote: git://github.com/cstewart87/ridley.git
+  revision: 53d82f3c55c121ff6a8f2b1fccae65374605b4ca
+  branch: boolean_updates
+  specs:
+    ridley (2.1.0)
+      addressable
+      buff-config (~> 0.2)
+      buff-extensions (~> 0.3)
+      buff-ignore (~> 1.1)
+      buff-shell_out (~> 0.1)
+      celluloid (~> 0.15)
+      celluloid-io (~> 0.15)
+      erubis
+      faraday (>= 0.8.4)
+      hashie (>= 2.0.2)
+      json (>= 1.7.7)
+      mixlib-authentication (>= 1.3.0)
+      net-http-persistent (>= 2.8)
+      retryable
+      solve (>= 0.4.4)
+      varia_model (~> 0.1)
+
 GEM
   remote: http://rubygems.org/
   specs:
+    activeldap (3.2.2)
+      activemodel (~> 3.2.8)
+      gettext
+      gettext_i18n_rails
+      locale
     activemodel (3.2.16)
       activesupport (= 3.2.16)
       builder (~> 3.0.0)
@@ -16,7 +50,7 @@ GEM
       extlib (>= 0.9.15)
       multi_json (>= 1.0.0)
     awesome_print (1.2.0)
-    backports (3.3.5)
+    backports (3.4.0)
     bcrypt-ruby (3.0.1)
     bcrypt-ruby (3.0.1-java)
     bond (0.4.3)
@@ -28,7 +62,6 @@ GEM
     buff-config (0.4.0)
       buff-extensions (~> 0.3)
       varia_model (~> 0.1)
-    buff-extensions (0.5.0)
     buff-ignore (1.1.1)
     buff-ruby_engine (0.1.0)
     buff-shell_out (0.1.1)
@@ -50,12 +83,12 @@ GEM
     crack (0.4.1)
       safe_yaml (~> 0.9.0)
     database_cleaner (1.2.0)
-    debugger (1.6.3)
+    debugger (1.6.4)
       columnize (>= 0.3.1)
       debugger-linecache (~> 1.2.0)
-      debugger-ruby_core_source (~> 1.2.4)
+      debugger-ruby_core_source (~> 1.3.0)
     debugger-linecache (1.2.0)
-    debugger-ruby_core_source (1.2.4)
+    debugger-ruby_core_source (1.3.0)
     diff-lcs (1.2.5)
     docile (1.1.1)
     dotenv (0.9.0)
@@ -68,6 +101,7 @@ GEM
       activesupport (>= 3.0.0)
     faraday (0.8.8)
       multipart-post (~> 1.2.0)
+    fast_gettext (0.8.1)
     ffi (1.9.3)
     ffi (1.9.3-java)
     flay (2.4.0)
@@ -93,6 +127,11 @@ GEM
       dotenv (>= 0.7)
       thor (>= 0.13.6)
     formatador (0.2.4)
+    gettext (3.0.3)
+      locale (>= 2.0.5)
+      text
+    gettext_i18n_rails (1.0.3)
+      fast_gettext (>= 0.4.8)
     git (1.2.6)
     google-api-client (0.6.4)
       addressable (>= 2.3.2)
@@ -129,6 +168,7 @@ GEM
     launchy (2.4.2)
       addressable (~> 2.3)
     little-plugger (1.1.3)
+    locale (2.1.0)
     logging (1.8.1)
       little-plugger (>= 1.1.3)
       multi_json (>= 1.3.6)
@@ -141,7 +181,7 @@ GEM
     mongo (1.8.3)
       bson (~> 1.8.3)
     mongo_ext (0.19.3)
-    mongoid (3.1.5)
+    mongoid (3.1.6)
       activemodel (~> 3.2)
       moped (~> 1.4)
       origin (~> 1.0)
@@ -151,6 +191,7 @@ GEM
     multi_xml (0.5.5)
     multipart-post (1.2.0)
     net-http-persistent (2.9)
+    net-ldap (0.3.1)
     net-scp (1.1.2)
       net-ssh (>= 2.6.5)
     net-ssh (2.7.0)
@@ -183,7 +224,7 @@ GEM
       rack
     rack-test (0.6.2)
       rack (>= 1.0)
-    rake (10.1.0)
+    rake (10.1.1)
     rb-readline (0.5.0)
     representable (1.7.1)
       multi_json
@@ -191,28 +232,11 @@ GEM
     rest-client (1.6.7)
       mime-types (>= 1.16)
     retryable (1.3.3)
-    ridley (2.0.0)
-      addressable
-      buff-config (~> 0.2)
-      buff-extensions (~> 0.3)
-      buff-ignore (~> 1.1)
-      buff-shell_out (~> 0.1)
-      celluloid (~> 0.15)
-      celluloid-io (~> 0.15)
-      erubis
-      faraday (>= 0.8.4)
-      hashie (>= 2.0.2)
-      json (>= 1.7.7)
-      mixlib-authentication (>= 1.3.0)
-      net-http-persistent (>= 2.8)
-      retryable
-      solve (>= 0.4.4)
-      varia_model (~> 0.1)
-    ridley-connectors (1.0.1)
+    ridley-connectors (1.1.0)
       celluloid (~> 0.15)
       celluloid-io (~> 0.15)
       net-ssh
-      ridley (~> 2.0.0)
+      ridley (~> 2.1.0)
       winrm (~> 1.1.0)
     ripl (0.7.0)
       bond (~> 0.4.2)
@@ -284,6 +308,7 @@ GEM
     term-ansicolor (1.2.2)
       tins (~> 0.8)
     terminal-table (1.4.5)
+    text (1.2.3)
     thor (0.18.1)
     tilt (1.4.1)
     timers (1.1.0)
@@ -321,10 +346,12 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activeldap
   awesome_print
   bcrypt-ruby (~> 3.0.1)
   bson (= 1.8.3)
   bson_ext (= 1.8.3)
+  buff-extensions!
   coveralls
   database_cleaner
   erubis (~> 2.7.0)
@@ -341,7 +368,8 @@ DEPENDENCIES
   logging
   mongo (= 1.8.3)
   mongo_ext (~> 0.19)
-  mongoid (= 3.1.5)
+  mongoid (= 3.1.6)
+  net-ldap
   nokogiri
   pry
   pry-debugger
@@ -352,7 +380,7 @@ DEPENDENCIES
   rb-readline
   representable (= 1.7.1)
   rest-client (~> 1.6.7)
-  ridley (~> 2.0.0)
+  ridley!
   ridley-connectors
   roar (~> 0.9.1)
   rspec (~> 2.4)

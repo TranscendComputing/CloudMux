@@ -13,6 +13,9 @@ else
   use Rack::ShowExceptions
 end
 
+# our ldap settings
+require File.join(File.dirname(__FILE__), 'config_ldap')
+
 # require the dependencies
 require File.join(File.dirname(__FILE__), 'app', 'init')
 require 'app/api_base'
@@ -62,6 +65,7 @@ require 'app/topstack/topstack_queue_app'
 require 'app/topstack/topstack_cache_app'
 require 'app/topstack/topstack_dns_app'
 require 'app/orchestration/config_managers_api_app'
+require 'app/orchestration/config_manager_validator_api_app'
 require 'app/orchestration/chef_api_app'
 require 'app/orchestration/puppet_api_app'
 require 'app/orchestration/salt_api_app'
@@ -222,6 +226,13 @@ end
 #
 map "/stackstudio/v1/orchestration/chef" do
   run ChefApiApp
+end
+
+#
+# Configuration Management Validator API
+#
+map "/api/v1/validator" do
+  run ConfigManagerValidatorApiApp
 end
 
 #

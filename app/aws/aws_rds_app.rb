@@ -4,23 +4,9 @@ require 'fog'
 class AwsRdsApp < ResourceApiBase
 
 	before do
-		if ! params[:cred_id].nil? && Auth.validate(params[:cred_id],"Relational Database","action")
-			cloud_cred = get_creds(params[:cred_id])
-			if ! cloud_cred.nil?
-				if params[:region].nil? || params[:region] == "undefined" || params[:region] == ""
-					@rds = Fog::AWS::RDS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
-				else
-					@rds = Fog::AWS::RDS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => params[:region]})
-				end
-        halt [BAD_REQUEST] if @rds.nil?
-      else
-        halt [NOT_FOUND, "Credentials not found."]
-			end
-    else
-      message = Error.new.extend(ErrorRepresenter)
-      message.message = "Cannot access this service under current policy."
-      halt [NOT_AUTHORIZED, message.to_json]
-		end
+    @service_long_name = "Relational Database"
+    @service_class = Fog::AWS::RDS
+    @rds = can_access_service(params)
   end
 
 	#
@@ -201,72 +187,52 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/security_groups' do
-		json_body = body_to_json(request)
-		if(json_body.nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @rds.security_groups.create(json_body["security_group"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request)
+		begin
+			response = @rds.security_groups.create(json_body["security_group"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
     
 	post '/security_groups/:id/ipranges' do
-		json_body = body_to_json(request)
-		if(json_body.nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @rds.security_groups.get(params[:id]).authorize_cidrip(json_body["cidrip"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request)
+		begin
+			response = @rds.security_groups.get(params[:id]).authorize_cidrip(json_body["cidrip"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
     
 	post '/security_groups/:id/ec2_groups' do
-		json_body = body_to_json(request)
-		if(json_body.nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @rds.security_groups.get(params[:id]).authorize_ec2_security_group(json_body["ec2_group"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request)
+		begin
+			response = @rds.security_groups.get(params[:id]).authorize_ec2_security_group(json_body["ec2_group"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
     
 	post '/security_groups/:id/revoke_ipranges' do
-		json_body = body_to_json(request)
-		if(json_body.nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @rds.security_groups.get(params[:id]).revoke_cidrip(json_body["cidrip"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request)
+		begin
+			response = @rds.security_groups.get(params[:id]).revoke_cidrip(json_body["cidrip"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
     
 	post '/security_groups/:id/revoke_ec2_groups' do
-		json_body = body_to_json(request)
-		if(json_body.nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @rds.security_groups.get(params[:id]).revoke_ec2_security_group(json_body["ec2_group"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request)
+		begin
+			response = @rds.security_groups.get(params[:id]).revoke_ec2_security_group(json_body["ec2_group"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
   
@@ -284,16 +250,12 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/parameter_groups' do
-		json_body = body_to_json(request)
-		if(json_body.nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @rds.parameter_groups.create(json_body["parameter_group"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request)
+		begin
+			response = @rds.parameter_groups.create(json_body["parameter_group"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
   
@@ -360,16 +322,12 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/parameter_groups/describe/:id' do
-		json_body = body_to_json(request)
-		if(json_body.nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @rds.describe_db_parameters(params[:id],json_body["options"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request)
+		begin
+			response = @rds.describe_db_parameters(params[:id],json_body["options"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 	
