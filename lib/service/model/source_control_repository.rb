@@ -19,19 +19,10 @@ class SourceControlRepository
     field :key
 
     def as_json
-        attributes = get_attributes
-        {"source_control_repository"=>attributes}
+        {"source_control_repository"=>self.attributes}
     end
 
     def to_json
-        attributes = get_attributes
-        {"source_control_repository"=>attributes}.to_json
-    end
-
-    def get_attributes
-        attributes = self.attributes
-        attributes["config_managers"] = []
-        self.config_managers.each{|cm| attributes["config_managers"] << cm.as_json}
-        return attributes
+        {"source_control_repository"=>self.attributes}.to_json
     end
 end

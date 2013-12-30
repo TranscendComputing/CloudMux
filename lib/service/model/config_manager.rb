@@ -10,11 +10,12 @@ class ConfigManager
     field :type, type:String
     field :name, type:String
     field :auth_properties, type:Hash
+    field :branch, type:String
     field :source_control_paths, type:Array
 
     has_and_belongs_to_many :cloud_accounts
     has_and_belongs_to_many :continuous_integration_servers
-    has_and_belongs_to_many :source_control_repository
+    has_and_belongs_to_many :source_control_repositories
 
     def as_json
         attributes = get_attributes

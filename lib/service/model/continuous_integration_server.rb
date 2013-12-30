@@ -18,19 +18,10 @@ class ContinuousIntegrationServer
     field :password
 
     def as_json
-        attributes = get_attributes
-        {"continuous_integration_server"=>attributes}
+        {"continuous_integration_server"=>self.attributes}
     end
 
     def to_json
-        attributes = get_attributes
-        {"continuous_integration_server"=>attributes}.to_json
-    end
-
-    def get_attributes
-        attributes = self.attributes
-        attributes["config_managers"] = []
-        self.config_managers.each{|cm| attributes["config_managers"] << cm.as_json}
-        return attributes
+        {"continuous_integration_server"=>self.attributes}.to_json
     end
 end
