@@ -4,6 +4,7 @@ require 'fog'
 class AwsComputeApp < ResourceApiBase
 
 	before do
+		params["provider"] = "aws"
 		@service_long_name = "Elastic Compute Cloud"
     	@service_class = Fog::Compute::AWS
     	@compute = can_access_service(params)

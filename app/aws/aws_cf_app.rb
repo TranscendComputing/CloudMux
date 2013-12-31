@@ -7,6 +7,7 @@ require File.join(File.dirname(__FILE__),'..','..','lib','scheduler.rb')
 class AwsCloudFormationApp < ResourceApiBase
     
     before do
+        params["provider"] = "aws"
         @service_long_name = "CloudFormation"
         @service_class = Fog::AWS::CloudFormation
         @cf = can_access_service(params)    

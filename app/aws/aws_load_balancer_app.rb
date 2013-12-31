@@ -4,6 +4,7 @@ require 'fog'
 class AwsLoadBalancerApp < ResourceApiBase
 
 	before do
+    params["provider"] = "aws"
     @service_long_name = "Elastic Load Balancer"
     @service_class = Fog::AWS::ELB
     @elb = can_access_service(params)

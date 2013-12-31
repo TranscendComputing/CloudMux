@@ -4,6 +4,7 @@ require 'fog'
 class AwsMonitorApp < ResourceApiBase
 
 	before do
+		params["provider"] = "aws"
 		@service_long_name = "CloudWatch"
     	@service_class = Fog::AWS::CloudWatch
     	@monitor = can_access_service(params)

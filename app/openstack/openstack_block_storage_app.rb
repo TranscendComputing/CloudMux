@@ -4,20 +4,10 @@ require 'fog'
 class OpenstackBlockStorageApp < ResourceApiBase
 
 	before do
-    if(params[:cred_id].nil? || ! Auth.validate(params[:cred_id],"Block Storage","action"))
-      message = Error.new.extend(ErrorRepresenter)
-      message.message = "Cannot access this service under current policy."
-      halt [NOT_AUTHORIZED, message.to_json]
-    else
-      cloud_cred = get_creds(params[:cred_id])
-      if cloud_cred.nil?
-        halt [NOT_FOUND, "Credentials not found."]
-      else
-        options = cloud_cred.cloud_attributes.merge(:provider => "openstack")
-        @block_storage = Fog::Compute.new(options)
-        halt [BAD_REQUEST] if @block_storage.nil?
-      end
-    end
+    params["provider"] = "openstack"
+    @service_long_name = "Block Storage"
+    @service_class = Fog::Compute
+    @block_storage = can_access_service(params)
   end
 	
 	#
@@ -69,16 +59,12 @@ class OpenstackBlockStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/volumes' do
-		json_body = body_to_json(request)
-		if(json_body.nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @block_storage.volumes.create(json_body["volume"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request)
+		begin
+			response = @block_storage.volumes.create(json_body["volume"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 	
@@ -118,17 +104,12 @@ class OpenstackBlockStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/volumes/:id/attach' do
-		json_body = body_to_json(request)
-		if(json_body.nil? || json_body["server_id"].nil? || json_body["device"].nil?)
-			response = "server_id and device are required request parameters."
-			[BAD_REQUEST, response]
-		else
-			begin
-				response = @block_storage.attach_volume(params[:id], json_body["server_id"], json_body["device"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+    json_body = body_to_json_or_die("body" => request, "args" => ["server_id","device"])
+		begin
+			response = @block_storage.attach_volume(params[:id], json_body["server_id"], json_body["device"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 	
@@ -193,16 +174,12 @@ class OpenstackBlockStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/snapshots' do
-		json_body = body_to_json(request)
-		if(json_body.nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @block_storage.snapshots.create(json_body["snapshot"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request)
+		begin
+			response = @block_storage.snapshots.create(json_body["snapshot"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 	
