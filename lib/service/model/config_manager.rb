@@ -29,8 +29,10 @@ class ConfigManager
 
     def get_attributes
         attributes = self.attributes
+        attributes["cloud_account_ids"] = self.cloud_account_ids
         attributes["continuous_integration_servers"] = []
         attributes["source_control_repositories"] = []
+        self.cloud_accounts.each{|ca| attributes["cloud_account_ids"] << ca.id}
         self.continuous_integration_servers.each{|ci| attributes["continuous_integration_servers"] << ci.as_json}
         self.source_control_repositories.each{|scr| attributes["source_control_repositories"] << scr.as_json}
         return attributes

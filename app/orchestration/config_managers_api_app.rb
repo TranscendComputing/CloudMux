@@ -94,30 +94,4 @@ class ConfigManagerApiApp < ApiBase
             [OK, {"message"=> "Config Manager Deleted"}.to_json]
         end
     end
-
-    post '/:manager_id/account' do
-        if params[:account_id].nil?
-            message = Error.new.extend(ErrorRepresenter)
-            message.message = "Must provide account_id with request"
-            [BAD_REQUEST, message.to_json]
-        else
-            account = CloudAccount.find(params[:account_id]).extend(UpdateCloudAccountRepresenter);
-            manager = ConfigManager.find(params[:manager_id])
-            existing = account.config_managers.select {|c| c["type"] == manager.type}
-            if(existing != [])
-                if(existing[0].id != manager.id)
-                    account.config_managers.delete(existing[0]);
-                    account.config_managers.push(manager)
-                end
-            else
-                account.config_managers.push(manager);
-            end
-            [OK, account.config_managers.to_json]
-        end
-    end
-
-    get '/account/:account_id' do
-        account = CloudAccount.find(params[:account_id]).extend(UpdateCloudAccountRepresenter)
-        [OK, account.config_managers.to_json]
-    end
 end
