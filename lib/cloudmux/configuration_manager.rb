@@ -18,7 +18,6 @@ module CloudMux
   module ConfigurationManager
 
     def self.new(data_model)
-      data_model = data_model.dup
       type = data_model.type.to_sym
 
       case type

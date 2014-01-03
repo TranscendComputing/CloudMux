@@ -15,7 +15,6 @@
 #
 
 require 'cloudmux/chef/client'
-require 'cloudmux/chef/cookbook'
 require 'cloudmux/chef/repo'
 require 'cloudmux/chef/continuous_integration'
 require 'cloudmux/chef/validator'
@@ -53,8 +52,8 @@ module CloudMux
 
       def update_status
         states = CloudMux::Chef::Validator.refresh_all(repo, server_client, ci_client)
+        binding.pry
         states.each do |cookbook, status|
-          @model.cookbooks.delete_all
           update_single(cookbook, status)
         end
       end
@@ -71,11 +70,12 @@ module CloudMux
       end
 
       def update_single(name, status)
+        cb_model = @model.cookbooks.find_or_create_by(name: name)
         ci_presence = has_ci_presence?(status)
-        @model.cookbooks << Cookbook.new(
-          name: name,
+        community = cb_model.community.nil? ? false : cb_model.community
+        cb_model.update_attributes!(
           ci_presence: ci_presence,
-          community: false,
+          community: community,
           status: status)
       end
     end

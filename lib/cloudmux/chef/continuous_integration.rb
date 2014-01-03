@@ -81,7 +81,7 @@ module CloudMux
       def build_job_status(cookbook, job_type)
         job_name = get_job_name(cookbook, 'build')
         results = get_status(job_name, job_type)
-        { "#{job_type}_status" => results }
+        { "#{job_type}" => results }
       end
 
       def all_build_job_states(cookbook)
@@ -95,7 +95,7 @@ module CloudMux
       def deploy_job_status(cookbook, driver, platform)
         deploy_job = get_job_name(cookbook, "#{driver}_#{platform}")
         status = get_status(deploy_job, "#{driver}_#{platform}")
-        { "#{driver}_#{platform}_status" => status }
+        { "#{driver}_#{platform}" => status }
       end
 
       def all_deploy_job_states(cookbook)

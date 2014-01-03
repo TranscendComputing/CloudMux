@@ -36,16 +36,16 @@ module CloudMux
         chef_client.cookbook_names_and_versions.each do |name, versions|
           repo_obj = chef_repo.cookbook_object(name)
           if repo_obj.nil?
-            sync_status[name] = { 'sync_status' => 'NOT_FOUND_IN_REPO' }
+            sync_status[name] = { 'sync' => 'NOT_FOUND_IN_REPO' }
           else
             if !versions.include? repo_obj.version
-              sync_status[name] = { 'sync_status' => 'VERSION_NOT_FOUND_IN_REPO' }
+              sync_status[name] = { 'sync' => 'VERSION_NOT_FOUND_IN_REPO' }
             else
               server_obj = chef_client.cookbook_object(name, repo_obj.version)
               if server_obj.manifest == repo_obj.manifest
-                sync_status[name] = { 'sync_status' => 'IN_SYNC' }
+                sync_status[name] = { 'sync' => 'IN_SYNC' }
               else
-                sync_status[name] = { 'sync_status' => 'OUT_OF_SYNC' }
+                sync_status[name] = { 'sync' => 'OUT_OF_SYNC' }
               end
             end
           end
