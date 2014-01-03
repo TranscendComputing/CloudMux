@@ -86,10 +86,25 @@ class Account
   end
 
   def auth(pass, now=Time.now)
+    if LDAP_ENABLED
+      ldap = LDAP.connect
+      unless ldap.connection.nil?
+        user = ldap.find({
+          :attribute=>"sAMAccountName",
+          :value=> self.email })
+        begin
+          if user.bind(pass)
+            true
+          end
+        rescue
+          false
+        end
+      end
+    end
     if BCrypt::Password.new(self.encrypted_password) == pass
       self.inc(:num_logins, 1)
       self.update_attribute(:last_login_at, now)
-      return true
+      true
     end
     return false
   end

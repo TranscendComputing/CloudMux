@@ -1,3 +1,4 @@
+LDAP_ENABLED=false
 # LDAP Configuration for this Cloudmux service
 LDAP_HOST = "ad.example.com"
 LDAP_PORT = 389  # 636 for ssl
