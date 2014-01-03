@@ -156,7 +156,8 @@ module CloudMux
       end
 
       def cookbook_path(name)
-        @chef_repo.find_relative_cookbook_path(name)
+        path = @chef_repo.find_relative_cookbook_path(name)
+        File.join(path, name)
       end
 
       def deployers_config
