@@ -24,6 +24,31 @@ module CloudMux
 
       DEPLOY_CONFIG = "#{File.dirname(__FILE__)}/configs/deploy_config.yml"
 
+      def delete_all_jobs
+        @chef_repo.cookbook_names.each do |name|
+          delete_build_job(name)
+          deployers_config['driver_plugins'].each do |driver, platforms|
+            platforms.each do |platform, config|
+              delete_deploy_job(name, driver, platform)
+            end
+          end
+        end
+      end
+
+      def delete_build_job(cookbook_name)
+        job = get_job_name(name, 'build')
+        @client.job.delete job
+      rescue
+        return false
+      end
+
+      def delete_deploy_job(cookbook_name, driver, platform)
+        job = get_job_name(name, "#{driver}_#{platform}")              
+        @client.job.delete job
+      rescue
+        return false
+      end        
+
       def create_build_job(cookbook_name)
         path = cookbook_path(cookbook_name)
         job_name = get_job_name(cookbook_name, 'build')
@@ -61,7 +86,7 @@ module CloudMux
 
       # job_name needs to be of format:
       #   'cookbook__branch__driver_platform__chef'
-      def generate_deploy_suites(job_name, deploy_config = nil)
+      def self.generate_deploy_suites(job_name, deploy_config = nil)
         info                = job_name.split('__')
         cookbook_name, test = info[0], info[2].split('_')
         driver, platform    = test[0], test[1]
@@ -70,7 +95,8 @@ module CloudMux
         else
           kitchen_obj = YAML.load(deploy_config)
         end
-        driver_cfg = deployers_config['driver_plugins'][driver][platform]
+        deploy_cfg = YAML.load_file DEPLOY_CONFIG
+        driver_cfg = deploy_cfg['driver_plugins'][driver][platform]
         kitchen_obj['suites'].each do |suite|
           suite['driver'] = { 'name' => driver }
           suite['platforms'] = [{ 'name' => platform, 'driver_config' => driver_cfg }]
@@ -140,6 +166,16 @@ module CloudMux
       def base_job_config
         { scm_url: @chef_repo.url, branch: @chef_repo.branch }
       end
+
+      def self.generate_default_deploy_obj(cookbook_name)
+        { 'suites' => [
+            'name' => 'default',
+            'provisioner' => { 'name' => 'chef_solo' },
+            'run_list' => ["recipe[#{cookbook_name}]"],
+            'attributes' => {}
+          ]
+        }
+      end      
 
     end
   end

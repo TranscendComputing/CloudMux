@@ -52,7 +52,6 @@ module CloudMux
 
       def update_status
         states = CloudMux::Chef::Validator.refresh_all(repo, server_client, ci_client)
-        binding.pry
         states.each do |cookbook, status|
           update_single(cookbook, status)
         end
