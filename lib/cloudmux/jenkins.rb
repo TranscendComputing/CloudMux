@@ -14,9 +14,13 @@
 # limitations under the License.
 #
 
-__LIB_DIR__ = File.expand_path(File.dirname(__FILE__))
-$LOAD_PATH.unshift __LIB_DIR__ unless $LOAD_PATH.include?(__LIB_DIR__)
+require 'cloudmux/core'
 
-require 'cloudmux/chef'
-require 'cloudmux/git'
-require 'cloudmux/jenkins'
+module CloudMux
+  module Jenkins
+    extend CloudMux::Component
+
+    register(path: 'jenkins/client')
+
+  end
+end

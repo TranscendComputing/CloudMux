@@ -17,47 +17,53 @@
 require 'git'
 
 module CloudMux
-  module SCM
-    class Git
+  module Git
+    class Repo
 
       attr_accessor :url
       attr_accessor :branch
-      attr_accessor :repo_name
-      attr_accessor :scm_paths
+      attr_accessor :name
 
-      def initialize(args)
-        @url   = args[:url]
-        @branch    = args[:branch]
-        @repo_name = args[:repo_name]
-        @scm_paths = args[:scm_paths]
+      def initialize(data_model, branch='master', args = {})
+        @url   = data_model.url
+        @branch = branch
+        @name = data_model.name
+        post_initialize(args)
       end
 
-      def cleanup
-        FileUtils.rm_rf(tmp_dir)
+      def post_initialize(args)
+        nil
+      end
+
+      def remove_local_repo
+        current_dir = checkout_dir
+        @checkout_dir = nil
+        FileUtils.rm_rf(current_dir)
       end
 
       def dir
+        repo
         repo.dir.to_s
-      end
-
-      def repo
-        File.exists?("#{tmp_dir}/#{@repo_name}") ? open : checkout
       end
 
       private
 
-      def tmp_dir
-        @dir ||= Dir.mktmpdir
+      def repo
+        Dir["#{checkout_dir}/*"].empty? ? checkout : open
+      end
+
+      def checkout_dir
+        @checkout_dir ||= Dir.mktmpdir
       end
 
       def checkout
-        obj = ::Git.clone(@url, @repo_name, path: tmp_dir)
+        obj = ::Git.clone(@url, @name, path: checkout_dir)
         obj.checkout(@branch)
         obj
       end
 
       def open
-        ::Git.open("#{tmp_dir}/#{@repo_name}")
+        ::Git.open("#{checkout_dir}/#{@name}")
       end
 
     end

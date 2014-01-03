@@ -1,6 +1,7 @@
 require 'app_spec_helper'
 
 require File.join(APP_DIR, 'orchestration', 'config_manager_validator_api_app')
+require File.join(File.dirname(__FILE__), '..', '..', 'lib', 'cloudmux', 'configuration_manager.rb')
 
 include HttpStatusCodes
 
@@ -13,29 +14,20 @@ describe ConfigManagerValidatorApiApp do
 
   describe "GET /" do
     before :each do
-      @config_manager = FactoryGirl.create(:configuration_manager)
+      # @config_manager = FactoryGirl.create(:configuration_manager)
+      config_manager = ConfigManager.all.first
+      @manager_client = CloudMux::ConfigurationManager.new(config_manager)
     end
 
-    # describe "defaults" do
-    #   before :each do
-    #     get "/"
-    #   end
+    describe "defaults" do
+      before :each do
+        get "/"
+      end
 
-    #   it "should return a success response code" do
-    #     last_response.status.should eq(OK)
-    #   end
-
-    #   it "should return all results by default" do
-    #     @cloud_query = CloudQuery.new
-    #     @cloud_query.extend(CloudQueryRepresenter)
-    #     @cloud_query.from_json(last_response.body)
-    #     @cloud_query.query.should_not eq(nil)
-    #     @cloud_query.clouds.length.should eq(@total)
-    #     @cloud_query.query.offset.should eq(0)
-    #     @cloud_query.query.total.should eq(@total)
-    #     @cloud_query.query.page.should eq(1)
-    #   end
-    # end
+      it "should return a success response code" do
+        last_response.status.should eq(OK)
+      end
+    end
   end
 
   # describe "POST /" do

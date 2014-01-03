@@ -14,9 +14,21 @@
 # limitations under the License.
 #
 
-__LIB_DIR__ = File.expand_path(File.dirname(__FILE__))
-$LOAD_PATH.unshift __LIB_DIR__ unless $LOAD_PATH.include?(__LIB_DIR__)
+module CloudMux
+  module ContinuousIntegration
 
-require 'cloudmux/chef'
-require 'cloudmux/git'
-require 'cloudmux/jenkins'
+    def self.new(data_model)
+      data_model = data_model.dup
+      type = data_model.type.to_sym
+
+      case type
+      when :jenkins
+        require 'cloudmux/jenkins/client'
+        CloudMux::Jenkins::Client.new(data_model)
+      else
+        raise ArgumentError.new("#{type} is not a supported continuous integration server")
+      end
+    end
+
+  end
+end

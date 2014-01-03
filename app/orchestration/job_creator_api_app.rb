@@ -1,9 +1,9 @@
 require 'sinatra'
 require 'json'
 
-require File.join(File.dirname(__FILE__), '..', '..', 'lib', 'cloudmux', 'configuration_manager.rb')
+require File.join(File.dirname(__FILE__), '..', '..', 'lib', 'cloudmux', 'chef', 'continuous_integration.rb')
 
-class ConfigManagerValidatorApiApp < ApiBase
+class JobCreatorApiApp < ApiBase
   before do
     if params[:manager_id]
       config_manager = ConfigManager.find(params[:manager_id])

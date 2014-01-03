@@ -14,9 +14,10 @@
 # limitations under the License.
 #
 
-__LIB_DIR__ = File.expand_path(File.dirname(__FILE__))
-$LOAD_PATH.unshift __LIB_DIR__ unless $LOAD_PATH.include?(__LIB_DIR__)
+# core dependencies
+require 'cloudmux/core/component'
 
-require 'cloudmux/chef'
-require 'cloudmux/git'
-require 'cloudmux/jenkins'
+# component wrappers
+require 'cloudmux/configuration_manager'
+require 'cloudmux/continuous_integration'
+require 'cloudmux/source_control'

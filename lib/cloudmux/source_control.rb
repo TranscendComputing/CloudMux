@@ -14,9 +14,21 @@
 # limitations under the License.
 #
 
-__LIB_DIR__ = File.expand_path(File.dirname(__FILE__))
-$LOAD_PATH.unshift __LIB_DIR__ unless $LOAD_PATH.include?(__LIB_DIR__)
+module CloudMux
+  module SourceControl
 
-require 'cloudmux/chef'
-require 'cloudmux/git'
-require 'cloudmux/jenkins'
+    def self.new(data_model, branch)
+      data_model = data_model.dup
+      type = data_model.type.to_sym
+
+      case type
+      when :git
+        require 'cloudmux/git/client'
+        CloudMux::Git::Client.new(data_model, branch)
+      else
+        raise ArgumentError.new("#{type} is not a supported source control manager")
+      end
+    end
+
+  end
+end

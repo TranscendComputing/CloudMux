@@ -18,13 +18,19 @@ require 'jenkins_api_client'
 require 'erubis'
 
 module CloudMux
-  module CI
-    class Jenkins
+  module Jenkins
+    class Client
 
-      def initialize(server_ip, args = {})
-        @client = JenkinsApi::Client.new(args.merge(server_url: server_ip))
+      def initialize(data_model)
+        args = { server_url: data_model.url }
+        unless data_model.username.nil?
+          args.merge(
+            username: data_model.username,
+            password: data_model.password
+            )
+        end
+        @client = JenkinsApi::Client.new(args)
         @client.logger.level = Logger.const_get 'ERROR'
-        @client
       end
 
       def list_jobs(test_type)
@@ -37,11 +43,8 @@ module CloudMux
         suite['cases'].find { |test| test['status'] != 'PASSED' }.nil? ? 'PASSING' : 'FAILING'
       end
 
-      def save_job(job_name, template, template_vars = {})
-        job_template = File.join(File.dirname(__FILE__), 'jobs', "#{template}.erb")
-        content      = File.read(job_template)
-        xml          = Erubis::Eruby.new(content).result(template_vars)
-        @client.job.create_or_update(job_name, xml)
+      def save_job(job_name, xml_config)
+        @client.job.create_or_update(job_name, xml_config)
       end
 
       def delete_job(name)
@@ -50,6 +53,12 @@ module CloudMux
 
       def build_job(job_name)
         @client.job.build(job_name)
+      end
+
+      def job_template(path, vars = {})
+        job_template = File.join(File.dirname(__FILE__), 'jobs', "#{path}.erb")
+        content      = File.read(job_template)
+        Erubis::Eruby.new(content).result(vars)        
       end
 
       private
