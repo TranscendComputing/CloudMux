@@ -72,11 +72,11 @@ module CloudMux
         cb_model = @model.cookbooks.find_or_create_by(name: name)
         ci_presence = has_ci_presence?(status)
         community = cb_model.community.nil? ? false : cb_model.community
-        cb_model.update_attributes(
-          ci_presence: ci_presence,
-          community: community,
-          status: status)
+        cb_model.ci_presence = ci_presence
+        cb_model.community = community
+        cb_model.status = status
         cb_model.save!
+        @model.save
       end
     end
   end
