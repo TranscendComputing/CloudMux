@@ -379,4 +379,24 @@ class CloudAccountApiApp < ApiBase
       [BAD_REQUEST, message.to_json]
     end
   end
+
+  # Update Cloud Account Config Managers
+  put '/:id/managers' do
+    json_body = body_to_json(request)
+    if json_body.nil? || json_body["config_manager_ids"].nil?
+      message = Error.new.extend(ErrorRepresenter)
+      message.message = "Must provide config_manager_ids."
+      [BAD_REQUEST, message.to_json]
+    else
+      account = CloudAccount.find(params[:id])
+      account.config_managers = []
+      json_body["config_manager_ids"].each do |cm_id|
+        cm = ConfigManager.where(id:cm_id).first
+        if cm
+          account.config_managers.push(cm)
+        end
+      end
+      [OK, account.to_json]
+    end
+  end
 end
