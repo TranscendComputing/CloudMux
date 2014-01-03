@@ -83,6 +83,7 @@ module Auth
             @policies = self.find_group_policies(cred_id)
             @provider = Account.find_cloud_credential(cred_id).cloud_provider
             @governance = nil
+            @cloud_enabled = nil
             @monitor = nil
             if !options.nil?
                 @resource_id = options[:resource_id]
@@ -141,12 +142,14 @@ module Auth
             elsif (@provider === "AWS")
                 @governance = policy.aws_governance
             end
+            @cloud_enabled = @governance["enabled_cloud"]
         end
 
         #Enabled Services
         def canUseService()
             enabled_services = @governance['enabled_services']
             return true if @account.permissions.length > 0
+            return false if @cloud_enabled.length < 1
             if enabled_services.nil?
                 return false
             elsif enabled_services.is_a? String
