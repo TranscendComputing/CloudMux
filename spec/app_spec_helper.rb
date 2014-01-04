@@ -51,3 +51,6 @@ DatabaseCleaner.clean
 FactoryGirl.factory_by_name('account') rescue FactoryGirl.find_definitions
 
 APP_DIR = File.expand_path(File.join(TOP_DIR,'app'))
+
+# Skips validation of locale in order to avoid deprecation message.
+I18n.enforce_available_locales = false

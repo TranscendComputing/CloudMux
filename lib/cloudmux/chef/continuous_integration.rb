@@ -23,6 +23,7 @@ module CloudMux
       attr_accessor :chef_repo
 
       DEPLOY_CONFIG = "#{File.dirname(__FILE__)}/configs/deploy_config.yml"
+      BUILD_TESTS = %w{ rspec foodcritic syntax }
 
       def delete_all_jobs
         @chef_repo.cookbook_names.each do |name|
@@ -112,7 +113,7 @@ module CloudMux
 
       def all_build_job_states(cookbook)
         states = {}
-        %w{ rspec foodcritic syntax }.each do |type|
+        BUILD_TESTS.each do |type|
           states.merge!(build_job_status(cookbook, type))
         end
         states
@@ -149,6 +150,18 @@ module CloudMux
         generate_all_deploy_jobs
       end
 
+      def new_cookbook_status
+        new_status = Hash[BUILD_TESTS.map { |t| [t, 'NONE'] }]
+        new_status.merge!('sync' => 'NONE')
+        deployers_config['driver_plugins'].each do |driver, platforms|
+          platforms.each do |platform, config|
+            new_status.merge!("#{driver}_#{platform}" => 'NONE')
+          end
+        end
+        new_status
+      end
+
+
       private
 
       def get_job_name(cookbook, job_type)
@@ -176,7 +189,7 @@ module CloudMux
             'attributes' => {}
           ]
         }
-      end      
+      end
 
     end
   end

@@ -61,22 +61,32 @@ module CloudMux
         ci_client.generate_all_jobs
       end
 
+      def setup_manageable_objects
+        all_cookbooks = (repo.cookbook_names | server_client.cookbook_names)
+        all_cookbooks.each do |name|
+          cb_model = @model.cookbooks.find_or_create_by(name: name)
+          cb_model.status = ci_client.new_cookbook_status
+          cb_model.save!
+        end
+      end
+
       private
 
       def has_ci_presence?(return_status)
-        ci_tests = return_status.find { |type, status| type =~ /rspec/ }
+        stat = return_status.dup
+        ci_tests = stat.find { |type, s| type =~ /rspec/ }
         !ci_tests.nil?
       end
 
-      def update_single(name, status)
+      def update_single(name, current_status)
         cb_model = @model.cookbooks.find_or_create_by(name: name)
-        ci_presence = has_ci_presence?(status)
+        ci_presence = has_ci_presence?(current_status)
         community = cb_model.community.nil? ? false : cb_model.community
         cb_model.ci_presence = ci_presence
         cb_model.community = community
-        cb_model.status = status
+        cb_model.status = current_status
         cb_model.save!
-        @model.save
+        @model.save!
       end
     end
   end

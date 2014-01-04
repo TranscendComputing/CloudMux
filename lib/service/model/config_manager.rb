@@ -17,6 +17,9 @@ class ConfigManager
     has_and_belongs_to_many :continuous_integration_servers
     has_and_belongs_to_many :source_control_repositories
 
+    validates_presence_of :name
+    validates_presence_of :url
+
     def as_json
         attributes = get_attributes
         {"config_manager"=>attributes}

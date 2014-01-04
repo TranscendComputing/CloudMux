@@ -3,7 +3,6 @@ require 'json'
 
 require File.join(File.dirname(__FILE__), '..', '..', 'lib', 'cloudmux', 'configuration_manager.rb')
 require File.join(File.dirname(__FILE__), '..', '..', 'lib', 'cloudmux', 'chef', 'continuous_integration.rb')
-require File.join(File.dirname(__FILE__), '..', '..', 'lib', 'cloudmux', 'chef', 'manager.rb')
 
 class ConfigManagerValidatorApiApp < ApiBase
 
@@ -17,8 +16,8 @@ class ConfigManagerValidatorApiApp < ApiBase
         message.message = 'Account ID must be passed in as a parameter'
         halt [BAD_REQUEST, message.to_json]
       end
-      @manager_client.ci_client.delete_all_jobs
-      @manager_client.generate_all_jobs
+      # @manager_client.ci_client.delete_all_jobs
+      # @manager_client.generate_all_jobs
       @manager_client.update_status
       [OK, 'OK']
     rescue Mongoid::Errors::DocumentNotFound
