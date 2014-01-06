@@ -6,7 +6,7 @@ require File.join(File.dirname(__FILE__), '..', '..', 'lib', 'cloudmux', 'chef',
 
 class ConfigManagerValidatorApiApp < ApiBase
 
-  get '/reset' do
+  get '/refresh' do
     begin
       if params[:manager_id]
         @config_manager = ConfigManager.find(params[:manager_id])
@@ -16,8 +16,6 @@ class ConfigManagerValidatorApiApp < ApiBase
         message.message = 'Account ID must be passed in as a parameter'
         halt [BAD_REQUEST, message.to_json]
       end
-      # @manager_client.ci_client.delete_all_jobs
-      # @manager_client.generate_all_jobs
       @manager_client.update_status
       [OK, 'OK']
     rescue Mongoid::Errors::DocumentNotFound

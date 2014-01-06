@@ -19,7 +19,6 @@ require 'cloudmux/jenkins/client'
 module CloudMux
   module Chef
     class ContinuousIntegration < CloudMux::Jenkins::Client
-
       attr_accessor :chef_repo
 
       DEPLOY_CONFIG = "#{File.dirname(__FILE__)}/configs/deploy_config.yml"
@@ -44,11 +43,11 @@ module CloudMux
       end
 
       def delete_deploy_job(cookbook_name, driver, platform)
-        job = get_job_name(name, "#{driver}_#{platform}")              
+        job = get_job_name(name, "#{driver}_#{platform}")
         @client.job.delete job
       rescue
         return false
-      end        
+      end
 
       def create_build_job(cookbook_name)
         path = cookbook_path(cookbook_name)
@@ -161,7 +160,6 @@ module CloudMux
         new_status
       end
 
-
       private
 
       def get_job_name(cookbook, job_type)
@@ -190,7 +188,6 @@ module CloudMux
           ]
         }
       end
-
     end
   end
 end

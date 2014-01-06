@@ -17,43 +17,35 @@
 module CloudMux
   module Chef
     module Validator
-
-      def self.refresh_all(chef_repo, chef_client, chef_ci)
-        sync_status = check_repo_sync(chef_repo, chef_client)
-        ci_status = chef_ci.get_all_states
-        current_states = {}
-        all_cookbooks = (sync_status.keys | ci_status.keys).sort
-        all_cookbooks.each do |cookbook|
-          current_states[cookbook] = {}
-          current_states[cookbook].merge!(ci_status[cookbook]) unless ci_status[cookbook].nil?
-          current_states[cookbook].merge!(sync_status[cookbook]) unless sync_status[cookbook].nil?
-        end
-        current_states
+      def self.refresh_status(args)
+        cookbook_model = args[:data_model]
+        repo = args[:repo]
+        server_client = args[:server_client]
+        ci_status = args[:ci_client].all_build_job_states(cookbook_model.name)
+        sync_status = check_repo_sync(cookbook_model.name, repo, server_client)
+        cookbook_model.status = ci_status.merge(sync_status)
+        cookbook_model.save!
       end
 
-      def self.check_repo_sync(chef_repo, chef_client)
-        sync_status = {}
-        chef_client.cookbook_names_and_versions.each do |name, versions|
-          repo_obj = chef_repo.cookbook_object(name)
-          if repo_obj.nil?
-            sync_status[name] = { 'sync' => 'NOT_FOUND_IN_REPO' }
+      def self.check_repo_sync(name, chef_repo, chef_client)
+        repo_obj = chef_repo.cookbook_object(name)
+        if repo_obj.nil?
+          sync_status = { 'sync' => 'NOT_FOUND_IN_REPO' }
+        else
+          if !chef_client.cookbook_versions(name).include? repo_obj.version
+            sync_status = { 'sync' => 'VERSION_NOT_FOUND_IN_REPO' }
           else
-            if !versions.include? repo_obj.version
-              sync_status[name] = { 'sync' => 'VERSION_NOT_FOUND_IN_REPO' }
+            server_obj = chef_client.cookbook_object(name, repo_obj.version)
+            if server_obj.manifest == repo_obj.manifest
+              sync_status = { 'sync' => 'IN_SYNC' }
             else
-              server_obj = chef_client.cookbook_object(name, repo_obj.version)
-              if server_obj.manifest == repo_obj.manifest
-                sync_status[name] = { 'sync' => 'IN_SYNC' }
-              else
-                sync_status[name] = { 'sync' => 'OUT_OF_SYNC' }
-              end
+              sync_status = { 'sync' => 'OUT_OF_SYNC' }
             end
           end
         end
         chef_repo.remove_local_repo
         sync_status
       end
-      
     end
   end
 end

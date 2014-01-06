@@ -24,11 +24,11 @@ module CloudMux
         url = data_model.url
         client_name = data_model.auth_properties['client_name']
         client_key = data_model.auth_properties['key']
-        Ridley::Logging.logger.level = Logger.const_get 'ERROR'
-        @server_client = Ridley.new(
+        @connection_data = {
           server_url: url,
           client_name: client_name,
-          client_key: client_key)
+          client_key: client_key
+        }
       end
 
       def cookbook_object(name, version = 'latest')
@@ -42,13 +42,26 @@ module CloudMux
         nil
       end
 
+      def cookbook_versions(name)
+        Ridley.open(@connection_data) do |conn|
+          conn.cookbook.versions(name)
+        end
+      rescue Ridley::Errors::ResourceNotFound
+        []
+      end
+
       def cookbook_names
-        @cookbook_names ||= @server_client.cookbook.all.keys
+        @cookbook_names ||=
+          Ridley.open(@connection_data) do |conn|
+            conn.cookbook.all.keys
+          end
       end
 
       def cookbook_names_and_versions
-        @cookbook_names_and_versions ||= 
-          Hash[@server_client.cookbook.all.sort]
+        @cookbook_names_and_versions ||=
+          Ridley.open(@connection_data) do |conn|
+            Hash[conn.cookbook.all.sort]
+          end
       end
 
       private
@@ -69,7 +82,9 @@ module CloudMux
       end
 
       def download_cookbook(name, version, path)
-        @server_client.cookbook.download(name, version, path)
+        Ridley.open(@connection_data) do |conn|
+          conn.cookbook.download(name, version, path)
+        end
       end
 
     end

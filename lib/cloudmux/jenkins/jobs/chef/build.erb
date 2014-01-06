@@ -36,7 +36,7 @@
       <command>
         export PATH=/opt/chef-ci-tools/bin:$PATH
         cd <%= path %>
-        knife cookbook test <%= name %> | knife-cookbook-test2junit.pl --suite knife_cookbook_test --class <%= name %> --out syntax_results.xml
+        knife cookbook test <%= name %> | knife-cookbook-test2junit.pl --suite syntax --class <%= name %> --out syntax_results.xml
         foodcritic -t ~portability -t ~definitions . 2&gt;&amp;1 | foodcritic2junit.pl --suite foodcritic --out foodcritic_results.xml
         rspec --format RspecJunitFormatter  --out rspec_results.xml .
       </command>

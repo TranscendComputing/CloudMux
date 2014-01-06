@@ -51,10 +51,19 @@ module CloudMux
       end
 
       def update_status
-        states = CloudMux::Chef::Validator.refresh_all(repo, server_client, ci_client)
-        states.each do |cookbook, status|
-          update_single(cookbook, status)
+        setup_manageable_objects
+        @model.cookbooks.each do |cb|
+          refresh_status(cb)
         end
+      end
+
+      def refresh_status(cookbook_model)
+        CloudMux::Chef::Validator.refresh_status(
+          data_model: cookbook_model,
+          repo: repo,
+          server_client: server_client,
+          ci_client: ci_client
+          )
       end
 
       def generate_all_jobs
@@ -65,7 +74,9 @@ module CloudMux
         all_cookbooks = (repo.cookbook_names | server_client.cookbook_names)
         all_cookbooks.each do |name|
           cb_model = @model.cookbooks.find_or_create_by(name: name)
-          cb_model.status = ci_client.new_cookbook_status
+          if cb_model.status.nil?
+            cb_model.status = ci_client.new_cookbook_status
+          end
           cb_model.save!
         end
       end
@@ -76,17 +87,6 @@ module CloudMux
         stat = return_status.dup
         ci_tests = stat.find { |type, s| type =~ /rspec/ }
         !ci_tests.nil?
-      end
-
-      def update_single(name, current_status)
-        cb_model = @model.cookbooks.find_or_create_by(name: name)
-        ci_presence = has_ci_presence?(current_status)
-        community = cb_model.community.nil? ? false : cb_model.community
-        cb_model.ci_presence = ci_presence
-        cb_model.community = community
-        cb_model.status = current_status
-        cb_model.save!
-        @model.save!
       end
     end
   end

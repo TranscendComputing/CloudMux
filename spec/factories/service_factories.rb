@@ -14,7 +14,6 @@ FactoryGirl.define do
     a.name 'Test stack'
   end
 
-
   factory :query, class: Query  do |a|
     a.total 504
     a.page 10
@@ -139,8 +138,7 @@ FactoryGirl.define do
     a.rules Hash.new
   end
 
-  factory :embedded_project, class: EmbeddedProject  do |a|
-  end
+  factory :embedded_project, class: EmbeddedProject
 
   factory :price, class: Price  do |a|
     a.name 'm1.small'
@@ -155,11 +153,41 @@ FactoryGirl.define do
     a.create Time.now
   end
 
+  factory :git_repo, class: SourceControlRepository do
+    name 'MockGitRepo'
+    type 'git'
+    url 'git@giturl.com:/GitRepo.git'
+    username 'test'
+    password 'test'
+  end
+
+  factory :jenkins_server, class: ContinuousIntegrationServer do
+    name 'MockJenkinsServer'
+    type 'jenkins'
+    url 'http://mockjenkins.com:8080'
+    username 'test'
+    password 'test'
+  end
+
   factory :config_manager, class: ConfigManager do |a|
     a.url 'http://configurl.localhost'
     a.name 'MockConfigManager'
     a.branch 'test'
   end
+
+  factory :chef_config_manager, class: ConfigManager do
+    url 'http://configurl.localhost'
+    name 'MockChefConfigManager'
+    branch 'test'
+    type 'chef'
+    continuous_integration_servers [ FactoryGirl.create(:jenkins_server) ]
+    source_control_repositories [ FactoryGirl.create(:git_repo) ]
+    auth_properties { {
+      'client_name' => 'tester',
+      'key' => 'secret_content'
+      } }
+  end
+
 
 end
 
