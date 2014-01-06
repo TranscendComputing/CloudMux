@@ -273,3 +273,16 @@ begin
 rescue LoadError
     # not in dev/test env - skip installing these tasks
 end
+
+namespace :ci do
+  desc "Update continuous integration status for configuration managers"
+  task :update_status do
+    require "lib/cloudmux/chef"
+    config_managers_to_update = ConfigManager.where(:continuous_integration_server_ids.nin => [nil, []])
+    config_managers_to_update.each do |cm|
+      puts "Updating Continuous Integration Status for Config Manager: #{cm.name}"
+        manager = CloudMux::Chef::Manager.new(cm)
+        manager.update_status
+    end
+  end
+end
