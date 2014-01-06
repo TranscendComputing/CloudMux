@@ -23,9 +23,9 @@ class ConfigManagerValidatorApiApp < ApiBase
     end
   end
 
-  post '/deploy_suite/:job_name' do
+  post '/deploy_suite' do
     job_name = params[:job_name]
-    deploy_config = body_to_yaml(request)
+    deploy_config = params[:file]
     config = CloudMux::Chef::ContinuousIntegration.generate_deploy_suites(job_name, deploy_config)
     [OK, config]
   end

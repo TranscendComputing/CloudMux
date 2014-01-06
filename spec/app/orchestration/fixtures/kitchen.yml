@@ -1,0 +1,23 @@
+---
+driver:
+  name: vagrant
+
+platforms:
+  - name: ubuntu-12.04
+
+suites:
+  - name: default
+    provisioner:
+      name: chef_zero
+    run_list:
+      - 'recipe[cookbook::default]'
+    attributes: { 'oauth_haproxy': {'data_bag_secret': '/tmp/kitchen/encrypted_data_bag_secret'}}
+    data_bags_path: 'test/integration/default/data_bags'
+    encrypted_data_bag_secret_key_path: 'test/integration/default/encrypted_data_bag_secret'
+  - name: solo
+    provisioner:
+      name: chef_solo
+    run_list:
+      - 'recipe[cookbook::default]'
+    attributes: { 'cookbook': { 'data_bag_item': 'plain_txt'}}
+    data_bags_path: 'test/integration/default/data_bags'
