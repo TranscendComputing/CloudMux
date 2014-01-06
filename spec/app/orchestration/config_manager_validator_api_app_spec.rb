@@ -1,5 +1,4 @@
 require 'app_spec_helper'
-require 'pry'
 
 require File.join(APP_DIR, 'orchestration', 'config_manager_validator_api_app')
 require File.join(LIB_DIR, 'cloudmux', 'chef.rb')

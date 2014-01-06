@@ -37,11 +37,11 @@
         cd <%= path %>
         if [ -f .kitchen.yml ]
         then
-          curl -o .kitchen.yml --data-urlencode "file@.kitchen.yml" '<%= app_endpoint %>/platform_test?job_name=${JOB_NAME}'
+          curl -o .kitchen.yml --data-urlencode "file@.kitchen.yml" --data "job_name=$JOB_NAME" '<%= app_endpoint %>/api/v1/validator/deploy_suite'
         else
-          curl -o .kitchen.yml '<%= app_endpoint %>/platform_test?job_name=${JOB_NAME}'
+          curl -o .kitchen.yml  --data "job_name=$JOB_NAME" '<%= app_endpoint %>/api/v1/validator/deploy_suite'
         fi
-        kitchen test
+        kitchen test --destroy=always
       </command>
     </hudson.tasks.Shell>
   </builders>

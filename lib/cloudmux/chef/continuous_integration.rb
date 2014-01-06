@@ -15,6 +15,7 @@
 #
 
 require 'cloudmux/jenkins/client'
+require 'socket'
 
 module CloudMux
   module Chef
@@ -63,7 +64,8 @@ module CloudMux
         job_config = base_job_config
         job_name = get_job_name(cookbook_name, "#{driver}_#{platform}")
         job_config[:path] = cookbook_path(cookbook_name)
-        job_config[:app_endpoint] = '${JENKINS_URL}'
+        ip = IPSocket.getaddress(Socket.gethostname)
+        job_config[:app_endpoint] = "http://#{ip}:9292"
         template = job_template(File.join('chef', 'kitchen'), job_config)
         save_job(job_name, template)
       end
@@ -97,10 +99,8 @@ module CloudMux
         end
         deploy_cfg = YAML.load_file DEPLOY_CONFIG
         driver_cfg = deploy_cfg['driver_plugins'][driver][platform]
-        kitchen_obj['suites'].each do |suite|
-          suite['driver'] = { 'name' => driver }
-          suite['platforms'] = [{ 'name' => platform, 'driver_config' => driver_cfg }]
-        end
+        kitchen_obj['driver'] = { 'name' => driver }
+        kitchen_obj['platforms'] = [{ 'name' => platform, 'driver_config' => driver_cfg }]
         kitchen_obj.to_yaml
       end
 
