@@ -2,8 +2,6 @@ require 'sinatra'
 require 'fog'
 require 'net/http'
 
-require File.join(File.dirname(__FILE__),'..','..','lib','scheduler.rb')
-
 class AwsCloudFormationApp < ResourceApiBase
     
     before do
