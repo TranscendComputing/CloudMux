@@ -4,6 +4,7 @@ require 'fog'
 class AwsRdsApp < ResourceApiBase
 
 	before do
+    params["provider"] = "aws"
     @service_long_name = "Relational Database"
     @service_class = Fog::AWS::RDS
     @rds = can_access_service(params)

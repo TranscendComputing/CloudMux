@@ -4,20 +4,10 @@ require 'fog'
 class OpenstackComputeApp < ResourceApiBase
 
     before do
-        if(params[:cred_id].nil? || ! Auth.validate(params[:cred_id],"Compute Service","action"))
-            message = Error.new.extend(ErrorRepresenter)
-            message.message = "Cannot access this service under current policy."
-            halt [NOT_AUTHORIZED, message.to_json]
-        else
-            cloud_cred = get_creds(params[:cred_id])
-            if cloud_cred.nil?
-                halt [NOT_FOUND, "Credentials not found."]
-            else
-                options = cloud_cred.cloud_attributes.merge(:provider => "openstack")
-                @compute = Fog::Compute.new(options)
-                halt [BAD_REQUEST] if @compute.nil?
-            end
-        end
+        params["provider"] = "openstack"
+        @service_long_name = "Compute Service"
+        @service_class = Fog::Compute
+        @compute = can_access_service(params)
     end
     
     ##~ sapi = source2swagger.namespace("openstack_compute")
@@ -87,16 +77,12 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/instances/:id/disassociate_address' do
-        json_body = body_to_json(request)
-        if(json_body["ip_address"].nil?)
-            [BAD_REQUEST]
-        else
-            begin
-                response = @compute.disassociate_address(params[:id], json_body["ip_address"])
-                [OK, response.to_json]
-            rescue => error
-                handle_error(error)
-            end
+        json_body = body_to_json_or_die("body" => request, "args" => ["ip_address"])
+        begin
+            response = @compute.disassociate_address(params[:id], json_body["ip_address"])
+            [OK, response.to_json]
+        rescue => error
+            handle_error(error)
         end
     end
     
@@ -297,16 +283,12 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     put '/security_groups' do
-        json_body = body_to_json(request)
-        if(json_body.nil?)
-            [BAD_REQUEST]
-        else
-            begin
-                response = @compute.security_groups.create(json_body["security_group"])
-                [OK, response.to_json]
-            rescue => error
-                handle_error(error)
-            end
+        json_body = body_to_json_or_die("body" => request)
+        begin
+            response = @compute.security_groups.create(json_body["security_group"])
+            [OK, response.to_json]
+        rescue => error
+            handle_error(error)
         end
     end
     
@@ -321,16 +303,12 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     delete '/security_groups' do
-        json_body = body_to_json(request)
-        if(json_body.nil? || json_body["security_group"].nil?)
-            [BAD_REQUEST]
-        else
-            begin
-                response = @compute.security_groups.get(json_body["security_group"]["id"]).destroy
-                [OK, response.to_json]
-            rescue => error
-                handle_error(error)
-            end
+        json_body = body_to_json_or_die("body" => request, "args" => ["security_group"])
+        begin
+            response = @compute.security_groups.get(json_body["security_group"]["id"]).destroy
+            [OK, response.to_json]
+        rescue => error
+            handle_error(error)
         end
     end
 
@@ -345,17 +323,13 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     delete '/security_groups/delete_rule' do
-        json_body = body_to_json(request)
-        if(json_body.nil? || json_body["rule_id"].nil?)
-            [BAD_REQUEST]
-        else
-            begin
-                group = @compute.security_groups.get(json_body["group_id"])
-                group.delete_security_group_rule(json_body["rule_id"])
-                [OK, @compute.security_groups.get(json_body["group_id"]).to_json]
-            rescue => error
-                handle_error(error)
-            end
+        json_body = body_to_json_or_die("body" => request, "args" => ["rule_id"])
+        begin
+            group = @compute.security_groups.get(json_body["group_id"])
+            group.delete_security_group_rule(json_body["rule_id"])
+            [OK, @compute.security_groups.get(json_body["group_id"]).to_json]
+        rescue => error
+            handle_error(error)
         end
     end
 
@@ -371,18 +345,14 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     put '/security_groups/:id/add_rule' do
-        json_body = body_to_json(request)
-        if(json_body.nil? || json_body["rule"].nil?)
-            [BAD_REQUEST]
-        else
-            begin
-                rule = json_body["rule"]
-                group = @compute.security_groups.get(params[:id])
-                group.create_security_group_rule(rule["fromPort"], rule["toPort"], rule["ipProtocol"], rule["cidr"], rule["groupId"])
-                [OK, @compute.security_groups.get(params[:id]).to_json]
-            rescue => error
-                handle_error(error)
-            end
+        json_body = body_to_json_or_die("body" => request, "args" => ["rule"])
+        begin
+            rule = json_body["rule"]
+            group = @compute.security_groups.get(params[:id])
+            group.create_security_group_rule(rule["fromPort"], rule["toPort"], rule["ipProtocol"], rule["cidr"], rule["groupId"])
+            [OK, @compute.security_groups.get(params[:id]).to_json]
+        rescue => error
+            handle_error(error)
         end
     end
     
@@ -567,13 +537,4 @@ class OpenstackComputeApp < ResourceApiBase
             handle_error(error)
         end
     end
-    
-    def body_to_json(request)
-        if(!request.content_length.nil? && request.content_length != "0")
-            return MultiJson.decode(request.body.read)
-        else
-            return nil
-        end
-    end
-
 end

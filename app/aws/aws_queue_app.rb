@@ -4,6 +4,7 @@ require 'fog'
 class AwsQueueApp < ResourceApiBase
 
 	before do
+    params["provider"] = "aws"
     @service_long_name = "Simple Queue"
     @service_class = Fog::AWS::SQS
     @sqs = can_access_service(params)

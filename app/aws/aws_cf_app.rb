@@ -5,6 +5,7 @@ require 'net/http'
 class AwsCloudFormationApp < ResourceApiBase
     
     before do
+        params["provider"] = "aws"
         @service_long_name = "CloudFormation"
         @service_class = Fog::AWS::CloudFormation
         @cf = can_access_service(params)    

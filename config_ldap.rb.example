@@ -1,0 +1,9 @@
+LDAP_ENABLED=false
+# LDAP Configuration for this Cloudmux service
+LDAP_HOST = "ad.example.com"
+LDAP_PORT = 389  # 636 for ssl
+LDAP_BASE = "DC=example,DC=com"
+LDAP_USER = 'CN=user1,CN=Users,DC=example,DC=com'
+LDAP_METHOD = :plain # can be :ssl, :tls or :plain
+LDAP_PASSWORD = 'sekrit'
+LDAP_SEARCH_DOMAIN = "example.com"

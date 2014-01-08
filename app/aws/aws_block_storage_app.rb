@@ -4,6 +4,7 @@ require 'fog'
 class AwsBlockStorageApp < ResourceApiBase
 
 	before do
+    params["provider"] = "aws"
     @service_long_name = "Elastic Block Storage"
     @service_class = Fog::Compute::AWS
     @block_storage = can_access_service(params)

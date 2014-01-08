@@ -4,28 +4,11 @@ require 'fog'
 class TopStackAutoscaleApp < ResourceApiBase
 
 	before do
-		  if(params[:cred_id].nil? || ! Auth.validate(params[:cred_id],"Auto Scale","action"))
-            message = Error.new.extend(ErrorRepresenter)
-            message.message = "Cannot access this service under current policy."
-            halt [NOT_AUTHORIZED, message.to_json]
-      else
-            cloud_cred = get_creds(params[:cred_id])
-            if cloud_cred.nil?
-                halt [NOT_FOUND, "Credentials not found."]
-            else
-                begin
-                    # Find AutoScale service endpoint
-                    endpoint = cloud_cred.cloud_account.cloud_services.where({"service_type"=>"AutoScale"}).first
-                    halt [BAD_REQUEST] if endpoint.nil?
-                    fog_options = {:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key}
-                    fog_options.merge!(:host => endpoint[:host], :port => endpoint[:port], :path => endpoint[:path], :scheme => endpoint[:protocol])
-                    @autoscale = Fog::AWS::AutoScaling.new(fog_options)
-                    halt [BAD_REQUEST] if @autoscale.nil?
-                rescue Fog::Errors::NotFound => error
-                    halt [NOT_FOUND, error.to_s]
-                end
-            end
-      end
+    params["provider"] = "topstack"
+    params["service_type"] = "AutoScale"
+    @service_long_name = "Auto Scale"
+    @service_class = Fog::AWS::AutoScaling
+    @autoscale = can_access_service(params)
   end
 
 	#

@@ -4,6 +4,7 @@ require 'fog'
 class AwsNotificationApp < ResourceApiBase
 
 	before do
+    params["provider"] = "aws"
     @service_long_name = "Simple Notification"
     @service_class = Fog::AWS::SNS
     @notification = can_access_service(params)

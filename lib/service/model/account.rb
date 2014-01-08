@@ -1,3 +1,4 @@
+require 'service/ldap'
 #
 # Represents a User Account that can be created, authenticated, and updated
 #
@@ -86,6 +87,9 @@ class Account
   end
 
   def auth(pass, now=Time.now)
+    if LDAP_ENABLED
+      return ldap_auth(self.email, pass)
+    end
     if BCrypt::Password.new(self.encrypted_password) == pass
       self.inc(:num_logins, 1)
       self.update_attribute(:last_login_at, now)

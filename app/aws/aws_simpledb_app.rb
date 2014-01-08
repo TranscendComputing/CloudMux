@@ -4,6 +4,7 @@ require 'fog'
 class AwsSimpleDBApp < ResourceApiBase
 
 	before do
+    params["provider"] = "aws"
     @service_long_name = "Simple DB"
     @service_class = Fog::AWS::SimpleDB
     @sdb = can_access_service(params)

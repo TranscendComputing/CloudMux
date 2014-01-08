@@ -4,6 +4,7 @@ require 'fog'
 class AwsObjectStorageApp < ResourceApiBase
 
 	before do
+    params["provider"] = "aws"
     @service_long_name = "Simple Storage"
     @service_class = Fog::Storage::AWS
     @object_storage = can_access_service(params)

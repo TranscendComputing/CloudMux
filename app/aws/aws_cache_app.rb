@@ -4,6 +4,7 @@ require 'fog'
 class AwsCacheApp < ResourceApiBase
 	
 	before do
+    params["provider"] = "aws"
     @service_long_name = "Elasticache"
     @service_class = Fog::AWS::Elasticache
     @elasticache = can_access_service(params)

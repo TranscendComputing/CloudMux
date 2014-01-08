@@ -75,16 +75,12 @@ class OpenstackIdentityApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/users' do
-    json_body = body_to_json(request)
-		if(json_body.nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @identity.users.create(json_body["user"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+    json_body = body_to_json_or_die("body" => request)
+		begin
+			response = @identity.users.create(json_body["user"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 	
@@ -147,16 +143,12 @@ class OpenstackIdentityApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/tenants' do
-      json_body = body_to_json(request)
-      if(json_body.nil?)
-        [BAD_REQUEST]
-      else
-        begin
-          response = @identity.tenants.create(json_body["tenant"])
-          [OK, response.to_json]
-        rescue => error
-          handle_error(error)
-        end
+      json_body = body_to_json_or_die("body" => request)
+      begin
+        response = @identity.tenants.create(json_body["tenant"])
+        [OK, response.to_json]
+      rescue => error
+        handle_error(error)
       end
     end
     
@@ -317,16 +309,12 @@ class OpenstackIdentityApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/roles' do
-      json_body = body_to_json(request)
-      if(json_body.nil?)
-        [BAD_REQUEST]
-      else
-        begin
-          response = @identity.roles.create(json_body["role"])
-          [OK, response.to_json]
-        rescue => error
-          handle_error(error)
-        end
+      json_body = body_to_json_or_die("body" => request)
+      begin
+        response = @identity.roles.create(json_body["role"])
+        [OK, response.to_json]
+      rescue => error
+        handle_error(error)
       end
     end
     

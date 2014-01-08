@@ -4,20 +4,10 @@ require 'fog'
 class OpenstackObjectStorageApp < ResourceApiBase
 
 	before do
-    if(params[:cred_id].nil? || ! Auth.validate(params[:cred_id],"Object Storage","action"))
-      message = Error.new.extend(ErrorRepresenter)
-      message.message = "Cannot access this service under current policy."
-      halt [NOT_AUTHORIZED, message.to_json]
-    else
-      cloud_cred = get_creds(params[:cred_id])
-      if cloud_cred.nil?
-        halt [NOT_FOUND, "Credentials not found."]
-      else
-        options = cloud_cred.cloud_attributes.merge(:provider => "openstack")
-        @object_storage = Fog::Storage.new(options)
-        halt [BAD_REQUEST] if @object_storage.nil?
-      end
-    end
+    params["provider"] = "openstack"
+    @service_long_name = "Object Storage"
+    @service_class = Fog::Storage
+    @object_storage = can_access_service(params)
   end
 
 	#
@@ -66,16 +56,12 @@ class OpenstackObjectStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/directories' do
-    json_body = body_to_json(request)
-		if(json_body.nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @object_storage.directories.create(json_body["directory"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+    json_body = body_to_json_or_die("body" => request)
+		begin
+			response = @object_storage.directories.create(json_body["directory"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 	

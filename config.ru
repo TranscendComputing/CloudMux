@@ -6,6 +6,7 @@ require 'bundler/setup'
 require 'sinatra'
 require 'fog'
 
+
 if ENV['RACK_ENV'] == 'production'
   # production config / requires
 else
