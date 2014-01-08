@@ -1,5 +1,57 @@
 class ResourceApiBase < ApiBase
 
+	# Long name for service representing this resource (e.g. Auto Scale, etc.)
+	@service_long_name = "undefined"
+
+	# Cloud implementation class (typically Fog::??)
+	@service_class = Object
+
+	def can_access_service(params)
+		service = nil
+		cred_id = params[:cred_id]
+		region = params[:region]
+		provider = params[:provider]
+		service_type = params[:service_type]
+		if ! cred_id.nil? && Auth.validate(cred_id,@service_long_name,"action")
+			cloud_cred = get_creds(cred_id)
+			if ! cloud_cred.nil?
+				if provider === "aws"
+					# require 'pry'
+					# binding.pry
+					args = {:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key}
+					if region != "undefined" && region != ""
+						args[:region] = region
+					end
+				elsif provider === "openstack"
+					# require 'pry'
+					# binding.pry
+					args = cloud_cred.cloud_attributes.merge(:provider => "openstack")
+				elsif provider === "topstack"
+					# require 'pry'
+					# binding.pry
+					begin
+	                    # Find service endpoint
+	                    endpoint = cloud_cred.cloud_account.cloud_services.where({"service_type"=>service_type}).first
+	                    halt [BAD_REQUEST] if endpoint.nil?
+	                    args = {:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key}
+	                    args.merge!(:host => endpoint[:host], :port => endpoint[:port], :path => endpoint[:path], :scheme => endpoint[:protocol])
+	                rescue Fog::Errors::NotFound => error
+                		halt [NOT_FOUND, error.to_s]
+            		end
+			    end
+				service = @service_class.new(args)
+				halt [BAD_REQUEST] if service.nil?
+			else
+				halt [NOT_FOUND, "Credentials not found."]
+			end
+		else
+			message = Error.new.extend(ErrorRepresenter)
+			message.message = "Cannot access this service under current policy."
+			halt [NOT_AUTHORIZED, message.to_json]
+		end
+		service
+	end
+
 	def body_to_json(request)
 		if(!request.content_length.nil? && request.content_length != "0")
 			return MultiJson.decode(request.body.read)
@@ -8,20 +60,34 @@ class ResourceApiBase < ApiBase
 		end
 	end
 
+	def body_to_json_or_die(request)
+  		json_body = body_to_json(request["body"])
+  		if(json_body.nil?)
+  			halt [BAD_REQUEST]
+  		elsif(request.length > 1)
+  			request["args"].each do |condition|
+  				if(json_body[condition].nil?)
+  					halt [BAD_REQUEST]
+  				end
+  			end
+  		end
+  		json_body
+	end
+
 	def get_creds(cred_id)
 		Account.find_cloud_credential(cred_id)
 	end
 
-	
+
 	def handle_error(error)
 		case error
-			when Fog::AWS::IAM::EntityAlreadyExists 
+			when Fog::AWS::IAM::EntityAlreadyExists
 				message = error.message
-				[NOT_ACCEPTABLE, message] 
+				[NOT_ACCEPTABLE, message]
 			when Fog::AWS::IAM::Error
 				error = error.message.split(" => ")
 				message = error[1]
-				[NOT_FOUND, message]   
+				[NOT_FOUND, message]
 			when Fog::Compute::AWS::Error
 				error = error.message.split(" => ")
 				message = error[1]
@@ -51,7 +117,7 @@ class ResourceApiBase < ApiBase
 					message = response_body["badRequest"]["message"]
 				end
 				[BAD_REQUEST, message]
-			when Excon::Errors::InternalServerError        
+			when Excon::Errors::InternalServerError
 				response_body = Nokogiri::XML(error.response.body)
 				if response_body.css('Message').empty?
 					message = error.response.body

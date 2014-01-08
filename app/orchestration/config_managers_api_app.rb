@@ -1,79 +1,86 @@
 require 'sinatra'
-require 'debugger'
 require 'json'
 
+require File.join(File.dirname(__FILE__), '..', '..', 'lib', 'cloudmux', 'configuration_manager.rb')
+
 class ConfigManagerApiApp < ApiBase
-  
-    get '/' do
-        if params[:org_id].nil?
-            message = Error.new.extend(ErrorRepresenter)
-            message.message = "Must provide org_id with request for configuration managers."
-            [BAD_REQUEST, message.to_json]
-        else
-            org = Org.find(params[:org_id]).extend(OrgRepresenter)
-            [OK, org.config_managers.to_json]
-        end
+   # Get a Config Manager by ID
+  get '/:id' do
+    cm = ConfigManager.where(id: params[:id]).first
+      if cm.nil?
+        [NOT_FOUND]
+      else
+        [OK, cm.to_json]
+      end
+  end
+   # Get Config Managers for org
+  get '/org/:org_id' do
+    cms = ConfigManager.where(org_id: params[:org_id])
+    response = []
+    cms.each do |cm|
+      response << cm.as_json
     end
-    
-    post '/' do
-        if params[:org_id].nil?
-            message = Error.new.extend(ErrorRepresenter)
-            message.message = "Must provide org_id with request for configuration managers."
-            [BAD_REQUEST, message.to_json]
-        else
-            body = request.body.read
-            new_manager = ConfigManager.new.extend(UpdateConfigManagerRepresenter)
-            new_manager.from_json(body)
-            new_manager.org = Org.find(params[:org_id]).extend(OrgRepresenter)
-            new_manager.save!
-            [OK, new_manager.to_json]
-        end
-    end
+    [OK, response.to_json]
+  end
 
-    delete '/:manager_id' do
+   # Create a Config Manager
+  post '/' do
+    json_body = body_to_json(request)
+    if json_body.nil?
+      [BAD_REQUEST]
+    else
+      case json_body['type']
+      when 'chef'
+        new_manager = ChefConfigurationManager.new(json_body)
+      when 'puppet'
+      # TODO: new Puppet that inherits ConfigManager
+        new_manager = ConfigManager.new(json_body)
+      when 'salt'
+      # TODO: new Salt that inherits ConfigManager
+        new_manager = ConfigManager.new(json_body)
+      when 'ansible'
+      # TODO: new Ansible that inherits ConfigManager
+        new_manager = ConfigManager.new(json_body)
+      else
+        new_manager = ConfigManager.new(json_body)
+      end
+      if new_manager.valid?
+        new_manager.save!
+        [CREATED, new_manager.to_json]
+      else
+        [BAD_REQUEST]
+      end
+    end
+  end
+
+  # Update a Config Manager
+  put '/:id' do
+    json_body = body_to_json(request)
+    if json_body.nil?
+      [BAD_REQUEST]
+    else
+      update_cm = ConfigManager.where(id: params[:id]).first
+      if update_cm.nil?
+        [NOT_FOUND]
+      else
         begin
-            ConfigManager.find(params[:manager_id]).delete
-            [OK, {:message=>"Configuration manager deleted."}.to_json]
-        rescue Mongoid::Errors::DocumentNotFound => error
-            [NOT_FOUND, "Configuration manager does not exist in database."]
+          update_cm.update_attributes!(json_body)
+          [OK, update_cm.to_json]
+        rescue
+          [BAD_REQUEST]
         end
+      end
     end
+  end
 
-    post '/:manager_id/account' do
-        if params[:account_id].nil?
-            message = Error.new.extend(ErrorRepresenter)
-            message.message = "Must provide account_id with request"
-            [BAD_REQUEST, message.to_json]
-        else
-            account = CloudAccount.find(params[:account_id]).extend(UpdateCloudAccountRepresenter);
-            manager = ConfigManager.find(params[:manager_id])
-            existing = account.config_managers.select {|c| c["type"] == manager.type}
-            if(existing != [])
-                if(existing[0].id != manager.id)
-                    account.config_managers.delete(existing[0]);
-                    account.config_managers.push(manager)
-                end
-            else
-                account.config_managers.push(manager);
-            end
-            [OK, account.config_managers.to_json]
-        end
+  # Delete a Config Manager
+  delete '/:id' do
+    cm = ConfigManager.where(id: params[:id]).first
+    if cm.nil?
+      [NOT_FOUND]
+    else
+      cm.delete
+      [OK, { 'message' => 'Config Manager Deleted' }.to_json]
     end
-
-    put '/:manager_id' do
-        attrs = JSON.parse(request.body.read)
-        manager = ConfigManager.find(params[:manager_id]);
-        result = manager.update_attributes!(attrs)
-        if(result)
-            [OK, {:message=>"Successfully updated configuration manager."}.to_json]
-        else
-            [BAD_REQUEST, {:message=>"Could not update configuration manager"}.to_json]
-        end
-    end
-
-
-    get '/account/:account_id' do
-        account = CloudAccount.find(params[:account_id]).extend(UpdateCloudAccountRepresenter)
-        [OK, account.config_managers.to_json]
-    end
+  end
 end

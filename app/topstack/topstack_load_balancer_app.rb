@@ -4,26 +4,11 @@ require 'fog'
 class TopStackLoadBalancerApp < ResourceApiBase
 
     before do
-        if(params[:cred_id].nil?)
-            halt [BAD_REQUEST]
-        else
-            cloud_cred = get_creds(params[:cred_id])
-            if cloud_cred.nil?
-                halt [NOT_FOUND, "Credentials not found."]
-            else
-                begin
-                    # Find LoadBalancer service endpoint
-                    endpoint = cloud_cred.cloud_account.cloud_services.where({"service_type"=>"ELB"}).first
-                    halt [BAD_REQUEST] if endpoint.nil?
-                    fog_options = {:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key}
-                    fog_options.merge!(:host => endpoint[:host], :port => endpoint[:port], :path => endpoint[:path], :scheme => endpoint[:protocol])
-                    @elb = Fog::AWS::ELB.new(fog_options)
-                    halt [BAD_REQUEST] if @elb.nil?
-                rescue Fog::Errors::NotFound => error
-                    halt [NOT_FOUND, error.to_s]
-                end
-            end
-        end
+        params["provider"] = "topstack"
+        params["service_type"] = "ELB"
+        @service_long_name = "Scalable Load Balancer"
+        @service_class = Fog::AWS::ELB
+        @elb = can_access_service(params)
     end
 
     #
@@ -69,23 +54,19 @@ class TopStackLoadBalancerApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/load_balancers' do
-        json_body = body_to_json(request)
-        if(json_body.nil?)
-            [BAD_REQUEST]
-        else
-            begin
-                lb = json_body["load_balancer"]
-                region = get_creds(params[:cred_id]).cloud_account.default_region
-                lb["availability_zones"] = [region]
-                if lb["options"].nil?
-                    response = @elb.create_load_balancer(lb["availability_zones"], lb["id"], lb["listeners"])
-                else
-                    response = @elb.create_load_balancer(lb["availability_zones"], lb["id"], lb["listeners"], lb["options"])
-                end
-                [OK, response.to_json]
-            rescue => error
-                handle_error(error)
+        json_body = body_to_json_or_die("body" => request)
+        begin
+            lb = json_body["load_balancer"]
+            region = get_creds(params[:cred_id]).cloud_account.default_region
+            lb["availability_zones"] = [region]
+            if lb["options"].nil?
+                response = @elb.create_load_balancer(lb["availability_zones"], lb["id"], lb["listeners"])
+            else
+                response = @elb.create_load_balancer(lb["availability_zones"], lb["id"], lb["listeners"], lb["options"])
             end
+            [OK, response.to_json]
+        rescue => error
+            handle_error(error)
         end
     end
     
@@ -123,16 +104,12 @@ class TopStackLoadBalancerApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/load_balancers/:id/configure_health_check' do
-        json_body = body_to_json(request)
-        if(json_body.nil?)
-            [BAD_REQUEST]
-        else
-            begin
-                response = @elb.configure_health_check(params[:id], json_body["health_check"])
-                [OK, response.to_json]
-            rescue => error
-                handle_error(error)
-            end
+        json_body = body_to_json_or_die("body" => request)
+        begin
+            response = @elb.configure_health_check(params[:id], json_body["health_check"])
+            [OK, response.to_json]
+        rescue => error
+            handle_error(error)
         end
     end
 
@@ -149,16 +126,12 @@ class TopStackLoadBalancerApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/load_balancers/:id/availability_zones/enable' do
-        json_body = body_to_json(request)
-        if(json_body.nil? || json_body["availability_zones"].nil?)
-            [BAD_REQUEST]
-        else
-            begin
-                response = @elb.enable_availability_zones_for_load_balancer(json_body["availability_zones"], params[:id])
-                [OK, response.to_json]
-            rescue => error
-                handle_error(error)
-            end
+        json_body = body_to_json_or_die("body" => request, "args" => ["availability_zones"])
+        begin
+            response = @elb.enable_availability_zones_for_load_balancer(json_body["availability_zones"], params[:id])
+            [OK, response.to_json]
+        rescue => error
+            handle_error(error)
         end
     end
 
@@ -175,16 +148,12 @@ class TopStackLoadBalancerApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/load_balancers/:id/availability_zones/disable' do
-        json_body = body_to_json(request)
-        if(json_body.nil? || json_body["availability_zones"].nil?)
-            [BAD_REQUEST]
-        else
-            begin
-                response = @elb.disable_availability_zones_for_load_balancer(json_body["availability_zones"], params[:id])
-                [OK, response.to_json]
-            rescue => error
-                handle_error(error)
-            end
+        json_body = body_to_json_or_die("body" => request, "args" => ["availability_zones"])
+        begin
+            response = @elb.disable_availability_zones_for_load_balancer(json_body["availability_zones"], params[:id])
+            [OK, response.to_json]
+        rescue => error
+            handle_error(error)
         end
     end
 
@@ -201,16 +170,12 @@ class TopStackLoadBalancerApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/load_balancers/:id/instances/register' do
-        json_body = body_to_json(request)
-        if(json_body.nil? || json_body["instance_ids"].nil?)
-            [BAD_REQUEST]
-        else
-            begin
-                response = @elb.register_instances_with_load_balancer(json_body["instance_ids"], params[:id])
-                [OK, response.to_json]
-            rescue => error
-                handle_error(error)
-            end
+        json_body = body_to_json_or_die("body" => request, "args" => ["instance_ids"])
+        begin
+            response = @elb.register_instances_with_load_balancer(json_body["instance_ids"], params[:id])
+            [OK, response.to_json]
+        rescue => error
+            handle_error(error)
         end
     end
 
@@ -227,16 +192,12 @@ class TopStackLoadBalancerApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/load_balancers/:id/instances/deregister' do
-        json_body = body_to_json(request)
-        if(json_body.nil? || json_body["instance_ids"].nil?)
-            [BAD_REQUEST]
-        else
-            begin
-                response = @elb.deregister_instances_from_load_balancer(json_body["instance_ids"], params[:id])
-                [OK, response.to_json]
-            rescue => error
-                handle_error(error)
-            end
+        json_body = body_to_json_or_die("body" => request, "args" => ["instance_ids"])
+        begin
+            response = @elb.deregister_instances_from_load_balancer(json_body["instance_ids"], params[:id])
+            [OK, response.to_json]
+        rescue => error
+            handle_error(error)
         end
     end
 
@@ -329,16 +290,12 @@ class TopStackLoadBalancerApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/load_balancers/:id/listeners' do
-        json_body = body_to_json(request)
-        if(json_body.nil?)
-            [BAD_REQUEST]
-        else
-            begin
-                response = @elb.create_load_balancer_listeners(params[:id], json_body["listeners"])
-                [OK, response.to_json]
-            rescue => error
-                handle_error(error)
-            end
+        json_body = body_to_json_or_die("body" => request)
+        begin
+            response = @elb.create_load_balancer_listeners(params[:id], json_body["listeners"])
+            [OK, response.to_json]
+        rescue => error
+            handle_error(error)
         end
     end
 
@@ -355,16 +312,12 @@ class TopStackLoadBalancerApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     delete '/load_balancers/:id/listeners' do
-        json_body = body_to_json(request)
-        if(json_body.nil?)
-            [BAD_REQUEST]
-        else
-            begin
-                response = @elb.delete_load_balancer_listeners(params[:id], json_body["ports"])
-                [OK, response.to_json]
-            rescue => error
-                handle_error(error)
-            end
+        json_body = body_to_json_or_die("body" => request)
+        begin
+            response = @elb.delete_load_balancer_listeners(params[:id], json_body["ports"])
+            [OK, response.to_json]
+        rescue => error
+            handle_error(error)
         end
     end
 

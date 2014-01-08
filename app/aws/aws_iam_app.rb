@@ -5,14 +5,19 @@ class AwsIamApp < ResourceApiBase
 
 	before do
 		if ! params[:cred_id].nil? && Auth.validate(params[:cred_id],"IAM","action")
-            #halt [BAD_REQUEST] if ! Auth.validate(params[:cred_id],"IAM","action")
 			cloud_cred = get_creds(params[:cred_id])
 			if ! cloud_cred.nil?
 				@iam = Fog::AWS::IAM.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
-			end
+        halt [BAD_REQUEST] if @iam.nil?
+      else
+        halt [NOT_FOUND, "Credentials not found."]
+      end
+    else
+      message = Error.new.extend(ErrorRepresenter)
+      message.message = "Cannot access this service under current policy."
+      halt [NOT_AUTHORIZED, message.to_json]
 		end
-		halt [BAD_REQUEST] if @iam.nil?
-    end
+  end
 
 	#
 	# Users
@@ -67,16 +72,12 @@ class AwsIamApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/users' do
-		json_body = body_to_json(request)
-		if(json_body.nil? || json_body["user"].nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @iam.users.create(json_body["user"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request, "args" => ["user"])
+		begin
+			response = @iam.users.create(json_body["user"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 
@@ -95,16 +96,12 @@ class AwsIamApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/users/login_profile' do
-		json_body = body_to_json(request)
-		if(json_body.nil? || json_body["user"].nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @iam.create_login_profile(json_body["user"]["id"], json_body["user"]["password"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request, "args" => ["user"])
+		begin
+			response = @iam.create_login_profile(json_body["user"]["id"], json_body["user"]["password"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 
@@ -123,16 +120,12 @@ class AwsIamApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/users/access_key' do
-		json_body = body_to_json(request)
-		if(json_body.nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @iam.create_access_key(json_body).body["AccessKey"]
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request)
+		begin
+			response = @iam.create_access_key(json_body).body["AccessKey"]
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 	
@@ -248,16 +241,12 @@ class AwsIamApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/groups' do
-		json_body = body_to_json(request)
-		if(json_body.nil? || json_body["group"].nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @iam.create_group(json_body["group"]["GroupName"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request, "args" => ["group"])
+		begin
+			response = @iam.create_group(json_body["group"]["GroupName"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 

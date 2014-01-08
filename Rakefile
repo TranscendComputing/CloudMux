@@ -40,14 +40,14 @@ namespace :db do
   task :truncate_clouds => [:environment] do
     Cloud.collection.drop
   end
-  
+
   desc "Truncate cloud mappings"
   task :truncate_mappings => [:environment] do
   	Cloud.all.each do |c|
   		c.cloud_mappings = []
   	end
   end
-  
+
   desc "Truncate cloud prices"
   task :truncate_prices => [:environment] do
 	Cloud.all.each do |c|
@@ -119,9 +119,9 @@ namespace :update do
 				new_version.description = "Initial version"
 				new_version.versionable = project
 				new_version.save!
-				
+
 				project_version = project.current_version
-				unless project_version.nil? 
+				unless project_version.nil?
 					project_version.version = "0.1.0"
 					project_version.save!
 				end
@@ -243,7 +243,7 @@ begin
   namespace :analyzer do
     desc "run all code analyzing tools (flog)"
 
-    task :all => ["flog:total"]
+    task :all => ["flog:total", "flay:flay"]
 
     namespace :flog do
       require 'flog_cli'
@@ -254,13 +254,35 @@ begin
         flog.flog %w(app lib)
         average = flog.average.round(1)
         total_score = flog.total_score
-        puts "Average complexity: #{flog.average.round(1)}" 
-        puts "Total complexity: #{flog.total_score.round(1)}" 
+        puts "Average complexity: #{flog.average.round(1)}"
+        puts "Total complexity: #{flog.total_score.round(1)}"
         flog.report
         fail "Average code complexity has exceeded max! (#{average} > #{threshold})" if average > threshold
+      end
+    end
+
+    namespace :flay do
+      require 'flay_task'
+      #desc "Analyze code duplication with flay"
+      FlayTask.new() do |t|
+        t.verbose = true
+        t.threshold = 22000
       end
     end
   end
 rescue LoadError
     # not in dev/test env - skip installing these tasks
+end
+
+namespace :ci do
+  desc "Update continuous integration status for configuration managers"
+  task :update_status do
+    require "lib/cloudmux/chef"
+    config_managers_to_update = ConfigManager.where(:continuous_integration_server_ids.nin => [nil, []])
+    config_managers_to_update.each do |cm|
+      puts "Updating Continuous Integration Status for Config Manager: #{cm.name}"
+        manager = CloudMux::Chef::Manager.new(cm)
+        manager.update_status
+    end
+  end
 end

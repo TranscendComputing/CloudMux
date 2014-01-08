@@ -4,8 +4,10 @@ require 'fog'
 class OpenstackNetworkApp < ResourceApiBase
 
 	before do
-    if(params[:cred_id].nil? || ! Auth.validate(params[:cred_id],"Network","action"))
-      halt [BAD_REQUEST]
+    if(params[:cred_id].nil? || ! Auth.validate(params[:cred_id],"Network Service","action"))
+      message = Error.new.extend(ErrorRepresenter)
+      message.message = "Cannot access this service under current policy."
+      halt [NOT_AUTHORIZED, message.to_json]
     else
       cloud_cred = get_creds(params[:cred_id])
       if cloud_cred.nil?
@@ -67,16 +69,12 @@ class OpenstackNetworkApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/networks' do
-    json_body = body_to_json(request)
-		if(json_body.nil? || json_body["network"].nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @network.networks.create(json_body["network"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+    json_body = body_to_json_or_die("body" => request, "args" => ["network"])
+		begin
+			response = @network.networks.create(json_body["network"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 	
@@ -138,16 +136,12 @@ class OpenstackNetworkApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/subnets' do
-      json_body = body_to_json(request)
-      if(json_body.nil? || json_body["subnet"].nil?)
-        [BAD_REQUEST]
-      else
-        begin
-          response = @network.subnets.create(json_body["subnet"])
-          [OK, response.to_json]
-        rescue => error
-          handle_error(error)
-        end
+      json_body = body_to_json_or_die("body" => request, "args" => ["subnet"])
+      begin
+        response = @network.subnets.create(json_body["subnet"])
+        [OK, response.to_json]
+      rescue => error
+        handle_error(error)
       end
     end
     
@@ -209,16 +203,12 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/ports' do
-      json_body = body_to_json(request)
-      if(json_body.nil? || json_body["port"].nil?)
-        [BAD_REQUEST]
-      else
-        begin
-          response = @network.ports.create(json_body["port"])
-          [OK, response.to_json]
-        rescue => error
-          handle_error(error)
-        end
+      json_body = body_to_json_or_die("body" => request, "args" => ["port"])
+      begin
+        response = @network.ports.create(json_body["port"])
+        [OK, response.to_json]
+      rescue => error
+        handle_error(error)
       end
     end
     
@@ -280,16 +270,12 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/floating_ips' do
-      json_body = body_to_json(request)
-      if(json_body.nil? || json_body["floating_ips"].nil?)
-        [BAD_REQUEST]
-      else
-        begin
-          response = @network.floating_ips.create(json_body["floating_ip"])
-          [OK, response.to_json]
-        rescue => error
-          handle_error(error)
-        end
+      json_body = body_to_json_or_die("body" => request, "args" => ["floating_ips"])
+      begin
+        response = @network.floating_ips.create(json_body["floating_ip"])
+        [OK, response.to_json]
+      rescue => error
+        handle_error(error)
       end
     end
     

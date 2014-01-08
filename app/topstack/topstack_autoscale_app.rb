@@ -4,27 +4,12 @@ require 'fog'
 class TopStackAutoscaleApp < ResourceApiBase
 
 	before do
-		if(params[:cred_id].nil?)
-            halt [BAD_REQUEST]
-        else
-            cloud_cred = get_creds(params[:cred_id])
-            if cloud_cred.nil?
-                halt [NOT_FOUND, "Credentials not found."]
-            else
-                begin
-                    # Find AutoScale service endpoint
-                    endpoint = cloud_cred.cloud_account.cloud_services.where({"service_type"=>"AutoScale"}).first
-                    halt [BAD_REQUEST] if endpoint.nil?
-                    fog_options = {:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key}
-                    fog_options.merge!(:host => endpoint[:host], :port => endpoint[:port], :path => endpoint[:path], :scheme => endpoint[:protocol])
-                    @autoscale = Fog::AWS::AutoScaling.new(fog_options)
-                    halt [BAD_REQUEST] if @autoscale.nil?
-                rescue Fog::Errors::NotFound => error
-                    halt [NOT_FOUND, error.to_s]
-                end
-            end
-        end
-    end
+    params["provider"] = "topstack"
+    params["service_type"] = "AutoScale"
+    @service_long_name = "Auto Scale"
+    @service_class = Fog::AWS::AutoScaling
+    @autoscale = can_access_service(params)
+  end
 
 	#
 	# Autoscale Groups
@@ -78,8 +63,17 @@ class TopStackAutoscaleApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/autoscale_groups' do
-        json_body = body_to_json(request)
-		if(json_body.nil? || json_body["launch_configuration"].nil? || json_body["autoscale_group"].nil? || params[:cred_id].nil?)
+    json_body = body_to_json(request)
+    max_instances = 0
+    if(json_body.nil? || !Auth.validate(params[:cred_id],"Auto Scale","use_image",{:image_id => json_body["instance"]["image_ref"]}))
+      message = Error.new.extend(ErrorRepresenter)
+      message.message = "The image you selected isn't available under current policy."
+      halt [NOT_FOUND, message.to_json]
+    end
+    if ! json_body["autoscale_group"].nil?
+      max_instances = json_body["autoscale_group"]["MaxSize"].to_i - 1
+    end
+		if(json_body.nil? || json_body["launch_configuration"].nil? || json_body["autoscale_group"].nil? || ! Auth.validate(params[:cred_id],"Auto Scale","create_autoscale",{:instance_count=>max_instances.to_i}))
 			[BAD_REQUEST]
 		else
 			begin
@@ -234,13 +228,16 @@ class TopStackAutoscaleApp < ResourceApiBase
   delete '/autoscale_groups/:id' do
 		begin
 			policies = @autoscale.describe_policies({"AutoScalingGroupName" => params[:id]}).body["DescribePoliciesResult"]["ScalingPolicies"]
-			policies.each do |t|
+			# require 'pry'
+   #    binding.pry
+      policies.each do |t|
 				@autoscale.delete_policy(params[:id], t["PolicyName"]) unless t["PolicyName"].nil?
 			end
 			response = @autoscale.groups.get(params[:id]).destroy
 			launch_config = @autoscale.configurations.get(params[:id]+"-lc")
 			if ! launch_config.nil?
-				launch_config.destroy
+  # Feature not implemented
+		# 		launch_config.destroy
 			end
 			[OK, response.to_json]
 		rescue => error

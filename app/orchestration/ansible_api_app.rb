@@ -219,11 +219,32 @@ class AnsibleApiApp < ApiBase
       [BAD_REQUEST, message.to_json]
     else
       begin
-        hosts = @ansible.post_find_hosts(instancedata);
+        result = []
+        add_instances = []
+        hosts = get_hosts()
+        instances.each_with_index{|inst|
+          name = inst["name"]
+          ips = inst["ip_addresses"]
+          host =  hosts.select{ |h| ips.include? h['name']}
+          if host.length > 0
+            result << host[0]
+          else
+            # add hosts not already in results
+            add_instances << inst
+          end
+        }
+        add_instances.each {|inst|
+          name = inst["name"]
+          ips = inst["ip_addresses"]
+          host = post_hosts(
+            ips[-1], # Using the last ip address for name
+            name) # SS name for Ansible description
+          result << {:name => host}
+        }
       rescue Errno::ECONNREFUSED
         [BAD_REQUEST, {:message=>"could not connect to Ansible."}.to_json]
       end
-      [OK, hosts.to_json];
+      [OK, result.to_json];
     end
   end
 
@@ -244,8 +265,13 @@ class AnsibleApiApp < ApiBase
   put '/hosts/:host_id' do
     begin
       jobs = JSON.parse(request.body.read)['jobtemplates']
-      response = @ansible.post_job_templates_run(jobs, params[:host_id])
-      [OK, response.to_json]
+      # we use the hostname for the limit option
+      host = @ansible.get_hosts(params[:host_id])
+      success = @ansible.post_job_templates_run(jobs, host['name'])
+      if success == false
+        return [BAD_REQUEST, {}]
+      end
+      [OK, {}]
     rescue RestClient::Unauthorized
         [BAD_REQUEST, {:message => "Invalid Ansible user/password combination."}];
 

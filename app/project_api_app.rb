@@ -1,6 +1,58 @@
 require 'sinatra'
 
 class ProjectApiApp < ApiBase
+
+  def save_or_fail(project, ok_code)
+    if project.valid?
+      project.save!
+      # refresh without the Update representer, so that we don't serialize private data back
+      project = Project.find(project.id).extend(ProjectRepresenter)
+      [ok_code, project.to_json]
+    else
+      message = Error.new.extend(ErrorRepresenter)
+      message.message = "#{project.errors.full_messages.join(";")}"
+      message.validation_errors = project.errors.to_hash
+      [BAD_REQUEST, message.to_json]
+    end
+  end
+
+  def save_or_fail_variant(variant, ok_code)
+    if variant.valid?
+      variant.save!
+      variant = project_version.find_variant(variant.id)
+      variant.extend(VariantRepresenter)
+      [CREATED, variant.to_json]
+    else
+      message = Error.new.extend(ErrorRepresenter)
+      message.message = "#{variant.errors.full_messages.join(";")}"
+      message.validation_errors = variant.errors.to_hash
+      [BAD_REQUEST, message.to_json]
+    end
+  end
+
+  def return_project(project)
+    if project.valid?
+      project.save!
+      # refresh without the Update representer, so that we don't serialize private data back
+      project = Project.find(project.id).extend(ProjectRepresenter)
+      [ok_code, project.to_json]
+    else
+      message = Error.new.extend(ErrorRepresenter)
+      message.message = "#{project.errors.full_messages.join(";")}"
+      message.validation_errors = project.errors.to_hash
+      [BAD_REQUEST, message.to_json]
+    end
+  end
+
+  def load_project(id)
+    Project.find(id)
+  end
+
+  # Generally load project, except before nodes, elements, embedded projects, variants
+  before %r{^/([\w.]+)} do |id|
+    @project = load_project(id)
+  end
+
   get '/' do
     per_page = (params[:per_page] || 20).to_i
     page = (params[:page] || 1).to_i
@@ -17,16 +69,14 @@ class ProjectApiApp < ApiBase
   end
 
   post '/:id/open/:account_id' do
-    project = Project.find(params[:id])
-    project.opened_by!(params[:account_id])
-    project.extend(ProjectRepresenter)
-    project.to_json
+    @project.opened_by!(params[:account_id])
+    @project.extend(ProjectRepresenter)
+    @project.to_json
   end
-  
+
   post '/:id' do
-    project = Project.find(params[:id])
-	project.extend(ProjectRepresenter)
-	project.to_json
+    @project.extend(ProjectRepresenter)
+    @project.to_json
   end
 
   post '/' do
@@ -42,67 +92,44 @@ class ProjectApiApp < ApiBase
 #    new_project.with_environments(create.with_environments)
     new_project = Project.new.extend(UpdateProjectRepresenter)
     new_project.from_json(request.body.read)
-    if new_project.valid?
-      new_project.save!
-      # refresh without the Update representer, so that we don't serialize private data back
-      project = Project.find(new_project.id).extend(ProjectRepresenter)
-      [CREATED, project.to_json]
-    else
-      message = Error.new.extend(ErrorRepresenter)
-      message.message = "#{new_project.errors.full_messages.join(";")}"
-      message.validation_errors = new_project.errors.to_hash
-      [BAD_REQUEST, message.to_json]
-    end
+    save_or_fail(new_project, CREATED)
   end
 
   put '/:id' do
-    update_project = Project.find(params[:id])
-    update_project.extend(UpdateProjectRepresenter)
-    update_project.from_json(request.body.read)
-    if update_project.valid?
-      update_project.save!
-      # refresh without the Update representer, so that we don't serialize the password data back across
-      project = Project.find(update_project.id).extend(ProjectRepresenter)
-      [OK, project.to_json]
-    else
-      message = Error.new.extend(ErrorRepresenter)
-      message.message = "#{update_project.errors.full_messages.join(";")}"
-      message.validation_errors = update_project.errors.to_hash
-      [BAD_REQUEST, message.to_json]
-    end
+    @project.extend(UpdateProjectRepresenter)
+    @project.from_json(request.body.read)
+    save_or_fail(@project, OK)
   end
 
   delete '/:id' do
-    project = Project.find(params[:id])
-    project.delete
+    @project.delete
     [OK]
   end
 
   # mark a project as archived
   post '/:id/archive' do
-    project = Project.find(params[:id]).extend(ProjectRepresenter)
-    project.archive!
-    [OK, project.to_json]
+    @project.extend(ProjectRepresenter)
+    @project.archive!
+    [OK, @project.to_json]
   end
 
   # mark a project as active
   post '/:id/reactivate' do
-    project = Project.find(params[:id]).extend(ProjectRepresenter)
-    project.active!
-    [OK, project.to_json]
+    @project..extend(ProjectRepresenter)
+    @project.active!
+    [OK, @project.to_json]
   end
 
   # Register a new member to an existing project
   post '/:id/members' do
-    update_project = Project.find(params[:id])
     new_member = Member.new.extend(UpdateMemberRepresenter)
     new_member.from_json(request.body.read)
-    new_member.project = update_project
+    new_member.project = @project
     if new_member.valid?
       new_member.save!
-      project = Project.find(update_project.id).extend(ProjectRepresenter)
-      update_project.extend(ProjectRepresenter)
-      [CREATED, update_project.to_json]
+      project = Project.find(@project.id).extend(ProjectRepresenter)
+      @project.extend(ProjectRepresenter)
+      [CREATED, @project.to_json]
     else
       message = Error.new.extend(ErrorRepresenter)
       message.message = "#{new_member.errors.full_messages.join(";")}"
@@ -113,42 +140,39 @@ class ProjectApiApp < ApiBase
 
   # Remove a member from an existing project
   delete '/:id/members/:member_id' do
-    update_project = Project.find(params[:id])
-    update_project.remove_member!(params[:member_id])
-    project = Project.find(update_project.id).extend(ProjectRepresenter)
-    update_project.extend(ProjectRepresenter)
-    [OK, update_project.to_json]
+    @project.remove_member!(params[:member_id])
+    project = Project.find(@project.id).extend(ProjectRepresenter)
+    @project.extend(ProjectRepresenter)
+    [OK, @project.to_json]
   end
-  
+
   # Register a permission to an existing member
   post '/:id/members/:member_id/permissions' do
-	update_project = Project.find(params[:id])
-	new_permission = Permission.new.extend(UpdatePermissionRepresenter)
-	new_permission.from_json(request.body.read)
-	if new_permission.valid?
-		update_project.add_member_permission!(params[:member_id], new_permission)
-		update_project.extend(ProjectRepresenter)
-		[CREATED, update_project.to_json]
-	else
-		message = Error.new.extend(ErrorRepresenter)
-		message.message = "#{new_permission.errors.full_messages.join(";")}"
-		message.validation_errors = new_permission.errors.to_hash
-		[BAD_REQUEST, message.to_json]
-	end
+   new_permission = Permission.new.extend(UpdatePermissionRepresenter)
+   new_permission.from_json(request.body.read)
+   if new_permission.valid?
+    @project.add_member_permission!(params[:member_id], new_permission)
+    @project.extend(ProjectRepresenter)
+    [CREATED, @project.to_json]
+  else
+    message = Error.new.extend(ErrorRepresenter)
+    message.message = "#{new_permission.errors.full_messages.join(";")}"
+    message.validation_errors = new_permission.errors.to_hash
+    [BAD_REQUEST, message.to_json]
   end
-  
+end
+
   # Remove an existing permission to an existing member
   delete '/:id/members/:member_id/permissions/:permission_id' do
-	update_project = Project.find(params[:id])
-	update_project.remove_member_permission!(params[:member_id], params[:permission_id])
-	update_project.extend(ProjectRepresenter)
-	[OK, update_project.to_json]
+    @project.remove_member_permission!(params[:member_id], params[:permission_id])
+    @project.extend(ProjectRepresenter)
+    [OK, @project.to_json]
   end
-  
+
   # Bulk imports permissions into a user
   post '/:id/members/:member_id/permissions/import' do
     update_project = Project.find(params[:id])
-	results = ImportResults.new.extend(ImportResultsRepresenter)
+    results = ImportResults.new.extend(ImportResultsRepresenter)
     all = Struct.new(:permissions).new.extend(PermissionsRepresenter)
     all.from_json(request.body.read)
 	failures = false
@@ -168,7 +192,7 @@ class ProjectApiApp < ApiBase
 		[CREATED, update_project.to_json]
 	end
   end
-  
+
   # Remove all permissions for an environment from an existing member
   delete '/:id/members/:member_id/env_permissions/:environment' do
 	update_project = Project.find(params[:id])
@@ -201,7 +225,7 @@ class ProjectApiApp < ApiBase
     update_project.extend(ProjectRepresenter)
     [OK, update_project.to_json]
   end
-  
+
   # Register a permission to an existing group
   post '/:id/groups/:group_id/permissions' do
 	update_project = Project.find(params[:id])
@@ -218,7 +242,7 @@ class ProjectApiApp < ApiBase
 		[BAD_REQUEST, message.to_json]
 	end
   end
-  
+
   # Remove an existing permission to an existing group
   delete '/:id/groups/:group_id/permissions/:permission_id' do
 	update_project = Project.find(params[:id])
@@ -226,7 +250,7 @@ class ProjectApiApp < ApiBase
 	update_project.extend(ProjectRepresenter)
 	[OK, update_project.to_json]
   end
-  
+
   # Bulk imports permissions into a group
   post '/:id/groups/:group_id/permissions/import' do
     update_project = Project.find(params[:id])
@@ -250,7 +274,7 @@ class ProjectApiApp < ApiBase
 		[CREATED, update_project.to_json]
 	end
   end
-  
+
   # Remove all permissions for an environment from an existing group
   delete '/:id/groups/:group_id/env_permissions/:environment' do
 	update_project = Project.find(params[:id])
@@ -275,8 +299,8 @@ class ProjectApiApp < ApiBase
       [BAD_REQUEST, message.to_json]
     end
   end
-  
-  # promot the project version
+
+  # promote the project version
   post '/:project_id/versions/:version/promote' do
     project = Project.find(params[:project_id])
     template_version = ProjectVersion.find_for_project(params[:project_id], params[:version])
@@ -293,7 +317,7 @@ class ProjectApiApp < ApiBase
       message.validation_errors = new_environment.errors.to_hash
       [BAD_REQUEST, message.to_json]
     end
-  end  
+  end
 
   get '/:project_id/versions/:version.json' do
     template_version = ProjectVersion.find_for_project(params[:project_id], params[:version] || ProjectVersion::CURRENT)
@@ -303,7 +327,7 @@ class ProjectApiApp < ApiBase
     template_version.extend(ProjectVersionRepresenter)
     [OK, template_version.to_json]
   end
-  
+
   # mark a project version as archived
   post '/:project_id/versions/:version/archive' do
     template_version = ProjectVersion.find_for_project(params[:project_id], params[:version])
@@ -491,17 +515,7 @@ class ProjectApiApp < ApiBase
     new_variant = Variant.new.extend(UpdateVariantRepresenter)
     new_variant.from_json(request.body.read)
     new_variant.variantable = project_version
-    if new_variant.valid?
-      new_variant.save!
-      updated_variant = project_version.find_variant(new_variant.id)
-      updated_variant.extend(VariantRepresenter)
-      [CREATED, updated_variant.to_json]
-    else
-      message = Error.new.extend(ErrorRepresenter)
-      message.message = "#{new_variant.errors.full_messages.join(";")}"
-      message.validation_errors = new_variant.errors.to_hash
-      [BAD_REQUEST, message.to_json]
-    end
+    save_or_fail_variant(new_variant, CREATED)
   end
 
   # update variant
@@ -513,17 +527,7 @@ class ProjectApiApp < ApiBase
     end
     update_variant.extend(UpdateVariantRepresenter)
     update_variant.from_json(request.body.read)
-    if update_variant.valid?
-      update_variant.save!
-      updated_variant = project_version.find_variant(update_variant.id)
-      updated_variant.extend(VariantRepresenter)
-      [OK, updated_variant.to_json]
-    else
-      message = Error.new.extend(ErrorRepresenter)
-      message.message = "#{new_variant.errors.full_messages.join(";")}"
-      message.validation_errors = new_variant.errors.to_hash
-      [BAD_REQUEST, message.to_json]
-    end
+    save_or_fail_variant(update_variant, OK)
   end
 
   # delete variant

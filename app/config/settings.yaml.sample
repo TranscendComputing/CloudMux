@@ -1,0 +1,8 @@
+# --
+# CloudMux Configuration
+# --
+# This is a sample settings file; CloudMux will use a file named "settings.yaml" in # the current directory.
+# The default credentials will be picked up if auth="default_creds" is passed.
+# In fact, any yaml label can be supplied to select credentials.
+mciaas:
+  "endpoint"

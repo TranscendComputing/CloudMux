@@ -5,17 +5,10 @@ require 'net/http'
 class AwsCloudFormationApp < ResourceApiBase
     
     before do
-        if ! params[:cred_id].nil? #&& Auth.validate(params[:cred_id],"CloudFormation","action")
-            cloud_cred = get_creds(params[:cred_id])
-            if ! cloud_cred.nil?
-                if params[:region].nil? || params[:region] == "undefined" || params[:region] == ""
-                    @cf = Fog::AWS::CloudFormation.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
-                else
-                    @cf = Fog::AWS::CloudFormation.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => params[:region]})
-                end
-            end
-        end
-        halt [BAD_REQUEST, {:message=>"cred_id parameter must be specified"}.to_json] if @cf.nil?
+        params["provider"] = "aws"
+        @service_long_name = "CloudFormation"
+        @service_class = Fog::AWS::CloudFormation
+        @cf = can_access_service(params)    
     end
 
     get '/stacks' do
@@ -29,10 +22,18 @@ class AwsCloudFormationApp < ResourceApiBase
     end
 
     post '/stacks' do
+        #"{\"AWSTemplateFormatVersion\":\"2010-09-09\",\"Descr iption\":\"New template created in StackStudio.\",\"Parameters\":{},\"Mappings\":{},\"Resources\":{\"AnsibleInstance\":{\"Type\":\"AWS::EC2::Instance\",\"Properties\":{\"AvailabilityZone\":\"us-east-1a\",\"ImageId\":\"ami-1624987f\",\"Tenancy\":\"default\"}}},\"Outputs\":{}}"
         begin 
             options = params["RequestParams"]
             stack_name = options.delete("StackName")
+            t =  JSON.parse(options['TemplateBody'])
             result = @cf.create_stack(stack_name, options)
+            #t.Resources.each_pair do |name,r|
+            #  if name.slice(0,15) == "AnsibleInstance"
+            #    # Queue Ansible
+            #    print "here\n\n\n"
+            #  end
+            #end
             [OK, result.to_json]
         rescue => error
             [BAD_REQUEST, {:message => error.to_s}.to_json]

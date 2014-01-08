@@ -4,18 +4,11 @@ require 'fog'
 class AwsNotificationApp < ResourceApiBase
 
 	before do
-		if ! params[:cred_id].nil? && Auth.validate(params[:cred_id],"Simple Notification","action")
-			cloud_cred = get_creds(params[:cred_id])
-			if ! cloud_cred.nil?
-				if params[:region].nil? || params[:region] == "undefined" || params[:region] == ""
-					@notification = Fog::AWS::SNS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
-				else
-					@notification = Fog::AWS::SNS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => params[:region]})
-				end
-			end
-		end
-		halt [BAD_REQUEST] if @notification.nil?
-    end
+    params["provider"] = "aws"
+    @service_long_name = "Simple Notification"
+    @service_class = Fog::AWS::SNS
+    @notification = can_access_service(params)
+  end
 
 	#
 	# Topics
@@ -105,17 +98,13 @@ class AwsNotificationApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/topics' do
-		json_body = body_to_json(request)
-		if(json_body.nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @notification.create_topic(json_body["topic"]["name"])
-                Auth.validate(params[:cred_id],"Simple Notification","create_default_alarms",{:params => params, :resource_id => json_body["topic"]["name"], :namespace => "AWS/SNS"})
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request)
+		begin
+			response = @notification.create_topic(json_body["topic"]["name"])
+      Auth.validate(params[:cred_id],"Simple Notification","create_default_alarms",{:params => params, :resource_id => json_body["topic"]["name"], :namespace => "AWS/SNS"})
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 
@@ -189,16 +178,12 @@ class AwsNotificationApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/topics/:id/subscriptions' do
-		json_body = body_to_json(request)
-		if(json_body.nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @notification.subscribe(params[:id], json_body["subscription"]["endpoint"], json_body["subscription"]["protocol"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request)
+		begin
+			response = @notification.subscribe(params[:id], json_body["subscription"]["endpoint"], json_body["subscription"]["protocol"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 

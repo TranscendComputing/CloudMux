@@ -4,17 +4,10 @@ require 'fog'
 class AwsComputeApp < ResourceApiBase
 
 	before do
-		if ! params[:cred_id].nil? && Auth.validate(params[:cred_id],"Elastic Compute Cloud","action")
-			cloud_cred = get_creds(params[:cred_id])
-			if ! cloud_cred.nil?
-				if params[:region].nil? || params[:region] == "undefined" || params[:region] == ""
-					@compute = Fog::Compute::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
-				else
-					@compute = Fog::Compute::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => params[:region]})
-				end
-			end
-		end
-		halt [BAD_REQUEST] if @compute.nil?
+		params["provider"] = "aws"
+		@service_long_name = "Elastic Compute Cloud"
+    	@service_class = Fog::Compute::AWS
+    	@compute = can_access_service(params)
     end
 
 	#
@@ -29,7 +22,7 @@ class AwsComputeApp < ResourceApiBase
     ##~ a.description = "Manage compute resources on the cloud (AWS)"
     ##~ op = a.operations.add
     ##~ op.set :httpMethod => "GET"
-    ##~ op.summary = "Describe current instances (AWS cloud)"  
+    ##~ op.summary = "Describe current instances (AWS cloud)"
     ##~ op.nickname = "describe_instances"
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
@@ -49,40 +42,40 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
     ##~ a = sapi.apis.add
     ##~ a.set :path => "/api/v1/cloud_management/aws/compute/instances"
     ##~ a.description = "Manage compute resources on the cloud (AWS)"
     ##~ op = a.operations.add
     ##~ op.set :httpMethod => "POST"
-    ##~ op.summary = "Run a new instance (AWS cloud)"  
+    ##~ op.summary = "Run a new instance (AWS cloud)"
     ##~ op.nickname = "run_instance"
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, new instance returned", :code => 200
-    ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400	
+    ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/instances' do
 		json_body = body_to_json(request)
-		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_instance",@compute.servers.length))
+		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_instance",{:instance_count => @compute.tags.all(:value=>Auth.find_account(params[:cred_id]).login, :key=>"UserName", "resource-type"=>"instance").length }))
 			[BAD_REQUEST]
 		else
 			begin
                 response = nil
-                
                 if Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_vpc_instance",{:params => params, :instance => json_body["instance"]})
                     response = @compute.servers.create(json_body["instance"])
+                    @compute.tags.create(:resource_id => response.id, :key => "UserName", :value => Auth.find_account(params[:cred_id]).login)
                     #create any default alarms set in policy
                     Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_default_alarms",{:params => params, :resource_id => response.id, :namespace => "AWS/EC2"})
                     Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_auto_tags",{:params => params, :resource_id => response.id})
                 end
-				
+
                 [OK, response.to_json]
 			rescue => error
 				handle_error(error)
 			end
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/instances/:id/start"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -103,7 +96,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/instances/:id/stop"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -124,7 +117,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/instances/:id/reboot"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -145,7 +138,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/instances/:id"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -166,7 +159,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
 	#
 	# Compute Availability Zones
 	#
@@ -196,7 +189,7 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	#
 	# Compute Flavors
 	#
@@ -220,7 +213,7 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	#
 	# Compute Security Group
 	#
@@ -250,7 +243,7 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/security_groups"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -263,19 +256,15 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, new security group returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/security_groups' do
-		json_body = body_to_json(request)
-		if(json_body.nil? || json_body["security_group"].nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @compute.security_groups.create(json_body["security_group"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request,"args" => ["security_group"])
+		begin
+			response = @compute.security_groups.create(json_body["security_group"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/security_groups/:id"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -289,37 +278,33 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, security group deleted", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	delete '/security_groups/:id' do
-			begin
-				response = @compute.security_groups.get_by_id(params[:id]).destroy
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		begin
+			response = @compute.security_groups.get_by_id(params[:id]).destroy
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
+		end
 	end
-    
+
     ##~ a = sapi.apis.add
     ##~ a.set :path => "/api/v1/cloud_management/openstack/compute/security_groups/delete_rule"
     ##~ a.description = "Manage compute resources on the cloud (OpenStack)"
     ##~ op = a.operations.add
     ##~ op.set :httpMethod => "DELETE"
-    ##~ op.summary = "Delete security groups rule (OpenStack cloud)"  
+    ##~ op.summary = "Delete security groups rule (OpenStack cloud)"
     ##~ op.nickname = "delete_rule_security_groups"
     ##~ op.errorResponses.add :reason => "Success, security groups rule deleted", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     delete '/security_groups/delete_rule' do
-        json_body = body_to_json(request)
-        if(json_body.nil? || json_body["group_id"].nil?)
-            [BAD_REQUEST]
-        else
-            begin
-                group = @compute.security_groups.get_by_id(json_body["group_id"])
-                r = json_body["options"]
-                group.revoke_port_range(json_body["range"],{})
-                [OK, @compute.security_groups.get(json_body["group_id"]).to_json]
-            rescue => error
-                handle_error(error)
-            end
+        json_body = body_to_json_or_die("body" => request, "args" => ["group_id"])
+        begin
+            group = @compute.security_groups.get_by_id(json_body["group_id"])
+            r = json_body["options"]
+            group.revoke_port_range(json_body["range"],{})
+            [OK, @compute.security_groups.get(json_body["group_id"]).to_json]
+        rescue => error
+            handle_error(error)
         end
     end
 
@@ -328,29 +313,25 @@ class AwsComputeApp < ResourceApiBase
     ##~ a.description = "Manage compute resources on the cloud (OpenStack)"
     ##~ op = a.operations.add
     ##~ op.set :httpMethod => "PUT"
-    ##~ op.summary = "Add security groups rule (AWS cloud)"  
+    ##~ op.summary = "Add security groups rule (AWS cloud)"
     ##~ op.nickname = "add_rule_security_groups"
     ##~ op.parameters.add :name => "id", :description => "Instance ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     ##~ op.errorResponses.add :reason => "Success, security groups rule added", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     put '/security_groups/:id/add_rule' do
-        json_body = body_to_json(request)
-        if(json_body.nil? || json_body["rule"].nil?)
-            [BAD_REQUEST]
-        else
-            begin
-                rule = json_body["rule"]
-                group = @compute.security_groups.get_by_id(params[:id])
-                group.authorize_port_range(rule["fromPort"].to_i..rule["toPort"].to_i, {:ip_protocol => rule["ipProtocol"], :cidr_ip => rule["cidr"],:group => rule["groupId"]})
-                [OK, @compute.security_groups.get(params[:id]).to_json]
-            rescue => error
-                handle_error(error)
-            end
+        json_body = body_to_json_or_die("body" => request, "args" => ["rule"])
+        begin
+            rule = json_body["rule"]
+            group = @compute.security_groups.get_by_id(params[:id])
+            group.authorize_port_range(rule["fromPort"].to_i..rule["toPort"].to_i, {:ip_protocol => rule["ipProtocol"], :cidr_ip => rule["cidr"],:group => rule["groupId"]})
+            [OK, @compute.security_groups.get(params[:id]).to_json]
+        rescue => error
+            handle_error(error)
         end
     end
-	
-	
+
+
 	#
 	# Compute Key Pairs
 	#
@@ -380,7 +361,7 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/key_pairs"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -406,7 +387,36 @@ class AwsComputeApp < ResourceApiBase
 			end
 		end
 	end
-	
+
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/key_pairs/import"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "POST"
+	##~ op.summary = "Imports key pair (AWS cloud)"
+	##~ op.nickname = "import_key_pair"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "name", :description => "Name to give key pair", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "public_key", :description => "The public key to import", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, instance terminated", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+	post '/key_pairs/import' do
+		body = body_to_json(request);
+		if(body["name"].nil?)
+			[BAD_REQUEST, {:message=>"The necessary parameter 'name' was not specified."}.to_json]
+		elsif (body["public_key"].nil?)
+			[BAD_REQUEST, {:message=>"The public key must be given."}.to_json]
+		else
+			begin
+				response = @compute.import_key_pair(body["name"], body["public_key"])
+				[OK, {:message =>"Successfully imported keypair."}.to_json]
+			rescue => error
+				handle_error(error)
+			end
+		end
+	end
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/key_pairs/:name"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -427,7 +437,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
 	#
 	# Compute Spot Requests
 	#
@@ -457,7 +467,7 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/spot_requests"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -471,18 +481,19 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/spot_requests' do
 		json_body = body_to_json(request)
-		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_spot",@compute.spot_requests.length))
+		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_spot",{:instance_count => @compute.tags.all(:value=>Auth.find_account(params[:cred_id]).login, :key=>"UserName", "resource-type"=>"spot-instances-request").length }))
 			[BAD_REQUEST]
 		else
 			begin
 				response = @compute.spot_requests.create(json_body["spot_request"])
+				@compute.tags.create(:resource_id => response.id, :key => "UserName", :value => Auth.find_account(params[:cred_id]).login)
 				[OK, response.to_json]
 			rescue => error
 				handle_error(error)
 			end
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/spot_requests"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -503,7 +514,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/spot_prices"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -529,7 +540,7 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/spot_prices/current"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -542,16 +553,12 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, current spot prices returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/spot_prices/current' do
-		json_body = body_to_json(request)
-		if(json_body.nil? || json_body["filters"].nil?)
-			[BAD_REQUEST]
-		else
-			filters = json_body["filters"]
-			response = @compute.describe_spot_price_history(filters).body["spotPriceHistorySet"].first
-			[OK, response.to_json]
-		end
+		json_body = body_to_json_or_die("body" => request, "args" => ["filters"])
+		filters = json_body["filters"]
+		response = @compute.describe_spot_price_history(filters).body["spotPriceHistorySet"].first
+		[OK, response.to_json]
 	end
-	
+
 	#
 	# Compute Elastic Ips
 	#
@@ -581,7 +588,7 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/addresses"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -606,7 +613,7 @@ class AwsComputeApp < ResourceApiBase
 		end
 		[OK, response.to_json]
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/addresses/:address"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -627,7 +634,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/addresses/:address/associate/:server_id"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -649,7 +656,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/addresses/:address/dissassoicate"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -670,7 +677,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
 	#
 	# Compute Reserved Instances
 	#
@@ -726,7 +733,7 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/reserved_instances"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -745,18 +752,19 @@ class AwsComputeApp < ResourceApiBase
         else option = reserved_set.length
         end
 		json_body = body_to_json(request)
-		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_reserved", option))
+		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_reserved", {:instance_count => @compute.tags.all(:value=>Auth.find_account(params[:cred_id]).login, :key=>"UserName", "resource-type"=>"reserved-instance").length }))
 			[BAD_REQUEST]
 		else
 			begin
 				response = @compute.purchase_reserved_instances_offering(json_body["reserved_instances_offering_id"], json_body["instance_count"])
+				@compute.tags.create(:resource_id => response.id, :key => "UserName", :value => Auth.find_account(params[:cred_id]).login)
 				[OK, response.to_json]
 			rescue => error
 				handle_error(error)
 			end
 		end
 	end
-	
+
 	#
 	# VPCs
 	#
@@ -786,7 +794,7 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/vpcs"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -799,21 +807,17 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, new VPC returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/vpcs' do
-		json_body = body_to_json(request)
-		if(json_body.nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				if(json_body["vpc"]["InstanceTenancy"].nil?)
-					options = {}
-				else
-					options = {"InstanceTenancy"=>json_body["vpc"]["InstanceTenancy"]}
-				end
-				response = @compute.create_vpc(json_body["vpc"]["CidrBlock"], options)
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
+		json_body = body_to_json_or_die("body" => request)
+		begin
+			if(json_body["vpc"]["InstanceTenancy"].nil?)
+				options = {}
+			else
+				options = {"InstanceTenancy"=>json_body["vpc"]["InstanceTenancy"]}
 			end
+			response = @compute.create_vpc(json_body["vpc"]["CidrBlock"], options)
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 
@@ -859,7 +863,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
 	#
 	# DHCPs
 	#
@@ -889,7 +893,7 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/dhcp_options"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -902,16 +906,12 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, new DHCP option returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/dhcp_options' do
-		json_body = body_to_json(request)
-		if(json_body.nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @compute.dhcp_options.create(json_body["dhcp_option"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request)
+		begin
+			response = @compute.dhcp_options.create(json_body["dhcp_option"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 
@@ -935,7 +935,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
 	#
 	# Internet Gateways
 	#
@@ -965,7 +965,7 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/internet_gateways"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -1051,7 +1051,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-	
+
 	#
 	# Subnets
 	#
@@ -1081,7 +1081,7 @@ class AwsComputeApp < ResourceApiBase
 				handle_error(error)
 		end
 	end
-	
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/subnets"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
@@ -1094,16 +1094,12 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, new subnet returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/subnets' do
-		json_body = body_to_json(request)
-		if(json_body.nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @compute.subnets.create(json_body["subnet"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request)
+		begin
+			response = @compute.subnets.create(json_body["subnet"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 
@@ -1127,7 +1123,7 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
-    
+
     #Images
     get '/images' do
         begin
@@ -1151,7 +1147,7 @@ class AwsComputeApp < ResourceApiBase
             handle_error(error)
         end
     end
-    
+
 	get '/tags' do
         begin
     		filters = params[:filters]

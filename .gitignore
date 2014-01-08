@@ -11,11 +11,11 @@ tags
 # Vim litter
 *.swp
 
-# sandbox
-cloudmux
-
 # logging
 rest_log
 
 # generated
 /coverage
+/turbulence
+
+app/config/settings.y*ml

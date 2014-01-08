@@ -3,6 +3,11 @@ require 'rspec'
 require 'factory_girl'
 require 'simplecov'
 require 'coveralls'
+require 'webmock/rspec'
+
+#
+# [XXX] Disabling Network Access for tests
+#
 
 SimpleCov.formatter = Coveralls::SimpleCov::Formatter
 SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
@@ -21,6 +26,16 @@ ENV['RACK_ENV'] = 'test'
 
 # require the dependencies
 require File.join(File.dirname(__FILE__), '..', 'lib', 'core')
+require File.join(File.dirname(__FILE__), 'support', 'fake_ansible')
+
+WebMock.disable_net_connect! allow_localhost:true
+
+# from http://robots.thoughtbot.com/how-to-stub-external-services-in-tests/
+RSpec.configure do |config|
+  config.before :each do
+    stub_request(:any, /.*the.ansibleserver.com.*/).to_rack FakeAnsible
+  end
+end
 
 #
 # Helper methods

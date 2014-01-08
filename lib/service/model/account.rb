@@ -1,3 +1,4 @@
+require 'service/ldap'
 #
 # Represents a User Account that can be created, authenticated, and updated
 #
@@ -79,7 +80,6 @@ class Account
 
   def password=(pass)
     @password = pass
-
     # only set the encrypted password if we haven't set anything before, or if we are resetting the password
     if self.encrypted_password.nil? or (!self.encrypted_password.nil? and !pass.nil?)
       self.encrypted_password =  pass.nil? ? nil : ::BCrypt::Password.create(pass, { :cost => bcrypt_cost })
@@ -87,6 +87,9 @@ class Account
   end
 
   def auth(pass, now=Time.now)
+    if LDAP_ENABLED
+      return ldap_auth(self.email, pass)
+    end
     if BCrypt::Password.new(self.encrypted_password) == pass
       self.inc(:num_logins, 1)
       self.update_attribute(:last_login_at, now)
@@ -250,8 +253,8 @@ class Account
     def initialize(project_id=nil, project_name=nil, member_id=nil, member_permissions=nil, role=nil, project_status=nil, last_opened_at=nil)
       @project_id = project_id
       @project_name = project_name
-	  @member_id = member_id
-	  @member_permissions = member_permissions
+      @member_id = member_id
+      @member_permissions = member_permissions
       @role = role
       @project_status = project_status
       @last_opened_at = last_opened_at

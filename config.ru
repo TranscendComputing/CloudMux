@@ -6,6 +6,7 @@ require 'bundler/setup'
 require 'sinatra'
 require 'fog'
 
+
 if ENV['RACK_ENV'] == 'production'
   # production config / requires
 else
@@ -27,6 +28,8 @@ require 'app/cloud_api_app'
 require 'app/project_api_app'
 require 'app/provisioning_api_app'
 require 'app/report_api_app'
+require 'app/source_control_repository_api_app'
+require 'app/continuous_integration_server_api_app'
 require 'app/root_app'
 require 'app/resource_api_base'
 require 'app/assembly_api_app'
@@ -60,11 +63,13 @@ require 'app/topstack/topstack_queue_app'
 require 'app/topstack/topstack_cache_app'
 require 'app/topstack/topstack_dns_app'
 require 'app/orchestration/config_managers_api_app'
+require 'app/orchestration/config_manager_validator_api_app'
 require 'app/orchestration/chef_api_app'
 require 'app/orchestration/puppet_api_app'
 require 'app/orchestration/salt_api_app'
 require 'app/orchestration/ansible_api_app'
 require 'app/packed_images/packed_images_app'
+require 'app/queue_item_api_app'
 
 # By default, Ruby buffers its output to stdout. To take advantage of
 # Heroku's realtime logging, you will need to disable this buffering
@@ -201,10 +206,31 @@ map "/stackstudio/v1/report" do
 end
 
 #
+# Source Control Repositories API (internal)
+#
+map "/api/v1/source_control_repositories" do
+  run SourceControlRepositoryApiApp
+end
+
+#
+# Continuous Integration Servers API (internal)
+#
+map "/api/v1/continuous_integration_servers" do
+  run ContinuousIntegrationServerApiApp
+end
+
+#
 # Chef Management API
 #
 map "/stackstudio/v1/orchestration/chef" do
   run ChefApiApp
+end
+
+#
+# Configuration Management Validator API
+#
+map "/api/v1/validator" do
+  run ConfigManagerValidatorApiApp
 end
 
 #
@@ -548,9 +574,16 @@ map "/stackstudio/v1/cloud_management/google/object_storage" do
 end
 
 #
-#	Configuration Managers API
+# Configuration Managers API
 #
 map "/stackstudio/v1/orchestration/managers" do
+  run ConfigManagerApiApp
+end
+
+#
+#	Configuration Managers API
+#
+map "/api/v1/orchestration/managers" do
   run ConfigManagerApiApp
 end
 
@@ -561,3 +594,9 @@ map "/stackstudio/v1/packed_images" do
   run PackedImagesApiApp
 end
 
+#
+# Queue Items API 
+#
+map "/stackstudio/v1/queue/item" do
+  run QueueItemApiApp
+end

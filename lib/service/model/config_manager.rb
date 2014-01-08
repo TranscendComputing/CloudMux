@@ -1,17 +1,43 @@
 class ConfigManager
 	include Mongoid::Document
+    include Mongoid::Timestamps
+    
+    belongs_to :org, :foreign_key => 'org_id'
+
     field :protocol, type:String
-    field :host, type:String
-    field :port, type:String
-	field :path, type:String
+    field :url, type:String
 	field :enabled, type:Boolean
     field :type, type:String
     field :name, type:String
-
-    field :org
-
     field :auth_properties, type:Hash
+    field :branch, type:String
+    field :source_control_paths, type:Array
 
-    belongs_to :org
     has_and_belongs_to_many :cloud_accounts
+    has_and_belongs_to_many :continuous_integration_servers
+    has_and_belongs_to_many :source_control_repositories
+
+    validates_presence_of :name
+    validates_presence_of :url
+
+    def as_json
+        attributes = get_attributes
+        {"config_manager"=>attributes}
+    end
+
+    def to_json
+        attributes = get_attributes
+        {"config_manager"=>attributes}.to_json
+    end
+
+    def get_attributes
+        attributes = self.attributes
+        attributes["cloud_account_ids"] = self.cloud_account_ids
+        attributes["continuous_integration_servers"] = []
+        attributes["source_control_repositories"] = []
+        self.cloud_accounts.each{|ca| attributes["cloud_account_ids"] << ca.id}
+        self.continuous_integration_servers.each{|ci| attributes["continuous_integration_servers"] << ci.as_json}
+        self.source_control_repositories.each{|scr| attributes["source_control_repositories"] << scr.as_json}
+        return attributes
+    end
 end

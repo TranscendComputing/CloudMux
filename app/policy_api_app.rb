@@ -27,16 +27,24 @@ class PolicyApiApp < ApiBase
         if ! policy_json.nil? && ! policy_json["name"].nil?
             policy = policy_json["policy"]
             policy_os = policy_json["policy_os"]
-            name = policy_json["name"]
-            myOrg = Org.find(params[:org_id])
-            gp = GroupPolicy.new(
-                name: name,
-                os_governance: policy_os,
-                aws_governance: policy,
-                org: myOrg
-            )
-            gp.save!
-            [OK, gp.to_json]
+            policy_pw = policy_json["policy_pw"]
+            if Auth.validate_integer_input(policy_pw["min_password_length"],0)
+                name = policy_json["name"]
+                myOrg = Org.find(params[:org_id])
+                gp = GroupPolicy.new(
+                    name: name,
+                    os_governance: policy_os,
+                    aws_governance: policy,
+                    org_governance: policy_pw,
+                    org: myOrg
+                )
+                gp.save!
+                [OK, gp.to_json]
+            else
+                message = Error.new.extend(ErrorRepresenter)
+                message.message = "The password length field must contain numbers and cannot be empty or zero"
+                [BAD_REQUEST, message.to_json]
+            end
         else
             [BAD_REQUEST]
         end
@@ -59,22 +67,28 @@ class PolicyApiApp < ApiBase
     
     #Set Policy to Group
     post '/groups' do
-        pg = body_to_json(request)
-        policy_to_group = pg["policy"]
-        if ((!policy_to_group.nil?) && (!policy_to_group["group_id"].nil?) && (!policy_to_group["group_policy_id"].nil?))
-            group = Group.find(policy_to_group["group_id"])
-            
-            if policy_to_group["group_policy_id"] != "None"
-                group_policy = GroupPolicy.find(policy_to_group["group_policy_id"])
+        if Auth.validate_admin(params[:login])
+            pg = body_to_json(request)
+            policy_to_group = pg["policy"]
+            if ((!policy_to_group.nil?) && (!policy_to_group["group_id"].nil?) && (!policy_to_group["group_policy_id"].nil?))
+                group = Group.find(policy_to_group["group_id"])
+                
+                if policy_to_group["group_policy_id"] != "None"
+                    group_policy = GroupPolicy.find(policy_to_group["group_policy_id"])
+                else
+                    group_policy = nil
+                end
+                
+                group.group_policy = group_policy
+                group.save!
+                [OK, group.to_json]
             else
-                group_policy = nil
+                [BAD_REQUEST]
             end
-            
-            group.group_policy = group_policy
-            group.save!
-            [OK, group.to_json]
         else
-            [BAD_REQUEST]
+            message = Error.new.extend(ErrorRepresenter)
+            message.message = "Cannot set a policy to a group without admin permissions."
+            [NOT_AUTHORIZED, message.to_json]
         end
     end
     
@@ -91,13 +105,21 @@ class PolicyApiApp < ApiBase
             policy = policy_json["policy"]
             name = policy_json["name"]
             policy_os = policy_json["policy_os"]
-            updatePolicy = GroupPolicy.find(params[:id])
-            updatePolicy.update_attributes(
-              name: name,
-              aws_governance: policy,
-              os_governance: policy_os
-            )
-            [OK, updatePolicy.to_json]
+            policy_pw = policy_json["policy_pw"]
+            if Auth.validate_integer_input(policy_pw["min_password_length"],0)
+                updatePolicy = GroupPolicy.find(params[:id])
+                updatePolicy.update_attributes(
+                  name: name,
+                  aws_governance: policy,
+                  os_governance: policy_os,
+                  org_governance: policy_pw
+                )
+                [OK, updatePolicy.to_json]
+            else
+                message = Error.new.extend(ErrorRepresenter)
+                message.message = "The password length field must contain numbers and cannot be empty or zero"
+                [BAD_REQUEST, message.to_json]
+            end
         else
             [BAD_REQUEST]
         end
@@ -115,9 +137,7 @@ class PolicyApiApp < ApiBase
     end
     
     def find_account(cloud_credential_id)
-      return nil if cloud_credential_id.nil?
-      account = Account.where({"cloud_credentials._id"=>Moped::BSON::ObjectId.from_string(cloud_credential_id.to_s)}).first
-      (account.nil? ? nil : account)
+        Auth.find_account(cloud_credential_id)
     end
     
     def find_group_rules(cred_id)
