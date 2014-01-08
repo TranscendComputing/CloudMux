@@ -400,6 +400,23 @@ class OpenstackComputeApp < ResourceApiBase
             end
         end
     end
+
+    post '/key_pairs/import' do
+        json_body = body_to_json_or_die("body" => request, "args" => ["key_pair"])["key_pair"]
+
+        if(json_body["name"].nil?)
+            [BAD_REQUEST, {:message=>"Must provide parameter name"}.to_json]
+        elsif(json_body["public_key"].nil?)
+            [BAD_REQUEST, {:message=>"Must provide parameter public_key"}.to_json]
+        else
+            begin
+                response = @compute.create_key_pair(json_body["name"], json_body["public_key"])
+                [OK, {:message =>"Successfully imported keypair."}.to_json]
+            rescue => error
+                handle_error(error)
+            end
+        end
+    end
     
     ##~ a = sapi.apis.add
     ##~ a.set :path => "/api/v1/cloud_management/openstack/compute/key_pairs/:id"
