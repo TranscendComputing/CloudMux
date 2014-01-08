@@ -1,5 +1,7 @@
 require 'sinatra/base'
 
+# TODO: complete coverage for what we use of the Ansible API.
+
 class FakeAnsible < Sinatra::Base
   post '/api/v1/authtoken/' do
     json_response 200, 'ansible/authtoken_ok.json'

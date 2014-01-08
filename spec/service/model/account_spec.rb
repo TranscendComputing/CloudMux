@@ -124,6 +124,12 @@ describe Account do
       @account.auth(@account.password, now)
       @account.last_login_at.to_s.should eq(now.to_s)
     end
+
+    it "should authenticate against an LDAP server" do
+      pending "Creating a mock LDAP service"
+      @account.email = 'test@ldap.com'
+      @account.auth(@account.password)
+    end
   end
 
   describe "#country_code=" do
