@@ -93,7 +93,7 @@ class Account
     if BCrypt::Password.new(self.encrypted_password) == pass
       self.inc(:num_logins, 1)
       self.update_attribute(:last_login_at, now)
-      true
+      return true
     end
     return false
   end
