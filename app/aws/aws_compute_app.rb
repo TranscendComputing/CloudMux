@@ -388,6 +388,22 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 
+	post '/key_pairs/import' do
+		body = body_to_json(request);
+		if(body["name"].nil?)
+			[BAD_REQUEST, {:message=>"The necessary parameter 'name' was not specified."}.to_json]
+		elsif (body["public_key"].nil?)
+			[BAD_REQUEST, {:message=>"The public key must be given."}.to_json]
+		else
+			begin
+				response = @compute.import_key_pair(body["name"], body["public_key"])
+				[OK, {:message =>"Successfully imported keypair."}.to_json]
+			rescue => error
+				handle_error(error)
+			end
+		end
+	end
+
 	##~ a = sapi.apis.add
 	##~ a.set :path => "/api/v1/cloud_management/aws/compute/key_pairs/:name"
 	##~ a.description = "Manage compute resources on the cloud (AWS)"
