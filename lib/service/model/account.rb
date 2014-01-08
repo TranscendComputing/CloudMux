@@ -1,3 +1,4 @@
+require 'service/ldap'
 #
 # Represents a User Account that can be created, authenticated, and updated
 #
@@ -87,19 +88,7 @@ class Account
 
   def auth(pass, now=Time.now)
     if LDAP_ENABLED
-      ldap = LDAP.connect
-      unless ldap.connection.nil?
-        user = ldap.find({
-          :attribute=>"sAMAccountName",
-          :value=> self.email })
-        begin
-          if user.bind(pass)
-            true
-          end
-        rescue
-          false
-        end
-      end
+      return ldap_auth(self.email, pass)
     end
     if BCrypt::Password.new(self.encrypted_password) == pass
       self.inc(:num_logins, 1)

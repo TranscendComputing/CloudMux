@@ -6,15 +6,13 @@ require 'bundler/setup'
 require 'sinatra'
 require 'fog'
 
+
 if ENV['RACK_ENV'] == 'production'
   # production config / requires
 else
   # development or testing only
   use Rack::ShowExceptions
 end
-
-# our ldap settings
-require File.join(File.dirname(__FILE__), 'config_ldap')
 
 # require the dependencies
 require File.join(File.dirname(__FILE__), 'app', 'init')

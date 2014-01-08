@@ -1,0 +1,14 @@
+development:
+  host: dc.exampleco.com
+  base_domain: exampleco.com
+  method: simple
+
+test:
+  host: 127.0.0.1
+  base_domain: exampleco.com
+  method: simple
+
+production:
+  host: 127.0.0.1
+  base_domain: exampleco.com
+  method: simple
