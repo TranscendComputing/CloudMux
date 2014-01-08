@@ -388,6 +388,19 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/key_pairs/import"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "POST"
+	##~ op.summary = "Imports key pair (AWS cloud)"
+	##~ op.nickname = "import_key_pair"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "name", :description => "Name to give key pair", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "public_key", :description => "The public key to import", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, instance terminated", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/key_pairs/import' do
 		body = body_to_json(request);
 		if(body["name"].nil?)
