@@ -38,7 +38,7 @@ gem "spice"
 #Should use ridley instead of spice, but ridley and mongoid are currently incompatible until mongoid 4.0 release or fixes with Ridley for Boolean class definition.
 gem 'ridley-connectors'
 gem 'ridley', :git => 'https://github.com/cstewart87/ridley.git', :branch => 'boolean_updates'
-gem 'buff-extensions', :git => 'https://github.com/cstewart87/buff-extensions.git'
+gem 'buff-extensions', :git => 'https://github.com/cstewart87/buff-extensions.git', :ref => '892a096d'
 
 # SCM
 gem 'git'
