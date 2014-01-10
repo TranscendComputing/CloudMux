@@ -74,9 +74,8 @@ module CloudMux
         all_cookbooks = (repo.cookbook_names | server_client.cookbook_names)
         all_cookbooks.each do |name|
           cb_model = @model.cookbooks.find_or_create_by(name: name)
-          if cb_model.status.nil?
-            cb_model.status = ci_client.new_cookbook_status
-          end
+          cb_model.status = {} if cb_model.status.nil?
+          cb_model.status.merge!(ci_client.new_cookbook_status)
           cb_model.save!
         end
       end
