@@ -88,8 +88,10 @@ class Account
 
   def auth(pass, now=Time.now)
     if LDAP_ENABLED
-      return ldap_auth(self.email, pass)
+      @ldap =  LdapGateway.new
+      return @ldap.auth self.email, pass
     end
+
     if BCrypt::Password.new(self.encrypted_password) == pass
       self.inc(:num_logins, 1)
       self.update_attribute(:last_login_at, now)
