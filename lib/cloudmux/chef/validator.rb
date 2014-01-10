@@ -21,9 +21,10 @@ module CloudMux
         cookbook_model = args[:data_model]
         repo = args[:repo]
         server_client = args[:server_client]
-        ci_status = args[:ci_client].all_build_job_states(cookbook_model.name)
+        build_status = args[:ci_client].all_build_job_states(cookbook_model.name)
+        deploy_status = args[:ci_client]..all_deploy_job_states(cookbook_model.name)
+        ci_status = build_status.merge(deploy_status)
         sync_status = check_repo_sync(cookbook_model.name, repo, server_client)
-        cookbook_model.status.merge!(args[:ci_client].new_cookbook_status)
         cookbook_model.status = ci_status.merge(sync_status)
         cookbook_model.save!
       end
