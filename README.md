@@ -16,7 +16,7 @@ CloudMux currently supports the following clouds:
 
 <!--- You can explore the REST API at the [API Doc browser](/docs/). -->
 
-![CloudMux Architecture](/docs/CloudMuxArchitecture.png "CloudMux Architecture")
+![CloudMux Architecture](https://raw2.github.com/TranscendComputing/CloudMux/master/docs/CloudMuxArchitecture.png "CloudMux Architecture")
 
 Getting Started
 ---------------
