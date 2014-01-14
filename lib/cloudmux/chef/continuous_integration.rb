@@ -22,13 +22,15 @@ module CloudMux
     class ContinuousIntegration < CloudMux::Jenkins::Client
       attr_accessor :chef_repo
 
-      DEPLOY_CONFIG = "#{File.dirname(__FILE__)}/configs/deploy_config.yml"
+      DEPLOY_CONFIG = ENV['KITCHEN_DRIVER_CONFIG'] ||
+        "#{File.dirname(__FILE__)}/configs/deploy_config.yml"
       BUILD_TESTS   = %w{ rspec foodcritic syntax }
+
       # Used for generating/referencing job names
-      VERSION_SEPARATOR     = '.'
-      VERSION_SEPARATOR_SUB = '--'
-      NAME_SEPARATOR        = '__'
-      DEPLOY_SEPARATOR      = '-'
+      VERSION_SEPARATOR     = '.'  # Dot
+      VERSION_SEPARATOR_SUB = '--' # Double dash
+      NAME_SEPARATOR        = '__' # Double underscore
+      DEPLOY_SEPARATOR      = '_'  # Single underscor
 
       def delete_all_jobs
         @chef_repo.cookbook_names.each do |name|

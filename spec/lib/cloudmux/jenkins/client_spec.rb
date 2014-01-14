@@ -17,7 +17,10 @@ describe CloudMux::Jenkins::Client do
     @ci_client.stub(:job).and_return(@job)
     @job.stub(:create_or_update).and_return('200')
     @job.stub(:build).and_return('200')
-    @job.stub(:get_build_details).with('no_job', 0).and_return(nil)
+    @job.stub(:exists?).with('no_job').and_return(false)
+    @job.stub(:exists?).with('deploy_job').and_return(true)
+    @job.stub(:exists?).with('build_job').and_return(true)
+    @job.stub(:get_builds).and_return(['not_empty'])
     @job.stub(:get_build_details)
       .with('deploy_job', 0)
       .and_return('result' => 'PASSING', 'timestamp' => 1389390581000)
@@ -42,7 +45,9 @@ describe CloudMux::Jenkins::Client do
   context 'when job does not exist' do
     describe '#get_status' do
       it 'returns nil' do
-        expect(client.get_status('no_job')).to eql(nil)
+        expect(client.get_status('no_job')).to eql(
+          'status' => 'NONE', 'timestamp' => 'N/A'
+        )
       end
     end
   end
@@ -51,17 +56,15 @@ describe CloudMux::Jenkins::Client do
     describe '#get_status' do
       it 'returns a hash' do
         status = client.get_status('deploy_job')
-        expect(status).to have_key('global_status')
         expect(status).to have_key('timestamp')
       end
     end
   end
 
   context 'when build job exists' do
-    describe '#get_status' do
+    describe '#get_suite' do
       it 'returns a hash' do
-        status = client.get_status('build_job')
-        expect(status).to have_key('global_status')
+        status = client.get_suite('build_job')
         expect(status).to have_key('test')
         expect(status).to have_key('timestamp')
       end
