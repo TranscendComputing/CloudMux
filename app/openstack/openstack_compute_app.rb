@@ -145,6 +145,34 @@ class OpenstackComputeApp < ResourceApiBase
             handle_error(error)
         end
     end
+
+    get '/instances/:id/security_groups' do
+        begin
+            groups = @compute.servers.get(params[:id]).security_groups
+            response = groups.collect{|group|
+                group.attributes
+            }
+            [OK, response.to_json]
+        rescue => error
+            handle_error(error)
+        end
+    end
+
+    post '/instances/:id/change_groups' do
+        begin
+            body = body_to_json(request)
+            body["add"].each do |name| 
+                @compute.add_security_group(params[:id], name)
+            end
+            body["remove"].each do |name| 
+                @compute.remove_security_group(params[:id], name)
+            end
+            [OK, {:message=>"Security groups successfully changed"}.to_json]
+        rescue => error
+            handle_error(error)
+        end
+    end
+
     
     ##~ a = sapi.apis.add
     ##~ a.set :path => "/api/v1/cloud_management/openstack/compute/instances/:id"
