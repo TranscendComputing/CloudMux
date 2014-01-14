@@ -4,7 +4,7 @@ class ChefConfigurationManager < ConfigManager
   embeds_many :cookbooks
 
   def add_cookbook!(cookbook)
-    self.cookbooks << cookbook
+    cookbooks << cookbook
     self.save!
-  end 
+  end
 end

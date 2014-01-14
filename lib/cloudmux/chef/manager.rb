@@ -53,7 +53,7 @@ module CloudMux
       def update_status
         setup_manageable_objects
         @model.cookbooks.each do |cb|
-          refresh_status(cb)
+          refresh_status(cb) unless cb.community
         end
       end
 
@@ -67,20 +67,26 @@ module CloudMux
       end
 
       def generate_all_jobs
-        ci_client.generate_all_jobs
+        repo.cookbook_names.each do |name|
+          ci_client.create_build_job(name)
+          ci_client.create_deploy_jobs(name)
+        end
       end
 
       def setup_manageable_objects
-        all_cookbooks = (repo.cookbook_names | server_client.cookbook_names)
         all_cookbooks.each do |name|
           cb_model = @model.cookbooks.find_or_create_by(name: name)
           cb_model.status = {} if cb_model.status.nil?
-          cb_model.status.merge!(ci_client.new_cookbook_status)
+          cb_model.status = ci_client.default_status.merge(cb_model.status)
           cb_model.save!
         end
       end
 
       private
+
+      def all_cookbooks
+        repo.cookbook_names | server_client.cookbook_names
+      end
 
       def has_ci_presence?(return_status)
         stat = return_status.dup
