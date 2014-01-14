@@ -1,10 +1,14 @@
 ---
 
 driver_plugins:
-  vagrant:
+  openstack:
     'ubuntu-12.04':
-      box: canonical-ubuntu-12.04
-      box_url: https://opscode-vm.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_chef-11.4.4.box
-    'centos-6.4':
-      box: opscode-centos-6.4
-      box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_centos-6.4_provisionerless.box
+      openstack_username: att_jenkins
+      openstack_api_key: att_jenkins
+      openstack_auth_url: 'http://172.31.254.27:35357/v2.0/tokens'
+      require_chef_omnibus: latest
+      image_ref: 72df9ffd-0a4e-46c7-9280-6f87ab302b98
+      flavor_ref: 7
+      openstack_tenant: TranscendDev
+      key_name: att_jenkins
+      private_key_path: /var/lib/jenkins/.ssh/att_jenkins.pem

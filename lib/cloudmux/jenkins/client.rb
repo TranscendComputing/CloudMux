@@ -16,11 +16,12 @@
 
 require 'jenkins_api_client'
 require 'erubis'
+require 'logger'
 
 module CloudMux
   module Jenkins
+    # Jenkins api client interface
     class Client
-
       def initialize(data_model)
         args = { server_url: data_model.url }
         unless data_model.username.nil?
@@ -31,16 +32,30 @@ module CloudMux
         end
         @client = JenkinsApi::Client.new(args)
         @client.logger.level = Logger.const_get 'ERROR'
+        @logger = Logger.new(STDOUT)
+        @logger.level = Logger::DEBUG
       end
 
       def list_jobs(test_type)
         @client.job.list(test_type).map { |j| @client.job.list_details(j) }
       end
 
-      def get_status(job_name, suite_type)
-        suite = get_suite_results(job_name, suite_type)
-        return 'NONE' if suite.nil?
-        suite['cases'].find { |test| test['status'] != 'PASSED' }.nil? ? 'PASSING' : 'FAILING'
+      def get_status(job_name, build = 0)
+        return {} if @client.job.get_builds(job_name).empty?
+        results = @client.job.get_build_details(job_name, build)
+        return {} if results.nil?
+        timestamp = Time.at(results['timestamp'] / 1000).to_datetime
+        status = { 'global_status' => results['result'] }
+        tests = @client.job.get_test_results(job_name, build)
+        unless tests.nil?
+          h = tests['suites'].map do |t|
+            s = t['cases'].find { |test| test['status'] != 'PASSED' }
+            formatted_status = s.nil? ? 'PASSING' : 'FAILING'
+            [t['name'], formatted_status]
+          end
+          status.merge!(Hash[h])
+        end
+        status.merge('timestamp' => timestamp.to_s)
       end
 
       def save_job(job_name, xml_config)
@@ -58,21 +73,8 @@ module CloudMux
       def job_template(path, vars = {})
         job_template = File.join(File.dirname(__FILE__), 'jobs', "#{path}.erb")
         content      = File.read(job_template)
-        Erubis::Eruby.new(content).result(vars)        
+        Erubis::Eruby.new(content).result(vars)
       end
-
-      private
-
-      def get_suite_results(job_name, suite_type)
-        job_results = get_test_results(job_name)
-        return nil if job_results.nil?
-        job_results['suites'].find { |suite| suite['name'] =~ /#{suite_type}/ }
-      end
-
-      def get_test_results(name, build = 0)
-        @client.job.get_test_results(name, build)
-      end
-
     end
   end
 end
