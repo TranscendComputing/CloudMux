@@ -53,7 +53,7 @@ module CloudMux
       def update_status
         setup_manageable_objects
         @model.cookbooks.each do |cb|
-          refresh_status(cb)
+          refresh_status(cb) unless cb.community
         end
       end
 
@@ -77,7 +77,7 @@ module CloudMux
         all_cookbooks.each do |name|
           cb_model = @model.cookbooks.find_or_create_by(name: name)
           cb_model.status = {} if cb_model.status.nil?
-          cb_model.status.merge!(ci_client.default_status)
+          cb_model.status = ci_client.default_status.merge(cb_model.status)
           cb_model.save!
         end
       end

@@ -96,10 +96,14 @@ module CloudMux
         @logger.debug("Getting job status for #{cookbook}")
         build_job = get_job_name(cookbook, 'build')
         cookbook_status = default_status.dup
-        cookbook_status.merge!(get_status(build_job))
+        cookbook_status.merge!(get_suite(build_job))
         deploy_jobs.each do |job|
           deploy_job = get_job_name(cookbook, job)
-          cookbook_status.merge!(get_status(deploy_job))
+          results = get_status(deploy_job)
+          cookbook_status.merge!(
+            "#{job}" => results['status'],
+            'timestamp' => results['timestamp']
+          )
         end
         cookbook_status
       end
@@ -107,7 +111,7 @@ module CloudMux
       def default_status
         status = Hash[BUILD_TESTS.map { |t| [t, 'NONE'] }]
         status.merge! Hash[deploy_jobs.map { |t| [t, 'NONE'] }]
-        status.merge!('sync' => 'NONE')
+        status.merge!('sync' => 'NONE', 'timestamp' => 'N/A')
       end
 
       private

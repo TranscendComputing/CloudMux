@@ -40,21 +40,21 @@ module CloudMux
         @client.job.list(test_type).map { |j| @client.job.list_details(j) }
       end
 
-      def get_status(job_name, build = 0)
-        return {} if @client.job.get_builds(job_name).empty?
+      def get_suite(job_name, build = 0)
+        return empty_status unless non_empty_job?(job_name)
         results = @client.job.get_build_details(job_name, build)
-        return {} if results.nil?
         timestamp = Time.at(results['timestamp'] / 1000).to_datetime
-        status = { 'global_status' => results['result'] }
+        status = {}
         tests = @client.job.get_test_results(job_name, build)
-        unless tests.nil?
-          h = tests['suites'].map do |t|
-            s = t['cases'].find { |test| test['status'] != 'PASSED' }
-            formatted_status = s.nil? ? 'PASSING' : 'FAILING'
-            [t['name'], formatted_status]
-          end
-          status.merge!(Hash[h])
-        end
+        status.merge!(suite_status(tests)) unless tests.nil?
+        status.merge('timestamp' => timestamp.to_s)
+      end
+
+      def get_status(job_name, build = 0)
+        return empty_status unless non_empty_job?(job_name)
+        results = @client.job.get_build_details(job_name, build)
+        timestamp = Time.at(results['timestamp'] / 1000).to_datetime
+        status = { 'status' => results['result'] }
         status.merge('timestamp' => timestamp.to_s)
       end
 
@@ -74,6 +74,25 @@ module CloudMux
         job_template = File.join(File.dirname(__FILE__), 'jobs', "#{path}.erb")
         content      = File.read(job_template)
         Erubis::Eruby.new(content).result(vars)
+      end
+
+      private
+
+      def empty_status
+        { 'status' => 'NONE', 'timestamp' => 'N/A' }
+      end
+
+      def non_empty_job?(name)
+        @client.job.exists?(name) && !@client.job.get_builds(name).empty?
+      end
+
+      def suite_status(tests)
+        h = tests['suites'].map do |t|
+          s = t['cases'].find { |test| test['status'] != 'PASSED' }
+          formatted_status = s.nil? ? 'PASSED' : 'FAILURE'
+          [t['name'], formatted_status]
+        end
+        Hash[h]
       end
     end
   end
