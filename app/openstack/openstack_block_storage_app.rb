@@ -87,6 +87,7 @@ class OpenstackBlockStorageApp < ResourceApiBase
   delete '/volumes/:id' do
 		begin
 			response = @block_storage.volumes.get(params[:id]).destroy
+      UserResource.delete_resource(params[:id])
 			[OK, response.to_json]
 		rescue => error
 			handle_error(error)
