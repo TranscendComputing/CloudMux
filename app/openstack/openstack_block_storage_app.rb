@@ -59,9 +59,13 @@ class OpenstackBlockStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/volumes' do
+    # require 'pry'
+    # binding.pry
 		json_body = body_to_json_or_die("body" => request)
 		begin
 			response = @block_storage.volumes.create(json_body["volume"])
+      tags = UserResource.new(:account_id => Auth.find_account(params[:cred_id]).id, :resource_id => response.id, :resource_type => "Block Storage", :operation => "create", :size => json_body["volume"]["size"]);
+      tags.save!
 			[OK, response.to_json]
 		rescue => error
 			handle_error(error)
