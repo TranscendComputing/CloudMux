@@ -21,13 +21,13 @@ class UserResource
      return self.where(account_id:account).first
   end
 
-  # changes the operation flag to delete. This will keep copy in database but not show in query.
+  # deletes the resource tag.
   def self.delete_resource(resource)
     return nil if resource.nil? or resource.empty?
-    self.where(resource_id:resource).first.update_attributes(operation:"delete")
+    self.where(resource_id:resource).first.destroy
   end
 
-  # returns the count of a type of resource associated with an account.
+  # returns the tag count of a type of resource associated with an account.
   def self.count_resources(user_id,type)
     self.where(account_id:user_id,resource_type:type,operation:"create").count
   end
