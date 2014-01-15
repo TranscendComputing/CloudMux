@@ -20,6 +20,9 @@ class Account
   field :login, type:String
   field :encrypted_password, type:String
 
+  # user resources
+  has_many :user_resources
+
   # location and organization details
   field :company, type:String
   belongs_to :org, :foreign_key => 'org_id'
