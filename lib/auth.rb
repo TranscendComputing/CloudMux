@@ -121,6 +121,8 @@ module Auth
                     return self.canCreateInstance('max_reserved')
                 when "create_autoscale"
                     return self.canCreateInstance('max_in_autoscale')
+                when "create_block_storage"
+                    return self.canCreateInstance('max_volumes')
                 when "create_default_alarms"
                     return self.createAlarms()
                 when "create_auto_tags"
