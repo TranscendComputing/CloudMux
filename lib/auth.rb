@@ -122,7 +122,7 @@ module Auth
                 when "create_autoscale"
                     return self.canCreateInstance('max_in_autoscale')
                 when "create_block_storage"
-                    return self.canCreateInstance('max_volumes')
+                    return (self.canCreateInstance('max_volumes_size') && self.canCreateInstance('max_volumes'))
                 when "create_default_alarms"
                     return self.createAlarms()
                 when "create_auto_tags"
@@ -176,8 +176,8 @@ module Auth
             user_instance_count = 0
             user_info = ""
             if(!option_count.nil?)
-                    if(option_count > 0)
-                        user_instance_count = option_count
+                    if(option_count.to_i > 0)
+                        user_instance_count = option_count.to_i
                     end                    
             else       
                 resources.each do |resource|
@@ -211,7 +211,11 @@ module Auth
         #Max Instances
         def canCreateInstance(max)
             max_instance = @governance[max]
-            user_instances = self.userIntanceCount()
+            if max === "max_volumes_size"
+                user_instances = UserResource.count_total_size(@account.id) + @options[:volume_size].to_i - 1
+            else
+                user_instances = self.userIntanceCount()
+            end
             if max_instance == ""
                 return true
             elsif user_instances >= max_instance.to_i

@@ -61,7 +61,7 @@ class OpenstackBlockStorageApp < ResourceApiBase
   post '/volumes' do
     json_body = body_to_json(request)
     user_id = Auth.find_account(params[:cred_id]).id
-		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Block Storage","create_block_storage",{:instance_count => UserResource.count_resources(user_id,"Block Storage")}))
+		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Block Storage","create_block_storage",{:instance_count => UserResource.count_resources(user_id,"Block Storage"), :volume_size => json_body["volume"]["size"]}))
       message = Error.new.extend(ErrorRepresenter)
       if(json_body.nil?)
         message.message = "Request had invalid parameters"

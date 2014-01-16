@@ -31,4 +31,15 @@ class UserResource
   def self.count_resources(user_id,type)
     self.where(account_id:user_id,resource_type:type,operation:"create").count
   end
+
+  # returns the current amount of GB used by an account.
+  def self.count_total_size(user_id)
+    volumes = self.where(account_id:user_id,resource_type:"Block Storage",operation:"create")
+    sum = 0
+    return 0 if volumes.count === 0
+    volumes.each do |volume|
+      sum += volume.size.to_i
+    end
+    return sum
+  end
 end
