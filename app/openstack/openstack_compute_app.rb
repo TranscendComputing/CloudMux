@@ -458,11 +458,14 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/addresses' do
         json_body = body_to_json(request)
+        user_id = Auth.find_account(params[:cred_id]).id
         if(json_body.nil?)
             response = @compute.addresses.create
+            UserResource.create!(account_id: user_id, resource_id: response.id, resource_type: "Elastic IP", operation: "create")
         else
             begin
                 response = @compute.addresses.create(json_body["address"])
+                UserResource.create!(account_id: user_id, resource_id: response.id, resource_type: "Elastic IP", operation: "create")
             rescue => error
                 handle_error(error)
             end
@@ -489,6 +492,7 @@ class OpenstackComputeApp < ResourceApiBase
     delete '/addresses/:id' do
         begin
             response = @compute.addresses.get(params[:id]).destroy
+            UserResource.delete_resource(params[:id])
             [OK, response.to_json]
         rescue => error
             handle_error(error)
