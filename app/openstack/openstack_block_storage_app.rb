@@ -59,20 +59,16 @@ class OpenstackBlockStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/volumes' do
-    json_body = body_to_json(request)
+    json_body = body_to_json_or_die("body" => request)
     user_id = Auth.find_account(params[:cred_id]).id
-		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Block Storage","create_block_storage",{:instance_count => UserResource.count_resources(user_id,"Block Storage"), :volume_size => json_body["volume"]["size"]}))
+		if(! Auth.validate(params[:cred_id],"Block Storage","create_block_storage",{:instance_count => UserResource.count_resources(user_id,"Block Storage"), :volume_size => json_body["volume"]["size"]}))
       message = Error.new.extend(ErrorRepresenter)
-      if(json_body.nil?)
-        message.message = "Request had invalid parameters"
-      else
-        message.message = "Cannot create anymore instances of this type under current policy"
-      end
+      message.message = "Cannot create anymore instances of this type under current policy"
       halt [BAD_REQUEST, message.to_json]
     else
   		begin
   			response = @block_storage.volumes.create(json_body["volume"])
-        UserResource.create!(account_id: user_id, resource_id: response.id, resource_type: "Block Storage", operation: "create", size: json_body["volume"]["size"]);
+        UserResource.create!(account_id: user_id, resource_id: response.id, resource_type: "Block Storage", operation: "create", size: json_body["volume"]["size"])
   			[OK, response.to_json]
   		rescue => error
   			handle_error(error)
