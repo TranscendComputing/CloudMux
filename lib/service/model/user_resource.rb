@@ -32,7 +32,7 @@ class UserResource
     self.where(account_id:user_id,resource_type:type,operation:"create").count
   end
 
-  # returns the current amount of GB used by an account.
+  # returns the current amount of GB used for block storage by an account.
   def self.count_total_size(user_id)
     volumes = self.where(account_id:user_id,resource_type:"Block Storage",operation:"create")
     sum = 0
