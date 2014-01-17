@@ -56,11 +56,11 @@ class TopStackLoadBalancerApp < ResourceApiBase
     post '/load_balancers' do
         json_body = body_to_json_or_die("body" => request)
         user_id = Auth.find_account(params[:cred_id]).id
-        # if(!Auth.validate(params[:cred_id],"Scalable Load Balancer","create_load_balancer",{:instance_count => UserResource.count_resources(user_id,"Scalable Load Balancer")}))
-        #     message = Error.new.extend(ErrorRepresenter)
-        #     message.message = "Cannot create anymore instances of this type under current policy"
-        #     halt [BAD_REQUEST, message.to_json]
-        # else
+        if(!Auth.validate(params[:cred_id],"Scalable Load Balancer","create_load_balancer",{:instance_count => UserResource.count_resources(user_id,"Scalable Load Balancer")}))
+            message = Error.new.extend(ErrorRepresenter)
+            message.message = "Cannot create anymore instances of this type under current policy"
+            halt [BAD_REQUEST, message.to_json]
+        else
             begin
                 lb = json_body["load_balancer"]
                 region = get_creds(params[:cred_id]).cloud_account.default_region
@@ -76,7 +76,7 @@ class TopStackLoadBalancerApp < ResourceApiBase
             rescue => error
                 handle_error(error)
             end
-        # end
+        end
     end
     
     ##~ a = sapi.apis.add
