@@ -459,18 +459,24 @@ class OpenstackComputeApp < ResourceApiBase
     post '/addresses' do
         json_body = body_to_json(request)
         user_id = Auth.find_account(params[:cred_id]).id
-        if(json_body.nil?)
-            response = @compute.addresses.create
-            UserResource.create!(account_id: user_id, resource_id: response.id, resource_type: "Elastic IP", operation: "create")
+        if(! Auth.validate(params[:cred_id],"Elastic IP","create_address",{:instance_count => UserResource.count_resources(user_id,"Elastic IP")}))
+            message = Error.new.extend(ErrorRepresenter)
+            message.message = "Cannot create anymore instances of this type under current policy"
+            halt [BAD_REQUEST, message.to_json]
         else
-            begin
-                response = @compute.addresses.create(json_body["address"])
+            if(json_body.nil?)
+                response = @compute.addresses.create
                 UserResource.create!(account_id: user_id, resource_id: response.id, resource_type: "Elastic IP", operation: "create")
-            rescue => error
-                handle_error(error)
+            else
+                begin
+                    response = @compute.addresses.create(json_body["address"])
+                    UserResource.create!(account_id: user_id, resource_id: response.id, resource_type: "Elastic IP", operation: "create")
+                rescue => error
+                    handle_error(error)
+                end
             end
+            [OK, response.to_json]
         end
-        [OK, response.to_json]
     end
 
     get '/address_pools' do

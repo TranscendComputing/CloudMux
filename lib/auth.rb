@@ -121,6 +121,8 @@ module Auth
                     return self.canCreateInstance('max_reserved')
                 when "create_autoscale"
                     return self.canCreateInstance('max_in_autoscale')
+                when "create_address"
+                    return self.canCreateInstance('max_ips')
                 when "create_load_balancer"
                     return self.canCreateInstance('max_load_balancers')
                 when "create_block_storage"
