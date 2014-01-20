@@ -125,6 +125,8 @@ module Auth
                     return self.canCreateInstance('max_ips')
                 when "create_load_balancer"
                     return self.canCreateInstance('max_load_balancers')
+                when "create_security_group"
+                    return self.canCreateInstance('max_security_groups')
                 when "create_block_storage"
                     return (self.canCreateInstance('max_volumes_size') && self.canCreateInstance('max_volumes'))
                 when "create_default_alarms"

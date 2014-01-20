@@ -284,11 +284,19 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     put '/security_groups' do
         json_body = body_to_json_or_die("body" => request)
-        begin
-            response = @compute.security_groups.create(json_body["security_group"])
-            [OK, response.to_json]
-        rescue => error
-            handle_error(error)
+        user_id = Auth.find_account(params[:cred_id]).id
+        if(! Auth.validate(params[:cred_id],"Security Group","create_security_group",{:instance_count => UserResource.count_resources(user_id,"Security Group")}))
+            message = Error.new.extend(ErrorRepresenter)
+            message.message = "Cannot create anymore instances of this type under current policy"
+            halt [BAD_REQUEST, message.to_json]
+        else
+            begin
+                response = @compute.security_groups.create(json_body["security_group"])
+                UserResource.create!(account_id: user_id, resource_id: response.id, resource_type: "Security Group", operation: "create")
+                [OK, response.to_json]
+            rescue => error
+                handle_error(error)
+            end
         end
     end
     
@@ -306,6 +314,7 @@ class OpenstackComputeApp < ResourceApiBase
         json_body = body_to_json_or_die("body" => request, "args" => ["security_group"])
         begin
             response = @compute.security_groups.get(json_body["security_group"]["id"]).destroy
+            UserResource.delete_resource(json_body["security_group"]["id"])
             [OK, response.to_json]
         rescue => error
             handle_error(error)
