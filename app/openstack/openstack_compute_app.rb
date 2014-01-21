@@ -355,13 +355,19 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     put '/security_groups/:id/add_rule' do
         json_body = body_to_json_or_die("body" => request, "args" => ["rule"])
-        begin
-            rule = json_body["rule"]
-            group = @compute.security_groups.get(params[:id])
-            group.create_security_group_rule(rule["fromPort"], rule["toPort"], rule["ipProtocol"], rule["cidr"], rule["groupId"])
-            [OK, @compute.security_groups.get(params[:id]).to_json]
-        rescue => error
-            handle_error(error)
+        group = @compute.security_groups.get(params[:id])
+        if(! Auth.validate(params[:cred_id],"Security Group Rule","create_security_group_rule",{:instance_count => group.rules.count}))
+            message = Error.new.extend(ErrorRepresenter)
+            message.message = "Cannot create anymore instances of this type under current policy"
+            halt [BAD_REQUEST, message.to_json]
+        else
+            begin
+                rule = json_body["rule"]
+                rule = group.create_security_group_rule(rule["fromPort"], rule["toPort"], rule["ipProtocol"], rule["cidr"], rule["groupId"])
+                [OK, @compute.security_groups.get(params[:id]).to_json]
+            rescue => error
+                handle_error(error)
+            end
         end
     end
     
