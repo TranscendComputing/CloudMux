@@ -55,8 +55,8 @@ class AwsComputeApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Success, new instance returned", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/instances' do
-		json_body = body_to_json(request)
-		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_instance",{:instance_count => @compute.tags.all(:value=>Auth.find_account(params[:cred_id]).login, :key=>"UserName", "resource-type"=>"instance").length }))
+		json_body = body_to_json_or_die("body" => request)
+		if( !Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_instance",{:instance_count => @compute.tags.all(:value=>Auth.find_account(params[:cred_id]).login, :key=>"UserName", "resource-type"=>"instance").length }))
 			[BAD_REQUEST]
 		else
 			begin
@@ -451,8 +451,8 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, new spot request returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/spot_requests' do
-		json_body = body_to_json(request)
-		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_spot",{:instance_count => @compute.tags.all(:value=>Auth.find_account(params[:cred_id]).login, :key=>"UserName", "resource-type"=>"spot-instances-request").length }))
+		json_body = body_to_json_or_die("body" => request)
+		if( !Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_spot",{:instance_count => @compute.tags.all(:value=>Auth.find_account(params[:cred_id]).login, :key=>"UserName", "resource-type"=>"spot-instances-request").length }))
 			[BAD_REQUEST]
 		else
 			begin
@@ -722,8 +722,8 @@ class AwsComputeApp < ResourceApiBase
             option = 0
         else option = reserved_set.length
         end
-		json_body = body_to_json(request)
-		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_reserved", {:instance_count => @compute.tags.all(:value=>Auth.find_account(params[:cred_id]).login, :key=>"UserName", "resource-type"=>"reserved-instance").length }))
+		json_body = body_to_json_or_die("body" => request)
+		if( !Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_reserved", {:instance_count => @compute.tags.all(:value=>Auth.find_account(params[:cred_id]).login, :key=>"UserName", "resource-type"=>"reserved-instance").length }))
 			[BAD_REQUEST]
 		else
 			begin

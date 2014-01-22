@@ -58,8 +58,8 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/databases' do
-		json_body = body_to_json(request)
-		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Relational Database","create_rds",{:resources => @rds.servers,:uid => Auth.find_account(params[:cred_id]).login}))
+		json_body = body_to_json_or_die("body" => request)
+		if( !Auth.validate(params[:cred_id],"Relational Database","create_rds",{:resources => @rds.servers,:uid => Auth.find_account(params[:cred_id]).login}))
 			[BAD_REQUEST]
 		else
 			begin

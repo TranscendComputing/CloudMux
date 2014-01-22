@@ -63,12 +63,10 @@ class AwsAutoscaleApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/autoscale_groups' do
-        json_body = body_to_json(request)
+		json_body = body_to_json_or_die("body" => request, "args" => ["autoscale_group","launch_configuration"])
         max_instances = 0
-        if ! json_body["autoscale_group"].nil?
-            max_instances = json_body["autoscale_group"]["MaxSize"].to_i - 1
-        end
-		if(json_body.nil? || json_body["launch_configuration"].nil? || json_body["autoscale_group"].nil? || ! Auth.validate(params[:cred_id],"Auto Scale","create_autoscale",{:instance_count=>max_instances.to_i}))
+        max_instances = json_body["autoscale_group"]["MaxSize"].to_i - 1
+		if( !Auth.validate(params[:cred_id],"Auto Scale","create_autoscale",{:instance_count=>max_instances.to_i}))
 			[BAD_REQUEST]
 		else
 			begin
