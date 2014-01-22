@@ -46,6 +46,20 @@ class ResourceApiBase < ApiBase
 		service
 	end
 
+	def can_create_instance(params)
+		# require 'pry'
+		# binding.pry
+		if( !Auth.validate(params["cred_id"],@service_long_name,params["action"],params["options"]))
+			message = Error.new.extend(ErrorRepresenter)
+			if(params["action"] === "create_autoscale")
+				message.message = "Cannot create an AutoScale group of that size"
+			else
+	        	message.message = "Cannot create anymore instances of this type under current policy"
+	        end
+	        halt [BAD_REQUEST, message.to_json]
+		end
+	end
+
 	# Changes the request to a usable format for processiong
 	def body_to_json(request)
 		if(!request.content_length.nil? && request.content_length != "0")

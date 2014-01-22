@@ -184,10 +184,8 @@ module Auth
             user_instance_count = 0
             user_info = ""
             if(!option_count.nil?)
-                    if(option_count.to_i > 0)
-                        user_instance_count = option_count.to_i
-                    end                    
-            else       
+                user_instance_count = option_count.to_i            
+            else    
                 resources.each do |resource|
                     if(@provider === "OpenStack")
                         user_info = resource.user_id
