@@ -447,12 +447,10 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, new spot request returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/spot_requests' do	
-		json_body = body_to_json(request)
-		if(json_body.nil?)
-  			halt [BAD_REQUEST]
-  		end
+		json_body = body_to_json_or_die("body" => request)
 		can_create_instance("cred_id" => params[:cred_id], "action" => "create_spot", "options" => {:instance_count => @compute.tags.all(:value=>Auth.find_account(params[:cred_id]).login, :key=>"UserName", "resource-type"=>"spot-instances-request").length } )
 		begin
+			json_body["spot_request"]["price"] = json_body["spot_request"]["price"].to_f
 			response = @compute.spot_requests.create(json_body["spot_request"])
 			@compute.tags.create(:resource_id => response.id, :key => "UserName", :value => Auth.find_account(params[:cred_id]).login)
 			[OK, response.to_json]
