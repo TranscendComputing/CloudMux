@@ -56,26 +56,21 @@ class TopStackLoadBalancerApp < ResourceApiBase
     post '/load_balancers' do
         json_body = body_to_json_or_die("body" => request)
         user_id = Auth.find_account(params[:cred_id]).id
-        if(!Auth.validate(params[:cred_id],"Scalable Load Balancer","create_load_balancer",{:instance_count => UserResource.count_resources(user_id,"Scalable Load Balancer")}))
-            message = Error.new.extend(ErrorRepresenter)
-            message.message = "Cannot create anymore instances of this type under current policy"
-            halt [BAD_REQUEST, message.to_json]
-        else
-            begin
-                lb = json_body["load_balancer"]
-                region = get_creds(params[:cred_id]).cloud_account.default_region
-                lb["availability_zones"] = [region]
-                if lb["options"].nil?
-                    response = @elb.create_load_balancer(lb["availability_zones"], lb["id"], lb["listeners"])
-                    UserResource.create!(account_id: user_id, resource_id: json_body["load_balancer"]["id"], resource_type: "Scalable Load Balancer", operation: "create")
-                else
-                    response = @elb.create_load_balancer(lb["availability_zones"], lb["id"], lb["listeners"], lb["options"])
-                    UserResource.create!(account_id: user_id, resource_id: json_body["load_balancer"]["id"], resource_type: "Scalable Load Balancer", operation: "create")
-                end
-                [OK, response.to_json]
-            rescue => error
-                handle_error(error)
+        can_create_instance("cred_id" => params[:cred_id], "action" => "create_load_balancer", "options" => {:instance_count => UserResource.count_resources(user_id,"Scalable Load Balancer")} )
+        begin
+            lb = json_body["load_balancer"]
+            region = get_creds(params[:cred_id]).cloud_account.default_region
+            lb["availability_zones"] = [region]
+            if lb["options"].nil?
+                response = @elb.create_load_balancer(lb["availability_zones"], lb["id"], lb["listeners"])
+                UserResource.create!(account_id: user_id, resource_id: json_body["load_balancer"]["id"], resource_type: "Scalable Load Balancer", operation: "create")
+            else
+                response = @elb.create_load_balancer(lb["availability_zones"], lb["id"], lb["listeners"], lb["options"])
+                UserResource.create!(account_id: user_id, resource_id: json_body["load_balancer"]["id"], resource_type: "Scalable Load Balancer", operation: "create")
             end
+            [OK, response.to_json]
+        rescue => error
+            handle_error(error)
         end
     end
     

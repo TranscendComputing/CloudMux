@@ -46,22 +46,16 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/instances' do
-        json_body = body_to_json(request)
+        json_body = body_to_json_or_die("body" => request)
         #Check the user has access to the image being requested.
-        if(json_body.nil? || !Auth.validate(params[:cred_id],"Compute Service","use_image",{:image_id => json_body["instance"]["image_ref"]}))
-            message = Error.new.extend(ErrorRepresenter)
-            message.message = "The image you selected isn't available under current policy."
-            halt [NOT_FOUND, message.to_json]
-        end
-        if(json_body.nil? || ! Auth.validate(params[:cred_id],"Compute Service","create_instance",{:resources => @compute.servers,:uid => @compute.current_user['id']}))
-            [BAD_REQUEST]
-        else
-            begin
-                response = @compute.servers.create(json_body["instance"])
-                [OK, response.to_json]
-            rescue => error
-                handle_error(error)
-            end
+        can_create_instance("cred_id" => params[:cred_id], "action" => "use_image", "options" => {:image_id => json_body["instance"]["image_ref"] } )
+        #Check the user hasn't exceded the limit for instances set in policy.
+        can_create_instance("cred_id" => params[:cred_id], "action" => "create_instance", "options" => {:resources => @compute.servers,:uid => @compute.current_user['id'] } )
+        begin
+            response = @compute.servers.create(json_body["instance"])
+            [OK, response.to_json]
+        rescue => error
+            handle_error(error)
         end
     end
 
@@ -285,18 +279,14 @@ class OpenstackComputeApp < ResourceApiBase
     put '/security_groups' do
         json_body = body_to_json_or_die("body" => request)
         user_id = Auth.find_account(params[:cred_id]).id
-        if(! Auth.validate(params[:cred_id],"Security Group","create_security_group",{:instance_count => UserResource.count_resources(user_id,"Security Group")}))
-            message = Error.new.extend(ErrorRepresenter)
-            message.message = "Cannot create anymore instances of this type under current policy"
-            halt [BAD_REQUEST, message.to_json]
-        else
-            begin
-                response = @compute.security_groups.create(json_body["security_group"])
-                UserResource.create!(account_id: user_id, resource_id: response.id, resource_type: "Security Group", operation: "create")
-                [OK, response.to_json]
-            rescue => error
-                handle_error(error)
-            end
+        #Check if the user hasn't exceeded the limit set by policy.
+        can_create_instance("cred_id" => params[:cred_id], "action" => "create_security_group", "options" => {:instance_count => UserResource.count_resources(user_id,"Security Group") } )
+        begin
+            response = @compute.security_groups.create(json_body["security_group"])
+            UserResource.create!(account_id: user_id, resource_id: response.id, resource_type: "Security Group", operation: "create")
+            [OK, response.to_json]
+        rescue => error
+            handle_error(error)
         end
     end
     
@@ -356,18 +346,13 @@ class OpenstackComputeApp < ResourceApiBase
     put '/security_groups/:id/add_rule' do
         json_body = body_to_json_or_die("body" => request, "args" => ["rule"])
         group = @compute.security_groups.get(params[:id])
-        if(! Auth.validate(params[:cred_id],"Security Group Rule","create_security_group_rule",{:instance_count => group.rules.count}))
-            message = Error.new.extend(ErrorRepresenter)
-            message.message = "Cannot create anymore instances of this type under current policy"
-            halt [BAD_REQUEST, message.to_json]
-        else
-            begin
-                rule = json_body["rule"]
-                rule = group.create_security_group_rule(rule["fromPort"], rule["toPort"], rule["ipProtocol"], rule["cidr"], rule["groupId"])
-                [OK, @compute.security_groups.get(params[:id]).to_json]
-            rescue => error
-                handle_error(error)
-            end
+        can_create_instance("cred_id" => params[:cred_id], "action" => "create_security_group_rule", "options" => {:instance_count => group.rules.count } )
+        begin
+            rule = json_body["rule"]
+            rule = group.create_security_group_rule(rule["fromPort"], rule["toPort"], rule["ipProtocol"], rule["cidr"], rule["groupId"])
+            [OK, @compute.security_groups.get(params[:id]).to_json]
+        rescue => error
+            handle_error(error)
         end
     end
     
@@ -474,24 +459,19 @@ class OpenstackComputeApp < ResourceApiBase
     post '/addresses' do
         json_body = body_to_json(request)
         user_id = Auth.find_account(params[:cred_id]).id
-        if(! Auth.validate(params[:cred_id],"Elastic IP","create_address",{:instance_count => UserResource.count_resources(user_id,"Elastic IP")}))
-            message = Error.new.extend(ErrorRepresenter)
-            message.message = "Cannot create anymore instances of this type under current policy"
-            halt [BAD_REQUEST, message.to_json]
+        can_create_instance("cred_id" => params[:cred_id], "action" => "create_address", "options" => {:instance_count => UserResource.count_resources(user_id,"Elastic IP") } )
+        if(json_body.nil?)
+            response = @compute.addresses.create
+            UserResource.create!(account_id: user_id, resource_id: response.id, resource_type: "Elastic IP", operation: "create")
         else
-            if(json_body.nil?)
-                response = @compute.addresses.create
+            begin
+                response = @compute.addresses.create(json_body["address"])
                 UserResource.create!(account_id: user_id, resource_id: response.id, resource_type: "Elastic IP", operation: "create")
-            else
-                begin
-                    response = @compute.addresses.create(json_body["address"])
-                    UserResource.create!(account_id: user_id, resource_id: response.id, resource_type: "Elastic IP", operation: "create")
-                rescue => error
-                    handle_error(error)
-                end
+            rescue => error
+                handle_error(error)
             end
-            [OK, response.to_json]
         end
+        [OK, response.to_json]
     end
 
     get '/address_pools' do

@@ -47,12 +47,12 @@ class ResourceApiBase < ApiBase
 	end
 
 	def can_create_instance(params)
-		# require 'pry'
-		# binding.pry
 		if( !Auth.validate(params["cred_id"],@service_long_name,params["action"],params["options"]))
 			message = Error.new.extend(ErrorRepresenter)
 			if(params["action"] === "create_autoscale")
 				message.message = "Cannot create an AutoScale group of that size"
+			elsif(params["action"] === "use_image")
+				message.message = "The image selected unavailable under current policy"
 			else
 	        	message.message = "Cannot create anymore instances of this type under current policy"
 	        end

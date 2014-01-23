@@ -61,19 +61,14 @@ class OpenstackBlockStorageApp < ResourceApiBase
   post '/volumes' do
     json_body = body_to_json_or_die("body" => request)
     user_id = Auth.find_account(params[:cred_id]).id
-		if(! Auth.validate(params[:cred_id],"Block Storage","create_block_storage",{:instance_count => UserResource.count_resources(user_id,"Block Storage"), :volume_size => json_body["volume"]["size"]}))
-      message = Error.new.extend(ErrorRepresenter)
-      message.message = "Cannot create anymore instances of this type under current policy"
-      halt [BAD_REQUEST, message.to_json]
-    else
-  		begin
-  			response = @block_storage.volumes.create(json_body["volume"])
-        UserResource.create!(account_id: user_id, resource_id: response.id, resource_type: "Block Storage", operation: "create", size: json_body["volume"]["size"])
-  			[OK, response.to_json]
-  		rescue => error
-  			handle_error(error)
-  		end
-    end
+    can_create_instance("cred_id" => params[:cred_id], "action" => "create_block_storage", "options" => {:instance_count => UserResource.count_resources(user_id,"Block Storage"), :volume_size => json_body["volume"]["size"]} )
+		begin
+			response = @block_storage.volumes.create(json_body["volume"])
+      UserResource.create!(account_id: user_id, resource_id: response.id, resource_type: "Block Storage", operation: "create", size: json_body["volume"]["size"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
+		end
 	end
 	
   ##~ a = sapi.apis.add
