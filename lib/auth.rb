@@ -55,6 +55,14 @@ module Auth
         return validation
     end
 
+    def Auth.validate_url(url)
+        pass = false
+        if(url.split('/').last === "tokens")
+            pass = true
+        end
+        return pass
+    end
+
     class Validator
         
         include Auth
