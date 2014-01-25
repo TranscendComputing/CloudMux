@@ -55,24 +55,20 @@ class AwsComputeApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Success, new instance returned", :code => 200
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/instances' do
-		json_body = body_to_json(request)
-		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_instance",{:instance_count => @compute.tags.all(:value=>Auth.find_account(params[:cred_id]).login, :key=>"UserName", "resource-type"=>"instance").length }))
-			[BAD_REQUEST]
-		else
-			begin
-                response = nil
-                if Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_vpc_instance",{:params => params, :instance => json_body["instance"]})
-                    response = @compute.servers.create(json_body["instance"])
-                    @compute.tags.create(:resource_id => response.id, :key => "UserName", :value => Auth.find_account(params[:cred_id]).login)
-                    #create any default alarms set in policy
-                    Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_default_alarms",{:params => params, :resource_id => response.id, :namespace => "AWS/EC2"})
-                    Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_auto_tags",{:params => params, :resource_id => response.id})
-                end
+		json_body = body_to_json_or_die("body" => request)
+		can_create_instance("cred_id" => params[:cred_id], "action" => "create_instance", "options" => {:instance_count => @compute.tags.all(:value=>Auth.find_account(params[:cred_id]).login, :key=>"UserName", "resource-type"=>"instance").length } )
+		begin
+            if Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_vpc_instance",{:params => params, :instance => json_body["instance"]})
+                response = @compute.servers.create(json_body["instance"])
+                @compute.tags.create(:resource_id => response.id, :key => "UserName", :value => Auth.find_account(params[:cred_id]).login)
+                #create any default alarms set in policy
+                Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_default_alarms",{:params => params, :resource_id => response.id, :namespace => "AWS/EC2"})
+                Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_auto_tags",{:params => params, :resource_id => response.id})
+            end
 
-                [OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+            [OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 
@@ -479,18 +475,16 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	##~ op.errorResponses.add :reason => "Success, new spot request returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
-	post '/spot_requests' do
-		json_body = body_to_json(request)
-		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_spot",{:instance_count => @compute.tags.all(:value=>Auth.find_account(params[:cred_id]).login, :key=>"UserName", "resource-type"=>"spot-instances-request").length }))
-			[BAD_REQUEST]
-		else
-			begin
-				response = @compute.spot_requests.create(json_body["spot_request"])
-				@compute.tags.create(:resource_id => response.id, :key => "UserName", :value => Auth.find_account(params[:cred_id]).login)
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+	post '/spot_requests' do	
+		json_body = body_to_json_or_die("body" => request)
+		can_create_instance("cred_id" => params[:cred_id], "action" => "create_spot", "options" => {:instance_count => @compute.tags.all(:value=>Auth.find_account(params[:cred_id]).login, :key=>"UserName", "resource-type"=>"spot-instances-request").length } )
+		begin
+			json_body["spot_request"]["price"] = json_body["spot_request"]["price"].to_f
+			response = @compute.spot_requests.create(json_body["spot_request"])
+			@compute.tags.create(:resource_id => response.id, :key => "UserName", :value => Auth.find_account(params[:cred_id]).login)
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 
@@ -751,17 +745,14 @@ class AwsComputeApp < ResourceApiBase
             option = 0
         else option = reserved_set.length
         end
-		json_body = body_to_json(request)
-		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Elastic Compute Cloud","create_reserved", {:instance_count => @compute.tags.all(:value=>Auth.find_account(params[:cred_id]).login, :key=>"UserName", "resource-type"=>"reserved-instance").length }))
-			[BAD_REQUEST]
-		else
-			begin
-				response = @compute.purchase_reserved_instances_offering(json_body["reserved_instances_offering_id"], json_body["instance_count"])
-				@compute.tags.create(:resource_id => response.id, :key => "UserName", :value => Auth.find_account(params[:cred_id]).login)
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request)
+		can_create_instance("cred_id" => params[:cred_id], "action" => "create_reserved", "options" => {:instance_count => @compute.tags.all(:value=>Auth.find_account(params[:cred_id]).login, :key=>"UserName", "resource-type"=>"reserved-instance").length } )
+		begin
+			response = @compute.purchase_reserved_instances_offering(json_body["reserved_instances_offering_id"], json_body["instance_count"])
+			@compute.tags.create(:resource_id => response.id, :key => "UserName", :value => Auth.find_account(params[:cred_id]).login)
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 

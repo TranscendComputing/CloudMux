@@ -82,6 +82,7 @@ require_relative 'service/representer/account_summary_representer'
 require_relative 'service/representer/update_account_representer'
 require_relative 'service/model/country'
 require_relative 'service/model/subscription'
+require_relative 'service/model/user_resource'
 
 require_relative 'service/model/environment'
 require_relative 'service/representer/environment_representer'

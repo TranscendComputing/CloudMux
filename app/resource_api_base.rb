@@ -16,19 +16,13 @@ class ResourceApiBase < ApiBase
 			cloud_cred = get_creds(cred_id)
 			if ! cloud_cred.nil?
 				if provider === "aws"
-					# require 'pry'
-					# binding.pry
 					args = {:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key}
 					if region != "undefined" && region != ""
 						args[:region] = region
 					end
 				elsif provider === "openstack"
-					# require 'pry'
-					# binding.pry
 					args = cloud_cred.cloud_attributes.merge(:provider => "openstack")
 				elsif provider === "topstack"
-					# require 'pry'
-					# binding.pry
 					begin
 	                    # Find service endpoint
 	                    endpoint = cloud_cred.cloud_account.cloud_services.where({"service_type"=>service_type}).first
@@ -52,6 +46,21 @@ class ResourceApiBase < ApiBase
 		service
 	end
 
+	def can_create_instance(params)
+		if( !Auth.validate(params["cred_id"],@service_long_name,params["action"],params["options"]))
+			message = Error.new.extend(ErrorRepresenter)
+			if(params["action"] === "create_autoscale")
+				message.message = "Cannot create an AutoScale group of that size"
+			elsif(params["action"] === "use_image")
+				message.message = "The image selected unavailable under current policy"
+			else
+	        	message.message = "Cannot create anymore instances of this type under current policy"
+	        end
+	        halt [BAD_REQUEST, message.to_json]
+		end
+	end
+
+	# Changes the request to a usable format for processiong
 	def body_to_json(request)
 		if(!request.content_length.nil? && request.content_length != "0")
 			return MultiJson.decode(request.body.read)
@@ -60,6 +69,8 @@ class ResourceApiBase < ApiBase
 		end
 	end
 
+	# Takes the request body and checks for valid information. Stops the request if the body is nil.
+	# Can take in additional parameters as a hash and checks if the request body has the information specified. 
 	def body_to_json_or_die(request)
   		json_body = body_to_json(request["body"])
   		if(json_body.nil?)

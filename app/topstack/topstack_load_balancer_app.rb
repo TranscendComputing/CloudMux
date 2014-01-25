@@ -55,14 +55,18 @@ class TopStackLoadBalancerApp < ResourceApiBase
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/load_balancers' do
         json_body = body_to_json_or_die("body" => request)
+        user_id = Auth.find_account(params[:cred_id]).id
+        can_create_instance("cred_id" => params[:cred_id], "action" => "create_load_balancer", "options" => {:instance_count => UserResource.count_resources(user_id,"Scalable Load Balancer")} )
         begin
             lb = json_body["load_balancer"]
             region = get_creds(params[:cred_id]).cloud_account.default_region
             lb["availability_zones"] = [region]
             if lb["options"].nil?
                 response = @elb.create_load_balancer(lb["availability_zones"], lb["id"], lb["listeners"])
+                UserResource.create!(account_id: user_id, resource_id: json_body["load_balancer"]["id"], resource_type: "Scalable Load Balancer", operation: "create")
             else
                 response = @elb.create_load_balancer(lb["availability_zones"], lb["id"], lb["listeners"], lb["options"])
+                UserResource.create!(account_id: user_id, resource_id: json_body["load_balancer"]["id"], resource_type: "Scalable Load Balancer", operation: "create")
             end
             [OK, response.to_json]
         rescue => error
@@ -84,6 +88,7 @@ class TopStackLoadBalancerApp < ResourceApiBase
     delete '/load_balancers/:id' do
         begin
             response = @elb.load_balancers.get(params[:id]).destroy
+            UserResource.delete_resource(params[:id])
             [OK, response.to_json]
         rescue => error
             handle_error(error)

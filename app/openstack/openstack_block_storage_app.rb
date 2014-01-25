@@ -59,9 +59,12 @@ class OpenstackBlockStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/volumes' do
-		json_body = body_to_json_or_die("body" => request)
+    json_body = body_to_json_or_die("body" => request)
+    user_id = Auth.find_account(params[:cred_id]).id
+    can_create_instance("cred_id" => params[:cred_id], "action" => "create_block_storage", "options" => {:instance_count => UserResource.count_resources(user_id,"Block Storage"), :volume_size => json_body["volume"]["size"]} )
 		begin
 			response = @block_storage.volumes.create(json_body["volume"])
+      UserResource.create!(account_id: user_id, resource_id: response.id, resource_type: "Block Storage", operation: "create", size: json_body["volume"]["size"])
 			[OK, response.to_json]
 		rescue => error
 			handle_error(error)
@@ -83,6 +86,7 @@ class OpenstackBlockStorageApp < ResourceApiBase
   delete '/volumes/:id' do
 		begin
 			response = @block_storage.volumes.get(params[:id]).destroy
+      UserResource.delete_resource(params[:id])
 			[OK, response.to_json]
 		rescue => error
 			handle_error(error)

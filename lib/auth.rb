@@ -121,6 +121,16 @@ module Auth
                     return self.canCreateInstance('max_reserved')
                 when "create_autoscale"
                     return self.canCreateInstance('max_in_autoscale')
+                when "create_address"
+                    return self.canCreateInstance('max_ips')
+                when "create_load_balancer"
+                    return self.canCreateInstance('max_load_balancers')
+                when "create_security_group"
+                    return self.canCreateInstance('max_security_groups')
+                when "create_security_group_rule"
+                    return self.canCreateInstance('max_security_group_rules')
+                when "create_block_storage"
+                    return (self.canCreateInstance('max_volumes_size') && self.canCreateInstance('max_volumes'))
                 when "create_default_alarms"
                     return self.createAlarms()
                 when "create_auto_tags"
@@ -174,10 +184,8 @@ module Auth
             user_instance_count = 0
             user_info = ""
             if(!option_count.nil?)
-                    if(option_count > 0)
-                        user_instance_count = option_count
-                    end                    
-            else       
+                user_instance_count = option_count.to_i            
+            else    
                 resources.each do |resource|
                     if(@provider === "OpenStack")
                         user_info = resource.user_id
@@ -209,7 +217,11 @@ module Auth
         #Max Instances
         def canCreateInstance(max)
             max_instance = @governance[max]
-            user_instances = self.userIntanceCount()
+            if max === "max_volumes_size"
+                user_instances = UserResource.count_total_size(@account.id) + @options[:volume_size].to_i - 1
+            else
+                user_instances = self.userIntanceCount()
+            end
             if max_instance == ""
                 return true
             elsif user_instances >= max_instance.to_i
