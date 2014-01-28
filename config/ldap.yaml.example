@@ -1,6 +1,6 @@
 development:
-  host: dc.exampleco.com
-  base_domain: exampleco.com
+  host: dc.momentumsoftware.com
+  base_domain: momentumsoftware.com
   method: simple_tls
 
 test:
