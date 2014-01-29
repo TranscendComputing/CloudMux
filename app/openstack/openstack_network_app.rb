@@ -48,6 +48,8 @@ class OpenstackNetworkApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   get '/networks' do
     begin
+      # require 'pry'
+      # binding.pry
       response = @network.list_networks.body["networks"]
 		  [OK, response.to_json]
     rescue => error
@@ -203,6 +205,8 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/ports' do
+      # require 'pry'
+      # binding.pry
       json_body = body_to_json_or_die("body" => request, "args" => ["port"])
       begin
         response = @network.ports.create(json_body["port"])
@@ -294,6 +298,75 @@ class OpenstackNetworkApp < ResourceApiBase
     delete '/floating_ips/:id' do
       begin
         response = @network.floating_ips.destroy(params[:id])
+        [OK, response.to_json]
+      rescue => error
+        handle_error(error)
+      end
+    end
+
+    #
+    # Routers
+    #
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/openstack/network/routers"
+    ##~ a.description = "Manage Network resources on the cloud (Openstack)"
+    ##~ op = a.operations.add
+    ##~ op.responseClass = "Routers"
+    ##~ op.set :httpMethod => "GET"
+    ##~ op.summary = "Describe Routers (Openstack cloud)"
+    ##~ op.nickname = "describe_routers"  
+    ##~ op.errorResponses.add :reason => "Success, list of Routers returned", :code => 200
+    ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    get '/routers' do
+      begin
+        # require 'pry'
+        # binding.pry
+        response = @network.routers
+        [OK, response.to_json]
+      rescue => error
+        handle_error(error)
+      end
+    end
+    
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/openstack/network/routers"
+    ##~ a.description = "Manage Network resources on the cloud (Openstack)"
+    ##~ op = a.operations.add
+    ##~ op.responseClass = "Routers"
+    ##~ op.set :httpMethod => "POST"
+    ##~ op.summary = "Create Routers (Openstack cloud)"
+    ##~ op.nickname = "create_routers"
+    ##~ sapi.models["CreateFloatingIP"] = {:id => "CreateFloatingIP", :properties => {:name => {:type => "string"}}}  
+    ##~ op.parameters.add :name => "floating_ip", :description => "FloatingIP to create", :dataType => "CreateFloatingIP", :allowMultiple => false, :required => true, :paramType => "body"  
+    ##~ op.errorResponses.add :reason => "Success, Router created", :code => 200
+    ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    post '/routers' do
+      json_body = body_to_json_or_die("body" => request, "args" => ["routers"])
+      begin
+        response = @network.routers.create(json_body["routers"])
+        [OK, response.to_json]
+      rescue => error
+        handle_error(error)
+      end
+    end
+    
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/openstack/network/routers/:id"
+    ##~ a.description = "Manage Network resources on the cloud (Openstack)"
+    ##~ op = a.operations.add
+    ##~ op.responseClass = "Routers"
+    ##~ op.set :httpMethod => "DELETE"
+    ##~ op.summary = "Delete Routers (Openstack cloud)"
+    ##~ op.nickname = "delete_routers"
+    ##~ op.parameters.add :name => "id", :description => "Router id to destroy", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"  
+    ##~ op.errorResponses.add :reason => "Success, Router deleted", :code => 200
+    ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    delete '/routers/:id' do
+      begin
+        response = @network.routers.destroy(params[:id])
         [OK, response.to_json]
       rescue => error
         handle_error(error)
