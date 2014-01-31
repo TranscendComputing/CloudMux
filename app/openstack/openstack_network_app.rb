@@ -343,15 +343,15 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/routers' do
-      require 'pry'
-      binding.pry
+      # require 'pry'
+      # binding.pry
       json_body = body_to_json_or_die("body" => request, "args" => ["router"])
       begin
-        require 'pry'
-        binding.pry
+        # require 'pry'
+        # binding.pry
         response = @network.routers.create(json_body["router"])
-        require 'pry'
-        binding.pry
+        # require 'pry'
+        # binding.pry
         [OK, response.to_json]
       rescue => error
         handle_error(error)
@@ -372,8 +372,8 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     delete '/routers/:id' do
       begin
-        require 'pry'
-        binding.pry
+        # require 'pry'
+        # binding.pry
         response = @network.routers.destroy(params[:id])
         [OK, response.to_json]
       rescue => error
@@ -395,16 +395,16 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     put '/routers/:id/add_router_interface' do
-      require 'pry'
-      binding.pry
+      # require 'pry'
+      # binding.pry
       json_body = body_to_json_or_die("body" => request, "args" => ["router"])
       begin
-        require 'pry'
-        binding.pry
+        # require 'pry'
+        # binding.pry
         router = @network.routers.get(params[:id])
         response = router.add_router_interface(json_body["router"])
-        require 'pry'
-        binding.pry
+        # require 'pry'
+        # binding.pry
         [OK, response.to_json]
       rescue => error
         handle_error(error)
@@ -425,16 +425,16 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     put '/routers/:id/remove_router_interface' do
-      require 'pry'
-      binding.pry
+      # require 'pry'
+      # binding.pry
       json_body = body_to_json_or_die("body" => request, "args" => ["router"])
       begin
-        require 'pry'
-        binding.pry
+        # require 'pry'
+        # binding.pry
         router = @network.routers.get(params[:id])
         response = router.remove_router_interface(json_body["router"])
-        require 'pry'
-        binding.pry
+        # require 'pry'
+        # binding.pry
         [OK, response.to_json]
       rescue => error
         handle_error(error)
