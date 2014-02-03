@@ -105,7 +105,8 @@ class CloudAccountApiApp < ApiBase
     update_cloud_account = CloudAccount.find(params[:id])
     update_cloud_account.extend(UpdateCloudAccountRepresenter)
     update_cloud_account.from_json(request.body.read)
-    if Auth.validate_url(update_cloud_account.url)
+    #Fog requires a '/tokens' string to be appended to the end of OS_AUTH_URL so a check is performed here.
+    if Auth.validate_url(update_cloud_account)
       if update_cloud_account.valid?
         update_cloud_account.save!
         # refresh without the Update representer, so that we don't serialize the password data back across
