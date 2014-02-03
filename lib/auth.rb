@@ -55,6 +55,20 @@ module Auth
         return validation
     end
 
+    #The function checks for the '/tokens' string to be appended to the end of OS_AUTH_URL as required by Fog.
+    #The function accepts a cloud account as a parameter.
+    #Returns true if the '/tokens' string is present false otherwise.
+    def Auth.validate_url(cloud_account)
+        pass = false
+        #Check if the cloud provider is openstack. If so, check it has the '/tokens' string.
+        if(cloud_account.cloud_provider.downcase != "openstack")
+            pass = true
+        elsif(cloud_account.url.split('/').last === "tokens")
+            pass = true
+        end
+        return pass
+    end
+
     class Validator
         
         include Auth

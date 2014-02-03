@@ -105,14 +105,22 @@ class CloudAccountApiApp < ApiBase
     update_cloud_account = CloudAccount.find(params[:id])
     update_cloud_account.extend(UpdateCloudAccountRepresenter)
     update_cloud_account.from_json(request.body.read)
-    if update_cloud_account.valid?
-      update_cloud_account.save!
-      # refresh without the Update representer, so that we don't serialize the password data back across
-      cloud_account = CloudAccount.find(update_cloud_account.id).extend(CloudAccountRepresenter)
-      [OK, cloud_account.to_json]
+    #Fog requires a '/tokens' string to be appended to the end of OS_AUTH_URL so a check is performed here.
+    if Auth.validate_url(update_cloud_account)
+      if update_cloud_account.valid?
+        update_cloud_account.save!
+        # refresh without the Update representer, so that we don't serialize the password data back across
+        cloud_account = CloudAccount.find(update_cloud_account.id).extend(CloudAccountRepresenter)
+        [OK, cloud_account.to_json]
+      else
+        message = Error.new.extend(ErrorRepresenter)
+        message.message = "#{update_cloud_account.errors.full_messages.join(";")}"
+        message.validation_errors = update_cloud_account.errors.to_hash
+        [BAD_REQUEST, message.to_json]
+      end
     else
       message = Error.new.extend(ErrorRepresenter)
-      message.message = "#{update_cloud_account.errors.full_messages.join(";")}"
+      message.message = "The Auth URL must have '/tokens' appended to the end of it."
       message.validation_errors = update_cloud_account.errors.to_hash
       [BAD_REQUEST, message.to_json]
     end
