@@ -435,8 +435,6 @@ class OpenstackNetworkApp < ResourceApiBase
     # put '/routers/:id' do
     #   json_body = body_to_json_or_die("body" => request, "args" => ["router"])
     #   begin
-    #     require 'pry'
-    #     binding.pry
     #     response = @network.routers.update(json_body["router"])
     #     [OK, response.to_json]
     #   rescue => error
