@@ -404,19 +404,13 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     put '/routers/:id/remove_router_interface' do
-      port = @network.ports.all({:device_id => params[:id]})[0]
-      if(!port.nil?)
+      json_body = body_to_json_or_die("body" => request, "args" => ["router"])
         begin
-          response = @network.remove_router_interface(params[:id],port.fixed_ips[0]["subnet_id"])
+          response = @network.remove_router_interface(params[:id],json_body["router"]["subnet_id"])
           [OK, response.to_json]
         rescue => error
           handle_error(error)
         end
-      else
-        message = Error.new.extend(ErrorRepresenter)
-        message.message = "Router has no interface to remove."
-        halt [BAD_REQUEST, message.to_json]
-      end
     end
 
     # ##~ a = sapi.apis.add

@@ -112,12 +112,25 @@ class ResourceApiBase < ApiBase
 			when Fog::Identity::OpenStack::NotFound
 				message = "You are not authorized for this action."
 				[NOT_AUTHORIZED, message]
+			when Fog::Network::OpenStack::NotFound
+				
+				message = "NeutronError: Router has no interface on subnet."
+				[NOT_FOUND, message]
 			when Excon::Errors::Conflict
-				response_body = Nokogiri::XML(error.response.body)
-				message = response_body.css('Message').text
-				if message.nil? || message.empty?
+				begin
 					response_body = JSON.parse(error.response.body)
 					message = response_body["conflictingRequest"]["message"]
+					if message.nil? || message.empty?
+						message = response_body["error"]["message"]
+					end
+				rescue JSON::ParserError => json_error
+					response_body = Nokogiri::XML(error.response.body)
+					message = response_body.css('Message').text
+					if message.nil? || message.empty?
+						message = error.response.body.to_s.gsub("\n", " ")
+					end
+				rescue
+					message = error.response.body.to_s.gsub("\n", " ")
 				end
 				[BAD_REQUEST, message]
 			when Excon::Errors::BadRequest
