@@ -196,8 +196,7 @@ class ResourceApiBase < ApiBase
 				[NOT_FOUND, error.to_s]
 			when Fog::JSON::DecodeError
 				#Work around for bug in Grizzly. Needs to be removed if ever fixed.
-		        message = "Router interface has been removed."
-		        [OK, message.to_json]
+		        return
 			else
 				[BAD_REQUEST, error.to_s]
 		end

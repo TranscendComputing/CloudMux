@@ -439,12 +439,11 @@ class OpenstackNetworkApp < ResourceApiBase
     #parameters router Id.
     def delete_all_interfaces(params)
       interfaces = @network.ports.all({:device_id => params[:id]})
-      #Hack this begin, rescue, next need to be removed once grizzly OpenStack parse error is fixed.
       interfaces.each    do |interface|
         begin
           @network.remove_router_interface(params[:id],interface.fixed_ips[0]["subnet_id"])
-        rescue
-          next
+        rescue => error
+          handle_error(error)
         end
       end
     end
