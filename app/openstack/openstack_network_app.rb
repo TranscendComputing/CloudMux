@@ -360,6 +360,7 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     delete '/routers/:id' do
       begin
+        delete_all_interfaces(params)
         response = @network.routers.destroy(params[:id])
         [OK, response.to_json]
       rescue => error
@@ -435,4 +436,18 @@ class OpenstackNetworkApp < ResourceApiBase
     #     handle_error(error)
     #   end
     # end
+
+    #Helper function when a router gets deleted and still has interfaces.
+    #parameters router Id.
+    def delete_all_interfaces(params)
+      interfaces = @network.ports.all({:device_id => params[:id]})
+      #Hack this begin, rescue, next need to be removed once grizzly OpenStack parse error is fixed.
+      interfaces.each    do |interface|
+        begin
+          @network.remove_router_interface(params[:id],interface.fixed_ips[0]["subnet_id"])
+        rescue
+          next
+        end
+      end
+    end
 end
