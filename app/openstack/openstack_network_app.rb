@@ -331,8 +331,8 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.set :httpMethod => "POST"
     ##~ op.summary = "Create Routers (Openstack cloud)"
     ##~ op.nickname = "create_routers"
-    ##~ sapi.models["CreateFloatingIP"] = {:id => "CreateFloatingIP", :properties => {:name => {:type => "string"}}}  
-    ##~ op.parameters.add :name => "floating_ip", :description => "FloatingIP to create", :dataType => "CreateFloatingIP", :allowMultiple => false, :required => true, :paramType => "body"  
+    ##~ sapi.models["CreateRouters"] = {:id => "CreateRouter", :properties => {:name => {:type => "string"}}}  
+    ##~ op.parameters.add :name => "router", :description => "Router to create", :dataType => "CreateRouter", :allowMultiple => false, :required => true, :paramType => "body"  
     ##~ op.errorResponses.add :reason => "Success, Router created", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
@@ -375,9 +375,8 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.responseClass = "Routers"
     ##~ op.set :httpMethod => "PUT"
     ##~ op.summary = "Add Router Interface (Openstack cloud)"
-    ##~ op.nickname = "add_router_interface"
-    ##~ sapi.models["CreateFloatingIP"] = {:id => "CreateFloatingIP", :properties => {:name => {:type => "string"}}}  
-    ##~ op.parameters.add :name => "floating_ip", :description => "FloatingIP to create", :dataType => "CreateFloatingIP", :allowMultiple => false, :required => true, :paramType => "body"  
+    ##~ op.nickname = "add_router_interface"  
+    ##~ op.parameters.add :name => "id", :description => "Interface to create", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "body"  
     ##~ op.errorResponses.add :reason => "Success, Router interface added", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
@@ -398,9 +397,8 @@ class OpenstackNetworkApp < ResourceApiBase
     ##~ op.responseClass = "Routers"
     ##~ op.set :httpMethod => "PUT"
     ##~ op.summary = "Remove Router Interface (Openstack cloud)"
-    ##~ op.nickname = "remove_router_interface"
-    ##~ sapi.models["CreateFloatingIP"] = {:id => "CreateFloatingIP", :properties => {:name => {:type => "string"}}}  
-    ##~ op.parameters.add :name => "floating_ip", :description => "FloatingIP to create", :dataType => "CreateFloatingIP", :allowMultiple => false, :required => true, :paramType => "body"  
+    ##~ op.nickname = "remove_router_interface"  
+    ##~ op.parameters.add :name => "router", :description => "Interface to remove", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "body"  
     ##~ op.errorResponses.add :reason => "Success, Router interface removed", :code => 200
     ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
