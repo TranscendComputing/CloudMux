@@ -42,8 +42,6 @@ class IdentityApiApp < ApiBase
       		if new_account.company.nil? || new_account.company === ""
       			new_account.company = "MyOrganization"
       		end
-          # require 'pry'
-          # binding.pry
       		org = Org.new.extend(UpdateOrgRepresenter)
       		org.name = new_account.company
       		org.save!
@@ -70,8 +68,6 @@ class IdentityApiApp < ApiBase
         account = Account.find(new_account.id).extend(AccountRepresenter)
         [CREATED, account.to_json]
       else
-        # require 'pry'
-        # binding.pry
         message = Error.new.extend(ErrorRepresenter)
         message.message = "#{new_account.errors.full_messages.join(";")}"
         message.validation_errors = new_account.errors.to_hash
@@ -79,6 +75,7 @@ class IdentityApiApp < ApiBase
       end
   end
 
+  #Check for correct login and password.
   post '/auth' do
     if params[:login].blank? or params[:password].blank?
       message = Error.new.extend(ErrorRepresenter)
@@ -120,28 +117,27 @@ class IdentityApiApp < ApiBase
     end
   end
   
+  #update a user account.
   put '/:id/update' do
-      update_hash = JSON.parse(request.body.read)
-      update_account = Account.find(params[:id])
-      gov = update_account.group_policies[0]["org_governance"]
-      # require 'pry'
-      # binding.pry
-      if !gov.empty? 
-        validation = Auth.password_validate(update_hash["password"],gov)
-      else  
-        update_account.update_attributes(update_hash.symbolize_keys)
-        update_account.save
-        [OK, update_account.to_json]
-      end
-      if validation["pass"] === true
-        update_account.update_attributes(update_hash.symbolize_keys)
-        update_account.save
-        [OK, update_account.to_json]
-      else
-        message = Error.new.extend(ErrorRepresenter)
-        message.message = validation["message"]
-        [BAD_REQUEST,message.to_json]
-      end
+    update_hash = JSON.parse(request.body.read)
+    update_account = Account.find(params[:id])
+    gov = update_account.group_policies[0]["org_governance"]
+    if !gov.empty? 
+      validation = Auth.password_validate(update_hash["password"],gov)
+    else  
+      update_account.update_attributes(update_hash.symbolize_keys)
+      update_account.save
+      [OK, update_account.to_json]
+    end
+    if validation["pass"] === true
+      update_account.update_attributes(update_hash.symbolize_keys)
+      update_account.save
+      [OK, update_account.to_json]
+    else
+      message = Error.new.extend(ErrorRepresenter)
+      message.message = validation["message"]
+      [BAD_REQUEST,message.to_json]
+    end
   end
 
   # Delete a user
