@@ -119,14 +119,12 @@ class IdentityApiApp < ApiBase
   
   #update a user account.
   put '/:id/update' do
-    # require 'pry'
-    # binding.pry
     update_hash = JSON.parse(request.body.read)
     update_account = Account.find(params[:id])
     gov = update_account.group_policies
     isAdmin = false
     if !update_hash["permissions"].nil?
-      isAdmin = Auth.validate_admin(update_hash["permissions"].admin_login)
+      isAdmin = Auth.validate_admin(update_hash["permissions"]["admin_login"])
       if isAdmin
         update_hash = update_hash["account"]
       end
@@ -140,8 +138,6 @@ class IdentityApiApp < ApiBase
       return [OK, update_account.to_json]
     end
     if(!validation.nil?)
-      # require 'pry'
-      # binding.pry
       if validation["pass"] === true
         update_account.update_attributes(update_hash.symbolize_keys)
         update_account.save
@@ -273,6 +269,8 @@ class IdentityApiApp < ApiBase
   
   # Remove a permission to the user account
   delete '/:id/permissions/:permission_id' do
+    # require 'pry'
+    # binding.pry
 	update_account = Account.find(params[:id])
     update_account.remove_permission!(params[:permission_id])
     update_account.extend(AccountRepresenter)
