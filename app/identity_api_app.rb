@@ -125,11 +125,9 @@ class IdentityApiApp < ApiBase
     isAdmin = false
     if !update_hash["permissions"].nil?
       isAdmin = Auth.validate_admin(update_hash["permissions"]["admin_login"])
-      if isAdmin
-        update_hash = update_hash["account"]
-      end
     end
-    if !gov.empty? || !isAdmin 
+    update_hash = update_hash["account"]
+    if !gov.empty? && !isAdmin 
       gov = gov[0]["org_governance"]
       validation = Auth.password_validate(update_hash["password"],gov)
     else  
@@ -269,8 +267,6 @@ class IdentityApiApp < ApiBase
   
   # Remove a permission to the user account
   delete '/:id/permissions/:permission_id' do
-    # require 'pry'
-    # binding.pry
 	update_account = Account.find(params[:id])
     update_account.remove_permission!(params[:permission_id])
     update_account.extend(AccountRepresenter)
