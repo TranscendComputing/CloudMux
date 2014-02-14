@@ -127,7 +127,7 @@ class IdentityApiApp < ApiBase
       isAdmin = Auth.validate_admin(update_hash["permissions"]["admin_login"])
     end
     update_hash = update_hash["account"]
-    if !gov.empty? && !isAdmin 
+    if !gov.empty? && !isAdmin && !update_hash["password"].nil?
       gov = gov[0]["org_governance"]
       validation = Auth.password_validate(update_hash["password"],gov)
     else  
