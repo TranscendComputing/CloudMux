@@ -199,9 +199,8 @@ class CloudAccountApiApp < ApiBase
       update_service.from_json(request.body.read)
       if update_service.valid?
         update_service.save!
-        updated_service = update_cloud_account.find_service(update_service.id)
-        updated_service.extend(CloudServiceRepresenter)
-        [OK, updated_service.to_json]
+        update_cloud_account.extend(CloudAccountRepresenter)
+        [OK, update_cloud_account.to_json]
       else
         message = Error.new.extend(ErrorRepresenter)
         message.message = "#{update_service.errors.full_messages.join(";")}"
