@@ -1115,6 +1115,36 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 
+	#
+	# Route Tables
+	#
+
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/route_tables"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "GET"
+	##~ op.summary = "Describe current route tables (AWS cloud)"
+	##~ op.nickname = "describe_route_tables"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "filters", :description => "Filters for route tables", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, list of route tables returned", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+	get '/route_tables' do
+    begin
+  		filters = params[:filters]
+  		if(filters.nil?)
+  			response = @compute.route_tables
+  		else
+  			response = @compute.route_tables.all(filters)
+  		end
+  		[OK, response.to_json]
+    rescue => error
+				handle_error(error)
+		end
+	end
+
     #Images
     get '/images' do
         begin
