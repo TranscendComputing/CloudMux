@@ -1145,6 +1145,48 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/route_tables"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "POST"
+	##~ op.summary = "Create route table (AWS cloud)"
+	##~ op.nickname = "create_route_table"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, new route table returned", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+	post '/route_tables' do
+		json_body = body_to_json_or_die("body" => request)
+		begin
+			response = @compute.route_tables.create(json_body["route_table"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
+		end
+	end
+
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/route_tables/:id"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "DELETE"
+	##~ op.summary = "Delete route table (AWS cloud)"
+	##~ op.nickname = "delete_route_table"
+	###~ op.parameters.add :name => "id", :description => "Route Table ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, subnet deleted", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", code => 400
+	delete '/route_tables/:id' do
+		begin
+			response = @compute.route_tables.get(params[:id]).destroy
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
+		end
+	end
+
     #Images
     get '/images' do
         begin
