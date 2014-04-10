@@ -1,6 +1,7 @@
 require 'sinatra'
 
 class CloudAccountApiApp < ApiBase
+
   ##~ sapi = source2swagger.namespace("cloud_accounts")
   ##~ sapi.swaggerVersion = "1.1"
   ##~ sapi.apiVersion = "1.0"
@@ -132,7 +133,7 @@ class CloudAccountApiApp < ApiBase
     if Auth.validate_admin(params[:login])
       cloud_account = CloudAccount.find(params[:id])
       cloud_account.delete
-      [OK]
+      [OK, { "something" => "json"}.to_json]
     else
       message = Error.new.extend(ErrorRepresenter)
       message.message = "Cannot delete a cloud account without admin permissions."
