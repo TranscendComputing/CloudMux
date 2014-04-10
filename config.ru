@@ -21,6 +21,7 @@ require 'app/stack_api_app'
 require 'app/offering_api_app'
 require 'app/portfolio_api_app'
 require 'app/identity_api_app'
+require 'app/tutorial_state_api_app'
 require 'app/org_api_app'
 require 'app/policy_api_app'
 require 'app/cloud_account_api_app'
@@ -55,6 +56,7 @@ require 'app/openstack/openstack_block_storage_app'
 require 'app/openstack/openstack_object_storage_app'
 require 'app/openstack/openstack_identity_app'
 require 'app/openstack/openstack_network_app'
+require 'app/vcloud/vcloud_compute_app'
 require 'app/topstack/topstack_autoscale_app'
 require 'app/topstack/topstack_load_balancer_app'
 require 'app/topstack/topstack_monitor_app'
@@ -168,6 +170,13 @@ end
 #
 map "/stackstudio/v1/stacks" do
   run StackApiApp
+end
+
+#
+# Tutorial States API (internal)
+#
+map "/stackstudio/v1/tutorial_states" do
+  run TutorialStateApiApp
 end
 
 #
