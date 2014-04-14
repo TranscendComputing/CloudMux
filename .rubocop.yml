@@ -2,3 +2,7 @@ Documentation:
   Enabled: false
 Encoding:
   Enabled: false
+MethodLength:
+  Max: 80
+NumericLiterals:
+  Enabled: false  

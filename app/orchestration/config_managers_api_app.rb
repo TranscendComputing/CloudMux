@@ -83,4 +83,30 @@ class ConfigManagerApiApp < ApiBase
       [OK, { 'message' => 'Config Manager Deleted' }.to_json]
     end
   end
+
+  # Update  Config Manager Component
+  put '/:id/components/:component_id' do
+    cm = ConfigManager.where(id: params[:id]).first
+    if cm.nil?
+      [NOT_FOUND]
+    else
+      case cm.type
+      when "chef"
+        component = cm.cookbooks.where(id: params[:component_id]).first
+      end
+
+      if component.nil?
+        [NOT_FOUND]
+      else
+        json_body = body_to_json(request)
+        if json_body.nil?
+          [BAD_REQUEST]
+        else
+          component.update_attributes!(json_body)
+          updated_cm = ConfigManager.where(id: params[:id]).first
+          [OK, updated_cm.to_json]
+        end
+      end
+    end
+  end
 end

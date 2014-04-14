@@ -33,6 +33,10 @@ Getting Started
 
 	`source cloudmux.env`
 
+4. Install nokogiri dependencies on the system (below is for Ubuntu/Debian systems.  Reference [Installing Nokogiri](http://nokogiri.org/tutorials/installing_nokogiri.html) for others):
+
+	`sudo apt-get install libxslt-dev libxml2-dev`
+
 3. Install Gem dependencies, cd to the <tt>CloudMux</tt> directory and run (if bundler is not install run `gem install bundler`):
 
 	`bundle install`

@@ -58,18 +58,16 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/databases' do
-		json_body = body_to_json(request)
-		if(json_body.nil? || ! Auth.validate(params[:cred_id],"Relational Database","create_rds",{:resources => @rds.servers,:uid => Auth.find_account(params[:cred_id]).login}))
-			[BAD_REQUEST]
-		else
-			begin
-				response = @rds.servers.create(json_body["relational_database"])
-        response.add_tags(:key => "UserName", :value => Auth.find_account(params[:cred_id]).login)  
-        Auth.validate(params[:cred_id],"Relational Database","create_default_alarms",{:params => params, :resource_id => response.id, :namespace => "AWS/RDS"})
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
+		json_body = body_to_json_or_die("body" => request)
+    user_id = Auth.find_account(params[:cred_id]).login
+    can_create_instance("cred_id" => params[:cred_id], "action" => "create_rds", "options" => {:resources => @rds.servers,:uid => user_id} )
+		begin
+			response = @rds.servers.create(json_body["relational_database"])
+      response.add_tags(:key => "UserName", :value => user_id)  
+      Auth.validate(params[:cred_id],"Relational Database","create_default_alarms",{:params => params, :resource_id => response.id, :namespace => "AWS/RDS"})
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
 	

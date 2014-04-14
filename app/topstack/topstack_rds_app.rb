@@ -54,6 +54,7 @@ class TopStackRdsApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/databases' do
 		json_body = body_to_json_or_die("body" => request)
+        can_create_instance("cred_id" => params[:cred_id], "action" => "create_rds", "options" => {:resources => @rds.servers,:uid => @rds.current_user['id'] } )
 		begin
             region = get_creds(params[:cred_id]).cloud_account.default_region
 			json_body["relational_database"]['availability_zone'] = region

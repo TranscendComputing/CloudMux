@@ -46,22 +46,16 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/instances' do
-        json_body = body_to_json(request)
+        json_body = body_to_json_or_die("body" => request)
         #Check the user has access to the image being requested.
-        if(json_body.nil? || !Auth.validate(params[:cred_id],"Compute Service","use_image",{:image_id => json_body["instance"]["image_ref"]}))
-            message = Error.new.extend(ErrorRepresenter)
-            message.message = "The image you selected isn't available under current policy."
-            halt [NOT_FOUND, message.to_json]
-        end
-        if(json_body.nil? || ! Auth.validate(params[:cred_id],"Compute Service","create_instance",{:resources => @compute.servers,:uid => @compute.current_user['id']}))
-            [BAD_REQUEST]
-        else
-            begin
-                response = @compute.servers.create(json_body["instance"])
-                [OK, response.to_json]
-            rescue => error
-                handle_error(error)
-            end
+        can_create_instance("cred_id" => params[:cred_id], "action" => "use_image", "options" => {:image_id => json_body["instance"]["image_ref"] } )
+        #Check the user hasn't exceded the limit for instances set in policy.
+        can_create_instance("cred_id" => params[:cred_id], "action" => "create_instance", "options" => {:resources => @compute.servers,:uid => @compute.current_user['id'] } )
+        begin
+            response = @compute.servers.create(json_body["instance"])
+            [OK, response.to_json]
+        rescue => error
+            handle_error(error)
         end
     end
 
@@ -145,6 +139,34 @@ class OpenstackComputeApp < ResourceApiBase
             handle_error(error)
         end
     end
+
+    get '/instances/:id/security_groups' do
+        begin
+            groups = @compute.servers.get(params[:id]).security_groups
+            response = groups.collect{|group|
+                group.attributes
+            }
+            [OK, response.to_json]
+        rescue => error
+            handle_error(error)
+        end
+    end
+
+    post '/instances/:id/change_groups' do
+        begin
+            body = body_to_json(request)
+            body["add"].each do |name| 
+                @compute.add_security_group(params[:id], name)
+            end
+            body["remove"].each do |name| 
+                @compute.remove_security_group(params[:id], name)
+            end
+            [OK, {:message=>"Security groups successfully changed"}.to_json]
+        rescue => error
+            handle_error(error)
+        end
+    end
+
     
     ##~ a = sapi.apis.add
     ##~ a.set :path => "/api/v1/cloud_management/openstack/compute/instances/:id"
@@ -284,8 +306,12 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     put '/security_groups' do
         json_body = body_to_json_or_die("body" => request)
+        user_id = Auth.find_account(params[:cred_id]).id
+        #Check if the user hasn't exceeded the limit set by policy.
+        can_create_instance("cred_id" => params[:cred_id], "action" => "create_security_group", "options" => {:instance_count => UserResource.count_resources(user_id,"Security Group") } )
         begin
             response = @compute.security_groups.create(json_body["security_group"])
+            UserResource.create!(account_id: user_id, resource_id: response.id, resource_type: "Security Group", operation: "create")
             [OK, response.to_json]
         rescue => error
             handle_error(error)
@@ -306,6 +332,7 @@ class OpenstackComputeApp < ResourceApiBase
         json_body = body_to_json_or_die("body" => request, "args" => ["security_group"])
         begin
             response = @compute.security_groups.get(json_body["security_group"]["id"]).destroy
+            UserResource.delete_resource(json_body["security_group"]["id"])
             [OK, response.to_json]
         rescue => error
             handle_error(error)
@@ -346,10 +373,11 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     put '/security_groups/:id/add_rule' do
         json_body = body_to_json_or_die("body" => request, "args" => ["rule"])
+        group = @compute.security_groups.get(params[:id])
+        can_create_instance("cred_id" => params[:cred_id], "action" => "create_security_group_rule", "options" => {:instance_count => group.rules.count } )
         begin
             rule = json_body["rule"]
-            group = @compute.security_groups.get(params[:id])
-            group.create_security_group_rule(rule["fromPort"], rule["toPort"], rule["ipProtocol"], rule["cidr"], rule["groupId"])
+            rule = group.create_security_group_rule(rule["fromPort"], rule["toPort"], rule["ipProtocol"], rule["cidr"], rule["groupId"])
             [OK, @compute.security_groups.get(params[:id]).to_json]
         rescue => error
             handle_error(error)
@@ -395,6 +423,23 @@ class OpenstackComputeApp < ResourceApiBase
                 response = @compute.key_pairs.create({"name"=>params[:name]})
                 headers["Content-disposition"] = "attachment; filename=" + response.name + ".pem"
                 [OK, response.private_key]
+            rescue => error
+                handle_error(error)
+            end
+        end
+    end
+
+    post '/key_pairs/import' do
+        json_body = body_to_json_or_die("body" => request, "args" => ["key_pair"])["key_pair"]
+
+        if(json_body["name"].nil?)
+            [BAD_REQUEST, {:message=>"Must provide parameter name"}.to_json]
+        elsif(json_body["public_key"].nil?)
+            [BAD_REQUEST, {:message=>"Must provide parameter public_key"}.to_json]
+        else
+            begin
+                response = @compute.create_key_pair(json_body["name"], json_body["public_key"])
+                [OK, {:message =>"Successfully imported keypair."}.to_json]
             rescue => error
                 handle_error(error)
             end
@@ -458,11 +503,15 @@ class OpenstackComputeApp < ResourceApiBase
     ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
     post '/addresses' do
         json_body = body_to_json(request)
+        user_id = Auth.find_account(params[:cred_id]).id
+        can_create_instance("cred_id" => params[:cred_id], "action" => "create_address", "options" => {:instance_count => UserResource.count_resources(user_id,"Elastic IP") } )
         if(json_body.nil?)
             response = @compute.addresses.create
+            UserResource.create!(account_id: user_id, resource_id: response.id, resource_type: "Elastic IP", operation: "create")
         else
             begin
                 response = @compute.addresses.create(json_body["address"])
+                UserResource.create!(account_id: user_id, resource_id: response.id, resource_type: "Elastic IP", operation: "create")
             rescue => error
                 handle_error(error)
             end
@@ -489,6 +538,7 @@ class OpenstackComputeApp < ResourceApiBase
     delete '/addresses/:id' do
         begin
             response = @compute.addresses.get(params[:id]).destroy
+            UserResource.delete_resource(params[:id])
             [OK, response.to_json]
         rescue => error
             handle_error(error)

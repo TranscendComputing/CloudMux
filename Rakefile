@@ -282,6 +282,8 @@ namespace :ci do
     config_managers_to_update.each do |cm|
       puts "Updating Continuous Integration Status for Config Manager: #{cm.name}"
         manager = CloudMux::Chef::Manager.new(cm)
+        manager.setup_manageable_objects
+        manager.generate_all_jobs
         manager.update_status
     end
   end

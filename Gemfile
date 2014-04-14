@@ -31,14 +31,15 @@ gem 'bcrypt-ruby', '~> 3.0.1'
 gem 'source2swagger'
 
 # Cloud Management
-gem 'fog', '1.15.0', :require => 'fog'
+#gem 'fog', '1.19.0', :require => 'fog'
+gem 'fog', :github => 'TranscendComputing/fog'
 
 gem "rest-client", "~> 1.6.7"
 gem "spice"
 #Should use ridley instead of spice, but ridley and mongoid are currently incompatible until mongoid 4.0 release or fixes with Ridley for Boolean class definition.
 gem 'ridley-connectors'
-gem 'ridley', :github => 'cstewart87/ridley', :branch => 'boolean_updates'
-gem 'buff-extensions', :github => 'cstewart87/buff-extensions'
+gem 'ridley', :git => 'https://github.com/cstewart87/ridley.git', :branch => 'boolean_updates'
+gem 'buff-extensions', :git => 'https://github.com/cstewart87/buff-extensions.git', :ref => '892a096d'
 
 # SCM
 gem 'git'
