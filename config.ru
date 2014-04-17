@@ -5,7 +5,11 @@ require 'rubygems'
 require 'bundler/setup'
 require 'sinatra'
 require 'fog'
+require 'openssl'
 
+# DEVELOPMENT ONLY
+OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
+Fog.credentials = { path_style: true }
 
 if ENV['RACK_ENV'] == 'production'
   # production config / requires
@@ -60,6 +64,7 @@ require 'app/openstack/openstack_object_storage_app'
 require 'app/openstack/openstack_identity_app'
 require 'app/openstack/openstack_network_app'
 ## VMware Vcloud Apps
+require 'app/vcloud/vcloud_app'
 require 'app/vcloud/vcloud_compute_app'
 require 'app/vcloud/vcloud_storage_app'
 require 'app/vcloud/vcloud_network_app'
@@ -587,6 +592,13 @@ end
 #
 map "/stackstudio/v1/cloud_management/google/object_storage" do
   run GoogleObjectStorageApp
+end
+
+#
+# VCloud Compute API
+#
+map "/stackstudio/v1/cloud_management/vcloud/compute" do
+  run VCloudComputeApp
 end
 
 #

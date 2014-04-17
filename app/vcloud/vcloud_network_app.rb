@@ -1,6 +1,6 @@
 require 'sinatra'
 require 'fog'
 
-class VCloudNetworkApp < ResourceApiBase
+class VCloudNetworkApp < VCloudApp
 
 end
