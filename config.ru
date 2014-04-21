@@ -4,12 +4,6 @@
 require 'rubygems'
 require 'bundler/setup'
 require 'sinatra'
-require 'fog'
-require 'openssl'
-
-# DEVELOPMENT ONLY
-OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
-Fog.credentials = { path_style: true }
 
 if ENV['RACK_ENV'] == 'production'
   # production config / requires
