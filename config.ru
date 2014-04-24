@@ -595,6 +595,10 @@ map "/stackstudio/v1/cloud_management/vcloud/compute" do
   run VCloudComputeApp
 end
 
+map "/stackstudio/v1/cloud_management/vcloud/networks" do
+  run VCloudNetworkApp
+end
+
 #
 # Configuration Managers API
 #

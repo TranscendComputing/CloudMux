@@ -32,7 +32,7 @@ gem 'source2swagger'
 
 # Cloud Management
 #gem 'fog', '1.19.0', :require => 'fog'
-gem 'fog', :github => 'TranscendComputing/fog'
+gem 'fog', :path => '/home/phil/working/fog'
 
 gem "rest-client", "~> 1.6.7"
 gem "spice"

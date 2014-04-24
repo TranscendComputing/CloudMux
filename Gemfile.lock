@@ -1,18 +1,4 @@
 GIT
-  remote: git://github.com/TranscendComputing/fog.git
-  revision: 7cff96bfd39513baf52f3f2f99b000b8be4a8041
-  specs:
-    fog (1.19.0)
-      builder
-      excon (~> 0.31.0)
-      formatador (~> 0.2.0)
-      mime-types
-      multi_json (~> 1.0)
-      net-scp (~> 1.1)
-      net-ssh (>= 2.1.3)
-      nokogiri (~> 1.5)
-
-GIT
   remote: https://github.com/cstewart87/buff-extensions.git
   revision: 892a096dbb653c92fd8c94bf9a64b1f4dc246cdc
   ref: 892a096d
@@ -41,6 +27,19 @@ GIT
       retryable
       solve (>= 0.4.4)
       varia_model (~> 0.1)
+
+PATH
+  remote: /home/phil/working/fog
+  specs:
+    fog (1.19.0)
+      builder
+      excon (~> 0.31.0)
+      formatador (~> 0.2.0)
+      mime-types
+      multi_json (~> 1.0)
+      net-scp (~> 1.1)
+      net-ssh (>= 2.1.3)
+      nokogiri (~> 1.5)
 
 GEM
   remote: http://rubygems.org/
