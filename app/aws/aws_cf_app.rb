@@ -17,7 +17,7 @@ class AwsCloudFormationApp < ResourceApiBase
             response = result.body["StackSummaries"]
             [OK, response.to_json]
         rescue => error
-                handle_error(error)
+                pre_handle_error(@cf, error)
         end
     end
 

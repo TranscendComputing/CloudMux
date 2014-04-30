@@ -89,9 +89,20 @@ class ResourceApiBase < ApiBase
 		Account.find_cloud_credential(cred_id)
 	end
 
+	#checks for special cases before handing off to handle_error
+	def pre_handle_error(service, error )
+  		if error.is_a?(TypeError)
+			service.instance_variable_get('@aws_session_token').nil? ? handle_error(error, "The credentials supplied are invalid") : handle_error(error)
+		else
+			handle_error(error)
+		end
+	end
 
-	def handle_error(error)
+	def handle_error(error, custom_type_error = nil)
 		case error
+			when TypeError
+				message = custom_type_error.nil? ? error.to_s  : custom_type_error 
+				[NOT_ACCEPTABLE, message]	
 			when Fog::AWS::IAM::EntityAlreadyExists
 				message = error.message
 				[NOT_ACCEPTABLE, message]

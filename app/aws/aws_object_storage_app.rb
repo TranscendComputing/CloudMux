@@ -40,7 +40,7 @@ class AwsObjectStorageApp < ResourceApiBase
   		end
   		[OK, response.to_json]
     rescue => error
-				handle_error(error)
+				pre_handle_error(@object_storage, error)
 		end
 	end
 	

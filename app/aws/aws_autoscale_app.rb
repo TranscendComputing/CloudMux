@@ -41,8 +41,8 @@ class AwsAutoscaleApp < ResourceApiBase
   			response = @autoscale.groups.all(filters)
   		end
   		[OK, response.to_json]
-    rescue => error
-				handle_error(error)
+    rescue => error	
+    			pre_handle_error(@autoscale, error)	
 		end
 	end
 

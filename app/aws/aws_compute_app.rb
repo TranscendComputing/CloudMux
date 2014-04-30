@@ -39,7 +39,7 @@ class AwsComputeApp < ResourceApiBase
   		end
   		[OK, response.to_json]
     rescue => error
-				handle_error(error)
+			pre_handle_error(@compute, error)
 		end
 	end
 
@@ -236,7 +236,7 @@ class AwsComputeApp < ResourceApiBase
   		end
   		[OK, response.to_json]
     rescue => error
-				handle_error(error)
+				pre_handle_error(@compute, error)
 		end
 	end
 
@@ -354,7 +354,7 @@ class AwsComputeApp < ResourceApiBase
   		end
   		[OK, response.to_json]
     rescue => error
-				handle_error(error)
+			pre_handle_error(@compute, error)
 		end
 	end
 
@@ -460,7 +460,7 @@ class AwsComputeApp < ResourceApiBase
   		end
   		[OK, response.to_json]
     rescue => error
-				handle_error(error)
+				pre_handle_error(@compute, error)
 		end
 	end
 
@@ -579,7 +579,7 @@ class AwsComputeApp < ResourceApiBase
   		end
   		[OK, response.to_json]
     rescue => error
-				handle_error(error)
+			pre_handle_error(@compute, error)
 		end
 	end
 
@@ -698,7 +698,7 @@ class AwsComputeApp < ResourceApiBase
   		end
   		[OK, response.to_json]
     rescue => error
-				handle_error(error)
+			pre_handle_error(@compute, error)
 		end
 	end
 
@@ -782,7 +782,7 @@ class AwsComputeApp < ResourceApiBase
   		end
   		[OK, response.to_json]
     rescue => error
-				handle_error(error)
+				pre_handle_error(@compute, error)
 		end
 	end
 
@@ -881,7 +881,7 @@ class AwsComputeApp < ResourceApiBase
   		end
   		[OK, response.to_json]
     rescue => error
-				handle_error(error)
+				pre_handle_error(@compute, error)
 		end
 	end
 
@@ -953,8 +953,8 @@ class AwsComputeApp < ResourceApiBase
   		end
   		[OK, response.to_json]
     rescue => error
-				handle_error(error)
-		end
+		pre_handle_error(@compute, error)
+	end
 	end
 
 	##~ a = sapi.apis.add
@@ -1069,8 +1069,8 @@ class AwsComputeApp < ResourceApiBase
   		end
   		[OK, response.to_json]
     rescue => error
-				handle_error(error)
-		end
+			pre_handle_error(@compute, error)
+	end
 	end
 
 	##~ a = sapi.apis.add
@@ -1141,8 +1141,8 @@ class AwsComputeApp < ResourceApiBase
   		end
   		[OK, response.to_json]
     rescue => error
-				handle_error(error)
-		end
+			pre_handle_error(@compute, error)
+	end
 	end
 
 	##~ a = sapi.apis.add

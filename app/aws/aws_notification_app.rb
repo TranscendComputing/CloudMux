@@ -80,7 +80,7 @@ class AwsNotificationApp < ResourceApiBase
   		end
   		[OK, response.to_json]
     rescue => error
-				handle_error(error)
+				pre_handle_error(@notification, error)
 		end
 	end
 
