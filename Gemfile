@@ -19,6 +19,8 @@ gem 'mongo', '1.8.3'
 gem 'mongo_ext', '~> 0.19', :platform => :ruby # native extensions for performance
 gem 'bson_ext', '1.8.3', :platform => :ruby  # native extensions for performance
 gem 'bson', '1.8.3'
+gem 'multi_json', '1.3.7'
+
 gem 'mongoid', '3.1.6'
 gem 'representable' , '1.7.1'
 
@@ -26,19 +28,19 @@ gem 'httparty', '~> 0.8.1'
 
 # Account/Auth support
 gem 'bcrypt-ruby', '~> 3.0.1'
-
 # API Doc generation
 gem 'source2swagger'
 
 # Cloud Management
-gem 'fog', '1.15.0', :require => 'fog'
+#gem 'fog', '1.19.0', :require => 'fog'
+gem 'fog', :github => 'TranscendComputing/fog'
 
 gem "rest-client", "~> 1.6.7"
 gem "spice"
 #Should use ridley instead of spice, but ridley and mongoid are currently incompatible until mongoid 4.0 release or fixes with Ridley for Boolean class definition.
 gem 'ridley-connectors'
-gem 'ridley', :github => 'cstewart87/ridley', :branch => 'boolean_updates'
-gem 'buff-extensions', :github => 'cstewart87/buff-extensions'
+gem 'ridley', :git => 'https://github.com/cstewart87/ridley.git'
+gem 'buff-extensions', :git => 'https://github.com/cstewart87/buff-extensions.git', :ref => '892a096d'
 
 # SCM
 gem 'git'
@@ -71,8 +73,9 @@ group :development, :test do
   gem 'flay'
   gem 'turbulence'
   gem 'coveralls', require: false
-  gem 'webmock'
+  gem 'webmock' 
 end
+
 
 # Google
 gem 'google-api-client'

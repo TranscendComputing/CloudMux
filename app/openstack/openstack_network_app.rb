@@ -299,4 +299,152 @@ class OpenstackNetworkApp < ResourceApiBase
         handle_error(error)
       end
     end
+
+    #
+    # Routers
+    #
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/openstack/network/routers"
+    ##~ a.description = "Manage Network resources on the cloud (Openstack)"
+    ##~ op = a.operations.add
+    ##~ op.responseClass = "Routers"
+    ##~ op.set :httpMethod => "GET"
+    ##~ op.summary = "Describe Routers (Openstack cloud)"
+    ##~ op.nickname = "describe_routers"  
+    ##~ op.errorResponses.add :reason => "Success, list of Routers returned", :code => 200
+    ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    get '/routers' do
+      begin
+        response = @network.routers
+        [OK, response.to_json]
+      rescue => error
+        handle_error(error)
+      end
+    end
+    
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/openstack/network/routers"
+    ##~ a.description = "Manage Network resources on the cloud (Openstack)"
+    ##~ op = a.operations.add
+    ##~ op.responseClass = "Routers"
+    ##~ op.set :httpMethod => "POST"
+    ##~ op.summary = "Create Routers (Openstack cloud)"
+    ##~ op.nickname = "create_routers"
+    ##~ sapi.models["CreateRouters"] = {:id => "CreateRouter", :properties => {:name => {:type => "string"}}}  
+    ##~ op.parameters.add :name => "router", :description => "Router to create", :dataType => "CreateRouter", :allowMultiple => false, :required => true, :paramType => "body"  
+    ##~ op.errorResponses.add :reason => "Success, Router created", :code => 200
+    ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    post '/routers' do
+      json_body = body_to_json_or_die("body" => request, "args" => ["router"])
+      begin
+        response = @network.routers.create(json_body["router"])
+        [OK, response.to_json]
+      rescue => error
+        handle_error(error)
+      end
+    end
+    
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/openstack/network/routers/:id"
+    ##~ a.description = "Manage Network resources on the cloud (Openstack)"
+    ##~ op = a.operations.add
+    ##~ op.responseClass = "Routers"
+    ##~ op.set :httpMethod => "DELETE"
+    ##~ op.summary = "Delete Routers (Openstack cloud)"
+    ##~ op.nickname = "delete_routers"
+    ##~ op.parameters.add :name => "id", :description => "Router id to destroy", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"  
+    ##~ op.errorResponses.add :reason => "Success, Router deleted", :code => 200
+    ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    delete '/routers/:id' do
+      begin
+        delete_all_interfaces(params)
+        response = @network.routers.destroy(params[:id])
+        [OK, response.to_json]
+      rescue => error
+        handle_error(error)
+      end
+    end
+
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/openstack/network/routers/:id/add_router_interface"
+    ##~ a.description = "Manage Network resources on the cloud (Openstack)"
+    ##~ op = a.operations.add
+    ##~ op.responseClass = "Routers"
+    ##~ op.set :httpMethod => "PUT"
+    ##~ op.summary = "Add Router Interface (Openstack cloud)"
+    ##~ op.nickname = "add_router_interface"  
+    ##~ op.parameters.add :name => "id", :description => "Interface to create", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "body"  
+    ##~ op.errorResponses.add :reason => "Success, Router interface added", :code => 200
+    ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    put '/routers/:id/add_router_interface' do
+      json_body = body_to_json_or_die("body" => request, "args" => ["router"])
+      begin
+        response = @network.add_router_interface(params[:id],json_body["router"]["subnet_id"])
+        [OK, response.to_json]
+      rescue => error
+        handle_error(error)
+      end
+    end
+
+    ##~ a = sapi.apis.add
+    ##~ a.set :path => "/api/v1/cloud_management/openstack/network/routers/:id/remove_router_interface"
+    ##~ a.description = "Manage Network resources on the cloud (Openstack)"
+    ##~ op = a.operations.add
+    ##~ op.responseClass = "Routers"
+    ##~ op.set :httpMethod => "PUT"
+    ##~ op.summary = "Remove Router Interface (Openstack cloud)"
+    ##~ op.nickname = "remove_router_interface"  
+    ##~ op.parameters.add :name => "router", :description => "Interface to remove", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "body"  
+    ##~ op.errorResponses.add :reason => "Success, Router interface removed", :code => 200
+    ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    put '/routers/:id/remove_router_interface' do
+      json_body = body_to_json_or_die("body" => request, "args" => ["router"])
+        begin
+          response = @network.remove_router_interface(params[:id],json_body["router"]["subnet_id"])
+          [OK, response.to_json]
+        rescue => error
+          handle_error(error)
+        end
+    end
+
+    # ##~ a = sapi.apis.add
+    # ##~ a.set :path => "/api/v1/cloud_management/openstack/network/routers"
+    # ##~ a.description = "Manage Network resources on the cloud (Openstack)"
+    # ##~ op = a.operations.add
+    # ##~ op.responseClass = "Routers"
+    # ##~ op.set :httpMethod => "PUT"
+    # ##~ op.summary = "Update Routers (Openstack cloud)"
+    # ##~ op.nickname = "update_routers"
+    # ##~ sapi.models["CreateFloatingIP"] = {:id => "CreateFloatingIP", :properties => {:name => {:type => "string"}}}  
+    # ##~ op.parameters.add :name => "floating_ip", :description => "FloatingIP to create", :dataType => "CreateFloatingIP", :allowMultiple => false, :required => true, :paramType => "body"  
+    # ##~ op.errorResponses.add :reason => "Success, Router updated", :code => 200
+    # ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+    # ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+    # put '/routers/:id' do
+    #   json_body = body_to_json_or_die("body" => request, "args" => ["router"])
+    #   begin
+    #     response = @network.routers.update(json_body["router"])
+    #     [OK, response.to_json]
+    #   rescue => error
+    #     handle_error(error)
+    #   end
+    # end
+
+    #Helper function when a router gets deleted and still has interfaces.
+    #parameters router Id.
+    def delete_all_interfaces(params)
+      interfaces = @network.ports.all({:device_id => params[:id]})
+      interfaces.each    do |interface|
+        begin
+          @network.remove_router_interface(params[:id],interface.fixed_ips[0]["subnet_id"])
+        rescue => error
+          handle_error(error)
+        end
+      end
+    end
 end

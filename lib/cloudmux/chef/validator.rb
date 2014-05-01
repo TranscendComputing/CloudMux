@@ -18,13 +18,14 @@ module CloudMux
   module Chef
     module Validator
       def self.refresh_status(args)
-        cookbook_model = args[:data_model]
+        cb = args[:data_model]
         repo = args[:repo]
         server_client = args[:server_client]
-        ci_status = args[:ci_client].all_build_job_states(cookbook_model.name)
-        sync_status = check_repo_sync(cookbook_model.name, repo, server_client)
-        cookbook_model.status = ci_status.merge(sync_status)
-        cookbook_model.save!
+        job_status = args[:ci_client].job_status(cb.name)
+        sync_status = check_repo_sync(cb.name, repo, server_client)
+        cb.update_attributes!(
+          status: job_status.merge(sync_status)
+        )
       end
 
       def self.check_repo_sync(name, chef_repo, chef_client)

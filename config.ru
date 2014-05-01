@@ -4,8 +4,6 @@
 require 'rubygems'
 require 'bundler/setup'
 require 'sinatra'
-require 'fog'
-
 
 if ENV['RACK_ENV'] == 'production'
   # production config / requires
@@ -21,6 +19,7 @@ require 'app/stack_api_app'
 require 'app/offering_api_app'
 require 'app/portfolio_api_app'
 require 'app/identity_api_app'
+require 'app/tutorial_state_api_app'
 require 'app/org_api_app'
 require 'app/policy_api_app'
 require 'app/cloud_account_api_app'
@@ -33,6 +32,7 @@ require 'app/continuous_integration_server_api_app'
 require 'app/root_app'
 require 'app/resource_api_base'
 require 'app/assembly_api_app'
+## AWS Apps
 require 'app/aws/aws_compute_app'
 require 'app/aws/aws_autoscale_app'
 require 'app/aws/aws_block_storage_app'
@@ -48,13 +48,21 @@ require 'app/aws/aws_iam_app'
 require 'app/aws/aws_queue_app'
 require 'app/aws/aws_simpledb_app'
 require 'app/aws/aws_cf_app'
+## Google Apps
 require 'app/google/google_compute_app'
 require 'app/google/google_object_storage_app'
+## Openstack Apps
 require 'app/openstack/openstack_compute_app'
 require 'app/openstack/openstack_block_storage_app'
 require 'app/openstack/openstack_object_storage_app'
 require 'app/openstack/openstack_identity_app'
 require 'app/openstack/openstack_network_app'
+## VMware Vcloud Apps
+require 'app/vcloud/vcloud_app'
+require 'app/vcloud/vcloud_compute_app'
+require 'app/vcloud/vcloud_storage_app'
+require 'app/vcloud/vcloud_network_app'
+## TopStack Apps
 require 'app/topstack/topstack_autoscale_app'
 require 'app/topstack/topstack_load_balancer_app'
 require 'app/topstack/topstack_monitor_app'
@@ -168,6 +176,13 @@ end
 #
 map "/stackstudio/v1/stacks" do
   run StackApiApp
+end
+
+#
+# Tutorial States API (internal)
+#
+map "/stackstudio/v1/tutorial_states" do
+  run TutorialStateApiApp
 end
 
 #
@@ -571,6 +586,17 @@ end
 #
 map "/stackstudio/v1/cloud_management/google/object_storage" do
   run GoogleObjectStorageApp
+end
+
+#
+# VCloud Compute API
+#
+map "/stackstudio/v1/cloud_management/vcloud/compute" do
+  run VCloudComputeApp
+end
+
+map "/stackstudio/v1/cloud_management/vcloud/networks" do
+  run VCloudNetworkApp
 end
 
 #

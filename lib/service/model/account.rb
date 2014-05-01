@@ -21,6 +21,9 @@ class Account
   field :login, type:String
   field :encrypted_password, type:String
 
+  # user resources
+  has_many :user_resources
+
   # location and organization details
   field :company, type:String
   belongs_to :org, :foreign_key => 'org_id'
@@ -88,8 +91,10 @@ class Account
 
   def auth(pass, now=Time.now)
     if LDAP_ENABLED
-      return ldap_auth(self.email, pass)
+      @ldap =  LdapGateway.new
+      return @ldap.auth self.email, pass
     end
+
     if BCrypt::Password.new(self.encrypted_password) == pass
       self.inc(:num_logins, 1)
       self.update_attribute(:last_login_at, now)

@@ -63,70 +63,59 @@ class TopStackAutoscaleApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/autoscale_groups' do
-    json_body = body_to_json(request)
+    json_body = body_to_json_or_die("body" => request, "args" => ["autoscale_group","launch_configuration"])
+    can_create_instance("cred_id" => params[:cred_id], "action" => "use_image", "options" => {:image_id => json_body["instance"]["image_ref"]} )
     max_instances = 0
-    if(json_body.nil? || !Auth.validate(params[:cred_id],"Auto Scale","use_image",{:image_id => json_body["instance"]["image_ref"]}))
-      message = Error.new.extend(ErrorRepresenter)
-      message.message = "The image you selected isn't available under current policy."
-      halt [NOT_FOUND, message.to_json]
-    end
-    if ! json_body["autoscale_group"].nil?
-      max_instances = json_body["autoscale_group"]["MaxSize"].to_i - 1
-    end
-		if(json_body.nil? || json_body["launch_configuration"].nil? || json_body["autoscale_group"].nil? || ! Auth.validate(params[:cred_id],"Auto Scale","create_autoscale",{:instance_count=>max_instances.to_i}))
-			[BAD_REQUEST]
-		else
-			begin
-                region = get_creds(params[:cred_id]).cloud_account.default_region
-				launch_config = json_body["launch_configuration"]
-				autoscale_group = json_body["autoscale_group"]
-                autoscale_group['AvailabilityZones'] = [region]
-                
-                @autoscale.configurations.create(launch_config)
-				response = @autoscale.groups.create(autoscale_group)
-
-				if(json_body["trigger"])
-					set_monitor_interface(params[:cred_id], params[:region])
-					trigger = json_body["trigger"]
-					#create scale up policy and metric alarm
-		            scale_up_name = autoscale_group["AutoScalingGroupName"] + "ScaleUpPolicy"
-		            up_policy = @autoscale.put_scaling_policy("ChangeInCapacity", autoscale_group["AutoScalingGroupName"], scale_up_name, trigger["scale_increment"]).body["PutScalingPolicyResult"]["PolicyARN"]
-					up_options = {
-						"AlarmName" => autoscale_group["AutoScalingGroupName"] + trigger["trigger_measurement"] + "UpAlarm",
-						"AlarmActions" => [up_policy],
-						"Dimensions" => [{"Name" => "AutoScalingGroupName", "Value" => autoscale_group["AutoScalingGroupName"]}],
-						"ComparisonOperator" => "GreaterThanThreshold",
-						"Namespace" => "AWS/EC2",
-						"EvaluationPeriods" => 1,
-						"MetricName" => trigger["trigger_measurement"],
-						"Period" => trigger["measure_period"],
-						"Statistic" => trigger["statistic"],
-						"Threshold" => trigger["upper_threshold"],
-						"Unit" => trigger["unit"]
-					}
-					@monitor.put_metric_alarm(up_options)
-		   			#create scale down policy and metric alarm
-		   			scale_down_name = autoscale_group["AutoScalingGroupName"] + "ScaleDownPolicy"
-		   			down_policy = @autoscale.put_scaling_policy("ChangeInCapacity", autoscale_group["AutoScalingGroupName"], scale_down_name, trigger["scale_decrement"]).body["PutScalingPolicyResult"]["PolicyARN"]
-		   			down_options = {
-		   				"AlarmName" => autoscale_group["AutoScalingGroupName"] + trigger["trigger_measurement"] + "DownAlarm",
-						"AlarmActions" => [down_policy],
-						"Dimensions" => [{"Name" => "AutoScalingGroupName", "Value" => autoscale_group["AutoScalingGroupName"]}],
-						"ComparisonOperator" => "LessThanThreshold",
-						"Namespace" => "AWS/EC2",
-						"EvaluationPeriods" => 1,
-						"MetricName" => trigger["trigger_measurement"],
-						"Period" => trigger["measure_period"],
-						"Statistic" => trigger["statistic"],
-						"Threshold" => trigger["lower_threshold"],
-						"Unit" => trigger["unit"]
-		   			}
-		   			@monitor.put_metric_alarm(down_options)
-				end
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
+    max_instances = json_body["autoscale_group"]["MaxSize"].to_i - 1
+    can_create_instance("cred_id" => params[:cred_id], "action" => "create_autoscale", "options" => {:instance_count=>max_instances.to_i} )
+		begin
+      region = get_creds(params[:cred_id]).cloud_account.default_region
+			launch_config = json_body["launch_configuration"]
+			autoscale_group = json_body["autoscale_group"]
+      autoscale_group['AvailabilityZones'] = [region]
+      @autoscale.configurations.create(launch_config)
+			response = @autoscale.groups.create(autoscale_group)
+			if(json_body["trigger"])
+				set_monitor_interface(params[:cred_id], params[:region])
+				trigger = json_body["trigger"]
+				#create scale up policy and metric alarm
+        scale_up_name = autoscale_group["AutoScalingGroupName"] + "ScaleUpPolicy"
+        up_policy = @autoscale.put_scaling_policy("ChangeInCapacity", autoscale_group["AutoScalingGroupName"], scale_up_name, trigger["scale_increment"]).body["PutScalingPolicyResult"]["PolicyARN"]
+				up_options = {
+					"AlarmName" => autoscale_group["AutoScalingGroupName"] + trigger["trigger_measurement"] + "UpAlarm",
+					"AlarmActions" => [up_policy],
+					"Dimensions" => [{"Name" => "AutoScalingGroupName", "Value" => autoscale_group["AutoScalingGroupName"]}],
+					"ComparisonOperator" => "GreaterThanThreshold",
+					"Namespace" => "AWS/EC2",
+					"EvaluationPeriods" => 1,
+					"MetricName" => trigger["trigger_measurement"],
+					"Period" => trigger["measure_period"],
+					"Statistic" => trigger["statistic"],
+					"Threshold" => trigger["upper_threshold"],
+					"Unit" => trigger["unit"]
+				}
+				@monitor.put_metric_alarm(up_options)
+	   			#create scale down policy and metric alarm
+	   			scale_down_name = autoscale_group["AutoScalingGroupName"] + "ScaleDownPolicy"
+	   			down_policy = @autoscale.put_scaling_policy("ChangeInCapacity", autoscale_group["AutoScalingGroupName"], scale_down_name, trigger["scale_decrement"]).body["PutScalingPolicyResult"]["PolicyARN"]
+	   			down_options = {
+	   				"AlarmName" => autoscale_group["AutoScalingGroupName"] + trigger["trigger_measurement"] + "DownAlarm",
+					"AlarmActions" => [down_policy],
+					"Dimensions" => [{"Name" => "AutoScalingGroupName", "Value" => autoscale_group["AutoScalingGroupName"]}],
+					"ComparisonOperator" => "LessThanThreshold",
+					"Namespace" => "AWS/EC2",
+					"EvaluationPeriods" => 1,
+					"MetricName" => trigger["trigger_measurement"],
+					"Period" => trigger["measure_period"],
+					"Statistic" => trigger["statistic"],
+					"Threshold" => trigger["lower_threshold"],
+					"Unit" => trigger["unit"]
+	   			}
+	   			@monitor.put_metric_alarm(down_options)
 			end
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
 		end
 	end
     
@@ -228,16 +217,14 @@ class TopStackAutoscaleApp < ResourceApiBase
   delete '/autoscale_groups/:id' do
 		begin
 			policies = @autoscale.describe_policies({"AutoScalingGroupName" => params[:id]}).body["DescribePoliciesResult"]["ScalingPolicies"]
-			# require 'pry'
-   #    binding.pry
       policies.each do |t|
 				@autoscale.delete_policy(params[:id], t["PolicyName"]) unless t["PolicyName"].nil?
 			end
 			response = @autoscale.groups.get(params[:id]).destroy
 			launch_config = @autoscale.configurations.get(params[:id]+"-lc")
 			if ! launch_config.nil?
-  # Feature not implemented
-		# 		launch_config.destroy
+      # Feature not implemented
+		  # 		launch_config.destroy
 			end
 			[OK, response.to_json]
 		rescue => error

@@ -46,7 +46,7 @@ class AwsBeanstalkApp < ResourceApiBase
     		end
     		[OK, response.to_json]
       rescue => error
-  				handle_error(error)
+          pre_handle_error(@elasticbeanstalk, error)
   		end
   	end
 

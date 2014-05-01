@@ -16,19 +16,13 @@ class ResourceApiBase < ApiBase
 			cloud_cred = get_creds(cred_id)
 			if ! cloud_cred.nil?
 				if provider === "aws"
-					# require 'pry'
-					# binding.pry
 					args = {:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key}
 					if region != "undefined" && region != ""
 						args[:region] = region
 					end
 				elsif provider === "openstack"
-					# require 'pry'
-					# binding.pry
 					args = cloud_cred.cloud_attributes.merge(:provider => "openstack")
 				elsif provider === "topstack"
-					# require 'pry'
-					# binding.pry
 					begin
 	                    # Find service endpoint
 	                    endpoint = cloud_cred.cloud_account.cloud_services.where({"service_type"=>service_type}).first
@@ -52,6 +46,21 @@ class ResourceApiBase < ApiBase
 		service
 	end
 
+	def can_create_instance(params)
+		if( !Auth.validate(params["cred_id"],@service_long_name,params["action"],params["options"]))
+			message = Error.new.extend(ErrorRepresenter)
+			if(params["action"] === "create_autoscale")
+				message.message = "Cannot create an AutoScale group of that size"
+			elsif(params["action"] === "use_image")
+				message.message = "The image selected unavailable under current policy"
+			else
+	        	message.message = "Cannot create anymore instances of this type under current policy"
+	        end
+	        halt [BAD_REQUEST, message.to_json]
+		end
+	end
+
+	# Changes the request to a usable format for processiong
 	def body_to_json(request)
 		if(!request.content_length.nil? && request.content_length != "0")
 			return MultiJson.decode(request.body.read)
@@ -60,6 +69,8 @@ class ResourceApiBase < ApiBase
 		end
 	end
 
+	# Takes the request body and checks for valid information. Stops the request if the body is nil.
+	# Can take in additional parameters as a hash and checks if the request body has the information specified. 
 	def body_to_json_or_die(request)
   		json_body = body_to_json(request["body"])
   		if(json_body.nil?)
@@ -78,9 +89,20 @@ class ResourceApiBase < ApiBase
 		Account.find_cloud_credential(cred_id)
 	end
 
+	#checks for special cases before handing off to handle_error
+	def pre_handle_error(service, error )
+  		if error.is_a?(TypeError)
+			service.instance_variable_get('@aws_session_token').nil? ? handle_error(error, "The credentials supplied are invalid") : handle_error(error)
+		else
+			handle_error(error)
+		end
+	end
 
-	def handle_error(error)
+	def handle_error(error, custom_type_error = nil)
 		case error
+			when TypeError
+				message = custom_type_error.nil? ? error.to_s  : custom_type_error 
+				[NOT_ACCEPTABLE, message]	
 			when Fog::AWS::IAM::EntityAlreadyExists
 				message = error.message
 				[NOT_ACCEPTABLE, message]
@@ -101,20 +123,42 @@ class ResourceApiBase < ApiBase
 			when Fog::Identity::OpenStack::NotFound
 				message = "You are not authorized for this action."
 				[NOT_AUTHORIZED, message]
+			when Fog::Network::OpenStack::NotFound
+				
+				message = "NeutronError: Router has no interface on subnet."
+				[NOT_FOUND, message]
 			when Excon::Errors::Conflict
-				response_body = Nokogiri::XML(error.response.body)
-				message = response_body.css('Message').text
-				if message.nil? || message.empty?
+				begin
 					response_body = JSON.parse(error.response.body)
 					message = response_body["conflictingRequest"]["message"]
+					if message.nil? || message.empty?
+						message = response_body["error"]["message"]
+					end
+				rescue JSON::ParserError => json_error
+					response_body = Nokogiri::XML(error.response.body)
+					message = response_body.css('Message').text
+					if message.nil? || message.empty?
+						message = error.response.body.to_s.gsub("\n", " ")
+					end
+				rescue
+					message = error.response.body.to_s.gsub("\n", " ")
 				end
 				[BAD_REQUEST, message]
 			when Excon::Errors::BadRequest
-				response_body = Nokogiri::XML(error.response.body)
-				message = response_body.css('Message').text
-				if message.nil? || message.empty?
+				begin
 					response_body = JSON.parse(error.response.body)
 					message = response_body["badRequest"]["message"]
+					if message.nil? || message.empty?
+						message = response_body["error"]["message"]
+					end
+				rescue JSON::ParserError => json_error
+					response_body = Nokogiri::XML(error.response.body)
+					message = response_body.css('Message').text
+					if message.nil? || message.empty?
+						message = error.response.body.to_s.gsub("\n", " ")
+					end
+				rescue
+					message = error.response.body.to_s.gsub("\n", " ")
 				end
 				[BAD_REQUEST, message]
 			when Excon::Errors::InternalServerError
@@ -161,6 +205,9 @@ class ResourceApiBase < ApiBase
 				[BAD_REQUEST, message]
 			when Fog::Errors::NotFound
 				[NOT_FOUND, error.to_s]
+			when Fog::JSON::DecodeError
+				#Work around for bug in Grizzly. Needs to be removed if ever fixed.
+		        return
 			else
 				[BAD_REQUEST, error.to_s]
 		end
