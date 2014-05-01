@@ -62,6 +62,7 @@ require 'app/vcloud/vcloud_app'
 require 'app/vcloud/vcloud_compute_app'
 require 'app/vcloud/vcloud_storage_app'
 require 'app/vcloud/vcloud_network_app'
+require 'app/vcloud/vcloud_catalog_app'
 ## TopStack Apps
 require 'app/topstack/topstack_autoscale_app'
 require 'app/topstack/topstack_load_balancer_app'
@@ -597,6 +598,10 @@ end
 
 map "/stackstudio/v1/cloud_management/vcloud/networks" do
   run VCloudNetworkApp
+end
+
+map "/stackstudio/v1/cloud_management/vcloud/catalogs" do
+  run VCloudCatalogApp
 end
 
 #

@@ -35,6 +35,9 @@ gem 'source2swagger'
 #gem 'fog', '1.19.0', :require => 'fog'
 gem 'fog', :github => 'TranscendComputing/fog'
 
+
+# gem 'fog', :git => 'https://github.com/cstewart87/fog.git'
+
 gem "rest-client", "~> 1.6.7"
 gem "spice"
 #Should use ridley instead of spice, but ridley and mongoid are currently incompatible until mongoid 4.0 release or fixes with Ridley for Boolean class definition.
@@ -73,7 +76,7 @@ group :development, :test do
   gem 'flay'
   gem 'turbulence'
   gem 'coveralls', require: false
-  gem 'webmock' 
+  gem 'webmock'
 end
 
 

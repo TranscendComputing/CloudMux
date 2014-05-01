@@ -24,5 +24,4 @@ describe AccountRepresenter do
       new_account.email.should eq(@account.email)
     end
   end
-
 end

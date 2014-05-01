@@ -13,9 +13,7 @@ class VCloudApp < ResourceApiBase
 					  :vcloud_director_username => options["vcloud_username"],
 					  :vcloud_director_password => options["vcloud_api_key"],
 					  :vcloud_director_host => options["vcloud_director_url"],
-					  :vcloud_director_show_progress => false,
-					  :scheme => "https",
-					  :port => 443
+					  :vcloud_director_show_progress => false
 					)
 			@org = @compute.organizations.get_by_name(options["vcloud_organization"])
   		end
