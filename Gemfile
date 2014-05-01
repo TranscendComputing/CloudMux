@@ -31,8 +31,11 @@ gem 'bcrypt-ruby', '~> 3.0.1'
 gem 'source2swagger'
 
 # Cloud Management
-#gem 'fog', '1.19.0', :require => 'fog'
+# gem 'fog', '1.19.0', :require => 'fog'
 gem 'fog', :path => '/home/phil/working/fog'
+
+
+# gem 'fog', :git => 'https://github.com/cstewart87/fog.git'
 
 gem "rest-client", "~> 1.6.7"
 gem "spice"

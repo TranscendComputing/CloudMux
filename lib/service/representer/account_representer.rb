@@ -4,6 +4,7 @@ module AccountRepresenter
   # wrap the fields e.g. { "model_name" : { ...fields... }
   self.representation_wrap = true
 
+
   property :id
   property :org_id
   property :login
