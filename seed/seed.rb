@@ -34,7 +34,8 @@ if google.nil?
 	google = Cloud.create!(:name => "Google", :cloud_provider => "Google", :permalink => "google")
 end
 
-vcloud = Cloud.where(cloud_provder: 'VMware').first
+## Setup vmware cloud
+vcloud = Cloud.where(cloud_provider: 'VCloud').first
 if vcloud.nil?
   puts "Installing VMware"
   vcloud = Cloud.create!(:name => "VMware", :cloud_provider => "VCloud", :permalink => "vcloud")
