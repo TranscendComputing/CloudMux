@@ -2,7 +2,13 @@ Documentation:
   Enabled: false
 Encoding:
   Enabled: false
+LineLength:
+  Max: 250
 MethodLength:
-  Max: 80
+  Enabled: false
+ClassLength:
+  Enabled: false
+HashSyntax:
+  Enabled: false
 NumericLiterals:
-  Enabled: false  
+  Enabled: false
