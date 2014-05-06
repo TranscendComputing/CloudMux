@@ -1,154 +1,130 @@
 require 'sinatra'
 require 'fog'
-require 'pry'
 
 class VCloudComputeApp < VCloudApp
-  get '/data_centers' do
-    vdcs = @org.vdcs.all.to_a
-
-    vdc_list = vdcs.map do |vdc|
-      vdc.extend(VCloudVdcRepresenter)
-      vdc.org = @org.name
-      vdc
+  #
+  # Organizations
+  #
+  get '/organizations' do
+    begin
+      orgs = @compute.organizations
+      [OK, orgs.to_json]
+    rescue => error
+      handle_error(error)
     end
+  end
 
-    [OK, vdc_list.to_json]
+  get '/organizations/:id' do
+    begin
+      org = @compute.organizations.get(params[:id])
+      [OK, org.to_json]
+    rescue => error
+      handle_error(error)
+    end
+  end
+
+  #
+  # vDCs
+  #
+  get '/data_centers' do
+    begin
+      vdcs = @org.vdcs
+      [OK, vdcs.to_json]
+    rescue => error
+      handle_error(error)
+    end
   end
 
   get '/data_centers/:id' do
-    vdc = @org.vdcs.get(params[:id]).extend(VCloudVdcRepresenter)
-    vdc.org = @org.name
-    [OK, vdc.to_json]
-  end
-
-  get '/vapps' do
-    vdcs = @org.vdcs
-    vdc = vdcs.get_by_name(params[:vdc])
-    vapp_list = vdc.vapps.map do |vapp|
-      vapp.extend(VCloudVappRepresenter)
-      vapp.org = @org.name
-      vapp.vdc = vdc.name
-      vapp
+    begin
+      vdc = @org.vdcs.get(params[:id])
+      [OK, vdc.to_json]
+    rescue => error
+      handle_error(error)
     end
-    [OK, vapp_list.to_json]
   end
 
-  get '/vms' do
-    [BAD_REQUEST, 'Missing parameters'] if params[:vapp].nil? || params[:vdc].nil?
-
-    vdcs = @org.vdcs
-    vdc = vdcs.get_by_name(params[:vdc])
-    vapps = vdc.vapps
-    vapp = vapps.get_by_name(params[:vapp])
-
-    vm_list = vapp.vms.map do |vm|
-      vm.extend(VCloudVmRepresenter)
-      vm.org = @org.name
-      vm.vdc = vdc.name
-      vm.vapp = vapp.name
-      vm
+  #
+  # vApps
+  #
+  # NOTES:
+  # Creating a vApp is done in vcloud_catalog_app
+  get '/data_centers/:vdc_id/vapps' do
+    begin
+      vapps = @org.vdcs.get(params[:vdc_id]).vapps
+      [OK, vapps.to_json]
+    rescue => error
+      handle_error(error)
     end
-    [OK, vm_list.to_json]
   end
 
-  get '/vms/network' do
-    vdcs = @org.vdcs
-    vdc = vdcs.get_by_name(params[:vdc])
-    vapps = vdc.vapps
-    vapp = vapps.get_by_name(params[:vapp])
-    vms = vapp.vms
-    vm = vms.get_by_name(params[:id])
-    network = vm.network
-    [OK, network.to_json]
+  get '/data_centers/:vdc_id/vapps/:id' do
+    begin
+      vapp = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:id])
+      [OK, vapp.to_json]
+    rescue => error
+      handle_error(error)
+    end
   end
 
-  post '/vms/network' do
-
-    vdcs = @org.vdcs
-    vdc = vdcs.get_by_name(params[:vdc])
-    vapps = vdc.vapps
-    vapp = vapps.get_by_name(params[:vapp])
-    vms = vapp.vms
-    vm = vms.get_by_name(params[:id])
-    network = vm.network
-
-    network.is_connected = params[:is_connected] unless params[:is_connected].nil?
-    network.ip_address_allocation_mode = params[:ip_address_allocation_mode] unless params[:ip_address_allocation_mode].nil?
-    network.mac_address = params[:mac_address] unless params[:mac_address].nil?
-    network.save
-
-    [OK, network.to_json]
+  #
+  # VMs
+  #
+  get '/data_centers/:vdc_id/vapps/:vapp_id/vms' do
+    begin
+      vms = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:vapp_id]).vms
+      [OK, vms.to_json]
+    rescue => error
+      handle_error(error)
+    end
   end
 
-  get '/vms/disks' do
-    vdcs = @org.vdcs
-    vdc = vdcs.get_by_name(params[:vdc])
-    vapps = vdc.vapps
-    vapp = vapps.get_by_name(params[:vapp])
-    vms = vapp.vms
-    vm = vms.get_by_name(params[:id])
-    disks = vm.disks.select { |disk| disk.capacity_loaded? }
-
-    disks = disks.map { |disk| { :name => disk.name, :capacity => disk.capacity } }
-
-    [OK, disks.to_json]
+  put '/data_centers/:vdc_id/vapps/:vapp_id/vms/:id' do
+    json_body = body_to_json_or_die('body' => request)
+    begin
+      vm = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:vapp_id]).vms.get(params[:id])
+      unless json_body['status'].nil?
+        vm.power_on if json_body['status'] == 'on' && vm.status != 'on'
+        vm.power_off if json_body['status'] == 'off' && vm.status != 'off'
+      end
+      vm.cpu = json_body['cpu'] if !json_body['cpu'].nil? && json_body['cpu'].to_s != vm.cpu.to_s
+      vm.memory =json_body['memory'] if !json_body['memory'].nil? && json_body['memory'].to_s != vm.memory.to_s
+      updated_vm = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:vapp_id]).vms.get(params[:id])
+      [OK, updated_vm.to_json]
+    rescue => error
+      handle_error(error)
+    end
   end
 
-  def vms
-    vdcs = @org.vdcs
-    # get all vapps from each vdc and combine
-    vapps  = vdcs.map { |vdc| vdc.vapps.all }.flatten
-
-    # get all vms from each vapp and combine
-    vms = vapps.map { |vapp| vapp.vms.all }.flatten
-    vms.to_json
+  get '/data_centers/:vdc_id/vapps/:vapp_id/vms/:id/network' do
+    begin
+      network = @org.vdcs.get(params[:vdc_id]).vapps.get(:vapp_id).vms.get(params[:id]).network
+      [OK, network.to_json]
+    rescue => error
+      handle_error(error)
+    end
   end
 
-  post '/vms/power_on' do
-    vdc = @org.vdcs.get_by_name(params[:vdc])
-    vapp = vdc.vapps.get_by_name(params[:vapp])
-    vm = vapp.vms.get_by_name(params[:id])
-
-    vm.power_on if vm.status != 'on'
-
-    [OK, vm.to_json]
+  post '/data_centers/:vdc_id/vapps/:vapp_id/vms/:id/network' do
+    json_body = body_to_json_or_die('body' => request)
+    begin
+      network = @org.vdcs.get(params[:vdc_id]).vapps.get(:vapp_id).vms.get(params[:id]).network
+      network.is_connected = json_body['is_connected'] unless json_body['is_connected'].nil?
+      network.is_address_allocation_mode = json_body['ip_address_allocation_mode'] unless json_body['ip_address_allocation_mode'].nil?
+      network.mac_address = json_body['mac_address'] unless json_body['mac_address'].nil?
+      network.save
+      [OK, network.to_json]
+    rescue => error
+      handle_error(error)
+    end
   end
 
-  post '/vms/power_off' do
-    vdc = @org.vdcs.get_by_name(params[:vdc])
-    vapp = vdc.vapps.get_by_name(params[:vapp])
-    vm = vapp.vms.get_by_name(params[:id])
-
-    vm.power_off if vm.status != 'off'
-
-    [OK, vm.to_json]
-  end
-
-  post '/vms/modify_cpu' do
-    [BAD_REQUEST, 'Must provide CPU value'] if params[:cpu].nil?
-
-    vdc = @org.vdcs.get_by_name(params[:vdc])
-    vapp = vdc.vapps.get_by_name(params[:vapp])
-    vm = vapp.vms.get_by_name(params[:id])
-
-    vm.cpu = params[:cpu] if vm.cpu != params[:cpu]
-
-    [OK, vm.to_json]
-  end
-
-  post '/vms/modify_memory' do
-    [BAD_REQUEST, 'Must provide memory value'] if params[:memory].nil?
-
-    vdc = @org.vdcs.get_by_name(params[:vdc])
-    vapp = vdc.vapps.get_by_name(params[:vapp])
-    vm = vapp.vms.get_by_name(params[:id])
-
-    vm.memory = params[:memory] if vm.memory != params[:memory]
-    [OK, vm.to_json]
-  end
-
-  get '/organizations' do
-    orgs = @compute.organizations
-    [OK, orgs.to_json]
+  get '/data_centers/:vdc_id/vapps/:vapp_id/vms/:id/disks' do
+    begin
+      disks = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:vapp_id]).vms.get(params[:id]).disks
+      [OK, disks.to_json]
+    rescue => error
+      handle_error(error)
+    end
   end
 end
