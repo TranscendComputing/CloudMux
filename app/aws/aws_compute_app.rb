@@ -1157,6 +1157,8 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, new route table returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/route_tables' do
+		require 'pry'
+		binding.pry
 		json_body = body_to_json_or_die("body" => request)
 		begin
 			response = @compute.route_tables.create(json_body["route_table"])
@@ -1186,6 +1188,56 @@ class AwsComputeApp < ResourceApiBase
 			handle_error(error)
 		end
 	end
+
+	##~ a = sapi.apis.add
+  	##~ a.set :path => "/api/v1/cloud_management/aws/vpc/route_tables/:id/associate"
+  	##~ a.description = "Manage associations between route tables and subnets on the cloud (AWS)"
+  	##~ op = a.operations.add
+  	##~ op.responseClass = "Association"
+  	##~ op.set :httpMethod => "POST"
+  	##~ op.summary = "Associate Route Tables (AWS cloud)"
+  	##~ op.nickname = "associate_route_tables"
+  	##~ op.parameters.add :name => "id", :description => "Route Table ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"  
+  	##~ op.parameters.add :name => "subnet_id", :description => "Subnet ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "body"
+  	##~ op.errorResponses.add :reason => "Success, route table associated", :code => 200
+  	##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  	##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	post '/route_tables/:id/associate' do
+		# require 'pry'
+		# binding.pry
+		begin
+			response = @compute.associate_route_table(params[:subnet_id], params[:id])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
+		end
+	end
+
+	##~ a = sapi.apis.add
+  	##~ a.set :path => "/api/v1/cloud_management/aws/vpc/route_tables/:association_id/disassociate"
+  	##~ a.description = "Manage associations between route tables and subnets on the cloud (AWS)"
+  	##~ op = a.operations.remove
+  	##~ op.responseClass = "Boolean"
+  	##~ op.set :httpMethod => "POST"
+  	##~ op.summary = "Disassociate Route Tables (AWS cloud)"
+  	##~ op.nickname = "disassociate_route_tables"
+  	##~ op.parameters.add :name => "association_id", :description => "Association ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"  
+  	##~ op.errorResponses.add :reason => "Success, route table disassociated", :code => 200
+  	##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  	##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	post '/route_tables/:association_id/disassociate' do
+		# require 'pry'
+		# binding.pry
+		begin
+			response = @compute.disassociate_route_table(params[:association_id])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
+		end
+	end
+
 
     #Images
     get '/images' do
