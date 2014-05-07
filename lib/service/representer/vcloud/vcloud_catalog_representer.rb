@@ -3,9 +3,8 @@ module VCloudCatalogRepresenter
 
   property :name
   property :org
-  property :vdc
-  property :vapp
-  property :vm
+  property :items
 
-  collection :catalog_items
+  attr_accessor :org
+  attr_accessor :items
 end
