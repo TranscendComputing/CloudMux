@@ -60,7 +60,6 @@ require 'app/openstack/openstack_network_app'
 ## VMware Vcloud Apps
 require 'app/vcloud/vcloud_app'
 require 'app/vcloud/vcloud_compute_app'
-require 'app/vcloud/vcloud_storage_app'
 require 'app/vcloud/vcloud_network_app'
 require 'app/vcloud/vcloud_catalog_app'
 ## TopStack Apps
@@ -91,7 +90,7 @@ $stdout.sync = true
 configure(:test) { disable :logging }
 =begin
 register Sinatra::CrossOrigin
-configure do 
+configure do
   set :cross_origin, true
   set :allow_origin, "*"
   set :allow_methods, [:get, :post, :options, :put, :delete]
@@ -121,7 +120,7 @@ end
 # Identity Accounts API (internal)
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/identity.{format}", :format => "json"
 ##~ a.description = "Manage system accounts"
 map "/identity/v1/accounts" do
@@ -146,7 +145,7 @@ end
 # Clouds API (internal)
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/clouds.{format}", :format => "json"
 ##~ a.description = "Manage defined clouds"
 map "/stackstudio/v1/clouds" do
@@ -161,7 +160,7 @@ end
 # Cloud Accounts API (internal)
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/cloud_accounts.{format}", :format => "json"
 ##~ a.description = "Manage defined clouds"
 map "/stackstudio/v1/cloud_accounts" do
@@ -281,7 +280,7 @@ end
 # AWS Compute API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/aws_compute.{format}", :format => "json"
 ##~ a.description = "AWS Cloud Compute API"
 map "/stackstudio/v1/cloud_management/aws/compute" do
@@ -296,7 +295,7 @@ end
 # AWS Autoscale API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/aws_autoscale.{format}", :format => "json"
 ##~ a.description = "AWS AutoScale API"
 map "/stackstudio/v1/cloud_management/aws/autoscale" do
@@ -307,7 +306,7 @@ end
 # AWS Block Storage API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/aws_block_storage.{format}", :format => "json"
 ##~ a.description = "AWS Block Storage API"
 map "/stackstudio/v1/cloud_management/aws/block_storage" do
@@ -318,7 +317,7 @@ end
 # AWS Object Storage API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/aws_object_storage.{format}", :format => "json"
 ##~ a.description = "AWS Object Storage API"
 map "/stackstudio/v1/cloud_management/aws/object_storage" do
@@ -329,7 +328,7 @@ end
 # AWS Monitor API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/aws_monitor.{format}", :format => "json"
 ##~ a.description = "AWS monitor API"
 map "/stackstudio/v1/cloud_management/aws/monitor" do
@@ -340,7 +339,7 @@ end
 # AWS Notification API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/aws_notification.{format}", :format => "json"
 ##~ a.description = "AWS Notification API"
 map "/stackstudio/v1/cloud_management/aws/notification" do
@@ -351,7 +350,7 @@ end
 # AWS DNS API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/aws_dns.{format}", :format => "json"
 ##~ a.description = "AWS DNS API"
 map "/stackstudio/v1/cloud_management/aws/dns" do
@@ -362,7 +361,7 @@ end
 # AWS RDS API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/aws_rds.{format}", :format => "json"
 ##~ a.description = "AWS RDS API"
 map "/stackstudio/v1/cloud_management/aws/rds" do
@@ -373,7 +372,7 @@ end
 # AWS Load Balancer API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/aws_load_balancer.{format}", :format => "json"
 ##~ a.description = "AWS Load Balancer API"
 map "/stackstudio/v1/cloud_management/aws/load_balancer" do
@@ -384,7 +383,7 @@ end
 # AWS Cache API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/aws_cache.{format}", :format => "json"
 ##~ a.description = "AWS Cache API"
 map "/stackstudio/v1/cloud_management/aws/cache" do
@@ -395,7 +394,7 @@ end
 # AWS Beanstalk API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/aws_beanstalk.{format}", :format => "json"
 ##~ a.description = "AWS Beanstalk API"
 map "/stackstudio/v1/cloud_management/aws/beanstalk" do
@@ -406,7 +405,7 @@ end
 # AWS IAM API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/aws_iam.{format}", :format => "json"
 ##~ a.description = "AWS IAM API"
 map "/stackstudio/v1/cloud_management/aws/iam" do
@@ -417,7 +416,7 @@ end
 # AWS Queue API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/aws_queue.{format}", :format => "json"
 ##~ a.description = "AWS Queue API"
 map "/stackstudio/v1/cloud_management/aws/queue" do
@@ -428,7 +427,7 @@ end
 # AWS SimpleDB API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/aws_simple_db.{format}", :format => "json"
 ##~ a.description = "AWS Simple DB API"
 map "/stackstudio/v1/cloud_management/aws/simple_db" do
@@ -447,7 +446,7 @@ map "/stackstudio/v1/cloud_management/openstack/compute" do
 end
 
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/openstack_compute.{format}", :format => "json"
 ##~ a.description = "OpenStack Cloud Compute API"
 map "/api/v1/cloud_management/openstack/compute" do
@@ -458,7 +457,7 @@ end
 # Openstack Block Storage API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/openstack_block_storage.{format}", :format => "json"
 ##~ a.description = "OpenStack Block Storage API"
 map "/stackstudio/v1/cloud_management/openstack/block_storage" do
@@ -469,7 +468,7 @@ end
 # Openstack Object Storage API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/openstack_object_storage.{format}", :format => "json"
 ##~ a.description = "OpenStack Object Storage API"
 map "/stackstudio/v1/cloud_management/openstack/object_storage" do
@@ -480,7 +479,7 @@ end
 # Openstack Identity API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/openstack_identity.{format}", :format => "json"
 ##~ a.description = "OpenStack Identity API"
 map "/stackstudio/v1/cloud_management/openstack/identity" do
@@ -491,7 +490,7 @@ end
 # Openstack Network API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/openstack_network.{format}", :format => "json"
 ##~ a.description = "OpenStack Network API"
 map "/stackstudio/v1/cloud_management/openstack/network" do
@@ -502,7 +501,7 @@ end
 # TopStack LoadBalancer API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/topstack_load_balancer.{format}", :format => "json"
 ##~ a.description = "TopStack Load Balancer API"
 map "/stackstudio/v1/cloud_management/topstack/load_balancer" do
@@ -513,7 +512,7 @@ end
 # TopStack AutoScale API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/topstack_autoscale.{format}", :format => "json"
 ##~ a.description = "TopStack AutoScale API"
 map "/stackstudio/v1/cloud_management/topstack/autoscale" do
@@ -524,7 +523,7 @@ end
 # TopStack Monitor API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/topstack_monitor.{format}", :format => "json"
 ##~ a.description = "TopStack Monitor API"
 map "/stackstudio/v1/cloud_management/topstack/monitor" do
@@ -535,7 +534,7 @@ end
 # TopStack RDS API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/topstack_rds.{format}", :format => "json"
 ##~ a.description = "TopStack RDS API"
 map "/stackstudio/v1/cloud_management/topstack/rds" do
@@ -546,7 +545,7 @@ end
 # TopStack Queue API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/topstack_queue.{format}", :format => "json"
 ##~ a.description = "TopStack Queue API"
 map "/stackstudio/v1/cloud_management/topstack/queue" do
@@ -557,7 +556,7 @@ end
 # TopStack Cache API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/topstack_cache.{format}", :format => "json"
 ##~ a.description = "TopStack Cache API"
 map "/stackstudio/v1/cloud_management/topstack/cache" do
@@ -568,7 +567,7 @@ end
 # TopStack DNS API
 #
 ##~ a = sapi.apis.add
-## 
+##
 ##~ a.set :path => "/topstack_dns.{format}", :format => "json"
 ##~ a.description = "TopStack DNS API"
 map "/stackstudio/v1/cloud_management/topstack/dns" do
@@ -626,7 +625,7 @@ map "/stackstudio/v1/packed_images" do
 end
 
 #
-# Queue Items API 
+# Queue Items API
 #
 map "/stackstudio/v1/queue/item" do
   run QueueItemApiApp
