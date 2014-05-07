@@ -126,6 +126,9 @@ class ResourceApiBase < ApiBase
     when Fog::Network::OpenStack::NotFound
       message = 'NeutronError: Router has no interface on subnet.'
       [NOT_FOUND, message]
+    when Fog::Compute::VcloudDirector::BadRequest
+      message = 'vCloud resource not found.'
+      [NOT_FOUND, message]
     when Excon::Errors::Conflict
       begin
         response_body = JSON.parse(error.response.body)
