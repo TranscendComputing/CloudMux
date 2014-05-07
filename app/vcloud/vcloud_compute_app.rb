@@ -96,6 +96,9 @@ class VCloudComputeApp < VCloudApp
     end
   end
 
+  #
+  # VM Network
+  #
   get '/data_centers/:vdc_id/vapps/:vapp_id/vms/:id/network' do
     begin
       network = @org.vdcs.get(params[:vdc_id]).vapps.get(:vapp_id).vms.get(params[:id]).network
@@ -119,10 +122,32 @@ class VCloudComputeApp < VCloudApp
     end
   end
 
+  #
+  # VM Disks
+  #
   get '/data_centers/:vdc_id/vapps/:vapp_id/vms/:id/disks' do
     begin
       disks = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:vapp_id]).vms.get(params[:id]).disks
       [OK, disks.to_json]
+    rescue => error
+      handle_error(error)
+    end
+  end
+
+  put '/data_centers/:vdc_id/vapps/:vapp_id/vms/:vm_id/disks/:id' do
+    json_body = body_to_json_or_die('body' => request)
+    begin
+      disk = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:vapp_id]).vms.get(params[:vm_id]).disks.get(params[:id].to_i)
+      disk.capacity = json_body['capacity'] if !json_body['capacity'].nil? && json_body['capacity'].to_s != disk.capacity.to_s
+    rescue => error
+      handle_error(error)
+    end
+  end
+
+  delete '/data_centers/:vdc_id/vapps/:vapp_id/vms/:vm_id/disks/:id' do
+    begin
+      disk = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:vapp_id]).vms.get(params[:vm_id]).disks.get(params[:id].to_i)
+      disk.destroy
     rescue => error
       handle_error(error)
     end
