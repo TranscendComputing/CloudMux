@@ -1204,11 +1204,9 @@ class AwsComputeApp < ResourceApiBase
   	##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/route_tables/:id/associate' do
-		json_body = body_to_json_or_die("body" => request)
-		# require 'pry'
-		# binding.pry
+		json_body = body_to_json_or_die("body" => request, "args" => ["subnet_id"])
 		begin
-			response = @compute.associate_route_table(json_body["subnet_id"], params[:id])
+			response = @compute.associate_route_table(params[:id], json_body["subnet_id"])
 			[OK, response.to_json]
 		rescue => error
 			handle_error(error)
@@ -1229,10 +1227,9 @@ class AwsComputeApp < ResourceApiBase
   	##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/route_tables/:association_id/disassociate' do
-		# require 'pry'
-		# binding.pry
+		json_body = body_to_json_or_die("body" => request, "args" => ["association_id"])
 		begin
-			response = @compute.disassociate_route_table(params[:association_id])
+			response = @compute.disassociate_route_table(json_body["association_id"])
 			[OK, response.to_json]
 		rescue => error
 			handle_error(error)
