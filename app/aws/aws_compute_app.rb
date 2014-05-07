@@ -1204,10 +1204,11 @@ class AwsComputeApp < ResourceApiBase
   	##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
 	post '/route_tables/:id/associate' do
+		json_body = body_to_json_or_die("body" => request)
 		# require 'pry'
 		# binding.pry
 		begin
-			response = @compute.associate_route_table(params[:subnet_id], params[:id])
+			response = @compute.associate_route_table(json_body["subnet_id"], params[:id])
 			[OK, response.to_json]
 		rescue => error
 			handle_error(error)
