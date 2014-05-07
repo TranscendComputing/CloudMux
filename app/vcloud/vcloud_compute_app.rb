@@ -88,7 +88,7 @@ class VCloudComputeApp < VCloudApp
         vm.power_off if json_body['status'] == 'off' && vm.status != 'off'
       end
       vm.cpu = json_body['cpu'] if !json_body['cpu'].nil? && json_body['cpu'].to_s != vm.cpu.to_s
-      vm.memory =json_body['memory'] if !json_body['memory'].nil? && json_body['memory'].to_s != vm.memory.to_s
+      vm.memory = json_body['memory'] if !json_body['memory'].nil? && json_body['memory'].to_s != vm.memory.to_s
       updated_vm = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:vapp_id]).vms.get(params[:id])
       [OK, updated_vm.to_json]
     rescue => error
