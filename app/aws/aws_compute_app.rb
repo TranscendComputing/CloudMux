@@ -1132,17 +1132,19 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, list of route tables returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/route_tables' do
-    begin
-  		filters = params[:filters]
-  		if(filters.nil?)
-  			response = @compute.route_tables
-  		else
-  			response = @compute.route_tables.all(filters)
-  		end
-  		[OK, response.to_json]
-    rescue => error
-			pre_handle_error(@compute, error)
-	end
+		# require 'pry'
+		# binding.pry
+	    begin
+	  		filters = params[:filters]
+	  		if(filters.nil?)
+	  			response = @compute.route_tables
+	  		else
+	  			response = @compute.route_tables.all(filters)
+	  		end
+	  		[OK, response.to_json]
+	    rescue => error
+				pre_handle_error(@compute, error)
+		end
 	end
 
 	##~ a = sapi.apis.add
@@ -1234,6 +1236,80 @@ class AwsComputeApp < ResourceApiBase
 		end
 	end
 
+	#
+	# Network ACLs
+	#
+
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/network_acls"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "GET"
+	##~ op.summary = "Describe current network acls (AWS cloud)"
+	##~ op.nickname = "describe_network_acls"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "filters", :description => "Filters for network acls", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, list of network acls returned", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+	get '/network_acls' do
+	    begin
+	    	# require 'pry'
+	    	# binding.pry
+	  		filters = params[:filters]
+	  		if(filters.nil?)
+	  			response = @compute.network_acls
+	  		else
+	  			response = @compute.network_acls.all(filters)
+	  		end
+	  		[OK, response.to_json]
+	    rescue => error
+				pre_handle_error(@compute, error)
+		end
+	end
+
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/network_acls"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "POST"
+	##~ op.summary = "Create network acl (AWS cloud)"
+	##~ op.nickname = "create_network_acl"
+	##~ op.parameters.add :name => "vpc_id", :description => "VPC ID to add the Network ACL to.", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, new network acl returned", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+	post '/network_acls' do
+		json_body = body_to_json_or_die("body" => request)
+		begin
+			response = @compute.network_acls.create(json_body["vpc_id"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
+		end
+	end
+
+	#~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/network_acls/:id"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "DELETE"
+	##~ op.summary = "Delete network acl (AWS cloud)"
+	##~ op.nickname = "delete_network_acl"
+	###~ op.parameters.add :name => "id", :description => "Network ACL ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, acl deleted", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", code => 400
+	delete '/network_acls/:id' do
+		begin
+			response = @compute.network_acls.get(params[:id]).destroy
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
+		end
+	end
 
     #Images
     get '/images' do
