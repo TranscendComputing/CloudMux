@@ -2,6 +2,7 @@ require 'sinatra'
 require 'fog'
 
 class VCloudCatalogApp < VCloudApp
+<<<<<<< HEAD
 	
 	get '/' do
 		catalog_list = @org.catalogs.map do |catalog|
@@ -47,3 +48,10 @@ class VCloudCatalogApp < VCloudApp
 		[OK, { :success => true }]
 	end
 end
+=======
+  get '/' do
+    catalogs = @org.catalogs.all
+    [OK, catalogs.to_json]
+  end
+end
+>>>>>>> 65909512813d792ee3c424ebea7d24b7876c8d71
