@@ -1157,8 +1157,6 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, new route table returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	post '/route_tables' do
-		require 'pry'
-		binding.pry
 		json_body = body_to_json_or_die("body" => request)
 		begin
 			response = @compute.route_tables.create(json_body["route_table"])
