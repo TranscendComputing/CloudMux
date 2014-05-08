@@ -19,3 +19,7 @@ rest_log
 /turbulence
 
 app/config/settings.y*ml
+
+#RVM default files
+.ruby-version
+.ruby-gemset
