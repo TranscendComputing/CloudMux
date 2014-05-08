@@ -1254,8 +1254,6 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/network_acls' do
 	    begin
-	    	# require 'pry'
-	    	# binding.pry
 	  		filters = params[:filters]
 	  		if(filters.nil?)
 	  			response = @compute.network_acls
@@ -1283,7 +1281,7 @@ class AwsComputeApp < ResourceApiBase
 	post '/network_acls' do
 		json_body = body_to_json_or_die("body" => request)
 		begin
-			response = @compute.network_acls.create(json_body["vpc_id"])
+			response = @compute.network_acls.create(json_body["network_acl"])
 			[OK, response.to_json]
 		rescue => error
 			handle_error(error)
