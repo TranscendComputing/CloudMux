@@ -1132,8 +1132,6 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, list of route tables returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/route_tables' do
-		# require 'pry'
-		# binding.pry
 	    begin
 	  		filters = params[:filters]
 	  		if(filters.nil?)
