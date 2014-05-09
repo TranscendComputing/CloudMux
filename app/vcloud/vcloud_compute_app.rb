@@ -75,7 +75,7 @@ class VCloudComputeApp < VCloudApp
         [OK, response.to_json]
       else
         response = @compute.delete_vapp(params[:id])
-        [OK, response.to_json]
+        [OK, response.body.to_json]
       end
     rescue => error
       handle_error(error)
@@ -90,7 +90,7 @@ class VCloudComputeApp < VCloudApp
         [OK, response.to_json]
       else
         response = @compute.post_power_off_vapp(params[:id])
-        [OK, response.to_json]
+        [OK, response.body.to_json]
       end
     rescue => error
       handle_error(error)
@@ -105,7 +105,7 @@ class VCloudComputeApp < VCloudApp
         [OK, response.to_json]
       else
         response = @compute.post_power_on_vapp(params[:id])
-        [OK, response.to_json]
+        [OK, response.body.to_json]
       end
     rescue => error
       handle_error(error)
@@ -120,7 +120,7 @@ class VCloudComputeApp < VCloudApp
         [OK, response.to_json]
       else
         response = @compute.post_reboot_vapp(params[:id])
-        [OK, response.to_json]
+        [OK, response.body.to_json]
       end
     rescue => error
       handle_error(error)
@@ -135,7 +135,7 @@ class VCloudComputeApp < VCloudApp
         [OK, response.to_json]
       else
         response = @compute.post_reset_vapp(params[:id])
-        [OK, response.to_json]
+        [OK, response.body.to_json]
       end
     rescue => error
       handle_error(error)
@@ -150,7 +150,7 @@ class VCloudComputeApp < VCloudApp
         [OK, response.to_json]
       else
         response = @compute.post_shutdown_vapp(params[:id])
-        [OK, response.to_json]
+        [OK, response.body.to_json]
       end
     rescue => error
       handle_error(error)
@@ -165,8 +165,57 @@ class VCloudComputeApp < VCloudApp
         [OK, response.to_json]
       else
         response = @compute.post_suspend_vapp(params[:id])
-        [OK, response.to_json]
+        [OK, response.body.to_json]
       end
+    rescue => error
+      handle_error(error)
+    end
+  end
+
+  post '/data_centers/:vdc_id/vapps/:id/clone' do
+    json_body = body_to_json_or_die('body' => request)
+    begin
+      if json_body['vapp_options']
+        response = @compute.post_clone_vapp(params[:vdc_id], json_body['vapp_name'], params[:id], json_body['vapp_options'])
+      else
+        response = @compute.post_clone_vapp(params[:vdc_id], json_body['vapp_name'], params[:id])
+      end
+      [OK, response.body.to_json]
+    rescue => error
+      handle_error(error)
+    end
+  end
+
+  #
+  # vApp Snapshots
+  #
+  post '/data_centers/:vdc_id/apps/:id/snapshot' do
+    json_body = body_to_json(request)
+    begin
+      if json_body['snapshot_options']
+        response = @compute.post_create_snapshot(params[:id], json_body['snapshot_options'])
+      else
+        response = @compute.post_create_snapshot(params[:id])
+      end
+      [OK, response.body.to_json]
+    rescue => error
+      handle_error(error)
+    end
+  end
+
+  post '/data_centers/:vdc_id/apps/:id/revert_to_snapshot' do
+    begin
+      response = @compute.post_revert_snapshot(params[:id])
+      [OK, response.body.to_json]
+    rescue => error
+      handle_error(error)
+    end
+  end
+
+  delete '/data_centers/:vdc_id/apps/:id/snapshot' do
+    begin
+      response = @compute.post_remove_all_snapshots(params[:id])
+      [OK, response.body.to_json]
     rescue => error
       handle_error(error)
     end
