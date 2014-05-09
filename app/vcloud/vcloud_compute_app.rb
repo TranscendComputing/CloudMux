@@ -298,6 +298,39 @@ class VCloudComputeApp < VCloudApp
     end
   end
 
+  post '/data_centers/:vdc_id/vapps/:vapp_id/vms/:vm_id/disks' do
+    json_body = body_to_json_or_die('body' => request)
+    begin
+      response = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:vapp_id]).vms.get(params[:vm_id]).disks.create(json_body['size'])
+      [OK, response.to_json]
+    rescue => error
+      handle_error(error)
+    end
+  end
+
+  post '/data_centers/:vdc_id/vapps/:vapp_id/vms/:vm_id/disks/:id/attach' do
+    json_body = body_to_json(request)
+    begin
+      if json_body['disk_options']
+        response = @compute.post_attach_disk(params[:vm_id], params[:id], json_body['disk_options'])
+      else
+        response = @compute.post_attach_disk(params[:vm_id], params[:id])
+      end
+      [OK, response.body.to_json]
+    rescue => error
+      handle_error(error)
+    end
+  end
+
+  post '/data_centers/:vdc_id/vapps/:vapp_id/vms/:vm_id/disks/:id/detach' do
+    begin
+      response = @compute.post_detach_disk(params[:vm_id], params[:id])
+      [OK, response.body.to_json]
+    rescue => error
+      handle_error(error)
+    end
+  end
+
   delete '/data_centers/:vdc_id/vapps/:vapp_id/vms/:vm_id/disks/:id' do
     begin
       disk = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:vapp_id]).vms.get(params[:vm_id]).disks.get(params[:id].to_i)
