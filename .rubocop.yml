@@ -12,3 +12,5 @@ HashSyntax:
   Enabled: false
 NumericLiterals:
   Enabled: false
+CyclomaticComplexity:
+  Enabled: false

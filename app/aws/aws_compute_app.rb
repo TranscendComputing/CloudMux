@@ -1132,17 +1132,17 @@ class AwsComputeApp < ResourceApiBase
 	##~ op.errorResponses.add :reason => "Success, list of route tables returned", :code => 200
 	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
 	get '/route_tables' do
-    begin
-  		filters = params[:filters]
-  		if(filters.nil?)
-  			response = @compute.route_tables
-  		else
-  			response = @compute.route_tables.all(filters)
-  		end
-  		[OK, response.to_json]
-    rescue => error
-			pre_handle_error(@compute, error)
-	end
+	    begin
+	  		filters = params[:filters]
+	  		if(filters.nil?)
+	  			response = @compute.route_tables
+	  		else
+	  			response = @compute.route_tables.all(filters)
+	  		end
+	  		[OK, response.to_json]
+	    rescue => error
+				pre_handle_error(@compute, error)
+		end
 	end
 
 	##~ a = sapi.apis.add
@@ -1181,6 +1181,126 @@ class AwsComputeApp < ResourceApiBase
 	delete '/route_tables/:id' do
 		begin
 			response = @compute.route_tables.get(params[:id]).destroy
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
+		end
+	end
+
+	##~ a = sapi.apis.add
+  	##~ a.set :path => "/api/v1/cloud_management/aws/vpc/route_tables/:id/associate"
+  	##~ a.description = "Manage associations between route tables and subnets on the cloud (AWS)"
+  	##~ op = a.operations.add
+  	##~ op.responseClass = "Association"
+  	##~ op.set :httpMethod => "POST"
+  	##~ op.summary = "Associate Route Tables (AWS cloud)"
+  	##~ op.nickname = "associate_route_tables"
+  	##~ op.parameters.add :name => "id", :description => "Route Table ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"  
+  	##~ op.parameters.add :name => "subnet_id", :description => "Subnet ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "body"
+  	##~ op.errorResponses.add :reason => "Success, route table associated", :code => 200
+  	##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  	##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	post '/route_tables/:id/associate' do
+		json_body = body_to_json_or_die("body" => request, "args" => ["subnet_id"])
+		begin
+			response = @compute.associate_route_table(params[:id], json_body["subnet_id"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
+		end
+	end
+
+	##~ a = sapi.apis.add
+  	##~ a.set :path => "/api/v1/cloud_management/aws/vpc/route_tables/:association_id/disassociate"
+  	##~ a.description = "Manage associations between route tables and subnets on the cloud (AWS)"
+  	##~ op = a.operations.remove
+  	##~ op.responseClass = "Boolean"
+  	##~ op.set :httpMethod => "POST"
+  	##~ op.summary = "Disassociate Route Tables (AWS cloud)"
+  	##~ op.nickname = "disassociate_route_tables"
+  	##~ op.parameters.add :name => "association_id", :description => "Association ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"  
+  	##~ op.errorResponses.add :reason => "Success, route table disassociated", :code => 200
+  	##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
+  	##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+  	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	post '/route_tables/:association_id/disassociate' do
+		json_body = body_to_json_or_die("body" => request, "args" => ["association_id"])
+		begin
+			response = @compute.disassociate_route_table(json_body["association_id"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
+		end
+	end
+
+	#
+	# Network ACLs
+	#
+
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/network_acls"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "GET"
+	##~ op.summary = "Describe current network acls (AWS cloud)"
+	##~ op.nickname = "describe_network_acls"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "filters", :description => "Filters for network acls", :dataType => "string", :allowMultiple => false, :required => false, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, list of network acls returned", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+	get '/network_acls' do
+	    begin
+	  		filters = params[:filters]
+	  		if(filters.nil?)
+	  			response = @compute.network_acls
+	  		else
+	  			response = @compute.network_acls.all(filters)
+	  		end
+	  		[OK, response.to_json]
+	    rescue => error
+				pre_handle_error(@compute, error)
+		end
+	end
+
+	##~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/network_acls"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "POST"
+	##~ op.summary = "Create network acl (AWS cloud)"
+	##~ op.nickname = "create_network_acl"
+	##~ op.parameters.add :name => "vpc_id", :description => "VPC ID to add the Network ACL to.", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, new network acl returned", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", :code => 400
+	post '/network_acls' do
+		json_body = body_to_json_or_die("body" => request)
+		begin
+			response = @compute.network_acls.create(json_body["network_acl"])
+			[OK, response.to_json]
+		rescue => error
+			handle_error(error)
+		end
+	end
+
+	#~ a = sapi.apis.add
+	##~ a.set :path => "/api/v1/cloud_management/aws/compute/network_acls/:id"
+	##~ a.description = "Manage compute resources on the cloud (AWS)"
+	##~ op = a.operations.add
+	##~ op.set :httpMethod => "DELETE"
+	##~ op.summary = "Delete network acl (AWS cloud)"
+	##~ op.nickname = "delete_network_acl"
+	###~ op.parameters.add :name => "id", :description => "Network ACL ID", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "path"
+	##~ op.parameters.add :name => "cred_id", :description => "Cloud credentials to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
+	##~ op.errorResponses.add :reason => "Success, acl deleted", :code => 200
+	##~ op.errorResponses.add :reason => "Credentials not supported by cloud", code => 400
+	delete '/network_acls/:id' do
+		begin
+			response = @compute.network_acls.get(params[:id]).destroy
 			[OK, response.to_json]
 		rescue => error
 			handle_error(error)

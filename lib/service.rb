@@ -73,12 +73,6 @@ require_relative 'service/representer/update_cloud_representer'
 require_relative 'service/representer/cloud_query_representer'
 require_relative 'service/representer/config_manager_representer'
 
-# Vcloud stuff
-require_relative 'service/representer/vcloud/vcloud_vdc_representer'
-require_relative 'service/representer/vcloud/vcloud_vapp_representer'
-require_relative 'service/representer/vcloud/vcloud_vm_representer'
-require_relative 'service/representer/vcloud/vcloud_catalog_representer'
-
 require_relative 'service/model/policy_rule'
 require_relative 'service/model/group_policy'
 require_relative 'service/representer/group_policy_representer'
