@@ -104,31 +104,17 @@ class ResourceApiBase < ApiBase
       message = custom_type_error.nil? ? error.to_s  : custom_type_error
       [NOT_ACCEPTABLE, message]
     when Fog::AWS::IAM::EntityAlreadyExists
-      message = error.message
-      [NOT_ACCEPTABLE, message]
+      [NOT_ACCEPTABLE, error.message]
     when Fog::AWS::IAM::Error
-      error = error.message.split(' => ')
-      message = error[1]
-      [NOT_FOUND, message]
+      [NOT_FOUND, error.message.split(' => ')[1]]
     when Fog::Compute::AWS::Error
-      error = error.message.split(' => ')
-      message = error[1]
-      [NOT_ACCEPTABLE, message]
-    when Fog::AWS::RDS::NotFound, Fog::AWS::Elasticache::NotFound
-      message = error.to_s
-      [NOT_FOUND, message]
+      [NOT_ACCEPTABLE, error.message.split(' => ')[1]]
     when Fog::Compute::OpenStack::NotFound
-      message = 'OpenStack resource not found.'
-      [NOT_FOUND, message]
+      [NOT_FOUND, 'OpenStack resource not found.']
     when Fog::Identity::OpenStack::NotFound
-      message = 'You are not authorized for this action.'
-      [NOT_AUTHORIZED, message]
+      [NOT_AUTHORIZED, 'You are not authorized for this action.']
     when Fog::Network::OpenStack::NotFound
-      message = 'NeutronError: Router has no interface on subnet.'
-      [NOT_FOUND, message]
-    when Fog::Compute::VcloudDirector::BadRequest
-      message = 'vCloud resource not found.'
-      [NOT_FOUND, message]
+      [NOT_FOUND, 'NeutronError: Router has no interface on subnet.']
     when Excon::Errors::Conflict
       begin
         response_body = JSON.parse(error.response.body)
@@ -190,10 +176,9 @@ class ResourceApiBase < ApiBase
     when Net::HTTPServerException
       message = JSON.parse(error.response.body)['error'][0]
       [ERROR, message]
-    when ArgumentError
-      message = error.to_s
-      [BAD_REQUEST, message]
-    when Fog::Errors::NotFound
+    when RuntimeError, ArgumentError, Fog::Compute::VcloudDirector::BadRequest
+      [BAD_REQUEST, error.to_s]
+    when  Fog::AWS::RDS::NotFound, Fog::AWS::Elasticache::NotFound, Fog::Errors::NotFound
       [NOT_FOUND, error.to_s]
     when Fog::JSON::DecodeError
       # Work around for bug in Grizzly. Needs to be removed if ever fixed.
