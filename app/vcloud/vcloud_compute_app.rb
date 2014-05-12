@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'fog'
+require 'pry'
 
 class VCloudComputeApp < VCloudApp
   #
@@ -51,8 +52,10 @@ class VCloudComputeApp < VCloudApp
   # Creating a vApp is done in vcloud_catalog_app
   get '/data_centers/:vdc_id/vapps' do
     begin
-      vapps = @org.vdcs.get(params[:vdc_id]).vapps
-      [OK, vapps.to_json]
+      vapps = @org.vdcs.get(params[:vdc_id]).vapps.all(false)
+
+      vapp_list = vapps.map { |vapp| vapp.extend(VCloudVappRepresenter); vapp }
+      [OK, vapp_list.to_json]
     rescue => error
       handle_error(error)
     end
@@ -72,23 +75,22 @@ class VCloudComputeApp < VCloudApp
   #
   get '/data_centers/:vdc_id/vapps/:vapp_id/vms' do
     begin
-      vms = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:vapp_id]).vms
+      vms = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:vapp_id]).vms.all(false)
       [OK, vms.to_json]
     rescue => error
       handle_error(error)
     end
   end
 
-  put '/data_centers/:vdc_id/vapps/:vapp_id/vms/:id' do
-    json_body = body_to_json_or_die('body' => request)
+  post '/data_centers/:vdc_id/vapps/:vapp_id/vms/:id' do
     begin
       vm = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:vapp_id]).vms.get(params[:id])
-      unless json_body['status'].nil?
-        vm.power_on if json_body['status'] == 'on' && vm.status != 'on'
-        vm.power_off if json_body['status'] == 'off' && vm.status != 'off'
+      unless params['status'].nil?
+        vm.power_on if params['status'] == 'on' && vm.status != 'on'
+        vm.power_off if params['status'] == 'off' && vm.status != 'off'
       end
-      vm.cpu = json_body['cpu'] if !json_body['cpu'].nil? && json_body['cpu'].to_s != vm.cpu.to_s
-      vm.memory = json_body['memory'] if !json_body['memory'].nil? && json_body['memory'].to_s != vm.memory.to_s
+      vm.cpu = params['cpu'] if !params['cpu'].nil? && params['cpu'].to_s != vm.cpu.to_s
+      vm.memory = params['memory'] if !params['memory'].nil? && params['memory'].to_s != vm.memory.to_s
       updated_vm = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:vapp_id]).vms.get(params[:id])
       [OK, updated_vm.to_json]
     rescue => error
@@ -99,6 +101,8 @@ class VCloudComputeApp < VCloudApp
   get '/data_centers/:vdc_id/vapps/:vapp_id/vms/:id/network' do
     begin
       network = @org.vdcs.get(params[:vdc_id]).vapps.get(:vapp_id).vms.get(params[:id]).network
+
+      network.extend(VCloudNetworkRepresenter)
       [OK, network.to_json]
     rescue => error
       handle_error(error)
@@ -106,12 +110,11 @@ class VCloudComputeApp < VCloudApp
   end
 
   post '/data_centers/:vdc_id/vapps/:vapp_id/vms/:id/network' do
-    json_body = body_to_json_or_die('body' => request)
     begin
       network = @org.vdcs.get(params[:vdc_id]).vapps.get(:vapp_id).vms.get(params[:id]).network
-      network.is_connected = json_body['is_connected'] unless json_body['is_connected'].nil?
-      network.is_address_allocation_mode = json_body['ip_address_allocation_mode'] unless json_body['ip_address_allocation_mode'].nil?
-      network.mac_address = json_body['mac_address'] unless json_body['mac_address'].nil?
+      network.is_connected = params['is_connected'] unless params['is_connected'].nil?
+      network.is_address_allocation_mode = params['ip_address_allocation_mode'] unless params['ip_address_allocation_mode'].nil?
+      network.mac_address = params['mac_address'] unless params['mac_address'].nil?
       network.save
       [OK, network.to_json]
     rescue => error
@@ -122,7 +125,10 @@ class VCloudComputeApp < VCloudApp
   get '/data_centers/:vdc_id/vapps/:vapp_id/vms/:id/disks' do
     begin
       disks = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:vapp_id]).vms.get(params[:id]).disks
-      [OK, disks.to_json]
+      
+      disks_list = disks.select { |disk| disk.capacity_loaded? }.map { |disk| disk.extend(VCloudDiskRepresenter); disk }
+
+      [OK, disks_list.to_json]
     rescue => error
       handle_error(error)
     end

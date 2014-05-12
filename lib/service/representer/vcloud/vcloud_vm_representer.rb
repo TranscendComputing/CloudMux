@@ -5,12 +5,4 @@ module VCloudVmRepresenter
   property :status
   property :cpu
   property :memory
-
-  property :org
-  property :vdc
-  property :vapp
-
-  attr_accessor :org
-  attr_accessor :vdc
-  attr_accessor :vapp
 end
