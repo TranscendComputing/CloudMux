@@ -195,6 +195,14 @@ class IdentityApiApp < ApiBase
     [OK, update_account.to_json]
   end
 
+  # Remove existing group of cloud credentials belonging to specific cloud_account
+  delete '/:id/cloud_account_credentials/:cloud_account_id' do
+    update_account = Account.find(params[:id])
+    update_account.remove_cloud_account_credentials!(params[:cloud_account_id])
+    update_account.extend(AccountRepresenter)
+    [OK, update_account.to_json]
+  end
+
   # Register a new key pair for a cloud credential
   # Note: no longer needed, as they query AWS for key pairs. Not sure how other cloud providers will need this handled, so will leave for now
   post '/:id/:cloud_credential_id/key_pairs' do
