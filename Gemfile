@@ -32,7 +32,6 @@ gem 'bcrypt-ruby', '~> 3.0.1'
 gem 'source2swagger'
 
 # Cloud Management
-#gem 'fog', '1.19.0', :require => 'fog'
 gem 'fog', :github => 'TranscendComputing/fog'
 
 
