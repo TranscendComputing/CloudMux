@@ -167,6 +167,11 @@ class Account
     self.cloud_credentials.select { |c| c.id.to_s == cloud_credential_id.to_s }.each { |c| c.delete }
     self.save!
   end
+
+  def remove_cloud_account_credentials!(source_accout_id)
+    self.cloud_credentials.select { |c| c.cloud_account_id.to_s == source_accout_id.to_s }.each { |c| c.delete }
+    self.save!
+  end
   
   def add_permission!(permission)
 	self.permissions << permission
