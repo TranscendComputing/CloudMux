@@ -176,6 +176,9 @@ class ResourceApiBase < ApiBase
     when Net::HTTPServerException
       message = JSON.parse(error.response.body)['error'][0]
       [ERROR, message]
+    when RuntimeError, ArgumentError, Fog::Compute::VcloudDirector::TaskError
+      #weird error format coming back from fog
+      [BAD_REQUEST, error.message.split('message=>')[1]]
     when RuntimeError, ArgumentError, Fog::Compute::VcloudDirector::BadRequest
       [BAD_REQUEST, error.to_s]
     when  Fog::AWS::RDS::NotFound, Fog::AWS::Elasticache::NotFound, Fog::Errors::NotFound
