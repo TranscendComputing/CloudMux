@@ -3,9 +3,22 @@ require 'fog'
 require 'pry'
 
 class VCloudComputeApp < VCloudApp
+  ##~ sapi = source2swagger.namespace("vcloud_compute")
+  ##~ sapi.swaggerVersion = "1.1"
+  ##~ sapi.apiVersion = "1.0"
+
   #
   # Organizations
   #
+  
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/compute/organizations"
+  ##~ a.description = "VMware Organizations"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.nickname = "get_organizations"
+  ##~ op.summary = "List organizations by credential"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   get '/organizations' do
     begin
       orgs = @compute.organizations
@@ -14,7 +27,15 @@ class VCloudComputeApp < VCloudApp
       handle_error(error)
     end
   end
-
+  
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/compute/organizations/:id"
+  ##~ a.description = "Organization operations"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.nickname = "get_organization"
+  ##~ op.summary = "Get organization by id"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   get '/organizations/:id' do
     begin
       org = @compute.organizations.get(params[:id])
@@ -24,9 +45,14 @@ class VCloudComputeApp < VCloudApp
     end
   end
 
-  #
-  # vDCs
-  #
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/compute/data_centers"
+  ##~ a.description = "VMware Organizations"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.nickname = "get_vdcs"
+  ##~ op.summary = "List data centers"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   get '/data_centers' do
     begin
       vdcs = @org.vdcs
@@ -36,6 +62,14 @@ class VCloudComputeApp < VCloudApp
     end
   end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/compute/data_centers/:id"
+  ##~ a.description = "Data Center operations"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.nickname = "get_vdc"
+  ##~ op.summary = "Get data center by id"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   get '/data_centers/:id' do
     begin
       vdc = @org.vdcs.get(params[:id])
@@ -50,6 +84,15 @@ class VCloudComputeApp < VCloudApp
   #
   # NOTES:
   # Creating a vApp is done in vcloud_catalog_app
+
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/compute/data_centers/:id/vapps"
+  ##~ a.description = "Data center vApps"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.nickname = "get_vapps"
+  ##~ op.summary = "List vApps for current data center"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   get '/data_centers/:vdc_id/vapps' do
     begin
       vapps = @org.vdcs.get(params[:vdc_id]).vapps.all(false)
@@ -61,6 +104,14 @@ class VCloudComputeApp < VCloudApp
     end
   end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/compute/data_centers/:vdc_id/vapps/:id"
+  ##~ a.description = "vApp operations"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.nickname = "get_vapp"
+  ##~ op.summary = "Get vApp by id"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   get '/data_centers/:vdc_id/vapps/:id' do
     begin
       vapp = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:id])
@@ -70,6 +121,11 @@ class VCloudComputeApp < VCloudApp
     end
   end
 
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.nickname = "destroy_vapp"
+  ##~ op.summary = "Destroy vApp"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   delete '/data_centers/:vdc_id/vapps/:id' do
     begin
       vapp = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:id])
@@ -85,6 +141,14 @@ class VCloudComputeApp < VCloudApp
     end
   end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/compute/data_centers/:vdc_id/vapps/:id/power_off"
+  ##~ a.description = "Power off vApp"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.nickname = "power_off_vapp"
+  ##~ op.summary = "Power off a vApp"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   post '/data_centers/:vdc_id/vapps/:id/power_off' do
     begin
       vapp = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:id])
@@ -100,6 +164,14 @@ class VCloudComputeApp < VCloudApp
     end
   end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/compute/data_centers/:vdc_id/vapps/:id/power_on"
+  ##~ a.description = "Power on vApp"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.nickname = "power_on_vapp"
+  ##~ op.summary = "Power on a vApp"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   post '/data_centers/:vdc_id/vapps/:id/power_on' do
     begin
       vapp = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:id])
@@ -115,6 +187,14 @@ class VCloudComputeApp < VCloudApp
     end
   end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/compute/data_centers/:vdc_id/vapps/:id/reboot"
+  ##~ a.description = "Reboot vApp"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.nickname = "reboot_vapp"
+  ##~ op.summary = "Reboot a vApp"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   post '/data_centers/:vdc_id/vapps/:id/reboot' do
     begin
       vapp = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:id])
@@ -130,6 +210,14 @@ class VCloudComputeApp < VCloudApp
     end
   end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/compute/data_centers/:vdc_id/vapps/:id/reset"
+  ##~ a.description = "Reset vApp"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.nickname = "reset_vapp"
+  ##~ op.summary = "Reset a vApp"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   post '/data_centers/:vdc_id/vapps/:id/reset' do
     begin
       vapp = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:id])
@@ -145,6 +233,14 @@ class VCloudComputeApp < VCloudApp
     end
   end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/compute/data_centers/:vdc_id/vapps/:id/shutdown"
+  ##~ a.description = "Shut down vApp"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.nickname = "shutdown_vapp"
+  ##~ op.summary = "Shut down a vApp"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   post '/data_centers/:vdc_id/vapps/:id/shutdown' do
     begin
       vapp = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:id])
@@ -160,6 +256,14 @@ class VCloudComputeApp < VCloudApp
     end
   end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/compute/data_centers/:vdc_id/vapps/:id/suspend"
+  ##~ a.description = "Suspend vApp"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.nickname = "suspend_vapp"
+  ##~ op.summary = "Suspend a vApp"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   post '/data_centers/:vdc_id/vapps/:id/suspend' do
     begin
       vapp = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:id])
@@ -175,13 +279,20 @@ class VCloudComputeApp < VCloudApp
     end
   end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/compute/data_centers/:vdc_id/vapps/:id/clone"
+  ##~ a.description = "Clone vApp"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.nickname = "clone_vapp"
+  ##~ op.summary = "Clone a vApp"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   post '/data_centers/:vdc_id/vapps/:id/clone' do
-    json_body = body_to_json_or_die('body' => request)
     begin
-      if json_body['vapp_options']
-        response = @compute.post_clone_vapp(params[:vdc_id], json_body['vapp_name'], params[:id], json_body['vapp_options'])
+      if params['vapp_options']
+        response = @compute.post_clone_vapp(params[:vdc_id], params['vapp_name'], params[:id], params['vapp_options'])
       else
-        response = @compute.post_clone_vapp(params[:vdc_id], json_body['vapp_name'], params[:id])
+        response = @compute.post_clone_vapp(params[:vdc_id], params['vapp_name'], params[:id])
       end
       [OK, response.body.to_json]
     rescue => error
@@ -192,11 +303,19 @@ class VCloudComputeApp < VCloudApp
   #
   # vApp Snapshots
   #
-  post '/data_centers/:vdc_id/apps/:id/snapshot' do
-    json_body = body_to_json(request)
+
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/compute/data_centers/:vdc_id/vapps/:id/snapshot"
+  ##~ a.description = "Create vApp snapshot"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.nickname = "create_vapp_snapshot"
+  ##~ op.summary = "Create snapshot for a vApp"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
+  post '/data_centers/:vdc_id/vapps/:id/snapshot' do
     begin
-      if json_body['snapshot_options']
-        response = @compute.post_create_snapshot(params[:id], json_body['snapshot_options'])
+      if params['snapshot_options']
+        response = @compute.post_create_snapshot(params[:id], params['snapshot_options'])
       else
         response = @compute.post_create_snapshot(params[:id])
       end
@@ -206,16 +325,12 @@ class VCloudComputeApp < VCloudApp
     end
   end
 
-  post '/data_centers/:vdc_id/apps/:id/revert_to_snapshot' do
-    begin
-      response = @compute.post_revert_snapshot(params[:id])
-      [OK, response.body.to_json]
-    rescue => error
-      handle_error(error)
-    end
-  end
-
-  delete '/data_centers/:vdc_id/apps/:id/snapshot' do
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.nickname = "delete_vapp_snapshots"
+  ##~ op.summary = "Delete all snapshots for a vApp"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
+  delete '/data_centers/:vdc_id/vapps/:id/snapshot' do
     begin
       response = @compute.post_remove_all_snapshots(params[:id])
       [OK, response.body.to_json]
@@ -224,9 +339,36 @@ class VCloudComputeApp < VCloudApp
     end
   end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/compute/data_centers/:vdc_id/vapps/:id/revert_to_snapshot"
+  ##~ a.description = "Revert vApp to current snapshot if one exists"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.nickname = "revert_vapp_to_snapshot"
+  ##~ op.summary = "Revert vApp to current snapshot if one exists"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
+  post '/data_centers/:vdc_id/vapps/:id/revert_to_snapshot' do
+    begin
+      response = @compute.post_revert_snapshot(params[:id])
+      [OK, response.body.to_json]
+    rescue => error
+      handle_error(error)
+    end
+  end
+
+
   #
   # VMs
   #
+
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/compute/data_centers/:vdc_id/vapps/:id/vms"
+  ##~ a.description = "Get vApp VMs"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.nickname = "get_vapp_vms"
+  ##~ op.summary = "List VMs for a vApp"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   get '/data_centers/:vdc_id/vapps/:vapp_id/vms' do
     begin
       vms = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:vapp_id]).vms.all(false)
@@ -236,6 +378,14 @@ class VCloudComputeApp < VCloudApp
     end
   end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/compute/data_centers/:vdc_id/vapps/:vapp_id/vms/:id"
+  ##~ a.description = "Update VM"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.nickname = "update_vapp_vm"
+  ##~ op.summary = "Updates a VMs memory and/or CPUs"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   post '/data_centers/:vdc_id/vapps/:vapp_id/vms/:id' do
     begin
       vm = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:vapp_id]).vms.get(params[:id])
@@ -255,17 +405,30 @@ class VCloudComputeApp < VCloudApp
   #
   # VM Network
   #
+
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/compute/data_centers/:vdc_id/vapps/:vapp_id/vms/:id/network"
+  ##~ a.description = "Get VM network"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.nickname = "get_vm_network"
+  ##~ op.summary = "Get network associated with a VM"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   get '/data_centers/:vdc_id/vapps/:vapp_id/vms/:id/network' do
     begin
       network = @org.vdcs.get(params[:vdc_id]).vapps.get(:vapp_id).vms.get(params[:id]).network
-
-      network.extend(VCloudNetworkRepresenter)
-      [OK, network.to_json]
+      
+      [OK, {:network => network.network, :is_connected => network.is_connected, :mac_address => network.mac_address, :ip_address_allocation_mode => network.ip_address_allocation_mode }]
     rescue => error
       handle_error(error)
     end
   end
 
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.nickname = "update_vm_network"
+  ##~ op.summary = "Update a VMs network properties"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   post '/data_centers/:vdc_id/vapps/:vapp_id/vms/:id/network' do
     begin
       network = @org.vdcs.get(params[:vdc_id]).vapps.get(:vapp_id).vms.get(params[:id]).network
@@ -279,59 +442,61 @@ class VCloudComputeApp < VCloudApp
     end
   end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/compute/data_centers/:vdc_id/vapps/:vapp_id/vms/:id/disks"
+  ##~ a.description = "Get VM disks"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.nickname = "get_vm_disks"
+  ##~ op.summary = "Get all disks for a VM"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   get '/data_centers/:vdc_id/vapps/:vapp_id/vms/:id/disks' do
     begin
-      disks = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:vapp_id]).vms.get(params[:id]).disks
-      [OK, disks.to_json]
+      disks = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:vapp_id]).vms.get(params[:id]).disks.all(false)
+      disk_list = disks.find_all { |disk| disk.capacity_loaded? }.map {|disk| {:name => disk.name, :capacity => disk.capacity}}
+      [OK, disk_list.to_json]
     rescue => error
       handle_error(error)
     end
   end
 
-  put '/data_centers/:vdc_id/vapps/:vapp_id/vms/:vm_id/disks/:id' do
-    json_body = body_to_json_or_die('body' => request)
-    begin
-      disk = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:vapp_id]).vms.get(params[:vm_id]).disks.get(params[:id].to_i)
-      disk.capacity = json_body['capacity'] if !json_body['capacity'].nil? && json_body['capacity'].to_s != disk.capacity.to_s
-      [OK, disk.to_json]
-    rescue => error
-      handle_error(error)
-    end
-  end
-
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.nickname = "create_vm_disk"
+  ##~ op.summary = "Add a new disk to a VM"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   post '/data_centers/:vdc_id/vapps/:vapp_id/vms/:vm_id/disks' do
-    json_body = body_to_json_or_die('body' => request)
     begin
-      response = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:vapp_id]).vms.get(params[:vm_id]).disks.create(json_body['size'])
+      response = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:vapp_id]).vms.get(params[:vm_id]).disks.create(params['size'])
       [OK, response.to_json]
     rescue => error
       handle_error(error)
     end
   end
 
-  post '/data_centers/:vdc_id/vapps/:vapp_id/vms/:vm_id/disks/:id/attach' do
-    json_body = body_to_json(request)
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/compute/data_centers/:vdc_id/vapps/:vapp_id/vms/:vm_id/disks/:id"
+  ##~ a.description = "Update capacity for disk"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "PUT"
+  ##~ op.nickname = "update_vm_disk"
+  ##~ op.summary = "Edit VM disk capacity"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
+  put '/data_centers/:vdc_id/vapps/:vapp_id/vms/:vm_id/disks/:id' do
     begin
-      if json_body['disk_options']
-        response = @compute.post_attach_disk(params[:vm_id], params[:id], json_body['disk_options'])
-      else
-        response = @compute.post_attach_disk(params[:vm_id], params[:id])
-      end
-      [OK, response.body.to_json]
+      disk = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:vapp_id]).vms.get(params[:vm_id]).disks.get(params[:id].to_i)
+      disk.capacity = params['capacity'] if !params['capacity'].nil? && params['capacity'].to_s != disk.capacity.to_s
+      [OK, disk.to_json]
     rescue => error
       handle_error(error)
     end
   end
 
-  post '/data_centers/:vdc_id/vapps/:vapp_id/vms/:vm_id/disks/:id/detach' do
-    begin
-      response = @compute.post_detach_disk(params[:vm_id], params[:id])
-      [OK, response.body.to_json]
-    rescue => error
-      handle_error(error)
-    end
-  end
-
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "DELETE"
+  ##~ op.nickname = "destory_vm_disk"
+  ##~ op.summary = "Destroy disk"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   delete '/data_centers/:vdc_id/vapps/:vapp_id/vms/:vm_id/disks/:id' do
     begin
       disk = @org.vdcs.get(params[:vdc_id]).vapps.get(params[:vapp_id]).vms.get(params[:vm_id]).disks.get(params[:id].to_i)
@@ -341,4 +506,43 @@ class VCloudComputeApp < VCloudApp
       handle_error(error)
     end
   end
+
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/compute/data_centers/:vdc_id/vapps/:vapp_id/vms/:vm_id/disks/:id/attach"
+  ##~ a.description = "Attach disk to VM"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.nickname = "attach_vm_disk"
+  ##~ op.summary = "Attach disk to VM"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
+  post '/data_centers/:vdc_id/vapps/:vapp_id/vms/:vm_id/disks/:id/attach' do
+    begin
+      if params['disk_options']
+        response = @compute.post_attach_disk(params[:vm_id], params[:id], params['disk_options'])
+      else
+        response = @compute.post_attach_disk(params[:vm_id], params[:id])
+      end
+      [OK, response.body.to_json]
+    rescue => error
+      handle_error(error)
+    end
+  end
+
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/compute/data_centers/:vdc_id/vapps/:vapp_id/vms/:vm_id/disks/:id/detach"
+  ##~ a.description = "Detach disk from VM"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.nickname = "attach_vm_disk"
+  ##~ op.summary = "Attach disk to VM"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
+  post '/data_centers/:vdc_id/vapps/:vapp_id/vms/:vm_id/disks/:id/detach' do
+    begin
+      response = @compute.post_detach_disk(params[:vm_id], params[:id])
+      [OK, response.body.to_json]
+    rescue => error
+      handle_error(error)
+    end
+  end
+
 end

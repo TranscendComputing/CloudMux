@@ -2,21 +2,45 @@ require 'sinatra'
 require 'fog'
 
 class VCloudCatalogApp < VCloudApp
-  #
-  # Catalogs
-  #
+  ##~ sapi = source2swagger.namespace("vcloud_catalog")
+  ##~ sapi.swaggerVersion = "1.1"
+  ##~ sapi.apiVersion = "1.0"
+
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/catalogs"
+  ##~ a.description = "Manage vCloud Catalogs"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.nickname = "get_catalogs"
+  ##~ op.summary = "List all catalogs in organization"  
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   get '/' do
     begin
-      catalogs = @org.catalogs
-      [OK, catalogs.to_json]
+      catalogs = @org.catalogs.all(false)
+      catalog_list = catalogs.map do |catalog|
+        catalog.extend(VCloudCatalogRepresenter)
+        catalog.items = catalog.catalog_items.all(false).map { |item| {:id => item.id, :name => item.name, :descripton => item.description }}
+        catalog
+      end
+      [OK, catalog_list.to_json]
     rescue => error
       handle_error(error)
     end
   end
 
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/catalogs/:id"
+  ##~ a.description = "Get catalog by id"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.nickname = "get_catalog"
+  ##~ op.summary = "Get catalog by id"  
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   get '/:id' do
     begin
       catalog = @org.catalogs.get(params[:id])
+      catalog.extend(VCloudCatalogRepresenter)
+      catalog.items = catalog.catalog_items.all(false)
       [OK, catalog.to_json]
     rescue => error
       handle_error(error)
@@ -26,6 +50,15 @@ class VCloudCatalogApp < VCloudApp
   #
   # Catalog Items
   #
+
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/catalogs/:id/items"
+  ##~ a.description = "Get items in catalog"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "GET"
+  ##~ op.nickname = "get_catalog_items"
+  ##~ op.summary = "Get items in catalog"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   get '/:catalog_id/items' do
     begin
       catalog_items = @org.catalogs.get(params[:catalog_id]).catalog_items
@@ -38,11 +71,24 @@ class VCloudCatalogApp < VCloudApp
   #
   # Create vApp
   #
+
+  ##~ a = sapi.apis.add
+  ##~ a.set :path => "/api/v1/vcloud/catalogs/:catalog_id/items/:id/vapp"
+  ##~ a.description = "Get catalog by id"
+  ##~ op = a.operations.add
+  ##~ op.set :httpMethod => "POST"
+  ##~ op.nickname = "instantiate_vapp"
+  ##~ op.summary = "Instatiate vApp from template"
+  ##~ op.errorResponses.add :reason => "API down", :code => 500
   post '/:catalog_id/items/:id/vapp' do
-    json_body = body_to_json_or_die('body' => request)
     begin
       template = @org.catalogs.get(params[:catalog_id]).catalog_items.get(params[:id])
-      template.instantiate(json_body['vapp_name'], json_body['vapp_options'])
+      if params[:vapp_options].nil?
+        template.instantiate(params['vapp_name'])
+      else
+        template.instantiate(params['vapp_name'], params['vapp_options'])
+      end
+      
       [OK, { 'message' => 'vApp Creating.' }.to_json]
     rescue => error
       handle_error(error)

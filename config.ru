@@ -589,16 +589,33 @@ map "/stackstudio/v1/cloud_management/google/object_storage" do
 end
 
 #
-# VCloud Compute API
+# vCloud Compute API
 #
+##~ a = sapi.apis.add
+##
+##~ a.set :path => "/vcloud_compute.{format}", :format => "json"
+##~ a.description = "vCloud Compute Operations"
 map "/stackstudio/v1/cloud_management/vcloud/compute" do
   run VCloudComputeApp
 end
 
+#
+# vCloud Network API
+#
+##~ a = sapi.apis.add
+##
+##~ a.set :path => "/vcloud_network.{format}", :format => "json"
+##~ a.description = "vCloud Networks"
 map "/stackstudio/v1/cloud_management/vcloud/networks" do
   run VCloudNetworkApp
 end
 
+#
+# vCloud Catalog API
+#
+##~ a = sapi.apis.add
+##~ a.set :path => "/vcloud_catalog.{format}", :format => "json"
+##~ a.description = "vCloud Catalogs"
 map "/stackstudio/v1/cloud_management/vcloud/catalogs" do
   run VCloudCatalogApp
 end
