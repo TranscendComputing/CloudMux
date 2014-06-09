@@ -1,6 +1,5 @@
 require 'rest-client'
 require 'json'
-require 'debugger'
 require 'logging'
 
 class Salt

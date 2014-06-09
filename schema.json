@@ -1,0 +1,57 @@
+account:
+{
+  "id":"{account.id}",
+  "login":"{account.login}",
+  "email":"{account.email}",
+  "num_logins":0,
+  "permissions":[],
+  "subscriptions":[],
+  "cloud_credentials":[],
+  "project_memberships":[],
+  "group_policies":[]}
+}
+
+org:
+{
+  "id":"{org.id}",
+  "name":"{org.name}",
+  "accounts":[],
+  "cloud_accounts":[],
+  "groups":[],
+  "subscriptions":[],
+  "cloud_mappings":[]
+}
+
+cloud:
+{
+  "id":"{cloud.id}",
+  "name":"{cloud.name}",
+  "cloud_provider":"{cloud.cloud_provider}",
+  "permalink":"{cloud.permalink}",
+  "public":true
+}
+
+cloud_account:
+{
+  "id":"{cloud_account.id}",
+  "name":"{cloud_account.name}",
+  "cloud_id":"{cloud_account.cloud_id}",
+  "org_id":"{cloud_account.org_id}",
+  "cloud_name":"{cloud_account.cloud_name}",
+  "cloud_provider":"{cloud_account.cloud_provider}",
+  "public":true,
+  "topstack_enabled":true,
+  "topstack_id":"cloud_zone",
+  "prices":[
+    {"price":{"id":"{cloud_account.prices[0].id}","name":"{cloud_account.prices[0].name}","type":"{cloud_account.prices[0].type}","effective_price":0.1,"effective_date":"01/01/2001"}},
+    {"price":{"id":"{cloud_account.prices[1].id}","name":"{cloud_account.prices[1].name}","type":"{cloud_account.prices[1].type}","effective_price":0.2,"effective_date":"01/01/2001"}}
+  ],
+  "cloud_services":[
+    {"cloud_service":{"id":"{cloud_account.cloud_services[0].id}","service_type":"{cloud_account.cloud_services[0].service_type}","path":"{cloud_account.cloud_services[0].path}"}},
+    {"cloud_service":{"id":"{cloud_account.cloud_services[1].id}","service_type":"{cloud_account.cloud_services[1].service_type}","path":"{cloud_account.cloud_services[1].path}"}}
+  ],
+  "cloud_mappings":[
+    {"cloud_mapping":{"id":"{cloud_account.cloud_mappings[0].id}","name":"{cloud_account.cloud_mappings[0].name}","mapping_entries":[]}},
+    {"cloud_mapping":{"id":"{cloud_account.cloud_mappings[1].id}","name":"{cloud_account.cloud_mappings[1].name}","mapping_entries":[]}}
+  ]
+}

@@ -1,5 +1,4 @@
 require 'sinatra'
-require 'debugger'
 require 'json'
 
 require File.join(File.dirname(__FILE__),'..','..','lib','ansible','rest_client.rb')

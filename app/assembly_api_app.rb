@@ -1,5 +1,4 @@
 require 'sinatra'
-require 'debugger'
 
 class AssemblyApiApp < ApiBase
 
