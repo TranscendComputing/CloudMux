@@ -56,28 +56,12 @@ class ApiBase < Sinatra::Base
   end
 
   def body_to_json(request)
-    if(!request.content_length.nil? && request.content_length != "0")
-      begin
-        json_body = MultiJson.decode(request.body.read)
-        return json_body
-      rescue
-        return nil
-      end
-    else
-      return nil
-    end
+    return if (request.content_length.nil? or request.content_length == "0")
+    MultiJson.decode(request.body.read) rescue nil
   end
 
   def body_to_yaml(request)
-    if(!request.content_length.nil? && request.content_length != "0")
-      begin
-        yaml_body = YAML.load(request.body.read)
-        return yaml_body
-      rescue
-        return nil
-      end
-    else
-      return nil
-    end
+    return if (request.content_length.nil? or request.content_length == "0")
+    YAML.load(request.body.read) rescue nil
   end
 end
