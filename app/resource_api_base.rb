@@ -5,6 +5,10 @@ class ResourceApiBase < ApiBase
   # Cloud implementation class (typically Fog::??)
   @service_class = Object
 
+  error do
+    handle_error(env['sinatra.error'])
+  end
+
   def can_access_service(params)
     service = nil
     cred_id = params[:cred_id]
@@ -59,15 +63,6 @@ class ResourceApiBase < ApiBase
         message.message = 'Cannot create anymore instances of this type under current policy'
       end
       halt [BAD_REQUEST, message.to_json]
-    end
-  end
-
-  # Changes the request to a usable format for processiong
-  def body_to_json(request)
-    if !request.content_length.nil? && request.content_length != '0'
-      return MultiJson.decode(request.body.read)
-    else
-      return nil
     end
   end
 
@@ -176,7 +171,7 @@ class ResourceApiBase < ApiBase
     when Net::HTTPServerException
       message = JSON.parse(error.response.body)['error'][0]
       [ERROR, message]
-    when RuntimeError, ArgumentError, Fog::Compute::VcloudDirector::TaskError
+    when Fog::Compute::VcloudDirector::TaskError
       #weird error format coming back from fog
       [BAD_REQUEST, error.message.split('message=>')[1]]
     when RuntimeError, ArgumentError, Fog::Compute::VcloudDirector::BadRequest
