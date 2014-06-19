@@ -2,8 +2,8 @@ require 'sinatra'
 require 'fog'
 
 class TopStackCacheApp < ResourceApiBase
-	
-	before do
+  
+  before do
     params["provider"] = "topstack"
     params["service_type"] = "Cache"
     @service_long_name = "Elastic Cache"
@@ -11,9 +11,9 @@ class TopStackCacheApp < ResourceApiBase
     @elasticache = can_access_service(params)
   end
     
-	#
-	# Clusters
-	#
+  #
+  # Clusters
+  #
   ##~ sapi = source2swagger.namespace("topstack_cache")
   ##~ sapi.swaggerVersion = "1.1"
   ##~ sapi.apiVersion = "1.0"
@@ -34,14 +34,14 @@ class TopStackCacheApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   get '/clusters' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @elasticache.clusters
-		else
-			response = @elasticache.clusters.all(filters)
-		end
-		[OK, response.to_json]
-	end
+    filters = params[:filters]
+    if(filters.nil?)
+      response = @elasticache.clusters
+    else
+      response = @elasticache.clusters.all(filters)
+    end
+    [OK, response.to_json]
+  end
   
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/topstack/cache/clusters"
@@ -57,14 +57,10 @@ class TopStackCacheApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/clusters' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @elasticache.clusters.create(json_body["cluster"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+    json_body = body_to_json_or_die("body" => request)
+    response = @elasticache.clusters.create(json_body["cluster"])
+    [OK, response.to_json]
+  end
   
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/topstack/cache/clusters/:id"
@@ -79,13 +75,9 @@ class TopStackCacheApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   delete '/clusters/:id' do
-		begin
-			response = @elasticache.clusters.get(params[:id]).destroy
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+    response = @elasticache.clusters.get(params[:id]).destroy
+    [OK, response.to_json]
+  end
   
   #
   #Get Security/Parameter Groups
@@ -102,15 +94,15 @@ class TopStackCacheApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Success, list of cache cluster parameter groups returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	get '/parameter_groups' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @elasticache.parameter_groups
-		else
-			response = @elasticache.parameter_groups.all(filters)
-		end
-		[OK, response.to_json]
-	end
+  get '/parameter_groups' do
+    filters = params[:filters]
+    if(filters.nil?)
+      response = @elasticache.parameter_groups
+    else
+      response = @elasticache.parameter_groups.all(filters)
+    end
+    [OK, response.to_json]
+  end
 
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/topstack/cache/security_groups"
@@ -125,14 +117,14 @@ class TopStackCacheApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   get '/security_groups' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @elasticache.security_groups
-		else
-			response = @elasticache.security_groups.all(filters)
-		end
-		[OK, response.to_json]
-	end
+    filters = params[:filters]
+    if(filters.nil?)
+      response = @elasticache.security_groups
+    else
+      response = @elasticache.security_groups.all(filters)
+    end
+    [OK, response.to_json]
+  end
   
   #
   #Create Security/Parameter Groups
@@ -150,15 +142,11 @@ class TopStackCacheApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Success, Security Group Created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/security_groups' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @elasticache.security_groups.create(json_body["security_group"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/security_groups' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @elasticache.security_groups.create(json_body["security_group"])
+    [OK, response.to_json]
+  end
   
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/topstack/cache/parameter_groups"
@@ -174,14 +162,10 @@ class TopStackCacheApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/parameter_groups' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @elasticache.parameter_groups.create(json_body["parameter_group"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+    json_body = body_to_json_or_die("body" => request)
+    response = @elasticache.parameter_groups.create(json_body["parameter_group"])
+    [OK, response.to_json]
+  end
   
   #
   #Delete Security/Parameter Groups
@@ -198,14 +182,10 @@ class TopStackCacheApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Success, Security Group deleted", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	delete '/security_groups/:id' do
-		begin
-			response = @elasticache.security_groups.get(params[:id]).destroy
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  delete '/security_groups/:id' do
+    response = @elasticache.security_groups.get(params[:id]).destroy
+    [OK, response.to_json]
+  end
   
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/topstack/cache/parameter_groups/:id"
@@ -220,13 +200,9 @@ class TopStackCacheApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   delete '/parameter_groups/:id' do
-		begin
-			response = @elasticache.parameter_groups.get(params[:id]).destroy
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+    response = @elasticache.parameter_groups.get(params[:id]).destroy
+    [OK, response.to_json]
+  end
   
   #
   #Modify
@@ -245,15 +221,14 @@ class TopStackCacheApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Success, cache cluster modified", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/clusters/modify/:id' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @elasticache.modify_cache_cluster(params[:id],json_body["options"].symbolize_keys!)
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/clusters/modify/:id' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @elasticache.modify_cache_cluster(
+      params[:id],
+      json_body["options"].symbolize_keys!
+    )
+    [OK, response.to_json]
+  end
   
   #
   #Describe Parameter Group
@@ -272,14 +247,9 @@ class TopStackCacheApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Success, Parameter Group Description returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/parameter_groups/describe/:id' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @elasticache.describe_cache_parameters(params[:id],json_body["options"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-  
+  post '/parameter_groups/describe/:id' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @elasticache.describe_cache_parameters(params[:id],json_body["options"])
+    [OK, response.to_json]
+  end
 end

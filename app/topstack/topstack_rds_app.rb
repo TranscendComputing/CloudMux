@@ -3,17 +3,17 @@ require 'fog'
 
 class TopStackRdsApp < ResourceApiBase
 
-	before do
-		params["provider"] = "topstack"
-	    params["service_type"] = "RDS"
-	    @service_long_name = "Relational Database"
-	    @service_class = Fog::AWS::RDS
-	    @rds = can_access_service(params)
-    end
+  before do
+    params["provider"] = "topstack"
+    params["service_type"] = "RDS"
+    @service_long_name = "Relational Database"
+    @service_class = Fog::AWS::RDS
+    @rds = can_access_service(params)
+  end
 
-	#
-	# Databases
-	#
+  #
+  # Databases
+  #
   ##~ sapi = source2swagger.namespace("topstack_rds")
   ##~ sapi.swaggerVersion = "1.1"
   ##~ sapi.apiVersion = "1.0"
@@ -30,16 +30,18 @@ class TopStackRdsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Success, list of database servers returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	get '/databases' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @rds.servers
-		else
-			response = @rds.servers.all(filters)
-		end
-		[OK, response.to_json]
-	end
-	
+  get '/databases' do
+    filters = params[:filters]
+
+    if filters.nil?
+      response = @rds.servers
+    else
+      response = @rds.servers.all(filters)
+    end
+
+    [OK, response.to_json]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/topstack/rds/databases"
   ##~ a.description = "Manage RDS resources on the cloud (Topstack)"
@@ -52,19 +54,23 @@ class TopStackRdsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Success, database server created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/databases' do
-		json_body = body_to_json_or_die("body" => request)
-        can_create_instance("cred_id" => params[:cred_id], "action" => "create_rds", "options" => {:resources => @rds.servers,:uid => @rds.current_user['id'] } )
-		begin
-            region = get_creds(params[:cred_id]).cloud_account.default_region
-			json_body["relational_database"]['availability_zone'] = region
-            response = @rds.servers.create(json_body["relational_database"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-	
+  post '/databases' do
+    json_body = body_to_json_or_die("body" => request)
+    can_create_instance(
+      "cred_id" => params[:cred_id],
+      "action"  => "create_rds",
+      "options" => {
+          :resources => @rds.servers,
+          :uid => @rds.current_user['id']
+      }
+    )
+
+    region = get_creds(params[:cred_id]).cloud_account.default_region
+    json_body["relational_database"]['availability_zone'] = region
+    response = @rds.servers.create(json_body["relational_database"])
+    [OK, response.to_json]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/topstack/rds/databases/:id"
   ##~ a.description = "Manage RDS resources on the cloud (Topstack)"
@@ -76,14 +82,10 @@ class TopStackRdsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Success, rds databases deleted", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	delete '/databases/:id' do
-		begin
-			response = @rds.servers.get(params[:id]).destroy
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  delete '/databases/:id' do
+    response = @rds.servers.get(params[:id]).destroy
+    [OK, response.to_json]
+  end
 
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/topstack/rds/engine_versions"
@@ -95,19 +97,19 @@ class TopStackRdsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Success, list of database engine versions returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	get '/engine_versions' do
-		begin
-			engine_versions = @rds.describe_db_engine_versions.body['DescribeDBEngineVersionsResult']['DBEngineVersions'].as_json
-			engine_versions.each do |v|
-				v.each_pair do |name, value|
-					v[name] = value.strip
-				end
-			end
-			[OK, engine_versions.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  get '/engine_versions' do
+    engine_versions = @rds.describe_db_engine_versions
+                          .body['DescribeDBEngineVersionsResult']['DBEngineVersions']
+                          .as_json
+
+    engine_versions.each do |v|
+      v.each_pair do |name, value|
+        v[name] = value.strip
+      end
+    end
+
+    [OK, engine_versions.to_json]
+  end
 
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/topstack/rds/parameter_groups"
@@ -120,15 +122,17 @@ class TopStackRdsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Success, list of database parameter groups returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	get '/parameter_groups' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @rds.parameter_groups
-		else
-			response = @rds.parameter_groups.all(filters)
-		end
-		[OK, response.to_json]
-	end
+  get '/parameter_groups' do
+    filters = params[:filters]
+
+    if filters.nil?
+      response = @rds.parameter_groups
+    else
+      response = @rds.parameter_groups.all(filters)
+    end
+
+    [OK, response.to_json]
+  end
 
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/topstack/rds/security_groups"
@@ -141,15 +145,17 @@ class TopStackRdsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Success, list of database security groups returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	get '/security_groups' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @rds.security_groups
-		else
-			response = @rds.security_groups.all(filters)
-		end
-		[OK, response.to_json]
-	end
+  get '/security_groups' do
+    filters = params[:filters]
+
+    if filters.nil?
+      response = @rds.security_groups
+    else
+      response = @rds.security_groups.all(filters)
+    end
+
+    [OK, response.to_json]
+  end
   
   #
   #Create Security Groups
@@ -166,55 +172,39 @@ class TopStackRdsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Success, database security groups created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/security_groups' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @rds.security_groups.create(json_body["security_group"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/security_groups' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @rds.security_groups.create(json_body["security_group"])
+    [OK, response.to_json]
+  end
     
-	post '/security_groups/:id/ipranges' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @rds.security_groups.get(params[:id]).authorize_cidrip(json_body["cidrip"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/security_groups/:id/ipranges' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @rds.security_groups.get(params[:id])
+                   .authorize_cidrip(json_body["cidrip"])
+    [OK, response.to_json]
+  end
     
-	post '/security_groups/:id/ec2_groups' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @rds.security_groups.get(params[:id]).authorize_ec2_security_group(json_body["ec2_group"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/security_groups/:id/ec2_groups' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @rds.security_groups.get(params[:id])
+                   .authorize_ec2_security_group(json_body["ec2_group"])
+    [OK, response.to_json]
+  end
     
-	post '/security_groups/:id/revoke_ipranges' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @rds.security_groups.get(params[:id]).revoke_cidrip(json_body["cidrip"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/security_groups/:id/revoke_ipranges' do
+    json_body = body_to_json_or_die("body" => request)
+    response  = @rds.security_groups.get(params[:id])
+                    .revoke_cidrip(json_body["cidrip"])
+    [OK, response.to_json]
+  end
     
-	post '/security_groups/:id/revoke_ec2_groups' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @rds.security_groups.get(params[:id]).revoke_ec2_security_group(json_body["ec2_group"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/security_groups/:id/revoke_ec2_groups' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @rds.security_groups.get(params[:id])
+                   .revoke_ec2_security_group(json_body["ec2_group"])
+    [OK, response.to_json]
+  end
   
   #
   #Delete Security Groups
@@ -230,14 +220,10 @@ class TopStackRdsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Success, rds security group deleted", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	delete '/security_groups/:id' do
-		begin
-			response = @rds.security_groups.get(params[:id]).destroy
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  delete '/security_groups/:id' do
+    response = @rds.security_groups.get(params[:id]).destroy
+    [OK, response.to_json]
+  end
   
   #
   #Create Parameter Groups
@@ -254,15 +240,11 @@ class TopStackRdsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Success, database parameter groups created", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/parameter_groups' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @rds.parameter_groups.create(json_body["parameter_group"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/parameter_groups' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @rds.parameter_groups.create(json_body["parameter_group"])
+    [OK, response.to_json]
+  end
   
   #
   #Delete Parameter Groups
@@ -278,14 +260,10 @@ class TopStackRdsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Success, rds parameter group deleted", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	delete '/parameter_groups/:id' do
-		begin
-			response = @rds.parameter_groups.get(params[:id]).destroy
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  delete '/parameter_groups/:id' do
+    response = @rds.parameter_groups.get(params[:id]).destroy
+    [OK, response.to_json]
+  end
   
   #
   #Describe Parameter Group
@@ -303,13 +281,9 @@ class TopStackRdsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Success, database parameters returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/parameter_groups/describe/:id' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @rds.describe_db_parameters(params[:id],json_body["options"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/parameter_groups/describe/:id' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @rds.describe_db_parameters(params[:id],json_body["options"])
+    [OK, response.to_json]
+  end
 end

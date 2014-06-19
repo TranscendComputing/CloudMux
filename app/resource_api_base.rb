@@ -1,3 +1,5 @@
+require 'sinatra'
+
 class ResourceApiBase < ApiBase
   # Long name for service representing this resource (e.g. Auto Scale, etc.)
   @service_long_name = 'undefined'

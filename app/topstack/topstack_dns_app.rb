@@ -3,7 +3,7 @@ require 'fog'
 
 class TopStackDnsApp < ResourceApiBase
 
-	before do
+  before do
     params["provider"] = "topstack"
     params["service_type"] = "DNS"
     @service_long_name = "DNS 53"
@@ -11,9 +11,9 @@ class TopStackDnsApp < ResourceApiBase
     @dns = can_access_service(params)
   end
 
-	#
-	# Hosted Zones
-	#
+  #
+  # Hosted Zones
+  #
   ##~ sapi = source2swagger.namespace("topstack_dns")
   ##~ sapi.swaggerVersion = "1.1"
   ##~ sapi.apiVersion = "1.0"
@@ -33,20 +33,17 @@ class TopStackDnsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   get '/hosted_zones' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @dns.zones
-		else
-			response = @dns.zones.all(filters)
-		end
-		begin
-			response = response.to_json
-		rescue
-			response = "[]"
-		end
-		[OK, response]
-	end
-	
+    filters = params[:filters]
+    if(filters.nil?)
+      response = @dns.zones
+    else
+      response = @dns.zones.all(filters)
+    end
+
+    response = response.to_json rescue "[]"
+    [OK, response]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/topstack/dns/hosted_zones"
   ##~ a.description = "Manage DNS resources on the cloud (Topstack)"
@@ -61,15 +58,11 @@ class TopStackDnsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/hosted_zones' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @dns.zones.create(json_body["hosted_zone"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-	
+    json_body = body_to_json_or_die("body" => request)
+    response = @dns.zones.create(json_body["hosted_zone"])
+    [OK, response.to_json]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/topstack/dns/hosted_zones/:id"
   ##~ a.description = "Manage DNS resources on the cloud (Topstack)"
@@ -83,17 +76,13 @@ class TopStackDnsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   delete '/hosted_zones/:id' do
-		begin
-			response = @dns.zones.get(params[:id]).destroy
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+    response = @dns.zones.get(params[:id]).destroy
+    [OK, response.to_json]
+  end
 
-	#
-	# Record Sets
-	#
+  #
+  # Record Sets
+  #
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/topstack/dns/hosted_zones/:hosted_zone_id/record_sets"
   ##~ a.description = "Manage DNS resources on the cloud (Topstack)"
@@ -106,15 +95,14 @@ class TopStackDnsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Success, list of DNS records returned", :code => 200
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	get '/hosted_zones/:hosted_zone_id/record_sets' do
-		begin
-			response = @dns.list_resource_record_sets(params[:hosted_zone_id]).body["ResourceRecordSets"]
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-	
+  get '/hosted_zones/:hosted_zone_id/record_sets' do
+    response = @dns.list_resource_record_sets(
+      params[:hosted_zone_id]
+    ).body["ResourceRecordSets"]
+
+    [OK, response.to_json]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/topstack/dns/hosted_zones/:hosted_zone_id/record_sets/change"
   ##~ a.description = "Manage DNS resources on the cloud (Topstack)"
@@ -131,19 +119,16 @@ class TopStackDnsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   put '/hosted_zones/:hosted_zone_id/record_sets/change' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			#must symbolize keys
-			change_batch_symbolized = []
-			json_body["record_set"]["change_batch"].each {|change| change_batch_symbolized<<change.symbolize_keys}
-			if(json_body["record_set"]["options"].nil?)
-				response = @dns.change_resource_record_sets(params[:hosted_zone_id], change_batch_symbolized)
-			else
-				response = @dns.change_resource_record_sets(params[:hosted_zone_id], change_batch_symbolized, json_body["record_set"]["options"])
-			end
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+    json_body = body_to_json_or_die("body" => request)
+    change_batch = json_body["record_set"]["change_batch"]
+    change_batch_symbolized = change_batch.map {|change| change.symbolize_keys}
+
+    if json_body["record_set"]["options"].nil?
+      response = @dns.change_resource_record_sets(params[:hosted_zone_id], change_batch_symbolized)
+    else
+      response = @dns.change_resource_record_sets(params[:hosted_zone_id], change_batch_symbolized, json_body["record_set"]["options"])
+    end
+
+    [OK, response.to_json]
+  end
 end
