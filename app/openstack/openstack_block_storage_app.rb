@@ -119,7 +119,7 @@ class OpenstackBlockStorageApp < ResourceApiBase
       "args" => ["server_id","device"]
     )
 
-    response = @block_storage.attach_volume(i
+    response = @block_storage.attach_volume(
       params[:id],
       json_body["server_id"],
       json_body["device"]
