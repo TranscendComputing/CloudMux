@@ -3,16 +3,16 @@ require 'fog'
 
 class AwsBlockStorageApp < ResourceApiBase
 
-	before do
+  before do
     params["provider"] = "aws"
     @service_long_name = "Elastic Block Storage"
     @service_class = Fog::Compute::AWS
     @block_storage = can_access_service(params)
   end
 
-	#
-	# Volumes
-	#
+  #
+  # Volumes
+  #
   ##~ sapi = source2swagger.namespace("aws_block_storage")
   ##~ sapi.swaggerVersion = "1.1"
   ##~ sapi.apiVersion = "1.0"
@@ -32,20 +32,18 @@ class AwsBlockStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	get '/volumes' do
+  get '/volumes' do
     begin
-  		filters = params[:filters]
-  		if(filters.nil?)
-  			response = @block_storage.volumes
-  		else
-  			response = @block_storage.volumes.all(filters)
-  		end
-  		[OK, response.to_json]
+      filters = params[:filters]
+      response = filters.nil? ?
+        @block_storage.volumes :
+        @block_storage.volumes.all(filters)
+      [OK, response.to_json]
     rescue => error
-				    pre_handle_error(@block_storage, error)
-		end
-	end
-	
+      pre_handle_error(@block_storage, error)
+    end
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/block_storage/volumes"
   ##~ a.description = "Manage Block Storage resources on the cloud (AWS)"
@@ -60,17 +58,22 @@ class AwsBlockStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/volumes' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @block_storage.volumes.create(json_body["volume"])
-      Auth.validate(params[:cred_id],"Elastic Block Storage","create_default_alarms",{:params => params, :resource_id => response.id, :namespace => "AWS/EBS"})
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-	
+  post '/volumes' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @block_storage.volumes.create(json_body["volume"])
+    Auth.validate(
+      params[:cred_id],
+      "Elastic Block Storage",
+      "create_default_alarms",
+      {
+        :params => params,
+        :resource_id => response.id,
+        :namespace => "AWS/EBS"
+      }
+    )
+    [OK, response.to_json]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/block_storage/volumes/:id"
   ##~ a.description = "Manage Block Storage resources on the cloud (AWS)"
@@ -84,15 +87,11 @@ class AwsBlockStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	delete '/volumes/:id' do
-		begin
-			response = @block_storage.volumes.get(params[:id]).destroy
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-	
+  delete '/volumes/:id' do
+    response = @block_storage.volumes.get(params[:id]).destroy
+    [OK, response.to_json]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/block_storage/volumes/:id/attach"
   ##~ a.description = "Manage Block Storage resources on the cloud (AWS)"
@@ -108,16 +107,21 @@ class AwsBlockStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/volumes/:id/attach' do
-		json_body = body_to_json_or_die("body" => request, "args" => ["server_id","device"])
-		begin
-			response = @block_storage.attach_volume(json_body["server_id"], params[:id], json_body["device"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-	
+  post '/volumes/:id/attach' do
+    json_body = body_to_json_or_die(
+      "body" => request,
+      "args" => ["server_id","device"]
+    )
+
+    response = @block_storage.attach_volume(
+      json_body["server_id"],
+      params[:id],
+      json_body["device"]
+    )
+
+    [OK, response.to_json]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/block_storage/volumes/:id/detach"
   ##~ a.description = "Manage Block Storage resources on the cloud (AWS)"
@@ -131,19 +135,12 @@ class AwsBlockStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/volumes/:id/detach' do
-		if(params[:id])
-			[BAD_REQUEST]
-		else
-			begin
-				response = @block_storage.detach_volume(params[:id])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
-		end
-	end
-	
+  post '/volumes/:id/detach' do
+    halt [BAD_REQUEST] unless params[:id]
+    response = @block_storage.detach_volume(params[:id])
+    [OK, response.to_json]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/block_storage/volumes/:id/force_detach"
   ##~ a.description = "Manage Block Storage resources on the cloud (AWS)"
@@ -157,18 +154,14 @@ class AwsBlockStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/volumes/:id/force_detach' do
-		begin
-			response = @block_storage.detach_volume(params[:id], {"Force"=>true})
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-	
-	#
-	# Snapshots
-	#
+  post '/volumes/:id/force_detach' do
+    response = @block_storage.detach_volume(params[:id], {"Force"=>true})
+    [OK, response.to_json]
+  end
+  
+  #
+  # Snapshots
+  #
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/block_storage/snapshots"
   ##~ a.description = "Manage Block Storage resources on the cloud (AWS)"
@@ -182,16 +175,14 @@ class AwsBlockStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	get '/snapshots' do
-		filters = params[:filters]
-		if(filters.nil?)
-			response = @block_storage.snapshots
-		else
-			response = @block_storage.snapshots.all(filters)
-		end
-		[OK, response.to_json]
-	end
-	
+  get '/snapshots' do
+    filters = params[:filters]
+    response = filters.nil? ?
+      @block_storage.snapshots :
+      @block_storage.snapshots.all(filters)
+    [OK, response.to_json]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/block_storage/snapshots"
   ##~ a.description = "Manage Block Storage resources on the cloud (AWS)"
@@ -206,16 +197,12 @@ class AwsBlockStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/snapshots' do
-		json_body = body_to_json_or_die("body" => request, "args" => ["snapshot"])
-		begin
-			response = @block_storage.snapshots.create(json_body["snapshot"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-	
+  post '/snapshots' do
+    json_body = body_to_json_or_die("body" => request, "args" => ["snapshot"])
+    response = @block_storage.snapshots.create(json_body["snapshot"])
+    [OK, response.to_json]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/block_storage/snapshots/:id"
   ##~ a.description = "Manage Block Storage resources on the cloud (AWS)"
@@ -229,12 +216,8 @@ class AwsBlockStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	delete '/snapshots/:id' do
-		begin
-			response = block_storage.snapshots.get(params[:id]).destroy
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  delete '/snapshots/:id' do
+    response = block_storage.snapshots.get(params[:id]).destroy
+    [OK, response.to_json]
+  end
 end

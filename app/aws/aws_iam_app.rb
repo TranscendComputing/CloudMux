@@ -3,11 +3,11 @@ require 'fog'
 
 class AwsIamApp < ResourceApiBase
 
-	before do
-		if ! params[:cred_id].nil? && Auth.validate(params[:cred_id],"IAM","action")
-			cloud_cred = get_creds(params[:cred_id])
-			if ! cloud_cred.nil?
-				@iam = Fog::AWS::IAM.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
+  before do
+    if ! params[:cred_id].nil? && Auth.validate(params[:cred_id],"IAM","action")
+      cloud_cred = get_creds(params[:cred_id])
+      if ! cloud_cred.nil?
+        @iam = Fog::AWS::IAM.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
         halt [BAD_REQUEST] if @iam.nil?
       else
         halt [NOT_FOUND, "Credentials not found."]
@@ -16,12 +16,12 @@ class AwsIamApp < ResourceApiBase
       message = Error.new.extend(ErrorRepresenter)
       message.message = "Cannot access this service under current policy."
       halt [NOT_AUTHORIZED, message.to_json]
-		end
+    end
   end
 
-	#
-	# Users
-	#
+  #
+  # Users
+  #
   ##~ sapi = source2swagger.namespace("aws_iam")
   ##~ sapi.swaggerVersion = "1.1"
   ##~ sapi.apiVersion = "1.0"
@@ -43,20 +43,16 @@ class AwsIamApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	get '/users' do
+  get '/users' do
     begin
-  		filters = params[:filters]
-  		if(filters.nil?)
-  			response = @iam.users
-  		else
-  			response = @iam.users.all(filters)
-  		end
-  		[OK, response.to_json]
+      filters  = params[:filters]
+      response = filters.nil? ? @iam.users : @iam.users.all(filters)
+      [OK, response.to_json]
     rescue => error
-          pre_handle_error(@iam, error)
-		end
-	end
-	
+      pre_handle_error(@iam, error)
+    end
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/iam/users"
   ##~ a.description = "Manage IAM resources on the cloud (AWS)"
@@ -71,15 +67,11 @@ class AwsIamApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/users' do
-		json_body = body_to_json_or_die("body" => request, "args" => ["user"])
-		begin
-			response = @iam.users.create(json_body["user"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/users' do
+    json_body = body_to_json_or_die("body" => request, "args" => ["user"])
+    response = @iam.users.create(json_body["user"])
+    [OK, response.to_json]
+  end
 
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/iam/users/login_profile"
@@ -95,15 +87,18 @@ class AwsIamApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/users/login_profile' do
-		json_body = body_to_json_or_die("body" => request, "args" => ["user"])
-		begin
-			response = @iam.create_login_profile(json_body["user"]["id"], json_body["user"]["password"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/users/login_profile' do
+    json_body = body_to_json_or_die(
+      "body" => request,
+      "args" => ["user"]
+    )
+
+    response = @iam.create_login_profile(
+      json_body["user"]["id"],
+      json_body["user"]["password"]
+    )
+    [OK, response.to_json]
+  end
 
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/iam/users/access_key"
@@ -119,16 +114,12 @@ class AwsIamApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/users/access_key' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @iam.create_access_key(json_body).body["AccessKey"]
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-	
+  post '/users/access_key' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @iam.create_access_key(json_body).body["AccessKey"]
+    [OK, response.to_json]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/iam/users/:id"
   ##~ a.description = "Manage IAM resources on the cloud (AWS)"
@@ -142,41 +133,44 @@ class AwsIamApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	delete '/users/:id' do
-		begin
-			#Remove policies from user
-			@iam.list_user_policies(params[:id]).body["PolicyNames"].each do |t|
-				@iam.delete_user_policy(params[:id], t)
-			end
-			#Remove user from groups
-			@iam.list_groups_for_user(params[:id]).body["GroupsForUser"].each do |g|
-				@iam.remove_user_from_group(g["GroupName"], params[:id])
-			end
-			#Delete User Access Keys
-			@iam.list_access_keys({"UserName" => params[:id]}).body["AccessKeys"].each do |a|
-				@iam.delete_access_key(a["AccessKeyId"], {"UserName" => params[:id]})
-			end
-			#Delete Signing Certs
-			@iam.list_signing_certificates({"UserName" => params[:id]}).body["SigningCertificates"].each do |s|
-				@iam.delete_signing_certificate(s["CertificateId"], {"UserName" => params[:id]})
-			end
+  delete '/users/:id' do
+    #Remove policies from user
+    @iam.list_user_policies(params[:id]).body["PolicyNames"].each do |t|
+      @iam.delete_user_policy(params[:id], t)
+    end
 
-			@iam.delete_login_profile(params[:id])
-		rescue
-			#Rescue because there may not be a login, but user still needs to be deleted
-		end	
+    #Remove user from groups
+    @iam.list_groups_for_user(params[:id]).body["GroupsForUser"].each do |g|
+      @iam.remove_user_from_group(g["GroupName"], params[:id])
+    end
 
-		begin
-			response = @iam.users.get(params[:id]).destroy
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-	
-	#
-	# Groups
-	#
+    #Delete User Access Keys
+    @iam.list_access_keys(
+      {"UserName" => params[:id]}
+    ).body["AccessKeys"].each do |a|
+      @iam.delete_access_key(a["AccessKeyId"], {"UserName" => params[:id]})
+    end
+
+    #Delete Signing Certs
+    @iam.list_signing_certificates(
+      {"UserName" => params[:id]}
+    ).body["SigningCertificates"].each do |s|
+      @iam.delete_signing_certificate(
+        s["CertificateId"],
+        {"UserName" => params[:id]}
+      )
+    end
+
+    # Call to rescue nil here because there may not be a login profile
+    # associated with user account but user account still needs to be deleted
+    @iam.delete_login_profile(params[:id]) rescue nil
+    response = @iam.users.get(params[:id]).destroy
+    [OK, response.to_json]
+  end
+  
+  #
+  # Groups
+  #
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/iam/groups"
   ##~ a.description = "Manage IAM resources on the cloud (AWS)"
@@ -190,19 +184,17 @@ class AwsIamApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	get '/groups' do
+  get '/groups' do
     begin
-  		filters = params[:filters]
-  		if(filters.nil?)
-  			response = @iam.list_groups.body["Groups"]
-  		else
-  			response = @iam.list_groups(filters).body["Groups"]
-  		end
-  		[OK, response.to_json]
+      filters = params[:filters]
+      response = filters.nil? ?
+        @iam.list_groups.body["Groups"] :
+        @iam.list_groups(filters).body["Groups"]
+      [OK, response.to_json]
     rescue => error
-				pre_handle_error(@iam, error)
-		end
-	end
+      pre_handle_error(@iam, error)
+    end
+  end
 
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/iam/groups/:group_name/users"
@@ -217,15 +209,11 @@ class AwsIamApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	get '/groups/:group_name/users' do
-		begin
-			response = @iam.get_group(params[:group_name]).body["Users"]
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-	
+  get '/groups/:group_name/users' do
+    response = @iam.get_group(params[:group_name]).body["Users"]
+    [OK, response.to_json]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/iam/groups"
   ##~ a.description = "Manage IAM resources on the cloud (AWS)"
@@ -240,15 +228,11 @@ class AwsIamApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/groups' do
-		json_body = body_to_json_or_die("body" => request, "args" => ["group"])
-		begin
-			response = @iam.create_group(json_body["group"]["GroupName"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/groups' do
+    json_body = body_to_json_or_die("body" => request, "args" => ["group"])
+    response = @iam.create_group(json_body["group"]["GroupName"])
+    [OK, response.to_json]
+  end
 
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/iam/groups/:group_name/users/:user_id"
@@ -264,14 +248,10 @@ class AwsIamApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/groups/:group_name/users/:user_id' do
-		begin
-			response = @iam.add_user_to_group(params[:group_name], params[:user_id])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/groups/:group_name/users/:user_id' do
+    response = @iam.add_user_to_group(params[:group_name], params[:user_id])
+    [OK, response.to_json]
+  end
 
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/iam/groups/:group_name/users/:user_id"
@@ -287,15 +267,11 @@ class AwsIamApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	delete '/groups/:group_name/users/:user_id' do
-		begin
-			response = @iam.remove_user_from_group(params[:group_name], params[:user_id])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-	
+  delete '/groups/:group_name/users/:user_id' do
+    response = @iam.remove_user_from_group(params[:group_name], params[:user_id])
+    [OK, response.to_json]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/iam/groups/:group_name/users/:user_id"
   ##~ a.description = "Manage IAM resources on the cloud (AWS)"
@@ -309,19 +285,17 @@ class AwsIamApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	delete '/groups/:group_name' do
-		begin
-			# remove all group policies
-			policies = @iam.list_group_policies(params[:group_name]).body["PolicyNames"]
-			policies.each {|policy| @iam.delete_group_policy(params[:group_name], policy)}
-			# remove all group users
-			users = @iam.get_group(params[:group_name]).body["Users"]
-			users.each {|user| @iam.remove_user_from_group(params[:group_name], user["UserName"])}
-			#delete the group
-			response = @iam.delete_group(params[:group_name])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  delete '/groups/:group_name' do
+    # remove all group policies
+    policies = @iam.list_group_policies(params[:group_name]).body["PolicyNames"]
+    policies.each {|policy| @iam.delete_group_policy(params[:group_name], policy)}
+
+    # remove all group users
+    users = @iam.get_group(params[:group_name]).body["Users"]
+    users.each {|user| @iam.remove_user_from_group(params[:group_name], user["UserName"])}
+
+    # delete the group
+    response = @iam.delete_group(params[:group_name])
+    [OK, response.to_json]
+  end
 end

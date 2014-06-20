@@ -3,12 +3,12 @@ require 'fog'
 
 class AwsDnsApp < ResourceApiBase
 
-	before do
-		if ! params[:cred_id].nil? && Auth.validate(params[:cred_id],"Route 53","action")
-			cloud_cred = get_creds(params[:cred_id])
-			if ! cloud_cred.nil?
-				@dns = Fog::DNS::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
-			  halt [BAD_REQUEST] if @dns.nil?
+  before do
+    if ! params[:cred_id].nil? && Auth.validate(params[:cred_id],"Route 53","action")
+      cloud_cred = get_creds(params[:cred_id])
+      if ! cloud_cred.nil?
+        @dns = Fog::DNS::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
+        halt [BAD_REQUEST] if @dns.nil?
       else
         halt [NOT_FOUND, "Credentials not found."]
       end
@@ -16,12 +16,12 @@ class AwsDnsApp < ResourceApiBase
       message = Error.new.extend(ErrorRepresenter)
       message.message = "Cannot access this service under current policy."
       halt [NOT_AUTHORIZED, message.to_json]
-		end
+    end
   end
 
-	#
-	# Hosted Zones
-	#
+  #
+  # Hosted Zones
+  #
   ##~ sapi = source2swagger.namespace("aws_dns")
   ##~ sapi.swaggerVersion = "1.1"
   ##~ sapi.apiVersion = "1.0"
@@ -41,20 +41,16 @@ class AwsDnsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	get '/hosted_zones' do
+  get '/hosted_zones' do
     begin
-  		filters = params[:filters]
-  		if(filters.nil?)
-  			response = @dns.zones
-  		else
-  			response = @dns.zones.all(filters)
-  		end
-  		[OK, response.to_json]
+      filters = params[:filters]
+      response = filters.nil? ? @dns.zones : @dns.zones.all(filters)
+      [OK, response.to_json]
     rescue => error
-          pre_handle_error(@dns, error)
-		end
-	end
-	
+      pre_handle_error(@dns, error)
+    end
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/dns/hosted_zones"
   ##~ a.description = "Manage DNS resources on the cloud (AWS)"
@@ -69,16 +65,12 @@ class AwsDnsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/hosted_zones' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @dns.zones.create(json_body["hosted_zone"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-	
+  post '/hosted_zones' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @dns.zones.create(json_body["hosted_zone"])
+    [OK, response.to_json]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/dns/hosted_zones/:id"
   ##~ a.description = "Manage DNS resources on the cloud (AWS)"
@@ -92,18 +84,14 @@ class AwsDnsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	delete '/hosted_zones/:id' do
-		begin
-			response = @dns.zones.get(params[:id]).destroy
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  delete '/hosted_zones/:id' do
+    response = @dns.zones.get(params[:id]).destroy
+    [OK, response.to_json]
+  end
 
-	#
-	# Record Sets
-	#
+  #
+  # Record Sets
+  #
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/dns/hosted_zones/:hosted_zone_id/record_sets"
   ##~ a.description = "Manage DNS resources on the cloud (AWS)"
@@ -117,15 +105,14 @@ class AwsDnsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	get '/hosted_zones/:hosted_zone_id/record_sets' do
-		begin
-			response = @dns.list_resource_record_sets(params[:hosted_zone_id]).body["ResourceRecordSets"]
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-	
+  get '/hosted_zones/:hosted_zone_id/record_sets' do
+    response = @dns.list_resource_record_sets(
+      params[:hosted_zone_id]
+    ).body["ResourceRecordSets"]
+
+    [OK, response.to_json]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/dns/hosted_zones/:hosted_zone_id/record_sets/change"
   ##~ a.description = "Manage DNS resources on the cloud (AWS)"
@@ -142,20 +129,25 @@ class AwsDnsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	put '/hosted_zones/:hosted_zone_id/record_sets/change' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			#must symbolize keys
-			change_batch_symbolized = []
-			json_body["record_set"]["change_batch"].each {|change| change_batch_symbolized<<change.symbolize_keys}
-			if(json_body["record_set"]["options"].nil?)
-				response = @dns.change_resource_record_sets(params[:hosted_zone_id], change_batch_symbolized)
-			else
-				response = @dns.change_resource_record_sets(params[:hosted_zone_id], change_batch_symbolized, json_body["record_set"]["options"])
-			end
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  put '/hosted_zones/:hosted_zone_id/record_sets/change' do
+    json_body = body_to_json_or_die("body" => request)
+
+    #must symbolize keys
+    change_batch_symbolized = []
+    json_body["record_set"]["change_batch"].each do |change|
+      change_batch_symbolized<<change.symbolize_keys
+    end
+
+    response = json_body["record_set"]["options"].nil? ?
+      @dns.change_resource_record_sets(
+        params[:hosted_zone_id],
+        change_batch_symbolized
+      ) :
+      @dns.change_resource_record_sets(
+        params[:hosted_zone_id],
+        change_batch_symbolized,
+        json_body["record_set"]["options"]
+      )
+    [OK, response.to_json]
+  end
 end
