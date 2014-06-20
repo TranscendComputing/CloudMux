@@ -3,16 +3,16 @@ require 'fog'
 
 class AwsObjectStorageApp < ResourceApiBase
 
-	before do
+  before do
     params["provider"] = "aws"
     @service_long_name = "Simple Storage"
     @service_class = Fog::Storage::AWS
     @object_storage = can_access_service(params)
   end
 
-	#
-	# Buckets
-	#
+  #
+  # Buckets
+  #
   ##~ sapi = source2swagger.namespace("aws_object_storage")
   ##~ sapi.swaggerVersion = "1.1"
   ##~ sapi.apiVersion = "1.0"
@@ -30,20 +30,18 @@ class AwsObjectStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	get '/directories' do
+  get '/directories' do
     begin
-  		filters = params[:filters]
-  		if(filters.nil?)
-  			response = @object_storage.directories
-  		else
-  			response = @object_storage.directories.all(filters)
-  		end
-  		[OK, response.to_json]
+      filters  = params[:filters]
+      response = filters.nil? ?
+        @object_storage.directories :
+        @object_storage.directories.all(filters)
+      [OK, response.to_json]
     rescue => error
-				pre_handle_error(@object_storage, error)
-		end
-	end
-	
+      pre_handle_error(@object_storage, error)
+    end
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/object_storage/directories"
   ##~ a.description = "Manage Object Storage resources on the cloud (AWS)"
@@ -57,16 +55,12 @@ class AwsObjectStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/directories' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @object_storage.directories.create(json_body["directory"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-	
+  post '/directories' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @object_storage.directories.create(json_body["directory"])
+    [OK, response.to_json]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/object_storage/directories/:id"
   ##~ a.description = "Manage Object Storage resources on the cloud (AWS)"
@@ -79,18 +73,14 @@ class AwsObjectStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	delete '/directories/:id' do
-		begin
-			response = @object_storage.directories.get(params[:id]).destroy
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-	
-	#
-	# Files
-	#
+  delete '/directories/:id' do
+    response = @object_storage.directories.get(params[:id]).destroy
+    [OK, response.to_json]
+  end
+  
+  #
+  # Files
+  #
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/object_storage/directories/:id/files"
   ##~ a.description = "Manage Object Storage resources on the cloud (AWS)"
@@ -103,15 +93,11 @@ class AwsObjectStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	get '/directories/:id/files' do
-		begin
-			response = @object_storage.directories.get(params[:id]).files
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-	
+  get '/directories/:id/files' do
+    response = @object_storage.directories.get(params[:id]).files
+    [OK, response.to_json]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/object_storage/directory/file/download"
   ##~ a.description = "Manage Object Storage resources on the cloud (AWS)"
@@ -125,22 +111,16 @@ class AwsObjectStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/directory/file/download' do
-		file = params[:file]
-		directory = params[:directory]
-		if(file.nil? || directory.nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @object_storage.get_object(directory, file).body
-				headers["Content-disposition"] = "attachment; filename=" + file
-				[OK, response]
-			rescue => error
-				handle_error(error)
-			end
-		end
-	end
-	
+  post '/directory/file/download' do
+    file = params[:file]
+    directory = params[:directory]
+    halt [BAD_REQUEST] if file.nil? or directory.nil?
+
+    response = @object_storage.get_object(directory, file).body
+    headers["Content-disposition"] = "attachment; filename=" + file
+    [OK, response]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/object_storage/directory/file/upload"
   ##~ a.description = "Manage Object Storage resources on the cloud (AWS)"
@@ -155,21 +135,19 @@ class AwsObjectStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/directory/file/upload' do
-		file = params[:file_upload]
-		directory = params[:directory]
-		if(file.nil? || directory.nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				response = @object_storage.put_object(directory, file[:filename], file[:tempfile])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
-		end
-	end
-	
+  post '/directory/file/upload' do
+    file = params[:file_upload]
+    directory = params[:directory]
+    halt [BAD_REQUEST] if file.nil? or directory.nil?
+
+    response = @object_storage.put_object(
+      directory,
+      file[:filename],
+      file[:tempfile]
+    )
+    [OK, response.to_json]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/object_storage/directories/:id/files/:file_id"
   ##~ a.description = "Manage Object Storage resources on the cloud (AWS)"
@@ -183,12 +161,8 @@ class AwsObjectStorageApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	delete '/directories/:id/files/:file_id' do
-		begin
-			response = @object_storage.delete_object(params[:id], params[:file_id]).body
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  delete '/directories/:id/files/:file_id' do
+    response = @object_storage.delete_object(params[:id], params[:file_id]).body
+    [OK, response.to_json]
+  end
 end
