@@ -62,7 +62,7 @@ class AwsCloudFormationApp < ResourceApiBase
     halt [BAD_REQUEST] unless params[:type]
     
     case params[:type]
-    when 'url' or 'body'
+    when 'url','body'
       body = JSON.parse(request.body.read)
       paramName = type == "url" ? "TemplateURL" : "TemplateBody"
       data = type == "url" ? body[paramName] : body[paramName].to_json
