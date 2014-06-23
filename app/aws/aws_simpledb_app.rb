@@ -35,7 +35,7 @@ class AwsSimpleDBApp < ResourceApiBase
       filters = params[:filters]
       db_list = filters.nil? ?
         @sdb.list_domains.body["Domains"] :
-        @sdb.list_domains.(filters).body["Domains"]
+        @sdb.list_domains(filters).body["Domains"]
 
       response = new Array
       db_list.each do |t|
