@@ -104,10 +104,10 @@ class AwsSimpleDBApp < ResourceApiBase
     )
 
     contents = @sdb.select(json_body["select_expression"]).body["Items"]
-    response = new Array]
+    response = Array.new
 
     contents.each do |t|
-      item = {'Name' => t[0], 'Attributes' => new Array}
+      item = {'Name' => t[0], 'Attributes' => Array.new}
       t[1].each do |s|
         item["Attributes"] << {'Name' => s[0], 'Value' => s[1]}
       end
