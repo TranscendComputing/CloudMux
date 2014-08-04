@@ -59,7 +59,8 @@ group :development do
   gem 'awesome_print'
   gem 'shotgun'
   gem 'pry'
-  gem 'pry-debugger'
+  gem 'pry-byebug', :platform => :ruby_20
+  gem 'pry-debugger', :platform => :ruby_19
   gem 'rb-readline'
 end
 
