@@ -11,7 +11,7 @@ The CloudMux project provides a RESTful service layer for the management of mult
 CloudMux currently supports the following clouds:
 
 * Amazon (AWS)
-* OpenStack (Essex & Grizzly)
+* OpenStack (Essex, Grizzly, Havana)
 * Google Compute Engine (GCE)
 * VMware vCenter and vCloudDirector
 
@@ -26,11 +26,10 @@ Getting Started
 
 2. Create a ruby environment file and source with the following contents (edit your mongo user and password):
 
-* STACK_PLACE_SERVICE_ENDPOINT=http://localhost:9292
 * MONGO_URI=mongodb://MONGOUSER:MONGOPASSWORD@localhost:27017
 * RACK_ENV=development
 * RAILS_ENV=development
-* export STACK_PLACE_SERVICE_ENDPOINT MONG_URI RACK_ENV RAILS_ENV
+* export MONGO_URI RACK_ENV RAILS_ENV
 
 	`source cloudmux.env`
 
