@@ -22,7 +22,7 @@ CloudMux currently supports the following clouds:
 Getting Started
 ---------------
 
-1. Make sure you have ruby 1.9.3 or 2.0+ and mongodb installed.
+1. Make sure you have ruby 1.9.3 or 2.0+ and mongodb installed on a Linux (or similar Unix-based) OS.
 
 2. Create a ruby environment file and source with the following contents (edit your mongo user and password):
 
@@ -47,7 +47,7 @@ Getting Started
 
 4. You are now ready to host CloudMux. This can simple be started from the <tt>CloudMux</tt> directory by running:
 
-	`sh script/start_cloudmux.sh`
+	`sh script/start_service.sh`
 
 or you can setup through an HTTP server (e.g. Apache w/ Passenger)
 
