@@ -15,17 +15,15 @@ class VCloudCatalogApp < VCloudApp
   ##~ op.summary = "List all catalogs in organization"  
   ##~ op.errorResponses.add :reason => "API down", :code => 500
   get '/' do
-    begin
-      catalogs = @org.catalogs.all(false)
-      catalog_list = catalogs.map do |catalog|
-        catalog.extend(VCloudCatalogRepresenter)
-        catalog.items = catalog.catalog_items.all(false).map { |item| {:id => item.id, :name => item.name, :descripton => item.description }}
-        catalog
+    catalogs = @org.catalogs.all(false)
+    catalog_list = catalogs.map do |catalog|
+      catalog.extend(VCloudCatalogRepresenter)
+      catalog.items = catalog.catalog_items.all(false).map do |item|
+        {:id => item.id, :name => item.name, :descripton => item.description}
       end
-      [OK, catalog_list.to_json]
-    rescue => error
-      handle_error(error)
+      catalog
     end
+    [OK, catalog_list.to_json]
   end
 
   ##~ a = sapi.apis.add
@@ -37,14 +35,10 @@ class VCloudCatalogApp < VCloudApp
   ##~ op.summary = "Get catalog by id"  
   ##~ op.errorResponses.add :reason => "API down", :code => 500
   get '/:id' do
-    begin
-      catalog = @org.catalogs.get(params[:id])
-      catalog.extend(VCloudCatalogRepresenter)
-      catalog.items = catalog.catalog_items.all(false)
-      [OK, catalog.to_json]
-    rescue => error
-      handle_error(error)
-    end
+    catalog = @org.catalogs.get(params[:id])
+    catalog.extend(VCloudCatalogRepresenter)
+    catalog.items = catalog.catalog_items.all(false)
+    [OK, catalog.to_json]
   end
 
   #
@@ -60,12 +54,8 @@ class VCloudCatalogApp < VCloudApp
   ##~ op.summary = "Get items in catalog"
   ##~ op.errorResponses.add :reason => "API down", :code => 500
   get '/:catalog_id/items' do
-    begin
-      catalog_items = @org.catalogs.get(params[:catalog_id]).catalog_items
-      [OK, catalog_items.to_json]
-    rescue => error
-      handle_error(error)
-    end
+    catalog_items = @org.catalogs.get(params[:catalog_id]).catalog_items
+    [OK, catalog_items.to_json]
   end
 
   #
@@ -81,17 +71,13 @@ class VCloudCatalogApp < VCloudApp
   ##~ op.summary = "Instatiate vApp from template"
   ##~ op.errorResponses.add :reason => "API down", :code => 500
   post '/:catalog_id/items/:id/vapp' do
-    begin
-      template = @org.catalogs.get(params[:catalog_id]).catalog_items.get(params[:id])
-      if params[:vapp_options].nil?
-        template.instantiate(params['vapp_name'])
-      else
-        template.instantiate(params['vapp_name'], params['vapp_options'])
-      end
-      
-      [OK, { 'message' => 'vApp Creating.' }.to_json]
-    rescue => error
-      handle_error(error)
+    template = @org.catalogs.get(params[:catalog_id]).catalog_items.get(params[:id])
+    if params[:vapp_options].nil?
+      template.instantiate(params['vapp_name'])
+    else
+      template.instantiate(params['vapp_name'], params['vapp_options'])
     end
+      
+    [OK, { 'message' => 'vApp Creating.' }.to_json]
   end
 end

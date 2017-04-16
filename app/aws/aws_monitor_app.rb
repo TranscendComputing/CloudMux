@@ -3,16 +3,16 @@ require 'fog'
 
 class AwsMonitorApp < ResourceApiBase
 
-	before do
-		params["provider"] = "aws"
-		@service_long_name = "CloudWatch"
-    	@service_class = Fog::AWS::CloudWatch
-    	@monitor = can_access_service(params)
-    end
+  before do
+    params["provider"] = "aws"
+    @service_long_name = "CloudWatch"
+    @service_class = Fog::AWS::CloudWatch
+    @monitor = can_access_service(params)
+  end
 
-	#
-	# Alarms
-	#
+  #
+  # Alarms
+  #
   ##~ sapi = source2swagger.namespace("aws_monitor")
   ##~ sapi.swaggerVersion = "1.1"
   ##~ sapi.apiVersion = "1.0"
@@ -30,26 +30,22 @@ class AwsMonitorApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	get '/alarms' do
+  get '/alarms' do
     begin
-  		filters = params[:filters]
-  		if(filters.nil?)
-  			response = @monitor.alarms
-  		else
-  			response = @monitor.alarms.all(filters)
-  		end
-  		[OK, response.to_json]
+      filters  = params[:filters]
+      response = filters.nil? ? @monitor.alarms : @monitor.alarms.all(filters)
+      [OK, response.to_json]
     rescue => error
-				    pre_handle_error(@monitor, error)
-		end
-	end
-    
-    get '/alarms/:id/alarm_history' do
-        #response = @monitor.describe_alarm_history({"AlarmName"=>params[:id],"HistoryItemType"=>"StateUpdate"}).body['DescribeAlarmHistoryResult']['AlarmHistoryItems']
-        response = @monitor.describe_alarm_history({"AlarmName"=>params[:id]}).body['DescribeAlarmHistoryResult']['AlarmHistoryItems']
-        [OK, response.to_json]
+      pre_handle_error(@monitor, error)
     end
-	
+  end
+    
+  get '/alarms/:id/alarm_history' do
+    response = @monitor.describe_alarm_history({"AlarmName"=>params[:id]})
+                       .body['DescribeAlarmHistoryResult']['AlarmHistoryItems']
+    [OK, response.to_json]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/monitor/alarms"
   ##~ a.description = "Manage Monitor resources on the cloud (AWS)"
@@ -62,16 +58,12 @@ class AwsMonitorApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/alarms' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @monitor.alarms.create(json_body["alarm"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-	
+  post '/alarms' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @monitor.alarms.create(json_body["alarm"])
+    [OK, response.to_json]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/monitor/alarms/:id"
   ##~ a.description = "Manage Monitor resources on the cloud (AWS)"
@@ -84,18 +76,14 @@ class AwsMonitorApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	delete '/alarms/:id' do
-		begin
-			response = @monitor.alarms.get(params[:id]).destroy
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-	
-	#
-	# Metrics
-	#
+  delete '/alarms/:id' do
+    response = @monitor.alarms.get(params[:id]).destroy
+    [OK, response.to_json]
+  end
+  
+  #
+  # Metrics
+  #
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/monitor/metrics"
   ##~ a.description = "Manage Monitor resources on the cloud (AWS)"
@@ -108,29 +96,22 @@ class AwsMonitorApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	get '/metrics' do
-		begin
-			filters = params[:filters]
-			if(filters["Dimensions"].is_a?String)
-				filters["Dimensions"] = [{"Name"=>filters["Dimensions"]}]
-			end
-			if(filters.nil?)
-				raw_response = @monitor.metrics
-			else
-				raw_response = @monitor.metrics.all(filters)
-			end
-			#Cast to and from JSON to workaround circular reference bug
-			new_response = JSON.parse(raw_response.to_json)
-			response = new_response.sort_by {|s| s["dimensions"].first["Value"]}
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-	
-	#
-	# Metric Statistics
-	#
+  get '/metrics' do
+    filters = params[:filters]
+    if filters["Dimensions"].is_a?(String)
+      filters["Dimensions"] = [{"Name"=>filters["Dimensions"]}]
+    end
+
+    #Cast to and from JSON to workaround circular reference bug
+    raw_response = filters.nil? ? @monitor.metrics : @monitor.metrics.all(filters)
+    new_response = JSON.parse(raw_response.to_json)
+    response = new_response.sort_by {|s| s["dimensions"].first["Value"]}
+    [OK, response.to_json]
+  end
+  
+  #
+  # Metric Statistics
+  #
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/monitor/metric_statistics"
   ##~ a.description = "Manage Monitor resources on the cloud (AWS)"
@@ -149,63 +130,57 @@ class AwsMonitorApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	get '/metric_statistics' do
-		if(	params[:time_range].nil? || params[:namespace].nil? || params[:metric_name].nil? || params[:period].nil? ||
-			params[:statistic].nil? || params[:dimension_name].nil? || params[:dimension_value].nil?)
-			[BAD_REQUEST]
-		else
-			begin
-        options = {}
-        
-        options["Period"] = params[:period].to_i
-        options["Statistics"] = params[:statistic]
-        options["Namespace"] = params[:namespace]
-        
-        if(!params[:dimension_name2].nil?)
-          options["Dimensions"] = [{"Name"=>params[:dimension_name], "Value"=>params[:dimension_value]},{"Name"=>params[:dimension_name2], "Value"=>params[:dimension_value2]}]
-        else
-          options["Dimensions"] = [{"Name"=>params[:dimension_name], "Value"=>params[:dimension_value]}]
-        end
-        
-        options["MetricName"] = params[:metric_name]
-        options["StartTime"] = DateTime.now - params[:time_range].to_i.seconds
-        options["EndTime"] = DateTime.now
-				
-        
-        #options = {
-				#	"Period"=>params[:period].to_i,
-				#	"Statistics"=>params[:statistic],
-				#	"Namespace"=>params[:namespace],
-				#	"Dimensions"=>[{"Name"=>params[:dimension_name], "Value"=>params[:dimension_value]}],
-				#	"MetricName"=>params[:metric_name],
-				#	"StartTime"=>DateTime.now - params[:time_range].to_i.seconds,
-				#	"EndTime"=>DateTime.now
-				#}
-        
-				response = @monitor.get_metric_statistics(options).body['GetMetricStatisticsResult']['Datapoints']
-				first_datapoint = response.first
-				statistic = ""
-				if(!first_datapoint.nil?)
-					if(first_datapoint.has_key?("Average"))
-						statistic = "Average"
-					elsif(first_datapoint.has_key?("Sum"))
-						statistic = "Sum"
-					elsif(first_datapoint.has_key?("SampleCount"))
-						statistic = "SampleCount"
-					elsif(first_datapoint.has_key?("Maximum"))
-						statistic = "Maximum"
-					elsif(first_datapoint.has_key?("Minimum"))
-						statistic = "Minimum"
-					end
+  get '/metric_statistics' do
+    req_params = [
+      params[:time_range],
+      params[:namespace],
+      params[:metric_name],
+      params[:period],
+      params[:statistic],
+      params[:dimension_name],
+      params[:dimension_value]
+    ]
 
-					if(statistic != "")
-						response.each {|d| d[statistic] = d[statistic].round(5)}
-					end
-				end
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
-		end
-	end
+    halt [BAD_REQUEST] if req_params.length == 0
+    halt [BAD_REQUEST] unless req_params.compact.length == req_params.length
+
+    options = {
+      "Period"     => params[:period].to_i,
+      "Statistics" => params[:statistic],
+      "Namespace"  => params[:namespace],
+      "MetricName" => params[:metric_name],
+      "StartTime"  => DateTime.now - params[:time_range].to_i.seconds,
+      "EndTime"    => DateTime.now,
+    }
+
+    options["Dimensions"] = params[:dimension_name2].nil? ?
+      [{"Name"=>params[:dimension_name], "Value"=>params[:dimension_value]}] :
+      [
+        {"Name"=>params[:dimension_name], "Value"=>params[:dimension_value]},
+        {"Name"=>params[:dimension_name2], "Value"=>params[:dimension_value2]}
+      ] 
+    
+    response = @monitor.get_metric_statistics(options)
+                       .body['GetMetricStatisticsResult']['Datapoints']
+    first_datapoint = response.first
+
+    unless first_datapoint.nil?
+      if first_datapoint.has_key?("Average")
+        statistic = "Average"
+      elsif first_datapoint.has_key?("Sum")
+        statistic = "Sum"
+      elsif first_datapoint.has_key?("SampleCount")
+        statistic = "SampleCount"
+      elsif first_datapoint.has_key?("Maximum")
+        statistic = "Maximum"
+      elsif first_datapoint.has_key?("Minimum")
+        statistic = "Minimum"
+      end
+
+      if statistic.nil? 
+        response.each {|d| d[statistic] = d[statistic].round(5)}
+      end
+    end
+    [OK, response.to_json]
+  end
 end

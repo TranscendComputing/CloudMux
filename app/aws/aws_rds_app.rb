@@ -3,16 +3,16 @@ require 'fog'
 
 class AwsRdsApp < ResourceApiBase
 
-	before do
+  before do
     params["provider"] = "aws"
     @service_long_name = "Relational Database"
     @service_class = Fog::AWS::RDS
     @rds = can_access_service(params)
   end
 
-	#
-	# Databases
-	#
+  #
+  # Databases
+  #
   ##~ sapi = source2swagger.namespace("aws_rds")
   ##~ sapi.swaggerVersion = "1.1"
   ##~ sapi.apiVersion = "1.0"
@@ -32,18 +32,14 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   get '/databases' do
     begin
-  		filters = params[:filters]
-  		if(filters.nil?)
-  			response = @rds.servers
-  		else
-  			response = @rds.servers.all(filters)
-  		end
-  		[OK, response.to_json]
+      filters = params[:filters]
+      response = filters.nil? ? @rds.servers : @rds.servers.all(filters)
+      [OK, response.to_json]
     rescue => error
-				pre_handle_error(@rds, error)
-		end
-	end
-	
+      pre_handle_error(@rds, error)
+    end
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/rds/databases"
   ##~ a.description = "Manage RDS resources on the cloud (AWS)"
@@ -58,19 +54,31 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   post '/databases' do
-		json_body = body_to_json_or_die("body" => request)
-    user_id = Auth.find_account(params[:cred_id]).login
-    can_create_instance("cred_id" => params[:cred_id], "action" => "create_rds", "options" => {:resources => @rds.servers,:uid => user_id} )
-		begin
-			response = @rds.servers.create(json_body["relational_database"])
-      response.add_tags(:key => "UserName", :value => user_id)  
-      Auth.validate(params[:cred_id],"Relational Database","create_default_alarms",{:params => params, :resource_id => response.id, :namespace => "AWS/RDS"})
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-	
+    json_body = body_to_json_or_die("body" => request)
+    user_id   = Auth.find_account(params[:cred_id]).login
+
+    can_create_instance(
+      "cred_id" => params[:cred_id],
+      "action"  => "create_rds",
+      "options" => {:resources => @rds.servers, :uid => user_id}
+    )
+
+    response = @rds.servers.create(json_body["relational_database"])
+    response.add_tags(:key => "UserName", :value => user_id)  
+
+    Auth.validate(
+      params[:cred_id],
+      "Relational Database",
+      "create_default_alarms",
+      {
+        :params => params,
+        :resource_id => response.id,
+        :namespace => "AWS/RDS"
+      }
+    )
+    [OK, response.to_json]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/rds/databases/:id"
   ##~ a.description = "Manage RDS resources on the cloud (AWS)"
@@ -83,14 +91,10 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	delete '/databases/:id' do
-		begin
-			response = @rds.servers.get(params[:id]).destroy
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  delete '/databases/:id' do
+    response = @rds.servers.get(params[:id]).destroy
+    [OK, response.to_json]
+  end
 
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/rds/engine_versions"
@@ -103,19 +107,18 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	get '/engine_versions' do
-		begin
-			engine_versions = @rds.describe_db_engine_versions.body['DescribeDBEngineVersionsResult']['DBEngineVersions'].as_json
-			engine_versions.each do |v|
-				v.each_pair do |name, value|
-					v[name] = value.strip
-				end
-			end
-			[OK, engine_versions.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  get '/engine_versions' do
+    engine_versions = @rds.describe_db_engine_versions
+                          .body['DescribeDBEngineVersionsResult']['DBEngineVersions']
+                          .as_json
+
+    engine_versions.each do |version|
+      version.each_pair do |name, value|
+        version[name] = value.strip
+      end
+    end
+    [OK, engine_versions.to_json]
+  end
 
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/rds/parameter_groups"
@@ -129,19 +132,17 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	get '/parameter_groups' do
+  get '/parameter_groups' do
     begin
-  		filters = params[:filters]
-  		if(filters.nil?)
-  			response = @rds.parameter_groups
-  		else
-  			response = @rds.parameter_groups.all(filters)
-  		end
-  		[OK, response.to_json]
+      filters  = params[:filters]
+      response = filters.nil? ?
+        @rds.parameter_groups :
+        @rds.parameter_groups.all(filters)
+      [OK, response.to_json]
     rescue => error
-				pre_handle_error(@rds, error)
-		end
-	end
+      pre_handle_error(@rds, error)
+    end
+  end
 
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/rds/security_groups"
@@ -155,19 +156,17 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	get '/security_groups' do
+  get '/security_groups' do
     begin
-  		filters = params[:filters]
-  		if(filters.nil?)
-  			response = @rds.security_groups
-  		else
-  			response = @rds.security_groups.all(filters)
-  		end
-  		[OK, response.to_json]
+      filters  = params[:filters]
+      response = filters.nil? ?
+        @rds.security_groups :
+        @rds.security_groups.all(filters)
+      [OK, response.to_json]
     rescue => error
-				pre_handle_error(@rds, error)
-		end
-	end
+      pre_handle_error(@rds, error)
+    end
+  end
   
   #
   #Create Security/Parameter Groups
@@ -185,55 +184,39 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/security_groups' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @rds.security_groups.create(json_body["security_group"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/security_groups' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @rds.security_groups.create(json_body["security_group"])
+    [OK, response.to_json]
+  end
     
-	post '/security_groups/:id/ipranges' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @rds.security_groups.get(params[:id]).authorize_cidrip(json_body["cidrip"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/security_groups/:id/ipranges' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @rds.security_groups.get(params[:id])
+                   .authorize_cidrip(json_body["cidrip"])
+    [OK, response.to_json]
+  end
     
-	post '/security_groups/:id/ec2_groups' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @rds.security_groups.get(params[:id]).authorize_ec2_security_group(json_body["ec2_group"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/security_groups/:id/ec2_groups' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @rds.security_groups.get(params[:id])
+                   .authorize_ec2_security_group(json_body["ec2_group"])
+    [OK, response.to_json]
+  end
     
-	post '/security_groups/:id/revoke_ipranges' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @rds.security_groups.get(params[:id]).revoke_cidrip(json_body["cidrip"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/security_groups/:id/revoke_ipranges' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @rds.security_groups.get(params[:id])
+                   .revoke_cidrip(json_body["cidrip"])
+    [OK, response.to_json]
+  end
     
-	post '/security_groups/:id/revoke_ec2_groups' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @rds.security_groups.get(params[:id]).revoke_ec2_security_group(json_body["ec2_group"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/security_groups/:id/revoke_ec2_groups' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @rds.security_groups.get(params[:id])
+                   .revoke_ec2_security_group(json_body["ec2_group"])
+    [OK, response.to_json]
+  end
   
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/rds/parameter_groups"
@@ -248,15 +231,11 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/parameter_groups' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @rds.parameter_groups.create(json_body["parameter_group"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/parameter_groups' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @rds.parameter_groups.create(json_body["parameter_group"])
+    [OK, response.to_json]
+  end
   
   #
   #Delete Security/Parameter Groups
@@ -273,14 +252,10 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	delete '/security_groups/:id' do
-		begin
-			response = @rds.security_groups.get(params[:id]).destroy
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  delete '/security_groups/:id' do
+    response = @rds.security_groups.get(params[:id]).destroy
+    [OK, response.to_json]
+  end
   
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/rds/parameter_groups/:id"
@@ -294,14 +269,10 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	delete '/parameter_groups/:id' do
-		begin
-			response = @rds.parameter_groups.get(params[:id]).destroy
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  delete '/parameter_groups/:id' do
+    response = @rds.parameter_groups.get(params[:id]).destroy
+    [OK, response.to_json]
+  end
   
   #
   #Describe Parameter Group
@@ -320,14 +291,9 @@ class AwsRdsApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/parameter_groups/describe/:id' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @rds.describe_db_parameters(params[:id],json_body["options"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-	
+  post '/parameter_groups/describe/:id' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @rds.describe_db_parameters(params[:id],json_body["options"])
+    [OK, response.to_json]
+  end
 end

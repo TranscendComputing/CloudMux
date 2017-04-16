@@ -3,16 +3,16 @@ require 'fog'
 
 class AwsLoadBalancerApp < ResourceApiBase
 
-	before do
+  before do
     params["provider"] = "aws"
     @service_long_name = "Elastic Load Balancer"
     @service_class = Fog::AWS::ELB
     @elb = can_access_service(params)
   end
 
-	#
-	# Load Balancers
-	#
+  #
+  # Load Balancers
+  #
   ##~ sapi = source2swagger.namespace("aws_load_balancer")
   ##~ sapi.swaggerVersion = "1.1"
   ##~ sapi.apiVersion = "1.0"
@@ -29,20 +29,18 @@ class AwsLoadBalancerApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	get '/load_balancers' do
+  get '/load_balancers' do
     begin
-  		filters = params[:filters]
-  		if(filters.nil?)
-  			response = @elb.load_balancers
-  		else
-  			response = @elb.load_balancers.all(filters)
-  		end
-  		[OK, response.to_json]
+      filters = params[:filters]
+      response = filters.nil? ?
+        @elb.load_balancers :
+        @elb.load_balancers.all(filters)
+      [OK, response.to_json]
     rescue => error
-				pre_handle_error(@elb, error)
-		end
-	end
-	
+      pre_handle_error(@elb, error)
+    end
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/load_balancer/load_balancers"
   ##~ a.description = "Manage Load Balancer resources on the cloud (AWS)"
@@ -57,22 +55,35 @@ class AwsLoadBalancerApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/load_balancers' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			lb = json_body["load_balancer"]
-			if lb["options"].nil?
-				response = @elb.create_load_balancer(lb["availability_zones"], lb["id"], lb["listeners"])
-			else
-				response = @elb.create_load_balancer(lb["availability_zones"], lb["id"], lb["listeners"], lb["options"])
-			end
-              Auth.validate(params[:cred_id],"Elastic Load Balancer","create_default_alarms",{:params => params, :resource_id => lb["id"], :namespace => "AWS/ELB"})
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-	
+  post '/load_balancers' do
+    json_body = body_to_json_or_die("body" => request)
+    lb = json_body["load_balancer"]
+    response = lb["options"].nil? ?
+      @elb.create_load_balancer(
+        lb["availability_zones"],
+        lb["id"],
+        lb["listeners"]
+      ) :
+      @elb.create_load_balancer(
+        lb["availability_zones"],
+        lb["id"],
+        lb["listeners"],
+        lb["options"]
+      )
+
+    Auth.validate(
+      params[:cred_id],
+      "Elastic Load Balancer",
+      "create_default_alarms",
+      {
+          :params => params,
+          :resource_id => lb["id"],
+          :namespace => "AWS/ELB"
+      }
+    )
+    [OK, response.to_json]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/load_balancer/load_balancers/:id"
   ##~ a.description = "Manage Load Balancer resources on the cloud (AWS)"
@@ -85,14 +96,10 @@ class AwsLoadBalancerApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	delete '/load_balancers/:id' do
-		begin
-			response = @elb.load_balancers.get(params[:id]).destroy
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  delete '/load_balancers/:id' do
+    response = @elb.load_balancers.get(params[:id]).destroy
+    [OK, response.to_json]
+  end
 
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/load_balancer/load_balancers/:id/configure_health_check"
@@ -108,15 +115,14 @@ class AwsLoadBalancerApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/load_balancers/:id/configure_health_check' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @elb.configure_health_check(params[:id], json_body["health_check"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/load_balancers/:id/configure_health_check' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @elb.configure_health_check(
+      params[:id],
+      json_body["health_check"]
+    )
+    [OK, response.to_json]
+  end
 
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/load_balancer/load_balancers/:id/availability_zones/enable"
@@ -131,15 +137,18 @@ class AwsLoadBalancerApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/load_balancers/:id/availability_zones/enable' do
-		json_body = body_to_json_or_die("body" => request, "args" => ["availability_zones"])
-		begin
-			response = @elb.enable_availability_zones_for_load_balancer(json_body["availability_zones"], params[:id])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/load_balancers/:id/availability_zones/enable' do
+    json_body = body_to_json_or_die(
+      "body" => request,
+      "args" => ["availability_zones"]
+    )
+
+    response = @elb.enable_availability_zones_for_load_balancer(
+      json_body["availability_zones"],
+      params[:id]
+    )
+    [OK, response.to_json]
+  end
 
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/load_balancer/load_balancers/:id/availability_zones/disable"
@@ -154,15 +163,18 @@ class AwsLoadBalancerApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/load_balancers/:id/availability_zones/disable' do
-		json_body = body_to_json_or_die("body" => request, "args" => ["availability_zones"])
-		begin
-			response = @elb.disable_availability_zones_for_load_balancer(json_body["availability_zones"], params[:id])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/load_balancers/:id/availability_zones/disable' do
+    json_body = body_to_json_or_die(
+      "body" => request,
+      "args" => ["availability_zones"]
+    )
+
+    response = @elb.disable_availability_zones_for_load_balancer(
+      json_body["availability_zones"],
+      params[:id]
+    )
+    [OK, response.to_json]
+  end
 
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/load_balancer/load_balancers/:id/instances/register"
@@ -177,15 +189,18 @@ class AwsLoadBalancerApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/load_balancers/:id/instances/register' do
-		json_body = body_to_json_or_die("body" => request, "args" => ["instance_ids"])
-		begin
-			response = @elb.register_instances_with_load_balancer(json_body["instance_ids"], params[:id])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/load_balancers/:id/instances/register' do
+    json_body = body_to_json_or_die(
+      "body" => request,
+      "args" => ["instance_ids"]
+    )
+
+    response = @elb.register_instances_with_load_balancer(
+      json_body["instance_ids"],
+      params[:id]
+    )
+    [OK, response.to_json]
+  end
 
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/load_balancer/load_balancers/:id/instances/deregister"
@@ -200,15 +215,18 @@ class AwsLoadBalancerApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/load_balancers/:id/instances/deregister' do
-		json_body = body_to_json_or_die("body" => request, "args" => ["instance_ids"])
-		begin
-			response = @elb.deregister_instances_from_load_balancer(json_body["instance_ids"], params[:id])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/load_balancers/:id/instances/deregister' do
+    json_body = body_to_json_or_die(
+      "body" => request,
+      "args" => ["instance_ids"]
+    )
+
+    response = @elb.deregister_instances_from_load_balancer(
+      json_body["instance_ids"],
+      params[:id]
+    )
+    [OK, response.to_json]
+  end
 
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/load_balancer/load_balancers/:id/describe_health"
@@ -225,48 +243,50 @@ class AwsLoadBalancerApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	get '/load_balancers/:id/describe_health' do
-		if(params[:availability_zones].nil?)
-			[BAD_REQUEST]
-		else
-			begin
-				availability_zones_health = []
-				availability_zones = JSON.parse(params[:availability_zones])
-				availability_zones.each do |az|
-					az_health = {}
-					az_health["LoadBalancerName"] = params[:id]
-					az_health["AvailabilityZone"] = az
-					az_health["InstanceCount"] = 0
-					az_health["Healthy"] = false
-					availability_zones_health << az_health
-				end
-				instance_health = @elb.describe_instance_health(params[:id]).body["DescribeInstanceHealthResult"]["InstanceStates"]
-				compute = get_compute_interface(params[:cred_id], params[:region])
-				instance_health.each do |i|
-					instance = compute.servers.get(i["InstanceId"])
-					if(!instance.nil?)
-						i["AvailabilityZone"] = instance.availability_zone
-						availability_zones_health.each do |a|
-							if a["AvailabilityZone"] == i["AvailabilityZone"]
-								a["InstanceCount"] = a["InstanceCount"] + 1
-								if i["State"] == "InService"
-									a["Healthy"] = true
-								end
-							end
-						end
-					end
-				end
-				response = {"AvailabilityZonesHealth" => availability_zones_health, "InstancesHealth" => instance_health}
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
-		end
-	end
+  get '/load_balancers/:id/describe_health' do
+    halt [BAD_REQUEST] if params[:availability_zones].nil?
 
-	#
-	# Load Balancer Listeners
-	#
+    availability_zones_health = []
+    availability_zones = JSON.parse(params[:availability_zones])
+
+    availability_zones.each do |az|
+      az_health = {}
+      az_health["LoadBalancerName"] = params[:id]
+      az_health["AvailabilityZone"] = az
+      az_health["InstanceCount"] = 0
+      az_health["Healthy"] = false
+      availability_zones_health << az_health
+    end
+
+    instance_health = @elb.describe_instance_health(params[:id])
+                          .body["DescribeInstanceHealthResult"]["InstanceStates"]
+    compute = get_compute_interface(params[:cred_id], params[:region])
+
+    instance_health.each do |i|
+      instance = compute.servers.get(i["InstanceId"])
+      next if instance.nil?
+
+      i["AvailabilityZone"] = instance.availability_zone
+      availability_zones_health.each do |a|
+        if a["AvailabilityZone"] == i["AvailabilityZone"]
+          a["InstanceCount"] = a["InstanceCount"] + 1
+          if i["State"] == "InService"
+            a["Healthy"] = true
+          end
+        end
+      end
+    end
+
+    response = {
+      "AvailabilityZonesHealth" => availability_zones_health,
+      "InstancesHealth" => instance_health
+    }
+    [OK, response.to_json]
+  end
+
+  #
+  # Load Balancer Listeners
+  #
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/load_balancer/load_balancers/:id/listeners"
   ##~ a.description = "Manage Load Balancer resources on the cloud (AWS)"
@@ -279,14 +299,10 @@ class AwsLoadBalancerApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	get '/load_balancers/:id/listeners' do
-		begin
-			response = @elb.load_balancers.get(params[:id]).listeners
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  get '/load_balancers/:id/listeners' do
+    response = @elb.load_balancers.get(params[:id]).listeners
+    [OK, response.to_json]
+  end
 
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/load_balancer/load_balancers/:id/listeners"
@@ -301,15 +317,14 @@ class AwsLoadBalancerApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/load_balancers/:id/listeners' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @elb.create_load_balancer_listeners(params[:id], json_body["listeners"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/load_balancers/:id/listeners' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @elb.create_load_balancer_listeners(
+      params[:id],
+      json_body["listeners"]
+    )
+    [OK, response.to_json]
+  end
 
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/load_balancer/load_balancers/:id/listeners"
@@ -324,30 +339,32 @@ class AwsLoadBalancerApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	delete '/load_balancers/:id/listeners' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @elb.delete_load_balancer_listeners(params[:id], json_body["ports"])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  delete '/load_balancers/:id/listeners' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @elb.delete_load_balancer_listeners(
+      params[:id],
+      json_body["ports"]
+    )
+    [OK, response.to_json]
+  end
 
-	def get_compute_interface(cred_id, region)
-		if(cred_id.nil?)
-			return nil
-		else
-			cloud_cred = get_creds(cred_id)
-			if cloud_cred.nil?
-				return nil
-			else
-				if region.nil? or region == "undefined" or region == ""
-					return Fog::Compute::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key})
-				else
-					return Fog::Compute::AWS.new({:aws_access_key_id => cloud_cred.access_key, :aws_secret_access_key => cloud_cred.secret_key, :region => region})
-				end
-			end
-		end
-	end
+  def get_compute_interface(cred_id, region)
+    return if cred_id.nil?
+
+    cloud_cred = get_creds(cred_id)
+    return if cloud_cred.nil?
+
+    if region.nil? or region == "undefined" or region == ""
+      return Fog::Compute::AWS.new({
+        :aws_access_key_id => cloud_cred.access_key,
+        :aws_secret_access_key => cloud_cred.secret_key
+      })
+    else
+      return Fog::Compute::AWS.new({
+        :aws_access_key_id => cloud_cred.access_key,
+        :aws_secret_access_key => cloud_cred.secret_key,
+        :region => region
+      })
+    end
+  end
 end

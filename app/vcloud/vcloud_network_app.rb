@@ -15,12 +15,8 @@ class VCloudNetworkApp < VCloudApp
   ##~ op.summary = "List networks in an organization"
   ##~ op.errorResponses.add :reason => "API down", :code => 500
   get '/' do
-    begin
-      networks = @org.networks
-      [OK, networks.to_json]
-    rescue => error
-      handle_error(error)
-    end
+    networks = @org.networks
+    [OK, networks.to_json]
   end
 
   ##~ a = sapi.apis.add
@@ -32,11 +28,7 @@ class VCloudNetworkApp < VCloudApp
   ##~ op.summary = "Get network by id"
   ##~ op.errorResponses.add :reason => "API down", :code => 500
   get '/:id' do
-    begin
-      networks = @org.networks.get(params[:id])
-      [OK, networks.to_json]
-    rescue => error
-      handle_error(error)
-    end
+    networks = @org.networks.get(params[:id])
+    [OK, networks.to_json]
   end
 end

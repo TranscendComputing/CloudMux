@@ -3,16 +3,16 @@ require 'fog'
 
 class AwsSimpleDBApp < ResourceApiBase
 
-	before do
+  before do
     params["provider"] = "aws"
     @service_long_name = "Simple DB"
     @service_class = Fog::AWS::SimpleDB
     @sdb = can_access_service(params)
   end
 
-	#
-	# Databases
-	#
+  #
+  # Databases
+  #
   ##~ sapi = source2swagger.namespace("aws_simple_db")
   ##~ sapi.swaggerVersion = "1.1"
   ##~ sapi.apiVersion = "1.0"
@@ -32,24 +32,23 @@ class AwsSimpleDBApp < ResourceApiBase
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   get '/databases' do
     begin
-  		filters = params[:filters]
-  		if(filters.nil?)
-  			db_list = @sdb.list_domains.body["Domains"]
-  		else
-  			db_list = @sdb.list_domains.(filters).body["Domains"]
-  		end
-  		response = []
-  		db_list.each do |t|
-  			domain = @sdb.domain_metadata(t).body
-  			domain = domain.merge({"DomainName" => t})
-  			response << domain
-  		end
-  		[OK, response.to_json]
+      filters = params[:filters]
+      db_list = filters.nil? ?
+        @sdb.list_domains.body["Domains"] :
+        @sdb.list_domains(filters).body["Domains"]
+
+      response = new Array
+      db_list.each do |t|
+        domain = @sdb.domain_metadata(t).body
+        domain = domain.merge({"DomainName" => t})
+        response << domain
+      end
+      [OK, response.to_json]
     rescue => error
-        pre_handle_error(@sdb, error)
-		end
-	end
-	
+      pre_handle_error(@sdb, error)
+    end
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/simple_db/databases"
   ##~ a.description = "Manage Simple DB resources on the cloud (AWS)"
@@ -63,16 +62,12 @@ class AwsSimpleDBApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/databases' do
-		json_body = body_to_json_or_die("body" => request)
-			begin
-				response = @sdb.create_domain(json_body["simple_db"]["DomainName"])
-				[OK, response.to_json]
-			rescue => error
-				handle_error(error)
-			end
-	end
-	
+  post '/databases' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @sdb.create_domain(json_body["simple_db"]["DomainName"])
+    [OK, response.to_json]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/simple_db/databases/:id"
   ##~ a.description = "Manage Simple DB resources on the cloud (AWS)"
@@ -85,15 +80,11 @@ class AwsSimpleDBApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	delete '/databases/:id' do
-		begin
-			response = @sdb.delete_domain(params[:id])
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
-	
+  delete '/databases/:id' do
+    response = @sdb.delete_domain(params[:id])
+    [OK, response.to_json]
+  end
+  
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/simple_db/databases/select"
   ##~ a.description = "Manage Simple DB resources on the cloud (AWS)"
@@ -106,28 +97,24 @@ class AwsSimpleDBApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/databases/select' do
-		json_body = body_to_json_or_die("body" => request, "args" => ["select_expression"])
-		begin
-			contents = @sdb.select(json_body["select_expression"]).body["Items"]
-			response = []
-			contents.each do |t|
-				item = {}
-				item["Name"] = t[0]
-				item["Attributes"] = []
-				t[1].each do |s|
-					att = {}
-					att["Name"] = s[0]
-					att["Value"] = s[1]
-					item["Attributes"] << att
-				end
-				response << item
-			end
-			[OK, response.to_json]
-		rescue => error
-			handle_error(error)
-		end
-	end
+  post '/databases/select' do
+    json_body = body_to_json_or_die(
+      "body" => request,
+      "args" => ["select_expression"]
+    )
+
+    contents = @sdb.select(json_body["select_expression"]).body["Items"]
+    response = Array.new
+
+    contents.each do |t|
+      item = {'Name' => t[0], 'Attributes' => Array.new}
+      t[1].each do |s|
+        item["Attributes"] << {'Name' => s[0], 'Value' => s[1]}
+      end
+      response << item
+    end
+    [OK, response.to_json]
+  end
 
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/simple_db/databases/:id/items/:item_name"
@@ -144,15 +131,15 @@ class AwsSimpleDBApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	post '/databases/:id/items/:item_name' do
-		json_body = body_to_json_or_die("body" => request)
-		begin
-			response = @sdb.put_attributes(params[:id], params[:item_name], json_body["attributes"])
-			[OK, response.to_json]
-		rescue
-			handle_error(error)
-		end
-	end
+  post '/databases/:id/items/:item_name' do
+    json_body = body_to_json_or_die("body" => request)
+    response = @sdb.put_attributes(
+      params[:id],
+      params[:item_name],
+      json_body["attributes"]
+    )
+    [OK, response.to_json]
+  end
 
   ##~ a = sapi.apis.add
   ##~ a.set :path => "/api/v1/cloud_management/aws/simple_db/databases/:id/items/:item_name"
@@ -167,12 +154,8 @@ class AwsSimpleDBApp < ResourceApiBase
   ##~ op.errorResponses.add :reason => "Invalid Parameters", :code => 400
   ##~ op.parameters.add :name => "cred_id", :description => "Cloud credential to use", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
   ##~ op.parameters.add :name => "region", :description => "Cloud region to examine", :dataType => "string", :allowMultiple => false, :required => true, :paramType => "query"
-	delete '/databases/:id/items/:item_name' do
-		begin
-			response = @sdb.delete_attributes(params[:id], params[:item_name])
-			[OK, response.to_json]
-		rescue
-			handle_error(error)
-		end
-	end
+  delete '/databases/:id/items/:item_name' do
+    response = @sdb.delete_attributes(params[:id], params[:item_name])
+    [OK, response.to_json]
+  end
 end
